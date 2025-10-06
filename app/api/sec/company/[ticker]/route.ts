@@ -1,0 +1,91 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { secClient } from '@/lib/sec-client';
+import { cache, cacheKeys } from '@/lib/cache';
+import { prisma } from '@/lib/prisma';
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ ticker: string }> }
+) {
+  try {
+    const { ticker } = await params;
+
+    if (!ticker) {
+      return NextResponse.json({ error: 'Ticker is required' }, { status: 400 });
+    }
+
+    // Check cache first
+    const cacheKey = `company:${ticker.toUpperCase()}`;
+    const cached = cache.get(cacheKey);
+    if (cached) {
+      return NextResponse.json(cached);
+    }
+
+    // Get company by ticker
+    const companyInfo = await secClient.getCompanyByTicker(ticker);
+
+    if (!companyInfo) {
+      return NextResponse.json({ error: 'Company not found' }, { status: 404 });
+    }
+
+    // Get filings (limit to 10-K, 10-Q, 8-K)
+    const filings = await secClient.getCompanyFilings(companyInfo.cik, [
+      '10-K',
+      '10-Q',
+      '8-K',
+    ]);
+
+    // Store in database if not exists
+    let company = await prisma.company.findUnique({
+      where: { cik: companyInfo.cik },
+    });
+
+    if (!company) {
+      company = await prisma.company.create({
+        data: {
+          cik: companyInfo.cik,
+          ticker: ticker.toUpperCase(),
+          name: companyInfo.name,
+        },
+      });
+    }
+
+    // Store recent filings in database
+    for (const filing of filings.filings.slice(0, 10)) {
+      // Only store last 10
+      await prisma.filing.upsert({
+        where: { accessionNumber: filing.accessionNumber },
+        create: {
+          companyId: company.id,
+          cik: companyInfo.cik,
+          accessionNumber: filing.accessionNumber,
+          filingType: filing.form,
+          filingDate: new Date(filing.filingDate),
+          reportDate: filing.reportDate ? new Date(filing.reportDate) : null,
+          filingUrl: filing.filingUrl,
+        },
+        update: {},
+      });
+    }
+
+    const result = {
+      company: {
+        cik: companyInfo.cik,
+        ticker: ticker.toUpperCase(),
+        name: companyInfo.name,
+      },
+      filings: filings.filings.slice(0, 20), // Return last 20 filings
+    };
+
+    // Cache for 1 hour
+    cache.set(cacheKey, result, 3600000);
+
+    return NextResponse.json(result);
+  } catch (error: any) {
+    console.error('Error fetching company:', error);
+    return NextResponse.json(
+      { error: error.message || 'Failed to fetch company data' },
+      { status: 500 }
+    );
+  }
+}

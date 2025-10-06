@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  ticker    String   @unique
+  cik       String   @unique
+  name      String
+  sector    String?
+  industry  String?
+  filings   Filing[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Filing {
+  id              String    @id @default(cuid())
+  companyId       String
+  company         Company   @relation(fields: [companyId], references: [id])
+  cik             String
+  accessionNumber String    @unique
+  filingType      String    // "10-K", "10-Q", "8-K"
+  filingDate      DateTime
+  reportDate      DateTime?
+  filingUrl       String
+
+  // AI Analysis Results (JSON)
+  analysisData    String?   // JSON stored as text
+  aiSummary       String?   // Executive summary
+  riskScore       Float?    // 0-10 severity score
+  sentimentScore  Float?    // -1 to 1
+
+  // Prediction Results
+  predicted7dReturn Float?  // Predicted 7-day return %
+  predictionConfidence Float? // 0-1 confidence score
+  actual7dReturn    Float?   // Actual return (backfilled)
+
+  predictions     Prediction[]
+  stockPrices     StockPrice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId, filingDate])
+  @@index([filingType])
+}
+
+model StockPrice {
+  id        String   @id @default(cuid())
+  ticker    String
+  date      DateTime
+  open      Float
+  high      Float
+  low       Float
+  close     Float
+  volume    Int
+  filingId  String?
+  filing    Filing?  @relation(fields: [filingId], references: [id])
+
+  @@unique([ticker, date])
+  @@index([ticker])
+}
+
+model Prediction {
+  id              String   @id @default(cuid())
+  filingId        String
+  filing          Filing   @relation(fields: [filingId], references: [id])
+  predictedReturn Float    // 7-day predicted return
+  confidence      Float    // 0-1 confidence score
+  features        String   // JSON feature vector
+  modelVersion    String   // "v1.0"
+  createdAt       DateTime @default(now())
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  tier          String   @default("free") // "free", "pro", "enterprise"
+  apiKey        String?  @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
