@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, Cell, ReferenceLine, ReferenceDot } from 'recharts';
 
 interface FilingAnalysisData {
   filing: {
@@ -117,6 +117,8 @@ export default function FilingPage() {
   const [loading, setLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState<AnalysisStep>('fetching-filing');
   const [error, setError] = useState<string | null>(null);
+  const [stockPrices, setStockPrices] = useState<any>(null);
+  const [loadingStockPrices, setLoadingStockPrices] = useState(false);
 
   useEffect(() => {
     if (!accession) return;
@@ -178,6 +180,32 @@ export default function FilingPage() {
 
     fetchAnalysis();
   }, [accession]);
+
+  // Fetch stock price data when filing data is loaded
+  useEffect(() => {
+    if (!data?.filing?.company?.ticker || !data?.filing?.filingDate) return;
+
+    const fetchStockPrices = async () => {
+      try {
+        setLoadingStockPrices(true);
+        const response = await fetch(
+          `/api/stock-prices?ticker=${data.filing.company.ticker}&filingDate=${data.filing.filingDate}`
+        );
+        const priceData = await response.json();
+        if (priceData.error) {
+          console.error('Stock prices error:', priceData.error);
+          return;
+        }
+        setStockPrices(priceData);
+      } catch (error) {
+        console.error('Failed to fetch stock prices:', error);
+      } finally {
+        setLoadingStockPrices(false);
+      }
+    };
+
+    fetchStockPrices();
+  }, [data]);
 
   const getStepDetails = (step: AnalysisStep) => {
     const steps = {
@@ -884,6 +912,89 @@ export default function FilingPage() {
                   )}
                 </div>
               )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Stock Price Performance Chart */}
+        {stockPrices && stockPrices.prices && stockPrices.prices.length > 0 && (
+          <Card className="mb-6 border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardHeader>
+              <CardTitle className="text-2xl">📊 Stock Price Performance</CardTitle>
+              <CardDescription>
+                {data.filing.company?.ticker} price movement from 30 days before to 30 days after filing (normalized to filing date)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="bg-white p-4 rounded-lg border-2 border-purple-100">
+                <ResponsiveContainer width="100%" height={350}>
+                  <LineChart
+                    data={stockPrices.prices}
+                    margin={{ top: 10, right: 30, left: 10, bottom: 40 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 11, angle: -45, textAnchor: 'end' }}
+                      height={60}
+                      label={{ value: 'Date', position: 'insideBottom', offset: -20, style: { fontSize: 12 } }}
+                    />
+                    <YAxis
+                      label={{ value: '% Change from Filing Date', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
+                      tick={{ fontSize: 11 }}
+                    />
+                    <Tooltip
+                      formatter={(value: number, name: string) => {
+                        if (name === 'Stock Change') return [`${value.toFixed(2)}%`, data.filing.company?.ticker || 'Stock'];
+                        if (name === 'S&P 500 Change') return [`${value.toFixed(2)}%`, 'S&P 500'];
+                        return [value, name];
+                      }}
+                      labelFormatter={(label) => `Date: ${label}`}
+                      contentStyle={{ fontSize: 12 }}
+                    />
+                    <Legend
+                      wrapperStyle={{ fontSize: 12, paddingTop: '10px' }}
+                      verticalAlign="top"
+                    />
+                    {/* Reference line at 0% */}
+                    <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="3 3" />
+                    {/* Stock performance line */}
+                    <Line
+                      type="monotone"
+                      dataKey="pctChange"
+                      stroke="#8b5cf6"
+                      strokeWidth={3}
+                      name="Stock Change"
+                      dot={false}
+                    />
+                    {/* S&P 500 comparison line */}
+                    <Line
+                      type="monotone"
+                      dataKey="spyPctChange"
+                      stroke="#94a3b8"
+                      strokeWidth={2}
+                      strokeDasharray="5 5"
+                      name="S&P 500 Change"
+                      dot={false}
+                    />
+                    {/* Filing date marker */}
+                    {stockPrices.prices.find((p: any) => p.isFilingDate) && (
+                      <ReferenceDot
+                        x={stockPrices.prices.find((p: any) => p.isFilingDate)?.date}
+                        y={0}
+                        r={8}
+                        fill="#f59e0b"
+                        stroke="#fff"
+                        strokeWidth={2}
+                      />
+                    )}
+                  </LineChart>
+                </ResponsiveContainer>
+                <div className="mt-3 flex items-center justify-center gap-2 text-sm text-slate-600">
+                  <span className="inline-block w-3 h-3 rounded-full bg-amber-500"></span>
+                  <span>Filing Date: {new Date(data.filing.filingDate).toLocaleDateString()}</span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}
