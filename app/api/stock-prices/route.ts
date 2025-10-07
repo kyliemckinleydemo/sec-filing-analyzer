@@ -74,10 +74,24 @@ for date_str in spy_data.index:
     if date <= filing_datetime and (spy_filing_price is None or date > filing_datetime):
         spy_filing_price = spy_data.loc[date_str]['Close']
 
+# Calculate 7 business days after filing date
+business_days_count = 0
+current_date = filing_datetime
+seven_bd_date = None
+
+while business_days_count < 7:
+    current_date += timedelta(days=1)
+    # Check if it's a weekday (Monday=0, Sunday=6)
+    if current_date.weekday() < 5:
+        business_days_count += 1
+        if business_days_count == 7:
+            seven_bd_date = current_date.strftime('%Y-%m-%d')
+
 # Build result
 result = {
     "ticker": ticker,
     "filingDate": filing_date,
+    "sevenBdDate": seven_bd_date,
     "prices": []
 }
 
@@ -102,7 +116,8 @@ for date_str in stock_data.index:
         "price": round(stock_price, 2),
         "pctChange": round(stock_pct_change, 2),
         "spyPctChange": round(spy_pct_change, 2),
-        "isFilingDate": date_formatted == filing_date
+        "isFilingDate": date_formatted == filing_date,
+        "is7BdDate": date_formatted == seven_bd_date
     })
 
 print(json.dumps(result))

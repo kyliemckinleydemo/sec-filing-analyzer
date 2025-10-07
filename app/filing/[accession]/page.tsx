@@ -989,11 +989,45 @@ export default function FilingPage() {
                         strokeWidth={2}
                       />
                     )}
+                    {/* 7-business-day prediction marker */}
+                    {data.prediction && stockPrices.prices.find((p: any) => p.is7BdDate) && (
+                      <>
+                        <ReferenceLine
+                          y={data.prediction.predicted7dReturn}
+                          stroke="#3b82f6"
+                          strokeDasharray="3 3"
+                          strokeWidth={2}
+                          label={{
+                            value: `Predicted: ${data.prediction.predicted7dReturn > 0 ? '+' : ''}${data.prediction.predicted7dReturn.toFixed(1)}%`,
+                            position: 'right',
+                            fill: '#3b82f6',
+                            fontSize: 11,
+                            fontWeight: 'bold'
+                          }}
+                        />
+                        <ReferenceDot
+                          x={stockPrices.prices.find((p: any) => p.is7BdDate)?.date}
+                          y={data.prediction.predicted7dReturn}
+                          r={10}
+                          fill="#3b82f6"
+                          stroke="#fff"
+                          strokeWidth={2}
+                        />
+                      </>
+                    )}
                   </LineChart>
                 </ResponsiveContainer>
-                <div className="mt-3 flex items-center justify-center gap-2 text-sm text-slate-600">
-                  <span className="inline-block w-3 h-3 rounded-full bg-amber-500"></span>
-                  <span>Filing Date: {new Date(data.filing.filingDate).toLocaleDateString()}</span>
+                <div className="mt-3 flex items-center justify-center gap-4 text-sm text-slate-600">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-block w-3 h-3 rounded-full bg-amber-500"></span>
+                    <span>Filing Date: {new Date(data.filing.filingDate).toLocaleDateString()}</span>
+                  </div>
+                  {data.prediction && stockPrices.sevenBdDate && (
+                    <div className="flex items-center gap-2">
+                      <span className="inline-block w-3 h-3 rounded-full bg-blue-500"></span>
+                      <span>7-Day Prediction: {new Date(stockPrices.sevenBdDate).toLocaleDateString()}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </CardContent>

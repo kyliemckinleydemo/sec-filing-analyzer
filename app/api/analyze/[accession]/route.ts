@@ -579,21 +579,26 @@ However, we faced headwinds from increased competition and rising costs. Looking
         const { epsSurprise, revenueSurprise, epsSurpriseMagnitude, revenueSurpriseMagnitude } = analysis.financialMetrics.structuredData;
 
         // If we have earnings surprises, adjust sentiment
+        // IMPORTANT: Actual earnings performance massively overweights sentiment wording
         if (epsSurprise || revenueSurprise) {
           let sentimentAdjustment = 0;
 
-          // EPS surprise has more weight (typically drives stock price more)
+          // Normalize magnitude to 0-1 range (epsSurpriseMagnitude is in % like -10.8 or +15.2)
+          const normalizedEpsMag = Math.min(Math.abs(epsSurpriseMagnitude || 0) / 100, 1.0);
+          const normalizedRevMag = Math.min(Math.abs(revenueSurpriseMagnitude || 0) / 100, 1.0);
+
+          // EPS surprise has massive weight - overrides sentiment wording completely
           if (epsSurprise === 'beat') {
-            sentimentAdjustment += 0.3 + (epsSurpriseMagnitude || 0) * 0.5; // Base +0.3, up to +0.8 for large beats
+            sentimentAdjustment += 0.5 + normalizedEpsMag * 1.0; // Base +0.5, up to +1.5 for large beats
           } else if (epsSurprise === 'miss') {
-            sentimentAdjustment -= 0.3 + (epsSurpriseMagnitude || 0) * 0.5; // Base -0.3, down to -0.8 for large misses
+            sentimentAdjustment -= 0.5 + normalizedEpsMag * 1.0; // Base -0.5, down to -1.5 for large misses
           }
 
           // Revenue surprise has less weight but still matters
           if (revenueSurprise === 'beat') {
-            sentimentAdjustment += 0.2 + (revenueSurpriseMagnitude || 0) * 0.3; // Base +0.2, up to +0.5
+            sentimentAdjustment += 0.3 + normalizedRevMag * 0.5; // Base +0.3, up to +0.8
           } else if (revenueSurprise === 'miss') {
-            sentimentAdjustment -= 0.2 + (revenueSurpriseMagnitude || 0) * 0.3; // Base -0.2, down to -0.5
+            sentimentAdjustment -= 0.3 + normalizedRevMag * 0.5; // Base -0.3, down to -0.8
           }
 
           // Apply adjustment and clamp to [-1, 1]
