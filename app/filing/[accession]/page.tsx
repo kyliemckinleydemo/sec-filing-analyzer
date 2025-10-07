@@ -945,13 +945,40 @@ export default function FilingPage() {
                       tick={{ fontSize: 11 }}
                     />
                     <Tooltip
-                      formatter={(value: number, name: string) => {
-                        if (name === 'Stock Change') return [`${value.toFixed(2)}%`, data.filing.company?.ticker || 'Stock'];
-                        if (name === 'S&P 500 Change') return [`${value.toFixed(2)}%`, 'S&P 500'];
-                        return [value, name];
+                      content={({ active, payload, label }) => {
+                        if (!active || !payload || !payload.length) return null;
+
+                        const dataPoint = payload[0].payload;
+                        const stockChange = dataPoint.pctChange;
+                        const spyChange = dataPoint.spyPctChange;
+                        const isFilingDate = dataPoint.isFilingDate;
+                        const is7BdDate = dataPoint.is7BdDate;
+
+                        return (
+                          <div className="bg-white border border-slate-300 rounded-lg shadow-lg p-3" style={{ fontSize: 12 }}>
+                            <p className="font-bold mb-2">{label}</p>
+                            {isFilingDate && (
+                              <p className="text-amber-600 font-semibold mb-1">📄 Filing Date</p>
+                            )}
+                            {is7BdDate && data.prediction && (
+                              <p className="text-blue-600 font-semibold mb-1">
+                                🎯 7-Day Target: {data.prediction.predicted7dReturn > 0 ? '+' : ''}{data.prediction.predicted7dReturn.toFixed(2)}%
+                              </p>
+                            )}
+                            <p className="text-purple-600">
+                              <strong>{data.filing.company?.ticker || 'Stock'}:</strong> {stockChange > 0 ? '+' : ''}{stockChange.toFixed(2)}%
+                            </p>
+                            <p className="text-slate-600">
+                              <strong>S&P 500:</strong> {spyChange > 0 ? '+' : ''}{spyChange.toFixed(2)}%
+                            </p>
+                            {is7BdDate && data.prediction && (
+                              <p className="text-slate-500 text-xs mt-2 pt-2 border-t border-slate-200">
+                                Predicted vs Actual: {stockChange > 0 ? '+' : ''}{stockChange.toFixed(2)}% (actual) vs {data.prediction.predicted7dReturn > 0 ? '+' : ''}{data.prediction.predicted7dReturn.toFixed(2)}% (predicted)
+                              </p>
+                            )}
+                          </div>
+                        );
                       }}
-                      labelFormatter={(label) => `Date: ${label}`}
-                      contentStyle={{ fontSize: 12 }}
                     />
                     <Legend
                       wrapperStyle={{ fontSize: 12, paddingTop: '10px' }}
