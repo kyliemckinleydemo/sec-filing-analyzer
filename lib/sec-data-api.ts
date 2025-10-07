@@ -125,9 +125,9 @@ class SECDataAPIClient {
       }
 
       // Calculate growth rates
-      const revenueYoY = this.calculateYoYGrowth(gaap['Revenues'] || gaap['RevenueFromContractWithCustomerExcludingAssessedTax'], revenue);
-      const netIncomeYoY = this.calculateYoYGrowth(gaap['NetIncomeLoss'], netIncome);
-      const epsYoY = this.calculateYoYGrowth(gaap['EarningsPerShareBasic'] || gaap['EarningsPerShareDiluted'], eps);
+      const revenueYoY = this.calculateYoYGrowth((gaap['Revenues'] || gaap['RevenueFromContractWithCustomerExcludingAssessedTax']) ?? undefined, revenue);
+      const netIncomeYoY = this.calculateYoYGrowth(gaap['NetIncomeLoss'] ?? undefined, netIncome);
+      const epsYoY = this.calculateYoYGrowth((gaap['EarningsPerShareBasic'] || gaap['EarningsPerShareDiluted']) ?? undefined, eps);
 
       // Calculate margins
       const grossMargin = grossProfit && revenue ? (grossProfit.val / revenue.val) * 100 : undefined;
