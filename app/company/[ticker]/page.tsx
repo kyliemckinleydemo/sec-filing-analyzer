@@ -109,9 +109,23 @@ export default function CompanyPage() {
               <Card
                 key={filing.accessionNumber}
                 className="hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() =>
-                  router.push(`/filing/${filing.accessionNumber}`)
-                }
+                onClick={() => {
+                  // Normalize accession number (add dashes if missing)
+                  const normalizedAccession = filing.accessionNumber.includes('-')
+                    ? filing.accessionNumber
+                    : `${filing.accessionNumber.slice(0, 10)}-${filing.accessionNumber.slice(10, 12)}-${filing.accessionNumber.slice(12)}`;
+
+                  // Pass filing metadata as query params
+                  const params = new URLSearchParams({
+                    ticker: data!.company.ticker,
+                    cik: data!.company.cik,
+                    filingType: filing.form,
+                    filingDate: filing.filingDate,
+                    filingUrl: filing.filingUrl,
+                    companyName: data!.company.name,
+                  });
+                  router.push(`/filing/${normalizedAccession}?${params.toString()}`);
+                }}
               >
                 <CardHeader>
                   <div className="flex justify-between items-start">

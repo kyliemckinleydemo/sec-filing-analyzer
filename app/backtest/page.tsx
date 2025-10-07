@@ -215,8 +215,7 @@ export default function BacktestPage() {
                     {results.map((result) => (
                       <tr
                         key={result.accessionNumber}
-                        className="border-b border-slate-100 hover:bg-slate-50 cursor-pointer"
-                        onClick={() => router.push(`/filing/${result.accessionNumber}`)}
+                        className="border-b border-slate-100 hover:bg-slate-50"
                       >
                         <td className="py-2 px-3">
                           {new Date(result.filingDate).toLocaleDateString()}
