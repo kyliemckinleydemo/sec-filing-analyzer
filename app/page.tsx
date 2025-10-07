@@ -40,7 +40,7 @@ export default function Home() {
             AI-Powered SEC Filing Analysis
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Understand what filings mean for stock prices. Get predictions backed by AI.
+            Using SEC filings to predict 7 business day forward stock performance
           </p>
           <div className="inline-block bg-green-50 border border-green-200 rounded-lg px-4 py-2 mt-4">
             <p className="text-sm text-green-700">
