@@ -189,7 +189,7 @@ export default function FilingPage() {
       try {
         setLoadingStockPrices(true);
         const response = await fetch(
-          `/api/stock-prices?ticker=${data.filing.company.ticker}&filingDate=${data.filing.filingDate}`
+          `/api/stock-prices?ticker=${data.filing.company?.ticker}&filingDate=${data.filing.filingDate}`
         );
         const priceData = await response.json();
         if (priceData.error) {
