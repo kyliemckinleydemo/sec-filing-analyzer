@@ -206,9 +206,9 @@ class SECDataAPIClient {
    */
   private calculateYoYGrowth(
     concept: GaapConcept | undefined,
-    currentValue: ConceptValue
+    currentValue: ConceptValue | undefined
   ): string | undefined {
-    if (!concept?.units) return undefined;
+    if (!concept?.units || !currentValue) return undefined;
 
     const units = concept.units['USD'] || concept.units['shares'] || concept.units['pure'];
     if (!units) return undefined;

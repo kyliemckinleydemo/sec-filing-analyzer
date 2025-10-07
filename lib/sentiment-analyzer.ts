@@ -18,7 +18,7 @@ export interface SentimentAnalysis {
   signals: {
     outlookOptimistic: boolean;
     guidanceLanguage: 'strong' | 'cautious' | 'neutral';
-    challenges Mentioned: boolean;
+    challengesMentioned: boolean;
     growthEmphasis: boolean;
     uncertaintyLevel: 'low' | 'medium' | 'high';
   };
