@@ -11,7 +11,7 @@ interface FilingAnalysisData {
     accessionNumber: string;
     filingType: string;
     filingDate: string;
-    company: {
+    company?: {
       name: string;
       ticker: string;
     };
@@ -131,9 +131,22 @@ export default function FilingPage() {
         const updateSteps2 = setTimeout(() => setCurrentStep('fetching-prior'), 5000);
         const updateSteps3 = setTimeout(() => setCurrentStep('running-ai'), 8000);
 
-        // Fetch analysis
-        const analysisRes = await fetch(`/api/analyze/${accession}`);
+        // Get query params from URL to pass to analyze API
+        const searchParams = new URLSearchParams(window.location.search);
+        const queryString = searchParams.toString();
+
+        // Fetch analysis (pass query params if they exist)
+        const analysisRes = await fetch(`/api/analyze/${accession}${queryString ? `?${queryString}` : ''}`);
+
+        if (!analysisRes.ok) {
+          throw new Error(`Analysis failed: ${analysisRes.status} ${analysisRes.statusText}`);
+        }
+
         const analysisData = await analysisRes.json();
+
+        if (analysisData.error) {
+          throw new Error(analysisData.error);
+        }
 
         clearTimeout(updateSteps);
         clearTimeout(updateSteps2);
@@ -142,7 +155,12 @@ export default function FilingPage() {
 
         // Fetch prediction
         const predictionRes = await fetch(`/api/predict/${accession}`);
-        const predictionData = await predictionRes.json();
+
+        if (!predictionRes.ok) {
+          console.warn('Prediction failed, continuing without it');
+        }
+
+        const predictionData = predictionRes.ok ? await predictionRes.json() : {};
 
         setCurrentStep('complete');
 
@@ -310,12 +328,12 @@ export default function FilingPage() {
         <div className="mb-8">
           <Button
             variant="outline"
-            onClick={() => router.push(`/company/${data.filing.company.ticker}`)}
+            onClick={() => router.push(`/company/${data.filing.company?.ticker || ''}`)}
             className="mb-4"
           >
-            ← Back to {data.filing.company.ticker}
+            ← Back to {data.filing.company?.ticker || 'Company'}
           </Button>
-          <h1 className="text-4xl font-bold">{data.filing.company.name}</h1>
+          <h1 className="text-4xl font-bold">{data.filing.company?.name || 'Company'}</h1>
           <p className="text-lg text-slate-600 mt-2">
             {data.filing.filingType} Filed on{' '}
             {new Date(data.filing.filingDate).toLocaleDateString()}

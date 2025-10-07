@@ -41,14 +41,73 @@ export async function GET(
     //   return NextResponse.json(cached);
     // }
 
-    // Get filing from database
-    const filing = await prisma.filing.findUnique({
-      where: { accessionNumber: accession },
+    // Normalize accession number (add dashes if missing)
+    const normalizedAccession = accession.includes('-')
+      ? accession
+      : `${accession.slice(0, 10)}-${accession.slice(10, 12)}-${accession.slice(12)}`;
+
+    // Get filing from database OR create it from URL params
+    let filing = await prisma.filing.findUnique({
+      where: { accessionNumber: normalizedAccession },
       include: { company: true },
     });
 
+    // If filing doesn't exist, try to create it from query params
     if (!filing) {
-      return NextResponse.json({ error: 'Filing not found' }, { status: 404 });
+      const { searchParams } = new URL(request.url);
+      const ticker = searchParams.get('ticker');
+      const cik = searchParams.get('cik');
+      const filingType = searchParams.get('filingType');
+      const filingDate = searchParams.get('filingDate');
+      const filingUrl = searchParams.get('filingUrl');
+      const companyName = searchParams.get('companyName');
+
+      if (!ticker || !cik || !filingType || !filingDate || !filingUrl || !companyName) {
+        return NextResponse.json(
+          { error: 'Filing not found in database. Please provide: ticker, cik, filingType, filingDate, filingUrl, companyName as query parameters.' },
+          { status: 404 }
+        );
+      }
+
+      // Create company if it doesn't exist
+      let company = await prisma.company.findUnique({
+        where: { ticker },
+      });
+
+      if (!company) {
+        company = await prisma.company.create({
+          data: {
+            ticker,
+            name: companyName,
+            cik,
+          },
+        });
+      }
+
+      // Create filing and reload with company relationship
+      const createdFiling = await prisma.filing.create({
+        data: {
+          accessionNumber: normalizedAccession,
+          cik: company.cik,
+          filingType,
+          filingDate: new Date(filingDate),
+          filingUrl,
+          companyId: company.id,
+        },
+      });
+
+      // Reload with company relationship
+      filing = await prisma.filing.findUnique({
+        where: { accessionNumber: normalizedAccession },
+        include: { company: true },
+      });
+
+      if (!filing) {
+        return NextResponse.json(
+          { error: 'Failed to create filing' },
+          { status: 500 }
+        );
+      }
     }
 
     // Disabled returning cached analysis - always regenerate
@@ -226,7 +285,14 @@ However, we faced headwinds from increased competition and rising costs. Looking
       try {
         console.log('Parsing inline XBRL financial data from filing...');
         xbrlFinancials = xbrlParser.parseInlineXBRL(filingHtml);
-        console.log('XBRL extraction complete:', xbrlParser.getSummary(xbrlFinancials));
+        if (xbrlFinancials) {
+          try {
+            console.log('XBRL extraction complete:', xbrlParser.getSummary(xbrlFinancials));
+          } catch (summaryError) {
+            console.error('Error getting XBRL summary (continuing):', summaryError);
+            console.log('XBRL extraction complete (summary unavailable)');
+          }
+        }
       } catch (xbrlParseError) {
         console.error('Error parsing inline XBRL:', xbrlParseError);
         // Continue without inline XBRL data
@@ -379,10 +445,10 @@ However, we faced headwinds from increased competition and rising costs. Looking
         // Fallback to SEC Data API if inline XBRL didn't work
         if (filing.company.cik) {
           try {
-            console.log(`Fetching structured XBRL data for CIK ${filing.company.cik}, accession ${accession}...`);
+            console.log(`Fetching structured XBRL data for CIK ${filing.company.cik}, accession ${normalizedAccession}...`);
             const structuredFinancials = await secDataAPI.getFinancialSummary(
               filing.company.cik,
-              accession
+              normalizedAccession
             );
             if (structuredFinancials) {
               console.log('SEC API data fetched successfully');
@@ -408,9 +474,48 @@ However, we faced headwinds from increased competition and rising costs. Looking
         }
       }
 
+      // Adjust sentiment based on earnings surprises (beats are positive news)
+      if (analysis.financialMetrics.structuredData) {
+        const { epsSurprise, revenueSurprise, epsSurpriseMagnitude, revenueSurpriseMagnitude } = analysis.financialMetrics.structuredData;
+
+        // If we have earnings surprises, adjust sentiment
+        if (epsSurprise || revenueSurprise) {
+          let sentimentAdjustment = 0;
+
+          // EPS surprise has more weight (typically drives stock price more)
+          if (epsSurprise === 'beat') {
+            sentimentAdjustment += 0.3 + (epsSurpriseMagnitude || 0) * 0.5; // Base +0.3, up to +0.8 for large beats
+          } else if (epsSurprise === 'miss') {
+            sentimentAdjustment -= 0.3 + (epsSurpriseMagnitude || 0) * 0.5; // Base -0.3, down to -0.8 for large misses
+          }
+
+          // Revenue surprise has less weight but still matters
+          if (revenueSurprise === 'beat') {
+            sentimentAdjustment += 0.2 + (revenueSurpriseMagnitude || 0) * 0.3; // Base +0.2, up to +0.5
+          } else if (revenueSurprise === 'miss') {
+            sentimentAdjustment -= 0.2 + (revenueSurpriseMagnitude || 0) * 0.3; // Base -0.2, down to -0.5
+          }
+
+          // Apply adjustment and clamp to [-1, 1]
+          const originalSentiment = analysis.sentiment.sentimentScore;
+          analysis.sentiment.sentimentScore = Math.max(-1, Math.min(1, originalSentiment + sentimentAdjustment));
+
+          // Add note about adjustment
+          if (sentimentAdjustment !== 0) {
+            console.log(`[Sentiment] Adjusted from ${originalSentiment.toFixed(2)} to ${analysis.sentiment.sentimentScore.toFixed(2)} based on earnings surprises`);
+            analysis.sentiment.keyPhrases = analysis.sentiment.keyPhrases || [];
+            if (sentimentAdjustment > 0) {
+              analysis.sentiment.keyPhrases.push('Earnings beat expectations');
+            } else {
+              analysis.sentiment.keyPhrases.push('Earnings missed expectations');
+            }
+          }
+        }
+      }
+
       // Store analysis in database
       await prisma.filing.update({
-        where: { accessionNumber: accession },
+        where: { accessionNumber: normalizedAccession },
         data: {
           analysisData: JSON.stringify(analysis),
           aiSummary: analysis.summary,
@@ -419,15 +524,23 @@ However, we faced headwinds from increased competition and rising costs. Looking
         },
       });
 
+      // Debug: Check if company relationship was loaded
+      if (!filing.company) {
+        console.error('ERROR: Company relationship not loaded!', {
+          accession: filing.accessionNumber,
+          companyId: filing.companyId,
+        });
+      }
+
       const result = {
         filing: {
           accessionNumber: filing.accessionNumber,
           filingType: filing.filingType,
           filingDate: filing.filingDate,
-          company: {
+          company: filing.company ? {
             name: filing.company.name,
             ticker: filing.company.ticker,
-          },
+          } : undefined,
         },
         analysis,
         summary: analysis.summary,

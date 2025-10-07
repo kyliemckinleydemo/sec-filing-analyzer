@@ -13,8 +13,13 @@ export async function GET(
   try {
     const { accession } = await params;
 
+    // Normalize accession number (add dashes if missing)
+    const normalizedAccession = accession.includes('-')
+      ? accession
+      : `${accession.slice(0, 10)}-${accession.slice(10, 12)}-${accession.slice(12)}`;
+
     // Caching disabled - always regenerate predictions for fresh accuracy data
-    // const cacheKey = `prediction:${accession}`;
+    // const cacheKey = `prediction:${normalizedAccession}`;
     // const cached = cache.get(cacheKey);
     // if (cached) {
     //   return NextResponse.json(cached);
@@ -22,7 +27,7 @@ export async function GET(
 
     // Get filing with analysis
     const filing = await prisma.filing.findUnique({
-      where: { accessionNumber: accession },
+      where: { accessionNumber: normalizedAccession },
       include: { company: true },
     });
 
@@ -44,7 +49,7 @@ export async function GET(
         // If we got actual data and haven't stored it yet, update the database
         if (accuracyResult.hasData && accuracyResult.actual7dReturn && !filing.actual7dReturn) {
           await accuracyTracker.updateActualReturn(
-            accession,
+            normalizedAccession,
             accuracyResult.actual7dReturn
           );
         }
@@ -239,7 +244,7 @@ export async function GET(
 
     // Store prediction
     await prisma.filing.update({
-      where: { accessionNumber: accession },
+      where: { accessionNumber: normalizedAccession },
       data: {
         predicted7dReturn: prediction.predicted7dReturn,
         predictionConfidence: prediction.confidence,

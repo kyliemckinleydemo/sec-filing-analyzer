@@ -47,7 +47,7 @@ export default function Home() {
           </p>
           <div className="inline-block bg-green-50 border border-green-200 rounded-lg px-4 py-2 mt-4">
             <p className="text-sm text-green-700">
-              <strong>v2.3:</strong> Optimized model with sentiment & risk analysis • 430 companies tracked • <strong>74.8% accuracy</strong>
+              <strong>v2.3:</strong> Optimized model with sentiment & risk analysis • 430 companies tracked
             </p>
           </div>
 

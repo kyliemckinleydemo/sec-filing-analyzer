@@ -297,6 +297,17 @@ Focus on quantitative data that impacts stock price. If information isn't found,
   }
 
   async analyzeSentiment(mdaText: string): Promise<SentimentAnalysis> {
+    // Check if there's meaningful MD&A content
+    if (!mdaText || mdaText.trim().length < 50 || mdaText.toLowerCase().includes('not available')) {
+      return {
+        sentimentScore: 0,
+        confidence: 0,
+        tone: 'neutral',
+        keyPhrases: ['No MD&A content available'],
+        toneShift: 'N/A',
+      };
+    }
+
     const prompt = this.SENTIMENT_PROMPT.replace('{mdaText}', mdaText);
 
     try {

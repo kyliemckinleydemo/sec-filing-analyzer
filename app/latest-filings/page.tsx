@@ -32,7 +32,7 @@ export default function LatestFilingsPage() {
   const [filings, setFilings] = useState<LatestFiling[]>([]);
   const [loading, setLoading] = useState(true);
   const [tickerFilter, setTickerFilter] = useState('');
-  const [filingTypeFilter, setFilingTypeFilter] = useState('');
+  const [filingTypeFilter, setFilingTypeFilter] = useState('all');
   const router = useRouter();
 
   useEffect(() => {
@@ -56,8 +56,22 @@ export default function LatestFilingsPage() {
     }
   };
 
-  const handleAnalyze = (accessionNumber: string) => {
-    router.push(`/filing/${accessionNumber}`);
+  const handleAnalyze = (filing: LatestFiling) => {
+    // Normalize accession number (add dashes if missing) to match database format
+    const normalizedAccession = filing.accessionNumber.includes('-')
+      ? filing.accessionNumber
+      : `${filing.accessionNumber.slice(0, 10)}-${filing.accessionNumber.slice(10, 12)}-${filing.accessionNumber.slice(12)}`;
+
+    // Pass filing metadata as query params so the analyze API can create it if needed
+    const params = new URLSearchParams({
+      ticker: filing.ticker,
+      cik: filing.cik,
+      filingType: filing.filingType,
+      filingDate: filing.filingDate,
+      filingUrl: filing.filingUrl,
+      companyName: filing.companyName,
+    });
+    router.push(`/filing/${normalizedAccession}?${params.toString()}`);
   };
 
   const getDaysSinceFiling = (filingDate: string) => {
@@ -116,7 +130,7 @@ export default function LatestFilingsPage() {
               <SelectValue placeholder="All filing types" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All filing types</SelectItem>
+              <SelectItem value="all">All filing types</SelectItem>
               <SelectItem value="10-K">10-K (Annual)</SelectItem>
               <SelectItem value="10-Q">10-Q (Quarterly)</SelectItem>
               <SelectItem value="8-K">8-K (Current Events)</SelectItem>
@@ -174,7 +188,7 @@ export default function LatestFilingsPage() {
                   </div>
                   <div className="flex gap-2">
                     <Button
-                      onClick={() => handleAnalyze(filing.accessionNumber)}
+                      onClick={() => handleAnalyze(filing)}
                       className="bg-blue-600 hover:bg-blue-700"
                     >
                       Analyze
