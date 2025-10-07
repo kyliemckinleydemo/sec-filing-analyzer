@@ -54,6 +54,17 @@ export interface FinancialMetrics {
     epsYoY?: string;
     grossMargin?: number;
     operatingMargin?: number;
+    // Yahoo Finance data for prediction model
+    peRatio?: number;
+    marketCap?: number; // in billions
+    sector?: string;
+    industry?: string;
+    consensusEPS?: number;
+    consensusRevenue?: number;
+    epsSurprise?: 'beat' | 'miss' | 'inline';
+    epsSurpriseMagnitude?: number;
+    revenueSurprise?: 'beat' | 'miss' | 'inline';
+    revenueSurpriseMagnitude?: number;
   };
 }
 
