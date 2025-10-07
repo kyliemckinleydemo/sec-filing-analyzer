@@ -575,7 +575,7 @@ However, we faced headwinds from increased competition and rising costs. Looking
       }
 
       // Adjust sentiment based on earnings surprises (beats are positive news)
-      if (analysis.financialMetrics.structuredData) {
+      if (analysis.financialMetrics?.structuredData) {
         const { epsSurprise, revenueSurprise, epsSurpriseMagnitude, revenueSurpriseMagnitude } = analysis.financialMetrics.structuredData;
 
         // If we have earnings surprises, adjust sentiment
