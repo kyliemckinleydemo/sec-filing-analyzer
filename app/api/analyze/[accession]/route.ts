@@ -600,14 +600,26 @@ However, we faced headwinds from increased competition and rising costs. Looking
           const originalSentiment = analysis.sentiment.sentimentScore;
           analysis.sentiment.sentimentScore = Math.max(-1, Math.min(1, originalSentiment + sentimentAdjustment));
 
-          // Add note about adjustment
+          // Add note about adjustment and update tone
           if (sentimentAdjustment !== 0) {
             console.log(`[Sentiment] Adjusted from ${originalSentiment.toFixed(2)} to ${analysis.sentiment.sentimentScore.toFixed(2)} based on earnings surprises`);
             analysis.sentiment.keyPhrases = analysis.sentiment.keyPhrases || [];
             if (sentimentAdjustment > 0) {
               analysis.sentiment.keyPhrases.push('Earnings beat expectations');
+              // Update tone based on final sentiment score
+              if (analysis.sentiment.sentimentScore > 0.5) {
+                analysis.sentiment.tone = 'optimistic';
+              } else if (analysis.sentiment.sentimentScore > 0) {
+                analysis.sentiment.tone = 'cautiously optimistic';
+              }
             } else {
               analysis.sentiment.keyPhrases.push('Earnings missed expectations');
+              // Update tone based on final sentiment score
+              if (analysis.sentiment.sentimentScore < -0.5) {
+                analysis.sentiment.tone = 'pessimistic';
+              } else if (analysis.sentiment.sentimentScore < 0) {
+                analysis.sentiment.tone = 'cautious';
+              }
             }
           }
         }
