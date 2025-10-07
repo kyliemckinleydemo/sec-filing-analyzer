@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
 
 /**
  * Fetch stock price data for a given ticker around a filing date
  * Returns daily prices from 30 days before to 30 days after the filing
+ *
+ * Uses Yahoo Finance API (via query1.finance.yahoo.com)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -30,110 +28,96 @@ export async function GET(request: NextRequest) {
     const endDate = new Date(filing);
     endDate.setDate(endDate.getDate() + 30);
 
-    // Format dates for yfinance (YYYY-MM-DD)
-    const startStr = startDate.toISOString().split('T')[0];
-    const endStr = endDate.toISOString().split('T')[0];
     const filingStr = filing.toISOString().split('T')[0];
 
-    console.log(`[Stock Prices API] Date range: ${startStr} to ${endStr}`);
+    console.log(`[Stock Prices API] Date range: ${startDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]}`);
 
-    // Create Python script to fetch stock data
-    const pythonScript = `
-import yfinance as yf
-import json
-from datetime import datetime, timedelta
+    // Fetch stock data from Yahoo Finance API
+    const [stockData, spyData] = await Promise.all([
+      fetchYahooFinanceData(ticker, startDate, endDate),
+      fetchYahooFinanceData('SPY', startDate, endDate)
+    ]);
 
-ticker = "${ticker}"
-spy_ticker = "SPY"
-start_date = "${startStr}"
-end_date = "${endStr}"
-filing_date = "${filingStr}"
-
-# Fetch stock data
-stock = yf.Ticker(ticker)
-stock_data = stock.history(start=start_date, end=end_date)
-
-# Fetch SPY (S&P 500) data for comparison
-spy = yf.Ticker(spy_ticker)
-spy_data = spy.history(start=start_date, end=end_date)
-
-# Find filing date price for normalization
-filing_datetime = datetime.strptime(filing_date, '%Y-%m-%d')
-
-# Get closest price to filing date
-stock_filing_price = None
-spy_filing_price = None
-
-for date_str in stock_data.index:
-    date = date_str.to_pydatetime().replace(tzinfo=None)
-    if date <= filing_datetime and (stock_filing_price is None or date > filing_datetime):
-        stock_filing_price = stock_data.loc[date_str]['Close']
-
-for date_str in spy_data.index:
-    date = date_str.to_pydatetime().replace(tzinfo=None)
-    if date <= filing_datetime and (spy_filing_price is None or date > filing_datetime):
-        spy_filing_price = spy_data.loc[date_str]['Close']
-
-# Calculate 7 business days after filing date
-business_days_count = 0
-current_date = filing_datetime
-seven_bd_date = None
-
-while business_days_count < 7:
-    current_date += timedelta(days=1)
-    # Check if it's a weekday (Monday=0, Sunday=6)
-    if current_date.weekday() < 5:
-        business_days_count += 1
-        if business_days_count == 7:
-            seven_bd_date = current_date.strftime('%Y-%m-%d')
-
-# Build result
-result = {
-    "ticker": ticker,
-    "filingDate": filing_date,
-    "sevenBdDate": seven_bd_date,
-    "prices": []
-}
-
-# Combine stock and SPY data
-for date_str in stock_data.index:
-    date = date_str.to_pydatetime().replace(tzinfo=None)
-    date_formatted = date.strftime('%Y-%m-%d')
-
-    stock_price = float(stock_data.loc[date_str]['Close'])
-
-    # Calculate percentage change from filing date
-    stock_pct_change = ((stock_price - stock_filing_price) / stock_filing_price * 100) if stock_filing_price else 0
-
-    # Get SPY data for this date if available
-    spy_pct_change = 0
-    if date_str in spy_data.index and spy_filing_price:
-        spy_price = float(spy_data.loc[date_str]['Close'])
-        spy_pct_change = ((spy_price - spy_filing_price) / spy_filing_price * 100)
-
-    result["prices"].append({
-        "date": date_formatted,
-        "price": round(stock_price, 2),
-        "pctChange": round(stock_pct_change, 2),
-        "spyPctChange": round(spy_pct_change, 2),
-        "isFilingDate": date_formatted == filing_date,
-        "is7BdDate": date_formatted == seven_bd_date
-    })
-
-print(json.dumps(result))
-`;
-
-    // Execute Python script using heredoc to avoid escaping issues
-    const { stdout, stderr } = await execAsync(
-      `python3 <<'PYTHON_SCRIPT'\n${pythonScript}\nPYTHON_SCRIPT`,
-      { timeout: 30000 }
-    );
-
-    if (stderr && !stderr.includes('FutureWarning')) {
-      console.error(`[Stock Prices API] Python stderr:`, stderr);
+    if (!stockData || stockData.length === 0) {
+      return NextResponse.json(
+        { error: `No price data available for ${ticker}` },
+        { status: 404 }
+      );
     }
 
-    const result = JSON.parse(stdout);
+    // Find filing date price for normalization
+    const filingTime = filing.getTime();
+    let stockFilingPrice: number | null = null;
+    let spyFilingPrice: number | null = null;
+
+    // Get closest price to filing date (on or before)
+    for (const point of stockData) {
+      if (point.date <= filingTime) {
+        stockFilingPrice = point.close;
+      } else {
+        break;
+      }
+    }
+
+    for (const point of spyData) {
+      if (point.date <= filingTime) {
+        spyFilingPrice = point.close;
+      } else {
+        break;
+      }
+    }
+
+    // Calculate 7 business days after filing date
+    let businessDaysCount = 0;
+    let currentDate = new Date(filing);
+    let sevenBdDate: string | null = null;
+
+    while (businessDaysCount < 7) {
+      currentDate.setDate(currentDate.getDate() + 1);
+      // Check if it's a weekday (0 = Sunday, 6 = Saturday)
+      const dayOfWeek = currentDate.getDay();
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        businessDaysCount++;
+        if (businessDaysCount === 7) {
+          sevenBdDate = currentDate.toISOString().split('T')[0];
+        }
+      }
+    }
+
+    // Build result with percentage changes
+    const prices = stockData.map(point => {
+      const dateStr = new Date(point.date).toISOString().split('T')[0];
+      const stockPctChange = stockFilingPrice
+        ? ((point.close - stockFilingPrice) / stockFilingPrice * 100)
+        : 0;
+
+      // Find corresponding SPY data
+      const spyPoint = spyData.find(spy => {
+        const spyDateStr = new Date(spy.date).toISOString().split('T')[0];
+        return spyDateStr === dateStr;
+      });
+
+      const spyPctChange = (spyPoint && spyFilingPrice)
+        ? ((spyPoint.close - spyFilingPrice) / spyFilingPrice * 100)
+        : 0;
+
+      return {
+        date: dateStr,
+        price: Math.round(point.close * 100) / 100,
+        pctChange: Math.round(stockPctChange * 100) / 100,
+        spyPctChange: Math.round(spyPctChange * 100) / 100,
+        isFilingDate: dateStr === filingStr,
+        is7BdDate: dateStr === sevenBdDate
+      };
+    });
+
+    const result = {
+      ticker,
+      filingDate: filingStr,
+      sevenBdDate,
+      prices
+    };
+
     console.log(`[Stock Prices API] Fetched ${result.prices.length} data points`);
 
     return NextResponse.json(result);
@@ -143,5 +127,60 @@ print(json.dumps(result))
       { error: error.message || 'Failed to fetch stock prices' },
       { status: 500 }
     );
+  }
+}
+
+/**
+ * Fetch historical price data from Yahoo Finance API
+ */
+async function fetchYahooFinanceData(
+  ticker: string,
+  startDate: Date,
+  endDate: Date
+): Promise<Array<{ date: number; close: number }>> {
+  try {
+    // Convert dates to Unix timestamps
+    const period1 = Math.floor(startDate.getTime() / 1000);
+    const period2 = Math.floor(endDate.getTime() / 1000);
+
+    // Yahoo Finance API endpoint
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?period1=${period1}&period2=${period2}&interval=1d`;
+
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; SEC-Filing-Analyzer/1.0)'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Yahoo Finance API returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result = data.chart?.result?.[0];
+
+    if (!result || !result.timestamp || !result.indicators?.quote?.[0]?.close) {
+      console.warn(`[Yahoo Finance] No data for ${ticker}`);
+      return [];
+    }
+
+    const timestamps = result.timestamp;
+    const closes = result.indicators.quote[0].close;
+
+    // Combine timestamps and closes, filtering out null values
+    const priceData: Array<{ date: number; close: number }> = [];
+    for (let i = 0; i < timestamps.length; i++) {
+      if (closes[i] !== null && closes[i] !== undefined) {
+        priceData.push({
+          date: timestamps[i] * 1000, // Convert to milliseconds
+          close: closes[i]
+        });
+      }
+    }
+
+    return priceData;
+  } catch (error) {
+    console.error(`[Yahoo Finance] Error fetching ${ticker}:`, error);
+    return [];
   }
 }
