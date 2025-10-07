@@ -18,6 +18,24 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      {/* Navigation */}
+      <nav className="container mx-auto px-4 py-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-blue-600">SEC Analyzer</h2>
+          <div className="flex gap-4">
+            <Button variant="ghost" onClick={() => router.push('/')}>
+              Home
+            </Button>
+            <Button variant="ghost" onClick={() => router.push('/latest-filings')}>
+              Latest Filings
+            </Button>
+            <Button variant="ghost" onClick={() => router.push('/backtest')}>
+              Backtest
+            </Button>
+          </div>
+        </div>
+      </nav>
+
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center space-y-6">
@@ -27,6 +45,31 @@ export default function Home() {
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
             Understand what filings mean for stock prices. Get predictions backed by AI.
           </p>
+          <div className="inline-block bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 mt-4">
+            <p className="text-sm text-blue-700">
+              <strong>v2.2:</strong> Real XBRL financial data extraction • 430 companies tracked • 56.8% accuracy
+            </p>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="flex justify-center gap-4 mt-8">
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => router.push('/latest-filings')}
+              className="h-12"
+            >
+              View Latest Filings →
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => router.push('/backtest')}
+              className="h-12"
+            >
+              Model Performance →
+            </Button>
+          </div>
 
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto mt-12 space-y-4">

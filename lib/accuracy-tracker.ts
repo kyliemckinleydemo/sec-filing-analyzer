@@ -165,6 +165,16 @@ export class AccuracyTracker {
   }
 
   /**
+   * Get accuracy label from error percentage
+   */
+  getAccuracyLabel(errorPercent: number): 'Excellent' | 'Good' | 'Fair' | 'Poor' {
+    if (errorPercent < 5) return 'Excellent';
+    if (errorPercent < 15) return 'Good';
+    if (errorPercent < 30) return 'Fair';
+    return 'Poor';
+  }
+
+  /**
    * Get overall model accuracy statistics
    */
   async getModelStats(): Promise<{

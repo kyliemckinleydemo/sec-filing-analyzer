@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { predictionEngine } from '@/lib/predictions';
 import { cache } from '@/lib/cache';
 import { accuracyTracker } from '@/lib/accuracy-tracker';
+import { marketMomentumClient } from '@/lib/market-momentum';
+import { macroIndicatorsClient } from '@/lib/macro-indicators';
 
 export async function GET(
   request: NextRequest,
@@ -48,11 +50,27 @@ export async function GET(
         }
       }
 
+      // Try to get stored features from prediction record
+      let storedFeatures = null;
+      try {
+        const predictionRecord = await prisma.prediction.findFirst({
+          where: { filingId: filing.id },
+          orderBy: { createdAt: 'desc' },
+        });
+        if (predictionRecord?.features) {
+          storedFeatures = JSON.parse(predictionRecord.features);
+        }
+      } catch (e) {
+        console.error('Error loading prediction features:', e);
+      }
+
       const result = {
         prediction: {
           predicted7dReturn: filing.predicted7dReturn,
           confidence: filing.predictionConfidence || 0.6,
           actual7dReturn: filing.actual7dReturn || accuracyResult?.actual7dReturn,
+          features: storedFeatures,
+          modelVersion: 'v2.0-research-2025',
         },
         accuracy: accuracyResult,
         filing: {
@@ -72,7 +90,14 @@ export async function GET(
     let eventType = undefined;
     let hasFinancialMetrics = false;
     let guidanceDirection = undefined;
+    let guidanceChange = undefined;
+    let epsSurprise = undefined;
+    let epsSurpriseMagnitude = undefined;
+    let revenueSurprise = undefined;
+    let revenueSurpriseMagnitude = undefined;
     let filingContentSummary = undefined;
+    let peRatio = undefined;
+    let marketCap = undefined;
 
     if (filing.analysisData) {
       try {
@@ -84,9 +109,49 @@ export async function GET(
           hasFinancialMetrics =
             analysis.financialMetrics.revenueGrowth ||
             analysis.financialMetrics.marginTrend ||
-            analysis.financialMetrics.keyMetrics?.length > 0;
+            analysis.financialMetrics.keyMetrics?.length > 0 ||
+            analysis.financialMetrics.structuredData;
 
           guidanceDirection = analysis.financialMetrics.guidanceDirection;
+
+          // NEW: Guidance comparison vs prior period (MAJOR PRICE DRIVER)
+          if (analysis.financialMetrics.guidanceComparison) {
+            guidanceChange = analysis.financialMetrics.guidanceComparison.change;
+          }
+
+          // NEW: Extract P/E ratio and market cap from structured data (Yahoo Finance)
+          if (analysis.financialMetrics.structuredData) {
+            peRatio = analysis.financialMetrics.structuredData.peRatio;
+            marketCap = analysis.financialMetrics.structuredData.marketCap; // in billions
+          }
+
+          // NEW: Extract earnings surprises from structured data
+          if (analysis.financialMetrics.structuredData) {
+            epsSurprise = analysis.financialMetrics.structuredData.epsSurprise;
+            epsSurpriseMagnitude = analysis.financialMetrics.structuredData.epsSurpriseMagnitude;
+            revenueSurprise = analysis.financialMetrics.structuredData.revenueSurprise;
+            revenueSurpriseMagnitude = analysis.financialMetrics.structuredData.revenueSurpriseMagnitude;
+          }
+
+          // Fallback: Parse from surprises array if structured data missing
+          if (!epsSurprise && analysis.financialMetrics.surprises) {
+            for (const surprise of analysis.financialMetrics.surprises) {
+              if (surprise.toLowerCase().includes('eps')) {
+                if (surprise.toLowerCase().includes('beat')) {
+                  epsSurprise = 'beat';
+                } else if (surprise.toLowerCase().includes('miss')) {
+                  epsSurprise = 'miss';
+                }
+              }
+              if (surprise.toLowerCase().includes('revenue')) {
+                if (surprise.toLowerCase().includes('beat')) {
+                  revenueSurprise = 'beat';
+                } else if (surprise.toLowerCase().includes('miss')) {
+                  revenueSurprise = 'miss';
+                }
+              }
+            }
+          }
         }
       } catch (e) {
         console.error('Error parsing analysis data:', e);
@@ -98,7 +163,43 @@ export async function GET(
       eventType = predictionEngine.classify8KEvent(filingContentSummary);
     }
 
-    // Generate prediction with enhanced features
+    // Fetch market momentum, regime, and flight-to-quality indicators
+    let marketMomentum = undefined;
+    let marketRegime = undefined;
+    let marketVolatility = undefined;
+    let flightToQuality = undefined;
+    try {
+      const momentumData = await marketMomentumClient.fetchMomentum(filing.filingDate);
+      if (momentumData && momentumData.success) {
+        marketMomentum = momentumData.marketMomentum;
+        marketRegime = momentumData.regime;
+        marketVolatility = momentumData.volatility;
+        flightToQuality = momentumData.flightToQuality;
+      }
+    } catch (momentumError) {
+      console.error('Error fetching market momentum:', momentumError);
+      // Continue without market data
+    }
+
+    // Fetch macro indicators (DXY dollar index, GDP proxy)
+    let dollarStrength = undefined;
+    let dollar30dChange = undefined;
+    let gdpProxyTrend = undefined;
+    let equityFlowBias = undefined;
+    try {
+      const macroData = await macroIndicatorsClient.fetchIndicators(filing.filingDate);
+      if (macroData && macroData.success) {
+        dollarStrength = macroData.dollarStrength;
+        dollar30dChange = macroData.dollar30dChange;
+        gdpProxyTrend = macroData.gdpProxyTrend;
+        equityFlowBias = macroData.equityFlowBias;
+      }
+    } catch (macroError) {
+      console.error('Error fetching macro indicators:', macroError);
+      // Continue without macro data
+    }
+
+    // Generate prediction with research-backed enhanced features
     const features = {
       riskScoreDelta: filing.riskScore || 0,
       sentimentScore: filing.sentimentScore || 0,
@@ -107,6 +208,27 @@ export async function GET(
       eventType,
       hasFinancialMetrics,
       guidanceDirection,
+      // NEW: Major price drivers
+      guidanceChange: guidanceChange as any,
+      epsSurprise: epsSurprise as any,
+      epsSurpriseMagnitude: epsSurpriseMagnitude,
+      revenueSurprise: revenueSurprise as any,
+      revenueSurpriseMagnitude: revenueSurpriseMagnitude,
+      // NEW: Valuation context (from Yahoo Finance)
+      peRatio: peRatio,
+      marketCap: marketCap, // in billions
+      // NEW: Market context (SPY momentum + regime)
+      marketMomentum: marketMomentum,
+      marketRegime: marketRegime as any,
+      marketVolatility: marketVolatility,
+      flightToQuality: flightToQuality,
+      // NEW: Macro economic context
+      dollarStrength: dollarStrength as any,
+      dollar30dChange: dollar30dChange,
+      gdpProxyTrend: gdpProxyTrend as any,
+      equityFlowBias: equityFlowBias as any,
+      // Company-specific patterns
+      ticker: filing.company.ticker || undefined,
       avgHistoricalReturn: await predictionEngine.getHistoricalPattern(
         filing.company.ticker || '',
         filing.filingType
@@ -130,7 +252,7 @@ export async function GET(
         predictedReturn: prediction.predicted7dReturn,
         confidence: prediction.confidence,
         features: JSON.stringify(prediction.features),
-        modelVersion: 'v1.0-pattern',
+        modelVersion: 'v2.0-research-2025', // Updated with 2024-2025 academic research
       },
     });
 
@@ -139,6 +261,8 @@ export async function GET(
         predicted7dReturn: prediction.predicted7dReturn,
         confidence: prediction.confidence,
         reasoning: prediction.reasoning,
+        features: prediction.features, // Include feature breakdown for transparency
+        modelVersion: 'v2.0-research-2025',
       },
       filing: {
         accessionNumber: filing.accessionNumber,

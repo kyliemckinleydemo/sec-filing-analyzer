@@ -38,7 +38,13 @@ export interface FinancialMetrics {
   keyMetrics?: string[]; // Notable metrics mentioned
   surprises?: string[]; // Beats/misses vs expectations
 
-  // NEW: Structured XBRL data from SEC API
+  // NEW: Guidance comparison vs prior period
+  guidanceComparison?: {
+    change: 'raised' | 'lowered' | 'maintained' | 'new';
+    details: string;
+  };
+
+  // Structured XBRL data from SEC API
   structuredData?: {
     revenue?: number;
     revenueYoY?: string;
@@ -175,11 +181,21 @@ Return ONLY valid JSON. No additional text.`;
 TEXT:
 {filingText}
 
-Extract the following if mentioned:
+CRITICAL - Earnings Surprise Detection:
+You MUST search for ANY mention of analyst expectations, consensus estimates, or Wall Street forecasts.
+
+Common phrases to look for:
+1. BEATS: "exceeded expectations", "beat analyst estimates", "surpassed consensus", "above estimates", "better than expected", "topped forecasts", "outperformed expectations"
+2. MISSES: "fell short", "missed estimates", "below expectations", "below consensus", "disappointed", "underperformed expectations"
+3. EXPLICIT COMPARISONS: "EPS of $X.XX vs estimate of $Y.YY", "$X.X billion vs consensus $Y.Y billion"
+4. IMPLIED BEATS: If the filing mentions "strong quarter" or "record results" along with specific numbers, this often implies a beat
+5. IMPLIED MISSES: If the filing is defensive or mentions "challenges" along with results, this may imply a miss
+
+Extract the following:
 1. Revenue growth rates (YoY, QoQ)
 2. Profit margin trends (expanding/contracting)
 3. Forward guidance (raised/lowered/maintained)
-4. Earnings surprises (beat/miss vs expectations)
+4. **EARNINGS SURPRISES** (beat/miss vs expectations) - THIS IS CRITICAL
 5. Key business metrics (user growth, ARPU, etc.)
 6. Management outlook statements
 
@@ -190,9 +206,20 @@ Return ONLY valid JSON:
   "guidanceDirection": "raised" | "lowered" | "maintained" | "not_provided",
   "guidanceDetails": "Raised Q4 guidance to $X-Y billion",
   "keyMetrics": ["iPhone revenue +15%", "Services revenue $24.2B"],
-  "surprises": ["EPS beat by $0.05", "Revenue missed by $200M"]
+  "surprises": ["EPS beat consensus by 9.8%", "Revenue beat by $4.5B (5.0%)"],
+  "guidanceComparison": {
+    "change": "raised" | "lowered" | "maintained" | "new",
+    "details": "Comparison of current vs prior guidance"
+  }
 }
 
+CRITICAL: For "surprises" array, use this format:
+- "EPS beat consensus by X%" or "EPS beat by $X.XX"
+- "Revenue beat consensus by X%" or "Revenue beat by $XB"
+- "EPS missed consensus by X%" or "EPS missed by $X.XX"
+- "Revenue missed consensus by X%" or "Revenue missed by $XB"
+
+Note: guidanceComparison will only be populated if prior period MD&A is provided for comparison.
 Focus on quantitative data that impacts stock price. If information isn't found, use "Not disclosed".`;
 
   async analyzeRiskFactors(
@@ -334,8 +361,13 @@ Focus on quantitative data that impacts stock price. If information isn't found,
     }
   }
 
-  async extractFinancialMetrics(filingText: string): Promise<FinancialMetrics> {
-    const prompt = this.FINANCIAL_METRICS_PROMPT.replace('{filingText}', filingText.slice(0, 30000)); // Limit size
+  async extractFinancialMetrics(filingText: string, priorMDA?: string): Promise<FinancialMetrics> {
+    let prompt = this.FINANCIAL_METRICS_PROMPT.replace('{filingText}', filingText.slice(0, 30000)); // Limit size
+
+    // If prior MD&A is available, add guidance comparison instructions
+    if (priorMDA) {
+      prompt += `\n\nPRIOR PERIOD MD&A:\n${priorMDA.slice(0, 20000)}\n\nIMPORTANT: Compare current guidance vs. prior guidance and include in response:\n- "guidanceComparison": { "change": "raised" | "lowered" | "maintained" | "new", "details": "Specific comparison" }`;
+    }
 
     try {
       const response = await this.client.messages.create({
@@ -496,7 +528,8 @@ Return ONLY bullet points, no introduction.`;
     mdaText: string,
     priorRisks?: string,
     filingType?: string,
-    companyName?: string
+    companyName?: string,
+    priorMDA?: string
   ): Promise<FilingAnalysis> {
     try {
       const fullText = currentRisks + '\n\n' + mdaText;
@@ -505,7 +538,7 @@ Return ONLY bullet points, no introduction.`;
       const [risks, sentiment, financialMetrics, filingContentSummary] = await Promise.all([
         this.analyzeRiskFactors(currentRisks, priorRisks),
         this.analyzeSentiment(mdaText),
-        this.extractFinancialMetrics(fullText),
+        this.extractFinancialMetrics(fullText, priorMDA),
         filingType && companyName
           ? this.generateFilingContentSummary(fullText, filingType, companyName)
           : Promise.resolve(undefined),

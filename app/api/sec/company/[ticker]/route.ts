@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { secClient } from '@/lib/sec-client';
 import { cache, cacheKeys } from '@/lib/cache';
 import { prisma } from '@/lib/prisma';
+import { hasFinancialData } from '@/lib/filing-utils';
 
 export async function GET(
   request: NextRequest,
@@ -68,13 +69,48 @@ export async function GET(
       });
     }
 
+    // v1.0: Filter to only filings with financial data
+    // First, fetch stored filings with analysis data to check for financial data
+    const storedFilings = await prisma.filing.findMany({
+      where: {
+        companyId: company.id,
+        analysisData: { not: null },
+      },
+      select: {
+        accessionNumber: true,
+        filingType: true,
+        analysisData: true,
+      },
+    });
+
+    // Create a map of filings with financial data
+    const financialFilingAccessions = new Set(
+      storedFilings
+        .filter(f => hasFinancialData(f))
+        .map(f => f.accessionNumber)
+    );
+
+    // Filter SEC filings to only include those with financial data (if analyzed)
+    const filteredFilings = filings.filings
+      .slice(0, 20)
+      .map(filing => ({
+        ...filing,
+        hasFinancialData: financialFilingAccessions.has(filing.accessionNumber),
+      }))
+      .filter(filing =>
+        // Include if not yet analyzed OR if has financial data
+        !storedFilings.find(sf => sf.accessionNumber === filing.accessionNumber) ||
+        filing.hasFinancialData
+      );
+
     const result = {
       company: {
         cik: companyInfo.cik,
         ticker: ticker.toUpperCase(),
         name: companyInfo.name,
       },
-      filings: filings.filings.slice(0, 20), // Return last 20 filings
+      filings: filteredFilings,
+      totalFilingsWithData: financialFilingAccessions.size,
     };
 
     // Cache for 1 hour

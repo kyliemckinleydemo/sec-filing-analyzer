@@ -5,6 +5,9 @@ import { cache } from '@/lib/cache';
 import { secClient } from '@/lib/sec-client';
 import { filingParser } from '@/lib/filing-parser';
 import { secDataAPI } from '@/lib/sec-data-api';
+import { xbrlParser } from '@/lib/xbrl-parser';
+import { financialDataClient } from '@/lib/yahoo-finance';
+import { yahooFinancePythonClient } from '@/lib/yahoo-finance-python';
 
 /**
  * Analyze a specific SEC filing using Claude AI
@@ -103,6 +106,9 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
     let currentRisks: string;
     let currentMDA: string;
     let priorRisks: string | undefined;
+    let priorMDA: string | undefined;
+    let filingHtml: string = ''; // Declare outside try block for XBRL parsing
+    let parsed: any = null; // Declare outside try block for stub filing detection
 
     try {
       // Fetch current filing HTML using the direct filing URL
@@ -117,13 +123,13 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
         throw new Error(`SEC returned ${response.status}`);
       }
 
-      const filingHtml = await response.text();
+      filingHtml = await response.text();
 
       console.log(`Fetched filing HTML length: ${filingHtml.length} characters`);
       console.log(`First 500 chars: ${filingHtml.substring(0, 500)}`);
 
       // Parse the filing to extract sections
-      const parsed = filingParser.parseFiling(filingHtml, filing.filingType);
+      parsed = filingParser.parseFiling(filingHtml, filing.filingType);
       console.log(`Parsed filing: ${filingParser.getSummary(parsed)}`);
 
       // If parsing failed, send Claude the entire filing (truncated) and let it extract
@@ -162,6 +168,9 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
 
           if (priorParsed.riskFactors && priorParsed.riskFactors.length > 50) {
             priorRisks = priorParsed.riskFactors;
+          }
+          if (priorParsed.mdaText && priorParsed.mdaText.length > 50) {
+            priorMDA = priorParsed.mdaText;
           }
         } catch (priorError) {
           console.error('Error fetching prior filing:', priorError);
@@ -207,48 +216,196 @@ However, we faced headwinds from increased competition and rising costs. Looking
         currentMDA,
         priorRisks,
         filing.filingType,
-        filing.company.name
+        filing.company.name,
+        priorMDA
       );
       console.log('Claude analysis completed successfully');
 
-      // Fetch structured XBRL financial data from SEC Data API
-      let structuredFinancials = null;
-      if (filing.company.cik) {
+      // Extract inline XBRL financial data directly from the filing HTML
+      let xbrlFinancials = null;
+      try {
+        console.log('Parsing inline XBRL financial data from filing...');
+        xbrlFinancials = xbrlParser.parseInlineXBRL(filingHtml);
+        console.log('XBRL extraction complete:', xbrlParser.getSummary(xbrlFinancials));
+      } catch (xbrlParseError) {
+        console.error('Error parsing inline XBRL:', xbrlParseError);
+        // Continue without inline XBRL data
+      }
+
+      // ENHANCEMENT: If this is a stub 10-Q (no MD&A), look for the corresponding 8-K earnings release
+      // This helps us extract earnings surprises and guidance that may not be in the 10-Q
+      if (
+        filing.filingType === '10-Q' &&
+        (!parsed.mdaText || parsed.mdaText.length < 500) &&
+        xbrlFinancials &&
+        (xbrlFinancials.revenue || xbrlFinancials.eps)
+      ) {
+        console.log('Detected stub 10-Q with minimal narrative. Searching for related 8-K earnings release...');
         try {
-          console.log(`Fetching structured XBRL data for CIK ${filing.company.cik}, accession ${accession}...`);
-          structuredFinancials = await secDataAPI.getFinancialSummary(
-            filing.company.cik,
-            accession
-          );
-          if (structuredFinancials) {
-            console.log('Structured XBRL data fetched successfully:', {
-              revenue: structuredFinancials.revenue,
-              revenueYoY: structuredFinancials.revenueYoY,
-              netIncome: structuredFinancials.netIncome,
-              eps: structuredFinancials.eps,
-            });
+          // Look for 8-K filed within 5 days before the 10-Q
+          const filingTimestamp = filing.filingDate.getTime();
+          const fiveDaysBefore = filingTimestamp - (5 * 24 * 60 * 60 * 1000);
+
+          const related8K = await prisma.filing.findFirst({
+            where: {
+              companyId: filing.companyId,
+              filingType: '8-K',
+              filingDate: {
+                gte: new Date(fiveDaysBefore),
+                lte: filing.filingDate,
+              },
+            },
+            orderBy: {
+              filingDate: 'desc',
+            },
+          });
+
+          if (related8K && related8K.analysisData) {
+            console.log(`Found related 8-K: ${related8K.accessionNumber}`);
+            const eightKAnalysis = JSON.parse(related8K.analysisData);
+
+            // Merge earnings surprises and guidance from 8-K
+            if (eightKAnalysis.financialMetrics) {
+              if (!analysis.financialMetrics) {
+                analysis.financialMetrics = {};
+              }
+
+              // Copy surprises from 8-K if we don't have them
+              if (
+                eightKAnalysis.financialMetrics.surprises &&
+                eightKAnalysis.financialMetrics.surprises.length > 0
+              ) {
+                analysis.financialMetrics.surprises = eightKAnalysis.financialMetrics.surprises;
+                console.log('Merged earnings surprises from 8-K:', eightKAnalysis.financialMetrics.surprises);
+              }
+
+              // Copy guidance from 8-K if we don't have it
+              if (eightKAnalysis.financialMetrics.guidanceDirection && eightKAnalysis.financialMetrics.guidanceDirection !== 'not_provided') {
+                analysis.financialMetrics.guidanceDirection = eightKAnalysis.financialMetrics.guidanceDirection;
+                analysis.financialMetrics.guidanceDetails = eightKAnalysis.financialMetrics.guidanceDetails;
+                console.log('Merged guidance from 8-K');
+              }
+
+              // Copy guidance comparison if available
+              if (eightKAnalysis.financialMetrics.guidanceComparison) {
+                analysis.financialMetrics.guidanceComparison = eightKAnalysis.financialMetrics.guidanceComparison;
+                console.log('Merged guidance comparison from 8-K');
+              }
+            }
+          } else if (related8K && !related8K.analysisData) {
+            console.log(`Found un-analyzed 8-K: ${related8K.accessionNumber}. Consider analyzing it first.`);
           } else {
-            console.log('No structured XBRL data found for this filing');
+            console.log('No related 8-K earnings release found within 5 days');
           }
-        } catch (xbrlError) {
-          console.error('Error fetching structured XBRL data:', xbrlError);
-          // Continue without structured data - Claude's text extraction is still available
+        } catch (eightKError) {
+          console.error('Error fetching related 8-K:', eightKError);
         }
       }
 
-      // Merge structured XBRL data with Claude's text-based extraction
-      if (structuredFinancials && analysis.financialMetrics) {
+      // Always merge XBRL data if we have it (most reliable source)
+      if (xbrlFinancials && (xbrlFinancials.revenue || xbrlFinancials.netIncome || xbrlFinancials.eps)) {
+        if (!analysis.financialMetrics) {
+          analysis.financialMetrics = {};
+        }
+
         analysis.financialMetrics.structuredData = {
-          revenue: structuredFinancials.revenue,
-          revenueYoY: structuredFinancials.revenueYoY,
-          netIncome: structuredFinancials.netIncome,
-          netIncomeYoY: structuredFinancials.netIncomeYoY,
-          eps: structuredFinancials.eps,
-          epsYoY: structuredFinancials.epsYoY,
-          grossMargin: structuredFinancials.grossMargin,
-          operatingMargin: structuredFinancials.operatingMargin,
+          revenue: xbrlFinancials.revenue,
+          netIncome: xbrlFinancials.netIncome,
+          eps: xbrlFinancials.eps,
+          grossMargin: xbrlFinancials.grossProfit && xbrlFinancials.revenue
+            ? (xbrlFinancials.grossProfit / xbrlFinancials.revenue) * 100
+            : undefined,
+          operatingMargin: xbrlFinancials.operatingIncome && xbrlFinancials.revenue
+            ? (xbrlFinancials.operatingIncome / xbrlFinancials.revenue) * 100
+            : undefined,
         };
-        console.log('Merged structured data into financial metrics');
+        console.log('Merged inline XBRL data into financial metrics');
+
+        // NEW: Fetch analyst consensus, P/E ratio, and market cap using Yahoo Finance (Python)
+        if (filing.company.ticker && xbrlFinancials.eps && xbrlFinancials.revenue) {
+          try {
+            console.log(`[Yahoo Finance] Fetching consensus, P/E, and market cap for ${filing.company.ticker}...`);
+            const yahooData = await yahooFinancePythonClient.fetchData(
+              filing.company.ticker,
+              filing.filingDate
+            );
+
+            if (yahooData) {
+              console.log(`[Yahoo Finance] ✅ Data fetched: P/E=${yahooData.peRatio}, MarketCap=$${(yahooData.marketCapB || 0).toFixed(1)}B`);
+
+              // Store P/E ratio and market cap for prediction model
+              analysis.financialMetrics.structuredData.peRatio = yahooData.peRatio;
+              analysis.financialMetrics.structuredData.marketCap = yahooData.marketCapB; // in billions
+              analysis.financialMetrics.structuredData.sector = yahooData.sector;
+              analysis.financialMetrics.structuredData.industry = yahooData.industry;
+
+              // Calculate earnings surprises if we have consensus estimates
+              if (yahooData.consensusEPS || yahooData.consensusRevenue) {
+                console.log(`[Yahoo Finance] Found consensus: EPS ${yahooData.consensusEPS}, Revenue $${yahooData.consensusRevenue ? (yahooData.consensusRevenue / 1e9).toFixed(2) + 'B' : 'N/A'}`);
+
+                const surpriseResult = yahooFinancePythonClient.calculateSurprises(
+                  xbrlFinancials.eps,
+                  xbrlFinancials.revenue,
+                  yahooData.consensusEPS,
+                  yahooData.consensusRevenue
+                );
+
+                if (surpriseResult.surprisesArray.length > 0) {
+                  analysis.financialMetrics.surprises = surpriseResult.surprisesArray;
+                  console.log(`[Yahoo Finance] Detected earnings surprises:`, surpriseResult.surprisesArray);
+                }
+
+                // Store consensus and surprise data
+                analysis.financialMetrics.structuredData.consensusEPS = yahooData.consensusEPS;
+                analysis.financialMetrics.structuredData.consensusRevenue = yahooData.consensusRevenue;
+                analysis.financialMetrics.structuredData.epsSurprise = surpriseResult.epsSurprise;
+                analysis.financialMetrics.structuredData.epsSurpriseMagnitude = surpriseResult.epsSurpriseMagnitude;
+                analysis.financialMetrics.structuredData.revenueSurprise = surpriseResult.revenueSurprise;
+                analysis.financialMetrics.structuredData.revenueSurpriseMagnitude = surpriseResult.revenueSurpriseMagnitude;
+              } else {
+                console.log(`[Yahoo Finance] No analyst estimates found for this period`);
+              }
+            } else {
+              console.log(`[Yahoo Finance] Failed to fetch data for ${filing.company.ticker}`);
+            }
+          } catch (consensusError) {
+            console.error('[Yahoo Finance] Error fetching data:', consensusError);
+            // Continue without Yahoo Finance data
+          }
+        }
+      } else {
+        console.log('No inline XBRL financial data found, trying SEC Company Facts API...');
+
+        // Fallback to SEC Data API if inline XBRL didn't work
+        if (filing.company.cik) {
+          try {
+            console.log(`Fetching structured XBRL data for CIK ${filing.company.cik}, accession ${accession}...`);
+            const structuredFinancials = await secDataAPI.getFinancialSummary(
+              filing.company.cik,
+              accession
+            );
+            if (structuredFinancials) {
+              console.log('SEC API data fetched successfully');
+              if (!analysis.financialMetrics) {
+                analysis.financialMetrics = {};
+              }
+              analysis.financialMetrics.structuredData = {
+                revenue: structuredFinancials.revenue,
+                revenueYoY: structuredFinancials.revenueYoY,
+                netIncome: structuredFinancials.netIncome,
+                netIncomeYoY: structuredFinancials.netIncomeYoY,
+                eps: structuredFinancials.eps,
+                epsYoY: structuredFinancials.epsYoY,
+                grossMargin: structuredFinancials.grossMargin,
+                operatingMargin: structuredFinancials.operatingMargin,
+              };
+            } else {
+              console.log('No SEC API data found for this filing');
+            }
+          } catch (xbrlError) {
+            console.error('Error fetching SEC API data:', xbrlError);
+          }
+        }
       }
 
       // Store analysis in database
