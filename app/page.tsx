@@ -45,9 +45,9 @@ export default function Home() {
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
             Understand what filings mean for stock prices. Get predictions backed by AI.
           </p>
-          <div className="inline-block bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 mt-4">
-            <p className="text-sm text-blue-700">
-              <strong>v2.2:</strong> Real XBRL financial data extraction • 430 companies tracked • 56.8% accuracy
+          <div className="inline-block bg-green-50 border border-green-200 rounded-lg px-4 py-2 mt-4">
+            <p className="text-sm text-green-700">
+              <strong>v2.3:</strong> Optimized model with sentiment & risk analysis • 430 companies tracked • <strong>74.8% accuracy</strong>
             </p>
           </div>
 
