@@ -1128,17 +1128,32 @@ export default function FilingPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {data.analysis.risks.newRisks.map((risk, i) => (
-                    <div key={i} className="border-l-4 border-red-400 pl-3">
-                      <h4 className="font-bold">{risk.title}</h4>
-                      <p className="text-sm text-slate-600 mt-1">{risk.impact}</p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Severity: {risk.severity}/10
+                {data.analysis.risks.newRisks && data.analysis.risks.newRisks.length > 0 ? (
+                  <div className="space-y-4">
+                    {data.analysis.risks.newRisks.map((risk, i) => (
+                      <div key={i} className="border-l-4 border-red-400 pl-3">
+                        <h4 className="font-bold">{risk.title}</h4>
+                        <p className="text-sm text-slate-600 mt-1">{risk.impact}</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Severity: {risk.severity}/10
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-slate-600 space-y-2">
+                    <p>
+                      {data.filing.filingType === '8-K'
+                        ? '8-K filings do not contain Risk Factors sections.'
+                        : 'No new or changed risk factors identified in this filing.'}
+                    </p>
+                    {data.filing.filingType === '8-K' && (
+                      <p className="text-sm">
+                        Risk factors are disclosed in 10-K and 10-Q filings. For {data.filing.company?.ticker || 'this company'}'s latest risk factors, see their most recent 10-K or 10-Q filing.
                       </p>
-                    </div>
-                  ))}
-                </div>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
           )}
