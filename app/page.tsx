@@ -29,6 +29,9 @@ export default function Home() {
             <Button variant="ghost" onClick={() => router.push('/latest-filings')}>
               Latest Filings
             </Button>
+            <Button variant="ghost" onClick={() => router.push('/faq')}>
+              FAQ
+            </Button>
           </div>
         </div>
       </nav>

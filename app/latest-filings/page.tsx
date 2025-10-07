@@ -103,6 +103,9 @@ export default function LatestFilingsPage() {
             <Button variant="default" onClick={() => router.push('/latest-filings')}>
               Latest Filings
             </Button>
+            <Button variant="ghost" onClick={() => router.push('/faq')}>
+              FAQ
+            </Button>
           </div>
         </div>
       </nav>
