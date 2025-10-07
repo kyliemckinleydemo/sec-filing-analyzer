@@ -93,15 +93,15 @@ export default function Home() {
                 AI Analysis
               </CardTitle>
               <CardDescription>
-                Conversational AI explains complex filings in plain English
+                Claude AI analyzes filings to extract insights and detect material events
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-slate-600">
-                <li>• Risk factor analysis</li>
-                <li>• Sentiment scoring</li>
-                <li>• Executive summaries</li>
-                <li>• Chat with filings</li>
+                <li>• Enhanced risk analysis (breaches, litigation, exec changes)</li>
+                <li>• Management sentiment & tone shifts</li>
+                <li>• Earnings surprise detection (beat/miss)</li>
+                <li>• Financial metrics extraction from XBRL</li>
               </ul>
             </CardContent>
           </Card>
@@ -113,15 +113,15 @@ export default function Home() {
                 Stock Predictions
               </CardTitle>
               <CardDescription>
-                ML-powered predictions of post-filing price movements
+                Data-driven predictions of 7-day forward stock performance
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-slate-600">
-                <li>• 7-day return predictions</li>
-                <li>• Confidence scores</li>
-                <li>• Historical accuracy</li>
-                <li>• Feature explanations</li>
+                <li>• 7-day return predictions with confidence scores</li>
+                <li>• Transparent model reasoning & feature breakdown</li>
+                <li>• Prediction vs actual comparison charts</li>
+                <li>• Buy/Sell/Hold signals based on magnitude</li>
               </ul>
             </CardContent>
           </Card>
@@ -133,15 +133,15 @@ export default function Home() {
                 Visual Insights
               </CardTitle>
               <CardDescription>
-                Interactive charts showing filing impact on stock price
+                Clear visualizations showing prediction accuracy and performance
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-slate-600">
-                <li>• Price charts with markers</li>
-                <li>• Filing timelines</li>
-                <li>• Multi-company compare</li>
-                <li>• Historical patterns</li>
+                <li>• Bar charts: predicted vs actual returns</li>
+                <li>• Line charts: performance over time</li>
+                <li>• Real-time filing feed (430+ companies tracked)</li>
+                <li>• Color-coded accuracy indicators</li>
               </ul>
             </CardContent>
           </Card>
