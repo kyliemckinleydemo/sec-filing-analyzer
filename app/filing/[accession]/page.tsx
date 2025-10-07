@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 
 interface FilingAnalysisData {
   filing: {
@@ -781,9 +781,67 @@ export default function FilingPage() {
                         {data.accuracy.message}
                       </p>
 
+                      {/* Simple Bar Chart Comparison */}
+                      <div className="mt-4 bg-white p-4 rounded-lg border-2 border-purple-200">
+                        <h4 className="text-sm font-semibold mb-3">📊 Prediction vs Reality</h4>
+                        <ResponsiveContainer width="100%" height={200}>
+                          <BarChart
+                            data={[
+                              {
+                                name: 'Predicted',
+                                value: data.accuracy.predicted7dReturn,
+                                fill: '#3b82f6'
+                              },
+                              {
+                                name: 'Actual',
+                                value: data.accuracy.actual7dReturn || 0,
+                                fill: (data.accuracy.actual7dReturn || 0) > 0 ? '#22c55e' : '#ef4444'
+                              }
+                            ]}
+                            margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                            <YAxis
+                              label={{ value: 'Return (%)', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
+                              tick={{ fontSize: 12 }}
+                            />
+                            <Tooltip
+                              formatter={(value: number) => `${value.toFixed(2)}%`}
+                              contentStyle={{ fontSize: 12 }}
+                            />
+                            <Bar dataKey="value">
+                              {[
+                                { name: 'Predicted', value: data.accuracy.predicted7dReturn, fill: '#3b82f6' },
+                                { name: 'Actual', value: data.accuracy.actual7dReturn || 0, fill: (data.accuracy.actual7dReturn || 0) > 0 ? '#22c55e' : '#ef4444' }
+                              ].map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.fill} />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                        {data.accuracy.accuracy && (
+                          <div className="mt-2 text-center">
+                            <span
+                              className={`inline-block px-3 py-1 rounded text-sm font-medium ${
+                                data.accuracy.accuracy === 'Excellent'
+                                  ? 'bg-green-100 text-green-700'
+                                  : data.accuracy.accuracy === 'Good'
+                                  ? 'bg-blue-100 text-blue-700'
+                                  : data.accuracy.accuracy === 'Fair'
+                                  ? 'bg-yellow-100 text-yellow-700'
+                                  : 'bg-red-100 text-red-700'
+                              }`}
+                            >
+                              Accuracy: {data.accuracy.accuracy} ({(data.accuracy.errorPercent || 0).toFixed(1)}% error)
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
                       {/* Performance Graph */}
                       <div className="mt-4 bg-slate-50 p-4 rounded-lg">
-                        <h4 className="text-sm font-semibold mb-3">📊 Predicted vs Actual Performance</h4>
+                        <h4 className="text-sm font-semibold mb-3">📈 Performance Over Time</h4>
                         <ResponsiveContainer width="100%" height={250}>
                           <LineChart
                             data={[
