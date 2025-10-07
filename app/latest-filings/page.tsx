@@ -103,15 +103,19 @@ export default function LatestFilingsPage() {
             <Button variant="default" onClick={() => router.push('/latest-filings')}>
               Latest Filings
             </Button>
-            <Button variant="ghost" onClick={() => router.push('/backtest')}>
-              Backtest
-            </Button>
           </div>
         </div>
       </nav>
 
       {/* Header */}
       <div className="container mx-auto px-4 py-8">
+        <Button
+          variant="outline"
+          onClick={() => router.push('/')}
+          className="mb-4"
+        >
+          ← Back to Home
+        </Button>
         <h1 className="text-4xl font-bold mb-2">Latest SEC Filings</h1>
         <p className="text-slate-600 mb-6">
           Recent filings with financial data from 430 tracked companies. Click "Analyze" to get AI-powered predictions.

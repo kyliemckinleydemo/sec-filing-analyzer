@@ -29,9 +29,6 @@ export default function Home() {
             <Button variant="ghost" onClick={() => router.push('/latest-filings')}>
               Latest Filings
             </Button>
-            <Button variant="ghost" onClick={() => router.push('/backtest')}>
-              Backtest
-            </Button>
           </div>
         </div>
       </nav>
@@ -60,14 +57,6 @@ export default function Home() {
               className="h-12"
             >
               View Latest Filings →
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => router.push('/backtest')}
-              className="h-12"
-            >
-              Model Performance →
             </Button>
           </div>
 

@@ -43,20 +43,34 @@ interface BacktestSummary {
 
 export default function BacktestPage() {
   const router = useRouter();
-  const [ticker, setTicker] = useState('AAPL');
+  const [ticker, setTicker] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<BacktestResult[] | null>(null);
   const [summary, setSummary] = useState<BacktestSummary | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const runBacktest = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await fetch(`/api/backtest?ticker=${ticker}&limit=20`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.error || 'Backtest API returned an error');
+        setResults(null);
+        setSummary(null);
+        return;
+      }
+
       const data = await response.json();
       setResults(data.backtestResults);
       setSummary(data.summary);
     } catch (error) {
       console.error('Error running backtest:', error);
+      setError('Failed to run backtest. Please try again.');
+      setResults(null);
+      setSummary(null);
     } finally {
       setLoading(false);
     }
@@ -99,6 +113,15 @@ export default function BacktestPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Error Display */}
+        {error && (
+          <Card className="mb-6 border-2 border-red-200 bg-red-50">
+            <CardContent className="py-4">
+              <p className="text-red-700">{error}</p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Summary Statistics */}
         {summary && (

@@ -109,7 +109,7 @@ export async function GET(request: Request) {
           if (!['10-K', '10-Q', '8-K'].includes(form)) continue;
 
           // Filter by filing type if specified
-          if (filingType && form !== filingType) continue;
+          if (filingType && filingType !== 'all' && form !== filingType) continue;
 
           // Only include filings with XBRL data (means they have financials)
           if (recent.isXBRL[i] === 0 && recent.isInlineXBRL[i] === 0) continue;

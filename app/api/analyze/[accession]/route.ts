@@ -46,68 +46,78 @@ export async function GET(
       ? accession
       : `${accession.slice(0, 10)}-${accession.slice(10, 12)}-${accession.slice(12)}`;
 
-    // Get filing from database OR create it from URL params
-    let filing = await prisma.filing.findUnique({
+    // ALWAYS delete existing filing to ensure fresh analysis (no stale cache)
+    const existingFiling = await prisma.filing.findUnique({
+      where: { accessionNumber: normalizedAccession },
+    });
+
+    if (existingFiling) {
+      console.log(`Deleting existing filing ${normalizedAccession} for fresh analysis...`);
+      // Delete related predictions first (foreign key constraint)
+      await prisma.prediction.deleteMany({
+        where: { filingId: existingFiling.id },
+      });
+      // Delete the filing
+      await prisma.filing.delete({
+        where: { accessionNumber: normalizedAccession },
+      });
+    }
+
+    // Create filing from URL params
+    let filing = null;
+    const { searchParams } = new URL(request.url);
+    const ticker = searchParams.get('ticker');
+    const cik = searchParams.get('cik');
+    const filingType = searchParams.get('filingType');
+    const filingDate = searchParams.get('filingDate');
+    const filingUrl = searchParams.get('filingUrl');
+    const companyName = searchParams.get('companyName');
+
+    if (!ticker || !cik || !filingType || !filingDate || !filingUrl || !companyName) {
+      return NextResponse.json(
+        { error: 'Filing not found in database. Please provide: ticker, cik, filingType, filingDate, filingUrl, companyName as query parameters.' },
+        { status: 404 }
+      );
+    }
+
+    // Create company if it doesn't exist
+    let company = await prisma.company.findUnique({
+      where: { ticker },
+    });
+
+    if (!company) {
+      company = await prisma.company.create({
+        data: {
+          ticker,
+          name: companyName,
+          cik,
+        },
+      });
+    }
+
+    // Create filing and reload with company relationship
+    const createdFiling = await prisma.filing.create({
+      data: {
+        accessionNumber: normalizedAccession,
+        cik: company.cik,
+        filingType,
+        filingDate: new Date(filingDate),
+        filingUrl,
+        companyId: company.id,
+      },
+    });
+
+    // Reload with company relationship
+    filing = await prisma.filing.findUnique({
       where: { accessionNumber: normalizedAccession },
       include: { company: true },
     });
 
-    // If filing doesn't exist, try to create it from query params
     if (!filing) {
-      const { searchParams } = new URL(request.url);
-      const ticker = searchParams.get('ticker');
-      const cik = searchParams.get('cik');
-      const filingType = searchParams.get('filingType');
-      const filingDate = searchParams.get('filingDate');
-      const filingUrl = searchParams.get('filingUrl');
-      const companyName = searchParams.get('companyName');
-
-      if (!ticker || !cik || !filingType || !filingDate || !filingUrl || !companyName) {
-        return NextResponse.json(
-          { error: 'Filing not found in database. Please provide: ticker, cik, filingType, filingDate, filingUrl, companyName as query parameters.' },
-          { status: 404 }
-        );
-      }
-
-      // Create company if it doesn't exist
-      let company = await prisma.company.findUnique({
-        where: { ticker },
-      });
-
-      if (!company) {
-        company = await prisma.company.create({
-          data: {
-            ticker,
-            name: companyName,
-            cik,
-          },
-        });
-      }
-
-      // Create filing and reload with company relationship
-      const createdFiling = await prisma.filing.create({
-        data: {
-          accessionNumber: normalizedAccession,
-          cik: company.cik,
-          filingType,
-          filingDate: new Date(filingDate),
-          filingUrl,
-          companyId: company.id,
-        },
-      });
-
-      // Reload with company relationship
-      filing = await prisma.filing.findUnique({
-        where: { accessionNumber: normalizedAccession },
-        include: { company: true },
-      });
-
-      if (!filing) {
-        return NextResponse.json(
-          { error: 'Failed to create filing' },
-          { status: 500 }
-        );
-      }
+      return NextResponse.json(
+        { error: 'Failed to create filing' },
+        { status: 500 }
+      );
     }
 
     // Disabled returning cached analysis - always regenerate
@@ -470,6 +480,96 @@ However, we faced headwinds from increased competition and rising costs. Looking
             }
           } catch (xbrlError) {
             console.error('Error fetching SEC API data:', xbrlError);
+          }
+        }
+
+        // NEW: For 8-K filings (earnings announcements), still try to get Yahoo Finance data
+        // even without XBRL, since Claude may have extracted earnings from the press release
+        if (filing.filingType === '8-K' && filing.company.ticker) {
+          try {
+            console.log(`[Yahoo Finance] Fetching data for 8-K filing ${filing.company.ticker}...`);
+            const yahooData = await yahooFinancePythonClient.fetchData(
+              filing.company.ticker,
+              filing.filingDate
+            );
+
+            if (yahooData) {
+              console.log(`[Yahoo Finance] ✅ Data fetched: P/E=${yahooData.peRatio}, MarketCap=$${(yahooData.marketCapB || 0).toFixed(1)}B`);
+
+              // Initialize structuredData if it doesn't exist
+              if (!analysis.financialMetrics) {
+                analysis.financialMetrics = {};
+              }
+              if (!analysis.financialMetrics.structuredData) {
+                analysis.financialMetrics.structuredData = {};
+              }
+
+              // Store P/E ratio and market cap
+              analysis.financialMetrics.structuredData.peRatio = yahooData.peRatio;
+              analysis.financialMetrics.structuredData.marketCap = yahooData.marketCapB;
+              analysis.financialMetrics.structuredData.sector = yahooData.sector;
+              analysis.financialMetrics.structuredData.industry = yahooData.industry;
+
+              // Try to extract EPS/Revenue from Claude's analysis of the press release
+              let extractedEPS = undefined;
+              let extractedRevenue = undefined;
+
+              // Check if Claude extracted earnings metrics from the filing text
+              if (analysis.financialMetrics.keyMetrics) {
+                for (const metric of analysis.financialMetrics.keyMetrics) {
+                  if (metric.toLowerCase().includes('eps') || metric.toLowerCase().includes('earnings per share')) {
+                    // Try to extract number from metric
+                    const epsMatch = metric.match(/\$?(\d+\.?\d*)/);
+                    if (epsMatch) {
+                      extractedEPS = parseFloat(epsMatch[1]);
+                    }
+                  }
+                  if (metric.toLowerCase().includes('revenue') || metric.toLowerCase().includes('sales')) {
+                    const revenueMatch = metric.match(/\$?(\d+\.?\d*)([BMK])?/);
+                    if (revenueMatch) {
+                      let value = parseFloat(revenueMatch[1]);
+                      const suffix = revenueMatch[2];
+                      if (suffix === 'B') value *= 1e9;
+                      else if (suffix === 'M') value *= 1e6;
+                      else if (suffix === 'K') value *= 1e3;
+                      extractedRevenue = value;
+                    }
+                  }
+                }
+              }
+
+              // Calculate earnings surprises if we have consensus and extracted earnings
+              if (yahooData.consensusEPS || yahooData.consensusRevenue) {
+                console.log(`[Yahoo Finance] Found consensus: EPS ${yahooData.consensusEPS}, Revenue $${yahooData.consensusRevenue ? (yahooData.consensusRevenue / 1e9).toFixed(2) + 'B' : 'N/A'}`);
+
+                const surpriseResult = yahooFinancePythonClient.calculateSurprises(
+                  extractedEPS,
+                  extractedRevenue,
+                  yahooData.consensusEPS,
+                  yahooData.consensusRevenue
+                );
+
+                if (surpriseResult.surprisesArray.length > 0) {
+                  analysis.financialMetrics.surprises = surpriseResult.surprisesArray;
+                  console.log(`[Yahoo Finance] Detected earnings surprises from 8-K:`, surpriseResult.surprisesArray);
+                }
+
+                // Store consensus and surprise data
+                analysis.financialMetrics.structuredData.consensusEPS = yahooData.consensusEPS;
+                analysis.financialMetrics.structuredData.consensusRevenue = yahooData.consensusRevenue;
+                analysis.financialMetrics.structuredData.epsSurprise = surpriseResult.epsSurprise;
+                analysis.financialMetrics.structuredData.epsSurpriseMagnitude = surpriseResult.epsSurpriseMagnitude;
+                analysis.financialMetrics.structuredData.revenueSurprise = surpriseResult.revenueSurprise;
+                analysis.financialMetrics.structuredData.revenueSurpriseMagnitude = surpriseResult.revenueSurpriseMagnitude;
+              } else {
+                console.log(`[Yahoo Finance] No analyst estimates found for this period`);
+              }
+            } else {
+              console.log(`[Yahoo Finance] Failed to fetch data for ${filing.company.ticker}`);
+            }
+          } catch (yahooError) {
+            console.error('[Yahoo Finance] Error fetching data for 8-K:', yahooError);
+            // Continue without Yahoo Finance data
           }
         }
       }
