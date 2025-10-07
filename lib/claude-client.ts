@@ -82,24 +82,33 @@ class ClaudeClient {
 
   private readonly RISK_ANALYSIS_PROMPT = `You are a financial analyst AI specializing in SEC filing risk assessment.
 
-TASK: Analyze risk factor changes and score severity.
+TASK: Analyze material risks, negative events, and changes that could impact stock price.
 
-CURRENT RISK FACTORS:
+CURRENT FILING CONTENT:
 {currentRisks}
 
-PRIOR RISK FACTORS (if available):
+PRIOR FILING CONTENT (if available):
 {priorRisks}
 
 IMPORTANT CONTEXT:
-- If prior filing is provided, this is a comparison between two filings from the same company
-- If prior filing says "Not available", this is still a mature public company - assess risks in that context
-- Never assume this is a first-time filing or IPO unless explicitly stated
-- Focus on changes in language, tone, and emphasis between filings
+- This may be a formal "Risk Factors" section OR the entire filing text
+- For 8-K filings, analyze the ENTIRE content for material negative events
+- Material events that don't use the word "risk" are still risks if they impact stock price
+
+CRITICAL - Look for these material events beyond formal "Risk Factors":
+1. **Data Breaches / Cybersecurity Incidents**: "unauthorized access", "data breach", "ransomware", "cyber attack", "security incident"
+2. **Litigation / Legal Issues**: "lawsuit", "litigation", "legal proceedings", "investigation", "settlement", "taking a reserve", "contingent liability"
+3. **Executive Changes**: "CEO departure", "CFO resigned", "management transition", "death of executive", "sudden resignation"
+4. **Regulatory Actions**: "SEC investigation", "DOJ inquiry", "regulatory enforcement", "consent decree", "fines", "penalties"
+5. **Restructuring / Impairments**: "goodwill impairment", "asset write-down", "restructuring charges", "facility closures", "layoffs"
+6. **Covenant Breaches / Liquidity Issues**: "covenant violation", "going concern", "insufficient liquidity", "default"
+7. **Product Issues**: "product recall", "safety concerns", "FDA warning", "quality issues", "supply disruption"
+8. **Financial Restatements**: "restatement", "accounting error", "material weakness", "control deficiency"
 
 ANALYSIS REQUIREMENTS:
-1. Identify NEW risks (not in prior filing)
-   - Score severity: 1-10 (10 = existential threat)
-   - Explain business impact
+1. Identify NEW risks or material negative events (not in prior filing)
+   - Score severity: 1-10 (10 = existential threat, 7+ = major concern, 4-6 = moderate, 1-3 = minor)
+   - Explain business impact in plain English
    - Flag if unusual for industry
 
 2. Identify REMOVED risks (if prior filing available)
@@ -109,15 +118,17 @@ ANALYSIS REQUIREMENTS:
    - Language shifts: "may" → "will" (increased severity)
    - Quantification: "could impact" → "expect $X impact"
    - Position changes: moved to top = more important
-   - Tone changes: defensive → confident or vice versa
+   - New disclosures of material amounts (e.g., "taking a $50M reserve")
 
 4. Calculate overall risk trend: INCREASING/STABLE/DECREASING
-   - If no prior filing provided, use STABLE as baseline
-   - Only use INCREASING/DECREASING if you see clear changes
+   - INCREASING: New material risks, negative events, or worsening language
+   - DECREASING: Risks removed, issues resolved, positive developments
+   - STABLE: No significant changes
 
 5. Extract 3 most material changes for investors
    - Focus on what matters for stock price
    - Be specific about the change, not just the risk
+   - For 8-Ks: Focus on the material event being disclosed
 
 OUTPUT FORMAT (JSON):
 {
