@@ -602,8 +602,14 @@ However, we faced headwinds from increased competition and rising costs. Looking
 
           // Add note about adjustment and update tone
           if (sentimentAdjustment !== 0) {
+            console.log(`[Sentiment] EPS: ${epsSurprise || 'N/A'}, Revenue: ${revenueSurprise || 'N/A'}, Adjustment: ${sentimentAdjustment.toFixed(2)}`);
             console.log(`[Sentiment] Adjusted from ${originalSentiment.toFixed(2)} to ${analysis.sentiment.sentimentScore.toFixed(2)} based on earnings surprises`);
-            analysis.sentiment.keyPhrases = analysis.sentiment.keyPhrases || [];
+
+            // Clear any existing earnings-related phrases to avoid contradictions
+            analysis.sentiment.keyPhrases = (analysis.sentiment.keyPhrases || []).filter(
+              phrase => !phrase.toLowerCase().includes('earnings') && !phrase.toLowerCase().includes('beat') && !phrase.toLowerCase().includes('miss')
+            );
+
             if (sentimentAdjustment > 0) {
               analysis.sentiment.keyPhrases.push('Earnings beat expectations');
               // Update tone based on final sentiment score
