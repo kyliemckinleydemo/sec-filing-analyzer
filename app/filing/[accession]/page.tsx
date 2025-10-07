@@ -328,10 +328,10 @@ export default function FilingPage() {
         <div className="mb-8">
           <Button
             variant="outline"
-            onClick={() => router.push(`/company/${data.filing.company?.ticker || ''}`)}
+            onClick={() => router.back()}
             className="mb-4"
           >
-            ← Back to {data.filing.company?.ticker || 'Company'}
+            ← Back
           </Button>
           <h1 className="text-4xl font-bold">{data.filing.company?.name || 'Company'}</h1>
           <p className="text-lg text-slate-600 mt-2">
