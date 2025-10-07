@@ -345,7 +345,14 @@ Focus on quantitative data that impacts stock price. If information isn't found,
       }
 
       try {
-        return JSON.parse(jsonMatch[0]);
+        const result: SentimentAnalysis = JSON.parse(jsonMatch[0]);
+        // Capitalize first letter of all key phrases for consistency
+        if (result.keyPhrases && Array.isArray(result.keyPhrases)) {
+          result.keyPhrases = result.keyPhrases.map(phrase =>
+            phrase.charAt(0).toUpperCase() + phrase.slice(1)
+          );
+        }
+        return result;
       } catch (parseError) {
         console.error('JSON parsing failed, attempting to fix common issues:', parseError);
 
@@ -357,7 +364,14 @@ Focus on quantitative data that impacts stock price. If information isn't found,
           .replace(/\s+/g, ' ');  // Normalize whitespace
 
         try {
-          return JSON.parse(fixedJson);
+          const result: SentimentAnalysis = JSON.parse(fixedJson);
+          // Capitalize first letter of all key phrases for consistency
+          if (result.keyPhrases && Array.isArray(result.keyPhrases)) {
+            result.keyPhrases = result.keyPhrases.map(phrase =>
+              phrase.charAt(0).toUpperCase() + phrase.slice(1)
+            );
+          }
+          return result;
         } catch (secondError) {
           console.error('Failed to fix JSON, returning fallback sentiment');
           // Return neutral sentiment as fallback
