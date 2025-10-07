@@ -611,7 +611,7 @@ However, we faced headwinds from increased competition and rising costs. Looking
             );
 
             if (sentimentAdjustment > 0) {
-              analysis.sentiment.keyPhrases.push('Earnings beat expectations');
+              analysis.sentiment.keyPhrases.unshift('Earnings beat expectations');
               // Update tone based on final sentiment score
               if (analysis.sentiment.sentimentScore > 0.5) {
                 analysis.sentiment.tone = 'optimistic';
@@ -619,12 +619,25 @@ However, we faced headwinds from increased competition and rising costs. Looking
                 analysis.sentiment.tone = 'cautiously optimistic';
               }
             } else {
-              analysis.sentiment.keyPhrases.push('Earnings missed expectations');
+              // For earnings misses, filter out overly positive phrases and add miss note at top
+              analysis.sentiment.keyPhrases = (analysis.sentiment.keyPhrases || []).filter(
+                phrase => {
+                  const lower = phrase.toLowerCase();
+                  return !lower.includes('strong') &&
+                         !lower.includes('exceeded') &&
+                         !lower.includes('positive') &&
+                         !lower.includes('growth') &&
+                         !lower.includes('improved');
+                }
+              );
+              analysis.sentiment.keyPhrases.unshift('Earnings missed expectations');
               // Update tone based on final sentiment score
               if (analysis.sentiment.sentimentScore < -0.5) {
                 analysis.sentiment.tone = 'pessimistic';
               } else if (analysis.sentiment.sentimentScore < 0) {
                 analysis.sentiment.tone = 'cautious';
+              } else {
+                analysis.sentiment.tone = 'neutral';
               }
             }
           }

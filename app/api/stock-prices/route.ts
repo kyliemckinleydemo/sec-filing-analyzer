@@ -108,9 +108,9 @@ for date_str in stock_data.index:
 print(json.dumps(result))
 `;
 
-    // Execute Python script
+    // Execute Python script using heredoc to avoid escaping issues
     const { stdout, stderr } = await execAsync(
-      `python3 -c ${JSON.stringify(pythonScript)}`,
+      `python3 <<'PYTHON_SCRIPT'\n${pythonScript}\nPYTHON_SCRIPT`,
       { timeout: 30000 }
     );
 

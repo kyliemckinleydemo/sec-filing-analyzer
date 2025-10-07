@@ -831,6 +831,7 @@ export default function FilingPage() {
                             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                             <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                             <YAxis
+                              domain={[0, 'auto']}
                               label={{ value: 'Return (%)', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
                               tick={{ fontSize: 12 }}
                             />
