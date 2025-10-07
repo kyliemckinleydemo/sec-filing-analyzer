@@ -539,12 +539,12 @@ However, we faced headwinds from increased competition and rising costs. Looking
               }
 
               // Calculate earnings surprises if we have consensus and extracted earnings
-              if (yahooData.consensusEPS || yahooData.consensusRevenue) {
+              if ((yahooData.consensusEPS || yahooData.consensusRevenue) && (extractedEPS !== undefined || extractedRevenue !== undefined)) {
                 console.log(`[Yahoo Finance] Found consensus: EPS ${yahooData.consensusEPS}, Revenue $${yahooData.consensusRevenue ? (yahooData.consensusRevenue / 1e9).toFixed(2) + 'B' : 'N/A'}`);
 
                 const surpriseResult = yahooFinancePythonClient.calculateSurprises(
-                  extractedEPS,
-                  extractedRevenue,
+                  extractedEPS || 0,
+                  extractedRevenue || 0,
                   yahooData.consensusEPS,
                   yahooData.consensusRevenue
                 );
