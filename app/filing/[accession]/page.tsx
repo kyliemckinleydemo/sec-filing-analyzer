@@ -936,8 +936,10 @@ export default function FilingPage() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                     <XAxis
                       dataKey="date"
-                      tick={{ fontSize: 11, angle: -45, textAnchor: 'end' }}
+                      tick={{ fontSize: 11 }}
                       height={60}
+                      angle={-45}
+                      textAnchor="end"
                       label={{ value: 'Date', position: 'insideBottom', offset: -20, style: { fontSize: 12 } }}
                     />
                     <YAxis
