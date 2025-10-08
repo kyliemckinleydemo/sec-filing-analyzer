@@ -43,3 +43,6 @@ prisma/*.db-journal
 *.swp
 *.swo
 *~
+
+# SEC bulk data
+data/sec-bulk/

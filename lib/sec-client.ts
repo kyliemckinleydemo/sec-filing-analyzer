@@ -38,6 +38,10 @@ class SECClient {
   private tickerCacheExpiry: number = 0;
   private readonly TICKER_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
+  // Bulk data cache (downloaded submissions.zip data)
+  private bulkDataIndex: Record<string, any> | null = null;
+  private readonly BULK_DATA_PATH = 'data/sec-bulk/submissions-index.json';
+
   private padCIK(cik: string): string {
     return cik.padStart(10, '0');
   }
@@ -211,10 +215,93 @@ class SECClient {
     }
   }
 
+  /**
+   * Load bulk data index from local file (if available)
+   */
+  private async loadBulkDataIndex(): Promise<Record<string, any> | null> {
+    if (this.bulkDataIndex) {
+      return this.bulkDataIndex;
+    }
+
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const indexPath = path.join(process.cwd(), this.BULK_DATA_PATH);
+
+      if (fs.existsSync(indexPath)) {
+        const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+        console.log(`[SEC Client] ✅ Loaded bulk data index: ${indexData.companyCount} companies`);
+        this.bulkDataIndex = indexData.index;
+        return this.bulkDataIndex;
+      } else {
+        console.log(`[SEC Client] ⚠️ Bulk data not found. Run: npx tsx scripts/download-sec-bulk-data.ts`);
+        return null;
+      }
+    } catch (error) {
+      console.warn('[SEC Client] Failed to load bulk data index:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get company filing data from local bulk data (if available) or SEC API
+   */
   async getCompanyFilings(cik: string, formTypes?: string[]): Promise<CompanyData> {
     const paddedCIK = this.padCIK(cik);
-    const url = `${this.baseUrl}/submissions/CIK${paddedCIK}.json`;
 
+    // Try to load from bulk data first
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const submissionFile = path.join(process.cwd(), 'data/sec-bulk/submissions', `CIK${paddedCIK}.json`);
+
+      if (fs.existsSync(submissionFile)) {
+        console.log(`[SEC Client] ✅ Using local bulk data for CIK ${paddedCIK}`);
+        const data = JSON.parse(fs.readFileSync(submissionFile, 'utf-8'));
+
+        // Parse filings from bulk data (same format as API)
+        const filings = data.filings?.recent || {};
+        const allFilings: FilingItem[] = [];
+
+        const accessionNumbers = filings.accessionNumber || [];
+        const filingDates = filings.filingDate || [];
+        const reportDates = filings.reportDate || [];
+        const forms = filings.form || [];
+        const primaryDocuments = filings.primaryDocument || [];
+        const primaryDocDescriptions = filings.primaryDocDescription || [];
+
+        for (let i = 0; i < accessionNumbers.length; i++) {
+          const form = forms[i];
+
+          // Filter by form type if specified
+          if (formTypes && !formTypes.includes(form)) continue;
+
+          const accessionNumber = accessionNumbers[i].replace(/-/g, '');
+
+          allFilings.push({
+            accessionNumber: accessionNumbers[i],
+            filingDate: filingDates[i],
+            reportDate: reportDates[i] || undefined,
+            form,
+            primaryDocument: primaryDocuments[i],
+            primaryDocDescription: primaryDocDescriptions[i],
+            filingUrl: `https://www.sec.gov/Archives/edgar/data/${parseInt(cik)}/${accessionNumber}/${primaryDocuments[i]}`,
+          });
+        }
+
+        return {
+          cik: paddedCIK,
+          name: data.name,
+          ticker: data.tickers?.[0],
+          filings: allFilings,
+        };
+      }
+    } catch (bulkError) {
+      console.log(`[SEC Client] Bulk data not available, falling back to API`);
+    }
+
+    // Fallback to SEC API
+    const url = `${this.baseUrl}/submissions/CIK${paddedCIK}.json`;
     const data = await this.rateLimitedFetch<any>(url);
 
     const filings = data.filings?.recent || {};
