@@ -18,6 +18,7 @@ yarn-error.log*
 scripts/
 collected_data/
 /tmp/
+data/sec-bulk/
 
 # IDE
 .vscode
