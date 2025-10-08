@@ -184,20 +184,93 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
       // This API is more reliable and has better rate limits than HTML scraping
       console.log(`Fetching structured data from SEC Submissions API for CIK ${filing.cik}...`);
 
-      // Get company facts (XBRL structured data) with timeout
-      let companyFacts = null;
-      try {
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('XBRL API timeout')), 8000)
-        );
-        companyFacts = await Promise.race([
+      // PARALLELIZATION: Fetch all SEC data in parallel (XBRL, filing HTML, prior filing)
+      // This reduces total time from ~26s sequential to ~10s parallel
+      const timeoutPromise = (ms: number, name: string) => new Promise((_, reject) =>
+        setTimeout(() => reject(new Error(`${name} timeout`)), ms)
+      );
+
+      const [companyFacts, filingFetchResult, priorCompanyFacts] = await Promise.all([
+        // Fetch current filing XBRL data (8s timeout)
+        Promise.race([
           secClient.getCompanyFacts(filing.cik),
-          timeoutPromise
-        ]);
+          timeoutPromise(8000, 'XBRL API')
+        ]).catch((error: any) => {
+          console.log(`⚠️ XBRL API failed: ${error.message}`);
+          return null;
+        }),
+
+        // Fetch filing HTML content (10s timeout)
+        (async () => {
+          if (!filing.filingUrl) {
+            console.log(`No filing URL provided, skipping text fetch`);
+            return { success: false, text: '', error: 'No URL' };
+          }
+
+          console.log(`Attempting to fetch filing from Archives: ${filing.filingUrl}`);
+          await new Promise(resolve => setTimeout(resolve, 150)); // Rate limit
+
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+          try {
+            const txtResponse = await fetch(filing.filingUrl, {
+              headers: {
+                'User-Agent': 'SEC Filing Analyzer/1.0 (educational project)',
+                'Accept': 'text/html,application/xhtml+xml',
+              },
+              signal: controller.signal,
+            });
+            clearTimeout(timeoutId);
+
+            if (txtResponse.ok) {
+              const text = await txtResponse.text();
+              console.log(`✅ Fetched filing text: ${text.length} characters`);
+              return { success: true, text, error: null };
+            } else if (txtResponse.status === 403 || txtResponse.status === 429) {
+              console.log(`⚠️ SEC Archives rate limited (${txtResponse.status}), proceeding with XBRL data only`);
+              return { success: false, text: '', error: 'rate_limited' };
+            } else {
+              console.log(`Filing URL returned ${txtResponse.status}, will use structured data only`);
+              return { success: false, text: '', error: `HTTP ${txtResponse.status}` };
+            }
+          } catch (fetchError: any) {
+            clearTimeout(timeoutId);
+            if (fetchError.name === 'AbortError') {
+              console.log(`⚠️ Filing fetch timed out after 10s, proceeding with XBRL data only`);
+              return { success: false, text: '', error: 'timeout' };
+            }
+            throw fetchError;
+          }
+        })().catch((error: any) => {
+          console.log(`Could not fetch filing text (${error.message}), using structured data only`);
+          return { success: false, text: '', error: error.message };
+        }),
+
+        // Fetch prior filing XBRL data (8s timeout) - only if we have a prior filing
+        priorFiling ? Promise.race([
+          (async () => {
+            console.log(`Fetching prior filing structured data for ${priorFiling.accessionNumber}...`);
+            return await secClient.getCompanyFacts(priorFiling.cik);
+          })(),
+          timeoutPromise(8000, 'Prior XBRL API')
+        ]).catch((error: any) => {
+          console.log(`⚠️ Prior filing XBRL failed: ${error.message}`);
+          return null;
+        }) : Promise.resolve(null)
+      ]);
+
+      // Log results
+      if (companyFacts) {
         console.log(`✅ XBRL data fetched successfully`);
-      } catch (xbrlError: any) {
-        console.log(`⚠️ XBRL API failed: ${xbrlError.message}`);
-        // Continue without XBRL data
+      }
+      if (filingFetchResult.success) {
+        filingHtml = filingFetchResult.text;
+        parsed = filingParser.parseFiling(filingFetchResult.text, filing.filingType);
+        console.log(`Parsed filing: ${filingParser.getSummary(parsed)}`);
+      }
+      if (priorCompanyFacts) {
+        console.log(`✅ Prior filing XBRL data fetched successfully`);
       }
 
       // Build filing context from structured data
@@ -265,62 +338,6 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
         }
       }
 
-      // APPROACH 2: Try to get textual content from filing document
-      // NOTE: SEC Archives may still rate limit, so this is best-effort only
-      let filingText = '';
-      let archivesBlocked = false;
-
-      try {
-        // Use the filing URL provided (e.g., https://www.sec.gov/Archives/edgar/data/320193/...)
-        if (filing.filingUrl) {
-          console.log(`Attempting to fetch filing from Archives: ${filing.filingUrl}`);
-
-          // Rate limit before fetching (150ms minimum between requests)
-          await new Promise(resolve => setTimeout(resolve, 150));
-
-          // Add timeout for filing fetch (max 10 seconds)
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-          try {
-            const txtResponse = await fetch(filing.filingUrl, {
-              headers: {
-                'User-Agent': 'SEC Filing Analyzer/1.0 (educational project)',
-                'Accept': 'text/html,application/xhtml+xml',
-              },
-              signal: controller.signal,
-            });
-            clearTimeout(timeoutId);
-
-            if (txtResponse.ok) {
-              filingText = await txtResponse.text();
-              filingHtml = filingText; // Set for XBRL parser compatibility
-              console.log(`✅ Fetched filing text: ${filingText.length} characters`);
-
-              // Parse with existing parser
-              parsed = filingParser.parseFiling(filingText, filing.filingType);
-              console.log(`Parsed filing: ${filingParser.getSummary(parsed)}`);
-            } else if (txtResponse.status === 403 || txtResponse.status === 429) {
-              console.log(`⚠️ SEC Archives rate limited (${txtResponse.status}), proceeding with XBRL data only`);
-              archivesBlocked = true;
-            } else {
-              console.log(`Filing URL returned ${txtResponse.status}, will use structured data only`);
-            }
-          } catch (fetchError: any) {
-            clearTimeout(timeoutId);
-            if (fetchError.name === 'AbortError') {
-              console.log(`⚠️ Filing fetch timed out after 10s, proceeding with XBRL data only`);
-            } else {
-              throw fetchError;
-            }
-          }
-        } else {
-          console.log(`No filing URL provided, skipping text fetch`);
-        }
-      } catch (txtError: any) {
-        console.log(`Could not fetch filing text (${txtError.message}), using structured data only`);
-      }
-
       // Build analysis context based on what we have
       if (parsed && parsed.riskFactors && parsed.riskFactors.length > 100) {
         // We successfully parsed the filing
@@ -374,46 +391,34 @@ Provide a general management analysis for ${filing.company.name} based on:
 3. Note that specific financial data is unavailable due to SEC rate limiting`;
       }
 
-      // If we have a prior filing, try to get its data too
-      if (priorFiling) {
-        try {
-          console.log(`Fetching prior filing structured data for ${priorFiling.accessionNumber}...`);
+      // Process prior filing data (already fetched in parallel above)
+      if (priorFiling && priorCompanyFacts && priorCompanyFacts.facts) {
+        const usGaap = priorCompanyFacts.facts['us-gaap'] || {};
+        let priorStructuredContext = '';
 
-          // Try to get structured prior filing data
-          const priorCompanyFacts = await secClient.getCompanyFacts(priorFiling.cik);
+        // Extract prior period revenue
+        if (usGaap.Revenues || usGaap.RevenueFromContractWithCustomerExcludingAssessedTax) {
+          const revenueData = usGaap.Revenues || usGaap.RevenueFromContractWithCustomerExcludingAssessedTax;
+          const priorFilingTime = priorFiling.filingDate.getTime();
+          const relevantUnits = revenueData.units?.USD || [];
+          const recent = relevantUnits
+            .filter((u: any) => {
+              const unitTime = new Date(u.filed || u.end).getTime();
+              return Math.abs(unitTime - priorFilingTime) < 180 * 24 * 60 * 60 * 1000;
+            })
+            .slice(-2);
 
-          if (priorCompanyFacts && priorCompanyFacts.facts) {
-            const usGaap = priorCompanyFacts.facts['us-gaap'] || {};
-            let priorStructuredContext = '';
-
-            // Extract prior period revenue
-            if (usGaap.Revenues || usGaap.RevenueFromContractWithCustomerExcludingAssessedTax) {
-              const revenueData = usGaap.Revenues || usGaap.RevenueFromContractWithCustomerExcludingAssessedTax;
-              const priorFilingTime = priorFiling.filingDate.getTime();
-              const relevantUnits = revenueData.units?.USD || [];
-              const recent = relevantUnits
-                .filter((u: any) => {
-                  const unitTime = new Date(u.filed || u.end).getTime();
-                  return Math.abs(unitTime - priorFilingTime) < 180 * 24 * 60 * 60 * 1000;
-                })
-                .slice(-2);
-
-              if (recent.length > 0) {
-                priorStructuredContext += '\n\nPrior Period Revenue:\n';
-                recent.forEach((u: any) => {
-                  priorStructuredContext += `  ${u.end}: $${(u.val / 1e9).toFixed(2)}B\n`;
-                });
-              }
-            }
-
-            if (priorStructuredContext.length > 50) {
-              priorRisks = `Prior Filing Context:${priorStructuredContext}`;
-              priorMDA = priorStructuredContext;
-            }
+          if (recent.length > 0) {
+            priorStructuredContext += '\n\nPrior Period Revenue:\n';
+            recent.forEach((u: any) => {
+              priorStructuredContext += `  ${u.end}: $${(u.val / 1e9).toFixed(2)}B\n`;
+            });
           }
-        } catch (priorError) {
-          console.error('Error fetching prior filing data:', priorError);
-          // Continue without prior filing comparison
+        }
+
+        if (priorStructuredContext.length > 50) {
+          priorRisks = `Prior Filing Context:${priorStructuredContext}`;
+          priorMDA = priorStructuredContext;
         }
       }
     } catch (fetchError: any) {
@@ -457,16 +462,34 @@ Note: Specific MD&A content is unavailable. Provide general business commentary.
 
     try {
       console.log('Running Claude AI analysis...');
-      // Run Claude analysis with real filing content
-      const analysis = await claudeClient.analyzeFullFiling(
-        currentRisks,
-        currentMDA,
-        priorRisks,
-        filing.filingType,
-        filing.company.name,
-        priorMDA
-      );
+
+      // PARALLELIZATION: Run Claude analysis and Yahoo Finance data fetch in parallel
+      // They're independent operations, so we can save ~2s by running together
+      const [analysis, preloadedYahooData] = await Promise.all([
+        // Claude analysis (~15-20s)
+        claudeClient.analyzeFullFiling(
+          currentRisks,
+          currentMDA,
+          priorRisks,
+          filing.filingType,
+          filing.company.name,
+          priorMDA
+        ),
+
+        // Yahoo Finance data (~1-2s) - preload for later use
+        filing.company.ticker ? yahooFinancePythonClient.fetchData(
+          filing.company.ticker,
+          filing.filingDate
+        ).catch((error: any) => {
+          console.log(`[Yahoo Finance Preload] Failed: ${error.message}`);
+          return null;
+        }) : Promise.resolve(null)
+      ]);
+
       console.log('Claude analysis completed successfully');
+      if (preloadedYahooData) {
+        console.log(`[Yahoo Finance] ✅ Preloaded data: P/E=${preloadedYahooData.peRatio}, MarketCap=$${(preloadedYahooData.marketCapB || 0).toFixed(1)}B`);
+      }
 
       // Extract inline XBRL financial data directly from the filing HTML
       let xbrlFinancials = null;
@@ -575,17 +598,14 @@ Note: Specific MD&A content is unavailable. Provide general business commentary.
         };
         console.log('Merged inline XBRL data into financial metrics');
 
-        // NEW: Fetch analyst consensus, P/E ratio, and market cap using Yahoo Finance (Python)
+        // NEW: Use preloaded Yahoo Finance data (already fetched in parallel with Claude)
         if (filing.company.ticker && xbrlFinancials.eps && xbrlFinancials.revenue) {
           try {
-            console.log(`[Yahoo Finance] Fetching consensus, P/E, and market cap for ${filing.company.ticker}...`);
-            const yahooData = await yahooFinancePythonClient.fetchData(
-              filing.company.ticker,
-              filing.filingDate
-            );
+            // Use preloaded data from parallel fetch
+            const yahooData = preloadedYahooData;
 
             if (yahooData) {
-              console.log(`[Yahoo Finance] ✅ Data fetched: P/E=${yahooData.peRatio}, MarketCap=$${(yahooData.marketCapB || 0).toFixed(1)}B`);
+              console.log(`[Yahoo Finance] ✅ Using preloaded data: P/E=${yahooData.peRatio}, MarketCap=$${(yahooData.marketCapB || 0).toFixed(1)}B`);
 
               // Store P/E ratio and market cap for prediction model
               analysis.financialMetrics.structuredData.peRatio = yahooData.peRatio;
@@ -661,18 +681,15 @@ Note: Specific MD&A content is unavailable. Provide general business commentary.
           }
         }
 
-        // NEW: For 8-K filings (earnings announcements), still try to get Yahoo Finance data
+        // NEW: For 8-K filings (earnings announcements), use preloaded Yahoo Finance data
         // even without XBRL, since Claude may have extracted earnings from the press release
         if (filing.filingType === '8-K' && filing.company.ticker) {
           try {
-            console.log(`[Yahoo Finance] Fetching data for 8-K filing ${filing.company.ticker}...`);
-            const yahooData = await yahooFinancePythonClient.fetchData(
-              filing.company.ticker,
-              filing.filingDate
-            );
+            // Use preloaded data from parallel fetch
+            const yahooData = preloadedYahooData;
 
             if (yahooData) {
-              console.log(`[Yahoo Finance] ✅ Data fetched: P/E=${yahooData.peRatio}, MarketCap=$${(yahooData.marketCapB || 0).toFixed(1)}B`);
+              console.log(`[Yahoo Finance] ✅ Using preloaded data for 8-K: P/E=${yahooData.peRatio}, MarketCap=$${(yahooData.marketCapB || 0).toFixed(1)}B`);
 
               // Initialize structuredData if it doesn't exist
               if (!analysis.financialMetrics) {

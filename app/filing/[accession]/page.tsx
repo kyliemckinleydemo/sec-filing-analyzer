@@ -109,6 +109,7 @@ type AnalysisStep =
   | 'complete';
 
 export default function FilingPage() {
+  console.log('🚀 FilingPage component loaded - NEW VERSION with renderComplete + progress bar at 95%');
   const params = useParams();
   const router = useRouter();
   const accession = params.accession as string;
@@ -119,6 +120,7 @@ export default function FilingPage() {
   const [error, setError] = useState<string | null>(null);
   const [stockPrices, setStockPrices] = useState<any>(null);
   const [loadingStockPrices, setLoadingStockPrices] = useState(false);
+  const [renderComplete, setRenderComplete] = useState(false);
 
   useEffect(() => {
     if (!accession) return;
@@ -251,6 +253,19 @@ export default function FilingPage() {
     fetchStockPrices();
   }, [data?.filing?.company?.ticker, data?.filing?.filingDate, data?.prediction]);
 
+  // Mark render as complete when all data is loaded AND charts have time to render
+  useEffect(() => {
+    console.log('🔍 RENDER STATE CHECK:', { data: !!data, loading, loadingStockPrices, renderComplete });
+    if (data && !loading && !loadingStockPrices) {
+      console.log('✅ ALL DATA LOADED - Waiting 1.5s for charts to render...');
+      // Add delay to ensure charts are fully rendered before hiding spinner
+      setTimeout(() => {
+        console.log('✅ RENDER COMPLETE SET TO TRUE');
+        setRenderComplete(true);
+      }, 1500); // 1.5 second delay to ensure charts render
+    }
+  }, [data, loading, loadingStockPrices]);
+
   const getStepDetails = (step: AnalysisStep) => {
     const steps = {
       'fetching-filing': {
@@ -293,7 +308,7 @@ export default function FilingPage() {
     return steps[step];
   };
 
-  if (loading) {
+  if (loading || !renderComplete) {
     const stepDetails = getStepDetails(currentStep);
 
     return (
@@ -303,7 +318,9 @@ export default function FilingPage() {
             <div className="text-center space-y-4">
               <div className="text-6xl animate-bounce">{stepDetails.emoji}</div>
               <CardTitle className="text-3xl">{stepDetails.title}</CardTitle>
-              <CardDescription className="text-lg">{stepDetails.description}</CardDescription>
+              <CardDescription className="text-lg">
+                {loadingStockPrices ? 'Loading stock price data and graphs...' : stepDetails.description}
+              </CardDescription>
             </div>
           </CardHeader>
           <CardContent>
@@ -312,11 +329,12 @@ export default function FilingPage() {
               <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
                 <div
                   className="bg-blue-600 h-3 rounded-full transition-all duration-500 ease-out"
-                  style={{ width: `${stepDetails.progress}%` }}
+                  style={{ width: `${loadingStockPrices ? 95 : stepDetails.progress}%` }}
                 />
               </div>
               <div className="text-center text-sm text-slate-600">
-                {stepDetails.progress}% Complete
+                {loadingStockPrices ? '95' : stepDetails.progress}% Complete
+                {loadingStockPrices && ' - Rendering charts...'}
               </div>
 
               {/* Steps checklist */}
