@@ -70,16 +70,31 @@ export default function CompanyPage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
         <Card className="max-w-md">
           <CardHeader>
-            <CardTitle>Error</CardTitle>
-            <CardDescription>{error || 'Failed to load company data'}</CardDescription>
+            <CardTitle>❌ Company Not Found</CardTitle>
+            <CardDescription>
+              {error || 'Failed to load company data for'} {ticker ? ticker.toUpperCase() : ''}
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            <Button onClick={() => router.push('/')} variant="outline">
-              Back to Home
-            </Button>
+          <CardContent className="space-y-4">
+            <div className="text-sm text-slate-600">
+              <p className="mb-2">This could happen if:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>The ticker symbol is incorrect</li>
+                <li>The company doesn't file with the SEC (non-US companies)</li>
+                <li>The SEC API is temporarily unavailable</li>
+              </ul>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={() => router.push('/')} variant="outline" className="flex-1">
+                ← Back to Home
+              </Button>
+              <Button onClick={() => window.location.reload()} variant="default" className="flex-1">
+                Try Again
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

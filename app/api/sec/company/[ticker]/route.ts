@@ -26,7 +26,9 @@ export async function GET(
     const companyInfo = await secClient.getCompanyByTicker(ticker);
 
     if (!companyInfo) {
-      return NextResponse.json({ error: 'Company not found' }, { status: 404 });
+      return NextResponse.json({
+        error: `Company with ticker "${ticker.toUpperCase()}" not found. Please verify the ticker symbol is correct and that the company files with the SEC.`
+      }, { status: 404 });
     }
 
     // Get filings (limit to 10-K, 10-Q, 8-K)
