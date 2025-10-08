@@ -93,7 +93,7 @@ class YahooFinancePythonClient {
     };
 
     // EPS Surprise
-    if (consensusEPS && consensusEPS > 0) {
+    if (consensusEPS && consensusEPS > 0 && actualEPS != null) {
       const epsDiff = actualEPS - consensusEPS;
       const epsDiffPct = (epsDiff / Math.abs(consensusEPS)) * 100;
 
@@ -116,7 +116,7 @@ class YahooFinancePythonClient {
     }
 
     // Revenue Surprise
-    if (consensusRevenue && consensusRevenue > 0) {
+    if (consensusRevenue && consensusRevenue > 0 && actualRevenue != null) {
       const revDiff = actualRevenue - consensusRevenue;
       const revDiffPct = (revDiff / consensusRevenue) * 100;
 

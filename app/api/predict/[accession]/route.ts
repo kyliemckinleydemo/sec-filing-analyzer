@@ -37,22 +37,33 @@ export async function GET(
 
     // If prediction already exists, check if we can calculate accuracy
     if (filing.predicted7dReturn !== null) {
+      console.log(`[Predict API] Prediction exists: ${filing.predicted7dReturn}%, filing date: ${filing.filingDate}, ticker: ${filing.company.ticker}`);
+
       // Check if we have actual results or can calculate them
       let accuracyResult = null;
       if (filing.company.ticker) {
-        accuracyResult = await accuracyTracker.checkAccuracy(
-          filing.company.ticker,
-          filing.filingDate,
-          filing.predicted7dReturn
-        );
+        console.log(`[Predict API] About to check accuracy for ${filing.company.ticker}...`);
+        try {
+          accuracyResult = await accuracyTracker.checkAccuracy(
+            filing.company.ticker,
+            filing.filingDate,
+            filing.predicted7dReturn
+          );
+          console.log(`[Predict API] Accuracy result:`, JSON.stringify(accuracyResult, null, 2));
+        } catch (error) {
+          console.error(`[Predict API] Error checking accuracy:`, error);
+        }
 
         // If we got actual data and haven't stored it yet, update the database
-        if (accuracyResult.hasData && accuracyResult.actual7dReturn && !filing.actual7dReturn) {
+        if (accuracyResult?.hasData && accuracyResult.actual7dReturn && !filing.actual7dReturn) {
+          console.log(`[Predict API] Updating actual return in database: ${accuracyResult.actual7dReturn}%`);
           await accuracyTracker.updateActualReturn(
             normalizedAccession,
             accuracyResult.actual7dReturn
           );
         }
+      } else {
+        console.log(`[Predict API] No ticker available for accuracy check`);
       }
 
       // Try to get stored features from prediction record

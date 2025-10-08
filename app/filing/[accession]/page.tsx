@@ -197,6 +197,50 @@ export default function FilingPage() {
           return;
         }
         setStockPrices(priceData);
+
+        // Calculate actual 7BD return from stock price data
+        if (priceData.prices && data.prediction) {
+          const sevenBdPoint = priceData.prices.find((p: any) => p.is7BdDate);
+          if (sevenBdPoint) {
+            console.log(`[Stock Prices] Found 7BD actual return: ${sevenBdPoint.pctChange}%`);
+            // Inject accuracy data calculated from stock prices
+            setData((prevData: any) => {
+              if (!prevData) return prevData;
+
+              const actual7dReturn = sevenBdPoint.pctChange;
+              const predicted7dReturn = prevData.prediction.predicted7dReturn;
+              const error = Math.abs(actual7dReturn - predicted7dReturn);
+              const now = new Date();
+              const filingTime = new Date(prevData.filing.filingDate);
+              const daysElapsed = Math.floor((now.getTime() - filingTime.getTime()) / (1000 * 60 * 60 * 24));
+
+              let accuracy: 'Excellent' | 'Good' | 'Fair' | 'Poor';
+              if (error < 1) {
+                accuracy = 'Excellent';
+              } else if (error < 2) {
+                accuracy = 'Good';
+              } else if (error < 4) {
+                accuracy = 'Fair';
+              } else {
+                accuracy = 'Poor';
+              }
+
+              return {
+                ...prevData,
+                accuracy: {
+                  hasData: true,
+                  daysElapsed,
+                  predicted7dReturn,
+                  actual7dReturn,
+                  error,
+                  errorPercent: (error / Math.abs(actual7dReturn || 1)) * 100,
+                  accuracy,
+                  message: `Prediction was ${accuracy.toLowerCase()} (${error.toFixed(2)}% error)`
+                }
+              };
+            });
+          }
+        }
       } catch (error) {
         console.error('Failed to fetch stock prices:', error);
       } finally {
@@ -205,7 +249,7 @@ export default function FilingPage() {
     };
 
     fetchStockPrices();
-  }, [data]);
+  }, [data?.filing?.company?.ticker, data?.filing?.filingDate, data?.prediction]);
 
   const getStepDetails = (step: AnalysisStep) => {
     const steps = {
