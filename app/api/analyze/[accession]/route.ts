@@ -420,17 +420,39 @@ Provide a general management analysis for ${filing.company.name} based on:
       console.error('Error fetching filing content from SEC XBRL API:', fetchError);
 
       // Fallback to minimal context based on filing metadata
+      console.log('⚠️ All SEC data fetching failed - using general analysis mode');
       currentRisks = `${companyContext}
 
-[SEC XBRL API unavailable. Analysis based on filing metadata only.]
+[SEC Rate Limiting - General Analysis Mode]
 
-Filing Type: ${filing.filingType}
-Company: ${filing.company.name} (${filing.company.ticker})
-Filing Date: ${filing.filingDate.toISOString().split('T')[0]}
+Due to SEC API rate limiting, specific filing data is temporarily unavailable.
+Provide a general risk and business analysis for ${filing.company.name} based on:
 
-Note: Provide general analysis for this filing type based on typical ${filing.filingType} contents and company context.`;
+Company Context:
+- Company: ${filing.company.name}
+- Ticker: ${filing.company.ticker}
+- Filing Type: ${filing.filingType}
+- Filing Date: ${filing.filingDate.toISOString().split('T')[0]}
 
-      currentMDA = currentRisks;
+Analysis Focus:
+1. General risk factors typical for ${filing.company.name}'s industry and business model
+2. Common ${filing.filingType} disclosure topics and regulatory requirements
+3. Known business trends and competitive landscape for this company
+4. Macro-economic factors relevant to the filing period
+
+Note: This is a general analysis. Specific risk factors from the actual filing are unavailable due to API limitations.`;
+
+      currentMDA = `${companyContext}
+
+[SEC Rate Limiting - General Analysis Mode]
+
+Provide management discussion analysis for ${filing.company.name} based on:
+1. Known business operations and industry position
+2. Typical ${filing.filingType} financial discussion topics
+3. General market conditions during ${filing.filingDate.toISOString().split('T')[0]}
+4. Company's historical performance and strategic direction
+
+Note: Specific MD&A content is unavailable. Provide general business commentary.`;
     }
 
     try {
