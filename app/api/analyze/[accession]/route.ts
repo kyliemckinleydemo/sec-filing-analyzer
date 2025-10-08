@@ -252,29 +252,42 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
         }
       }
 
-      // APPROACH 2: Try to get textual content from filing text endpoint
-      // The SEC provides full submission text files that don't require HTML parsing
+      // APPROACH 2: Try to get textual content from filing document
+      // NOTE: SEC Archives may still rate limit, so this is best-effort only
       let filingText = '';
+      let archivesBlocked = false;
+
       try {
-        const cleanAccession = normalizedAccession.replace(/-/g, '');
-        const txtUrl = `https://www.sec.gov/cgi-bin/viewer?action=view&cik=${filing.cik}&accession_number=${normalizedAccession}&xbrl_type=v`;
+        // Use the filing URL provided (e.g., https://www.sec.gov/Archives/edgar/data/320193/...)
+        if (filing.filingUrl) {
+          console.log(`Attempting to fetch filing from Archives: ${filing.filingUrl}`);
 
-        console.log(`Attempting to fetch filing text from: ${txtUrl}`);
-        const txtResponse = await fetch(txtUrl, {
-          headers: {
-            'User-Agent': 'SEC Filing Analyzer/1.0 (educational project)',
-            'Accept': 'text/html,text/plain',
-          },
-        });
+          // Rate limit before fetching (150ms minimum between requests)
+          await new Promise(resolve => setTimeout(resolve, 150));
 
-        if (txtResponse.ok) {
-          filingText = await txtResponse.text();
-          filingHtml = filingText; // Set for XBRL parser compatibility
-          console.log(`Fetched filing text: ${filingText.length} characters`);
+          const txtResponse = await fetch(filing.filingUrl, {
+            headers: {
+              'User-Agent': 'SEC Filing Analyzer/1.0 (educational project)',
+              'Accept': 'text/html,application/xhtml+xml',
+            },
+          });
 
-          // Parse with existing parser
-          parsed = filingParser.parseFiling(filingText, filing.filingType);
-          console.log(`Parsed filing: ${filingParser.getSummary(parsed)}`);
+          if (txtResponse.ok) {
+            filingText = await txtResponse.text();
+            filingHtml = filingText; // Set for XBRL parser compatibility
+            console.log(`✅ Fetched filing text: ${filingText.length} characters`);
+
+            // Parse with existing parser
+            parsed = filingParser.parseFiling(filingText, filing.filingType);
+            console.log(`Parsed filing: ${filingParser.getSummary(parsed)}`);
+          } else if (txtResponse.status === 403 || txtResponse.status === 429) {
+            console.log(`⚠️ SEC Archives rate limited (${txtResponse.status}), proceeding with XBRL data only`);
+            archivesBlocked = true;
+          } else {
+            console.log(`Filing URL returned ${txtResponse.status}, will use structured data only`);
+          }
+        } else {
+          console.log(`No filing URL provided, skipping text fetch`);
         }
       } catch (txtError: any) {
         console.log(`Could not fetch filing text (${txtError.message}), using structured data only`);
@@ -283,18 +296,54 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
       // Build analysis context based on what we have
       if (parsed && parsed.riskFactors && parsed.riskFactors.length > 100) {
         // We successfully parsed the filing
+        console.log('✅ Using parsed filing text (full Risk Factors and MD&A)');
         currentRisks = `${companyContext}\n\n${parsed.riskFactors}`;
         currentMDA = `${companyContext}\n\n${parsed.mdaText}`;
       } else if (structuredContext.length > 50) {
         // We have structured financial data but no text sections
-        console.log('Using structured XBRL data for analysis (no textual sections available)');
-        currentRisks = `${companyContext}\n\n[Structured Financial Data from SEC XBRL API]${structuredContext}\n\nNote: Full text sections not available. Analyze based on financial trends from XBRL data.`;
-        currentMDA = `${companyContext}\n\n[Structured Financial Data from SEC XBRL API]${structuredContext}\n\nNote: Provide analysis based on the financial metrics shown above.`;
+        console.log('⚠️ Using structured XBRL data only (SEC rate limiting prevented full text access)');
+        currentRisks = `${companyContext}\n\n[SEC Rate Limiting - Using Structured XBRL Financial Data]${structuredContext}
+
+Note: SEC is currently rate limiting requests from this IP address. Full text Risk Factors are not available.
+Based on the financial data above, provide a risk assessment for ${filing.company.name} focusing on:
+1. Financial performance trends (revenue, profitability)
+2. Quarter-over-quarter or year-over-year changes
+3. Industry-typical risks for a company of this size and sector
+4. Any notable patterns in the financial metrics`;
+
+        currentMDA = `${companyContext}\n\n[SEC Rate Limiting - Using Structured XBRL Financial Data]${structuredContext}
+
+Note: SEC is currently rate limiting requests. Full MD&A text is not available.
+Based on the financial metrics above, provide management commentary analysis:
+1. Assess financial performance (revenue trends, profitability, margins)
+2. Identify quarter-over-quarter or YoY changes
+3. Comment on business momentum and trajectory
+4. Provide realistic sentiment assessment based on the numbers`;
       } else {
-        // Fallback: use filing URL in context and let Claude know we have limited data
-        console.log('Limited data available, providing filing metadata for analysis');
-        currentRisks = `${companyContext}\n\nFiling URL: ${filing.filingUrl}\n\nNote: Full filing content not accessible via SEC API. Analyze based on available metadata and general knowledge about ${filing.company.name} in ${filing.filingType} filings.`;
-        currentMDA = `${companyContext}\n\nNote: Provide general analysis for this filing type based on company context.`;
+        // Fallback: minimal data available
+        console.log('⚠️ Limited data - SEC is blocking both text and XBRL access');
+        currentRisks = `${companyContext}
+
+[SEC Rate Limiting Active - Limited Data Available]
+
+The SEC is currently rate limiting API requests from this IP address, preventing access to:
+- Filing text (Risk Factors, MD&A sections)
+- XBRL structured financial data
+
+For ${filing.company.name} ${filing.filingType} filed ${filing.filingDate.toISOString().split('T')[0]}:
+Provide a general risk assessment based on:
+1. Typical ${filing.filingType} risk factors for a large public company
+2. Known industry risks for ${filing.company.name}'s sector
+3. General market conditions at the time of filing`;
+
+        currentMDA = `${companyContext}
+
+[SEC Rate Limiting - Limited Data]
+
+Provide a general management analysis for ${filing.company.name} based on:
+1. Typical ${filing.filingType} financial disclosures
+2. General company context and industry position
+3. Note that specific financial data is unavailable due to SEC rate limiting`;
       }
 
       // If we have a prior filing, try to get its data too
