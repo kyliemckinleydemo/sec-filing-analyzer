@@ -71,6 +71,9 @@ class SECClient {
   /**
    * Load all company tickers from SEC API with caching
    * The SEC endpoint contains ~15,000 companies and rarely changes
+   *
+   * NOTE: Uses www.sec.gov which has stricter rate limits
+   * Consider using submissions API or local ticker cache file instead
    */
   private async loadTickerData(): Promise<Record<string, any>> {
     // Return cached data if still valid
@@ -88,11 +91,20 @@ class SECClient {
       'https://www.sec.gov/files/company_tickers_exchange.json',
     ];
 
+    // Add rate limiting before fetching ticker data
+    const timeSinceLastRequest = now - this.lastRequestTime;
+    if (timeSinceLastRequest < this.MIN_INTERVAL) {
+      await new Promise(resolve =>
+        setTimeout(resolve, this.MIN_INTERVAL - timeSinceLastRequest)
+      );
+    }
+
     for (let attempt = 0; attempt < 3; attempt++) {
       for (const url of endpoints) {
         try {
           console.log(`[SEC Client] Attempt ${attempt + 1}: Fetching from ${url}...`);
 
+          this.lastRequestTime = Date.now();
           const response = await fetch(url, {
             headers: {
               'User-Agent': this.userAgent,
@@ -102,6 +114,12 @@ class SECClient {
 
           if (!response.ok) {
             console.warn(`[SEC Client] Failed: ${response.status} ${response.statusText}`);
+
+            // If rate limited, wait longer before retry
+            if (response.status === 403 || response.status === 429) {
+              console.log(`[SEC Client] Rate limited, waiting 5s before retry...`);
+              await new Promise(resolve => setTimeout(resolve, 5000));
+            }
             continue;
           }
 
@@ -121,13 +139,13 @@ class SECClient {
 
       // Wait before retry (exponential backoff)
       if (attempt < 2) {
-        const waitTime = Math.pow(2, attempt) * 1000;
+        const waitTime = Math.pow(2, attempt) * 2000; // Increased from 1000ms to 2000ms
         console.log(`[SEC Client] Waiting ${waitTime}ms before retry...`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
     }
 
-    throw new Error('Failed to load ticker data from SEC after multiple attempts');
+    throw new Error('Failed to load ticker data from SEC after multiple attempts. The SEC may be rate limiting requests. Please try again in a few minutes.');
   }
 
   async getCompanyByTicker(ticker: string): Promise<{ cik: string; name: string } | null> {
