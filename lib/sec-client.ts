@@ -33,6 +33,11 @@ class SECClient {
   private lastRequestTime = 0;
   private MIN_INTERVAL = 110; // 110ms = ~9 req/sec (safe margin)
 
+  // In-memory cache for company tickers (loaded once, cached for session)
+  private tickerCache: Record<string, any> | null = null;
+  private tickerCacheExpiry: number = 0;
+  private readonly TICKER_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
   private padCIK(cik: string): string {
     return cik.padStart(10, '0');
   }
@@ -63,51 +68,95 @@ class SECClient {
     return response.json();
   }
 
+  /**
+   * Load all company tickers from SEC API with caching
+   * The SEC endpoint contains ~15,000 companies and rarely changes
+   */
+  private async loadTickerData(): Promise<Record<string, any>> {
+    // Return cached data if still valid
+    const now = Date.now();
+    if (this.tickerCache && now < this.tickerCacheExpiry) {
+      console.log(`[SEC Client] Using cached ticker data (${Object.keys(this.tickerCache).length} companies)`);
+      return this.tickerCache;
+    }
+
+    console.log(`[SEC Client] Loading fresh ticker data from SEC...`);
+
+    // Try multiple endpoints with retry logic
+    const endpoints = [
+      'https://www.sec.gov/files/company_tickers.json',
+      'https://www.sec.gov/files/company_tickers_exchange.json',
+    ];
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      for (const url of endpoints) {
+        try {
+          console.log(`[SEC Client] Attempt ${attempt + 1}: Fetching from ${url}...`);
+
+          const response = await fetch(url, {
+            headers: {
+              'User-Agent': this.userAgent,
+              'Accept': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            console.warn(`[SEC Client] Failed: ${response.status} ${response.statusText}`);
+            continue;
+          }
+
+          const data = await response.json();
+          const companyCount = Object.keys(data).length;
+          console.log(`[SEC Client] ✅ Successfully loaded ${companyCount} companies`);
+
+          // Cache the data
+          this.tickerCache = data;
+          this.tickerCacheExpiry = now + this.TICKER_CACHE_TTL;
+
+          return data;
+        } catch (error: any) {
+          console.warn(`[SEC Client] Error fetching from ${url}:`, error.message);
+        }
+      }
+
+      // Wait before retry (exponential backoff)
+      if (attempt < 2) {
+        const waitTime = Math.pow(2, attempt) * 1000;
+        console.log(`[SEC Client] Waiting ${waitTime}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
+    }
+
+    throw new Error('Failed to load ticker data from SEC after multiple attempts');
+  }
+
   async getCompanyByTicker(ticker: string): Promise<{ cik: string; name: string } | null> {
     try {
-      // Known CIKs for common tickers (fallback)
-      const knownCIKs: Record<string, { cik: string; name: string }> = {
-        'AAPL': { cik: '0000320193', name: 'Apple Inc.' },
-        'MSFT': { cik: '0000789019', name: 'Microsoft Corporation' },
-        'GOOGL': { cik: '0001652044', name: 'Alphabet Inc.' },
-        'AMZN': { cik: '0001018724', name: 'Amazon.com, Inc.' },
-        'TSLA': { cik: '0001318605', name: 'Tesla, Inc.' },
-        'META': { cik: '0001326801', name: 'Meta Platforms, Inc.' },
-        'NVDA': { cik: '0001045810', name: 'NVIDIA Corporation' },
-        'JPM': { cik: '0000019617', name: 'JPMorgan Chase & Co.' },
-        'V': { cik: '0001403161', name: 'Visa Inc.' },
-        'WMT': { cik: '0000104169', name: 'Walmart Inc.' },
-        'EFX': { cik: '0000033185', name: 'Equifax Inc.' },
-      };
-
-      // Check if we have a known CIK
       const upperTicker = ticker.toUpperCase();
-      if (knownCIKs[upperTicker]) {
-        return knownCIKs[upperTicker];
-      }
+      console.log(`[SEC Client] Looking up ticker: ${upperTicker}`);
 
-      // Try to fetch from SEC API
-      try {
-        const url = `${this.baseUrl}/files/company_tickers.json`;
-        const data = await this.rateLimitedFetch<Record<string, any>>(url);
+      // Load ticker data (will use cache if available)
+      const tickerData = await this.loadTickerData();
 
-        // Find company by ticker
-        const company = Object.values(data).find(
-          (c: any) => c.ticker?.toUpperCase() === upperTicker
-        );
+      // Find company by ticker
+      const company = Object.values(tickerData).find(
+        (c: any) => c.ticker?.toUpperCase() === upperTicker
+      );
 
-        if (!company) return null;
-
-        return {
-          cik: String(company.cik_str).padStart(10, '0'),
-          name: company.title,
-        };
-      } catch (apiError) {
-        console.error('SEC API error, using fallback data:', apiError);
+      if (!company) {
+        console.log(`[SEC Client] ❌ Ticker ${upperTicker} not found in SEC database`);
         return null;
       }
-    } catch (error) {
-      console.error('Error fetching company by ticker:', error);
+
+      const result = {
+        cik: String(company.cik_str).padStart(10, '0'),
+        name: company.title,
+      };
+
+      console.log(`[SEC Client] ✅ Found: ${result.name} (CIK: ${result.cik})`);
+      return result;
+    } catch (error: any) {
+      console.error(`[SEC Client] Error fetching company by ticker:`, error.message || error);
       return null;
     }
   }
