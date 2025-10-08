@@ -204,35 +204,61 @@ class SECClient {
     };
   }
 
+  /**
+   * Get filing content using SEC XBRL Data API instead of HTML scraping
+   * This method now returns structured data, not HTML
+   */
   async getFilingContent(accessionNumber: string, cik: string): Promise<string> {
     const paddedCIK = this.padCIK(cik);
-    const cleanAccession = accessionNumber.replace(/-/g, '');
 
-    // Apply rate limiting
-    const now = Date.now();
-    const timeSinceLastRequest = now - this.lastRequestTime;
-    if (timeSinceLastRequest < this.MIN_INTERVAL) {
-      await new Promise(resolve =>
-        setTimeout(resolve, this.MIN_INTERVAL - timeSinceLastRequest)
-      );
+    // Use Company Facts API to get structured XBRL data
+    try {
+      const facts = await this.getCompanyFacts(cik);
+      if (!facts || !facts.facts) {
+        throw new Error('No XBRL data available for this filing');
+      }
+
+      // Extract relevant financial data and format as text
+      const usGaap = facts.facts['us-gaap'] || {};
+      let content = `Company: ${facts.entityName}\nCIK: ${paddedCIK}\n\n`;
+
+      // Add revenue data
+      if (usGaap.Revenues || usGaap.RevenueFromContractWithCustomerExcludingAssessedTax) {
+        const revenueData = usGaap.Revenues || usGaap.RevenueFromContractWithCustomerExcludingAssessedTax;
+        content += 'Revenue Data:\n';
+        const units = revenueData.units?.USD || [];
+        units.slice(-4).forEach((u: any) => {
+          content += `  ${u.end}: $${(u.val / 1e9).toFixed(2)}B (filed: ${u.filed})\n`;
+        });
+        content += '\n';
+      }
+
+      // Add net income
+      if (usGaap.NetIncomeLoss) {
+        content += 'Net Income:\n';
+        const units = usGaap.NetIncomeLoss.units?.USD || [];
+        units.slice(-4).forEach((u: any) => {
+          content += `  ${u.end}: $${(u.val / 1e9).toFixed(2)}B (filed: ${u.filed})\n`;
+        });
+        content += '\n';
+      }
+
+      // Add EPS
+      if (usGaap.EarningsPerShareDiluted || usGaap.EarningsPerShareBasic) {
+        const epsData = usGaap.EarningsPerShareDiluted || usGaap.EarningsPerShareBasic;
+        content += 'Earnings Per Share:\n';
+        const units = epsData.units?.['USD/shares'] || [];
+        units.slice(-4).forEach((u: any) => {
+          content += `  ${u.end}: $${u.val.toFixed(2)} (filed: ${u.filed})\n`;
+        });
+        content += '\n';
+      }
+
+      return content;
+    } catch (error) {
+      console.error('Error fetching XBRL data:', error);
+      throw new Error(`Failed to fetch structured filing data: ${error}`);
     }
-
-    this.lastRequestTime = Date.now();
-
-    // Try to fetch the primary document
-    const url = `https://www.sec.gov/cgi-bin/viewer?action=view&cik=${paddedCIK}&accession_number=${accessionNumber}&xbrl_type=v`;
-
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': this.userAgent,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch filing content: ${response.status}`);
-    }
-
-    return response.text();
   }
 
   async getCompanyFacts(cik: string): Promise<any> {

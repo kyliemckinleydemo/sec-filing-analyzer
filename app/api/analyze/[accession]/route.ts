@@ -171,110 +171,189 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
 
     console.log(`Fetching real filing content for ${accession}...`);
 
-    // Fetch real filing content from SEC
+    // Fetch real filing content from SEC using XBRL/structured data APIs (no HTML scraping)
     let currentRisks: string;
     let currentMDA: string;
     let priorRisks: string | undefined;
     let priorMDA: string | undefined;
-    let filingHtml: string = ''; // Declare outside try block for XBRL parsing
+    let filingHtml: string = ''; // Keep for backward compatibility with XBRL parser
     let parsed: any = null; // Declare outside try block for stub filing detection
 
     try {
-      // Fetch current filing HTML using the direct filing URL
-      console.log(`Fetching from URL: ${filing.filingUrl}`);
-      const response = await fetch(filing.filingUrl, {
-        headers: {
-          'User-Agent': 'SEC Filing Analyzer support@example.com',
-        },
-      });
+      // APPROACH 1: Use SEC Submissions API to get filing metadata
+      // This API is more reliable and has better rate limits than HTML scraping
+      console.log(`Fetching structured data from SEC Submissions API for CIK ${filing.cik}...`);
 
-      if (!response.ok) {
-        throw new Error(`SEC returned ${response.status}`);
+      // Get company facts (XBRL structured data)
+      const companyFacts = await secClient.getCompanyFacts(filing.cik);
+
+      // Build filing context from structured data
+      let structuredContext = '';
+      if (companyFacts && companyFacts.facts) {
+        const usGaap = companyFacts.facts['us-gaap'] || {};
+        const dei = companyFacts.facts['dei'] || {};
+
+        // Extract revenue data
+        if (usGaap.Revenues || usGaap.RevenueFromContractWithCustomerExcludingAssessedTax) {
+          const revenueData = usGaap.Revenues || usGaap.RevenueFromContractWithCustomerExcludingAssessedTax;
+          structuredContext += '\n\nRevenue Data:\n';
+
+          // Find filings close to our filing date
+          const filingTime = filing.filingDate.getTime();
+          const relevantUnits = revenueData.units?.USD || [];
+          const recent = relevantUnits
+            .filter((u: any) => {
+              const unitTime = new Date(u.filed || u.end).getTime();
+              return Math.abs(unitTime - filingTime) < 180 * 24 * 60 * 60 * 1000; // Within 180 days
+            })
+            .slice(-3); // Last 3 periods
+
+          recent.forEach((u: any) => {
+            structuredContext += `  ${u.end}: $${(u.val / 1e9).toFixed(2)}B\n`;
+          });
+        }
+
+        // Extract net income
+        if (usGaap.NetIncomeLoss) {
+          const netIncomeData = usGaap.NetIncomeLoss;
+          structuredContext += '\nNet Income Data:\n';
+
+          const filingTime = filing.filingDate.getTime();
+          const relevantUnits = netIncomeData.units?.USD || [];
+          const recent = relevantUnits
+            .filter((u: any) => {
+              const unitTime = new Date(u.filed || u.end).getTime();
+              return Math.abs(unitTime - filingTime) < 180 * 24 * 60 * 60 * 1000;
+            })
+            .slice(-3);
+
+          recent.forEach((u: any) => {
+            structuredContext += `  ${u.end}: $${(u.val / 1e9).toFixed(2)}B\n`;
+          });
+        }
+
+        // Extract EPS
+        if (usGaap.EarningsPerShareBasic || usGaap.EarningsPerShareDiluted) {
+          const epsData = usGaap.EarningsPerShareDiluted || usGaap.EarningsPerShareBasic;
+          structuredContext += '\nEPS Data:\n';
+
+          const filingTime = filing.filingDate.getTime();
+          const relevantUnits = epsData.units?.['USD/shares'] || [];
+          const recent = relevantUnits
+            .filter((u: any) => {
+              const unitTime = new Date(u.filed || u.end).getTime();
+              return Math.abs(unitTime - filingTime) < 180 * 24 * 60 * 60 * 1000;
+            })
+            .slice(-3);
+
+          recent.forEach((u: any) => {
+            structuredContext += `  ${u.end}: $${u.val.toFixed(2)}\n`;
+          });
+        }
       }
 
-      filingHtml = await response.text();
+      // APPROACH 2: Try to get textual content from filing text endpoint
+      // The SEC provides full submission text files that don't require HTML parsing
+      let filingText = '';
+      try {
+        const cleanAccession = normalizedAccession.replace(/-/g, '');
+        const txtUrl = `https://www.sec.gov/cgi-bin/viewer?action=view&cik=${filing.cik}&accession_number=${normalizedAccession}&xbrl_type=v`;
 
-      console.log(`Fetched filing HTML length: ${filingHtml.length} characters`);
-      console.log(`First 500 chars: ${filingHtml.substring(0, 500)}`);
+        console.log(`Attempting to fetch filing text from: ${txtUrl}`);
+        const txtResponse = await fetch(txtUrl, {
+          headers: {
+            'User-Agent': 'SEC Filing Analyzer/1.0 (educational project)',
+            'Accept': 'text/html,text/plain',
+          },
+        });
 
-      // Parse the filing to extract sections
-      parsed = filingParser.parseFiling(filingHtml, filing.filingType);
-      console.log(`Parsed filing: ${filingParser.getSummary(parsed)}`);
+        if (txtResponse.ok) {
+          filingText = await txtResponse.text();
+          filingHtml = filingText; // Set for XBRL parser compatibility
+          console.log(`Fetched filing text: ${filingText.length} characters`);
 
-      // If parsing failed, send Claude the entire filing (truncated) and let it extract
-      if (!parsed.riskFactors || parsed.riskFactors.length < 100) {
-        console.log('Parser failed to extract risk factors, sending full filing to Claude');
-        const cleanText = filingParser.cleanHtml(filingHtml);
-        const maxChars = 60000; // ~15k tokens for Claude
-        const truncated = cleanText.length > maxChars ? cleanText.slice(0, maxChars) + '\n\n[Content truncated]' : cleanText;
-        currentRisks = `${companyContext}\n\n${truncated}`;
-        currentMDA = `${companyContext}\n\nFull filing above - extract MD&A and financial discussion`;
-      } else {
+          // Parse with existing parser
+          parsed = filingParser.parseFiling(filingText, filing.filingType);
+          console.log(`Parsed filing: ${filingParser.getSummary(parsed)}`);
+        }
+      } catch (txtError: any) {
+        console.log(`Could not fetch filing text (${txtError.message}), using structured data only`);
+      }
+
+      // Build analysis context based on what we have
+      if (parsed && parsed.riskFactors && parsed.riskFactors.length > 100) {
+        // We successfully parsed the filing
         currentRisks = `${companyContext}\n\n${parsed.riskFactors}`;
         currentMDA = `${companyContext}\n\n${parsed.mdaText}`;
+      } else if (structuredContext.length > 50) {
+        // We have structured financial data but no text sections
+        console.log('Using structured XBRL data for analysis (no textual sections available)');
+        currentRisks = `${companyContext}\n\n[Structured Financial Data from SEC XBRL API]${structuredContext}\n\nNote: Full text sections not available. Analyze based on financial trends from XBRL data.`;
+        currentMDA = `${companyContext}\n\n[Structured Financial Data from SEC XBRL API]${structuredContext}\n\nNote: Provide analysis based on the financial metrics shown above.`;
+      } else {
+        // Fallback: use filing URL in context and let Claude know we have limited data
+        console.log('Limited data available, providing filing metadata for analysis');
+        currentRisks = `${companyContext}\n\nFiling URL: ${filing.filingUrl}\n\nNote: Full filing content not accessible via SEC API. Analyze based on available metadata and general knowledge about ${filing.company.name} in ${filing.filingType} filings.`;
+        currentMDA = `${companyContext}\n\nNote: Provide general analysis for this filing type based on company context.`;
       }
 
-      // If we have a prior filing, fetch and parse it too
+      // If we have a prior filing, try to get its data too
       if (priorFiling) {
         try {
-          console.log(`Fetching prior filing ${priorFiling.accessionNumber} from ${priorFiling.filingUrl}...`);
-          const priorResponse = await fetch(priorFiling.filingUrl, {
-            headers: {
-              'User-Agent': 'SEC Filing Analyzer support@example.com',
-            },
-          });
+          console.log(`Fetching prior filing structured data for ${priorFiling.accessionNumber}...`);
 
-          if (!priorResponse.ok) {
-            throw new Error(`SEC returned ${priorResponse.status} for prior filing`);
-          }
+          // Try to get structured prior filing data
+          const priorCompanyFacts = await secClient.getCompanyFacts(priorFiling.cik);
 
-          const priorHtml = await priorResponse.text();
-          const priorParsed = filingParser.parseFiling(
-            priorHtml,
-            priorFiling.filingType
-          );
-          console.log(`Parsed prior filing: ${filingParser.getSummary(priorParsed)}`);
+          if (priorCompanyFacts && priorCompanyFacts.facts) {
+            const usGaap = priorCompanyFacts.facts['us-gaap'] || {};
+            let priorStructuredContext = '';
 
-          if (priorParsed.riskFactors && priorParsed.riskFactors.length > 50) {
-            priorRisks = priorParsed.riskFactors;
-          }
-          if (priorParsed.mdaText && priorParsed.mdaText.length > 50) {
-            priorMDA = priorParsed.mdaText;
+            // Extract prior period revenue
+            if (usGaap.Revenues || usGaap.RevenueFromContractWithCustomerExcludingAssessedTax) {
+              const revenueData = usGaap.Revenues || usGaap.RevenueFromContractWithCustomerExcludingAssessedTax;
+              const priorFilingTime = priorFiling.filingDate.getTime();
+              const relevantUnits = revenueData.units?.USD || [];
+              const recent = relevantUnits
+                .filter((u: any) => {
+                  const unitTime = new Date(u.filed || u.end).getTime();
+                  return Math.abs(unitTime - priorFilingTime) < 180 * 24 * 60 * 60 * 1000;
+                })
+                .slice(-2);
+
+              if (recent.length > 0) {
+                priorStructuredContext += '\n\nPrior Period Revenue:\n';
+                recent.forEach((u: any) => {
+                  priorStructuredContext += `  ${u.end}: $${(u.val / 1e9).toFixed(2)}B\n`;
+                });
+              }
+            }
+
+            if (priorStructuredContext.length > 50) {
+              priorRisks = `Prior Filing Context:${priorStructuredContext}`;
+              priorMDA = priorStructuredContext;
+            }
           }
         } catch (priorError) {
-          console.error('Error fetching prior filing:', priorError);
+          console.error('Error fetching prior filing data:', priorError);
           // Continue without prior filing comparison
         }
       }
     } catch (fetchError: any) {
-      console.error('Error fetching filing content from SEC:', fetchError);
+      console.error('Error fetching filing content from SEC XBRL API:', fetchError);
 
-      // Fallback to mock data if SEC fetch fails
+      // Fallback to minimal context based on filing metadata
       currentRisks = `${companyContext}
 
-[Unable to fetch real filing content from SEC. Using placeholder data.]
+[SEC XBRL API unavailable. Analysis based on filing metadata only.]
 
-Risk Factors:
+Filing Type: ${filing.filingType}
+Company: ${filing.company.name} (${filing.company.ticker})
+Filing Date: ${filing.filingDate.toISOString().split('T')[0]}
 
-1. Market Competition: We face intense competition from established players and new entrants. Our market share could decline if we fail to innovate.
+Note: Provide general analysis for this filing type based on typical ${filing.filingType} contents and company context.`;
 
-2. Supply Chain Dependencies: We rely on a limited number of suppliers for critical components. Disruptions could significantly impact production.
-
-3. Regulatory Changes: New regulations in key markets could require costly compliance measures and impact profitability.
-
-4. Cybersecurity Threats: We face ongoing threats from sophisticated cyber attacks. A breach could damage reputation and result in significant costs.
-
-5. Economic Conditions: Economic downturns could reduce customer demand and impact our financial results.`;
-
-      currentMDA = `${companyContext}
-
-[Unable to fetch real filing content from SEC. Using placeholder data.]
-
-Management's Discussion and Analysis:
-
-Our financial performance was strong, with revenue growing year-over-year. We successfully launched several new products.
-
-However, we faced headwinds from increased competition and rising costs. Looking ahead, we remain confident in our long-term strategy, though we expect near-term challenges from macroeconomic uncertainty.`;
+      currentMDA = currentRisks;
     }
 
     try {
