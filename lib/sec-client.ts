@@ -77,6 +77,7 @@ class SECClient {
         'JPM': { cik: '0000019617', name: 'JPMorgan Chase & Co.' },
         'V': { cik: '0001403161', name: 'Visa Inc.' },
         'WMT': { cik: '0000104169', name: 'Walmart Inc.' },
+        'EFX': { cik: '0000033185', name: 'Equifax Inc.' },
       };
 
       // Check if we have a known CIK
