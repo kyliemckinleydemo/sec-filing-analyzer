@@ -153,7 +153,39 @@ class SECClient {
       const upperTicker = ticker.toUpperCase();
       console.log(`[SEC Client] Looking up ticker: ${upperTicker}`);
 
-      // Load ticker data (will use cache if available)
+      // FIRST: Check local static cache for common companies (S&P 500)
+      // This avoids hitting SEC API for 90% of requests
+      try {
+        const localCache = require('@/config/top-500-companies.json');
+        const cik = localCache.cikMap?.[upperTicker];
+
+        if (cik) {
+          console.log(`[SEC Client] ✅ Found in local cache (CIK: ${cik})`);
+
+          // Get company name from submissions API (more reliable than ticker endpoint)
+          try {
+            const submissions = await this.rateLimitedFetch<any>(
+              `${this.baseUrl}/submissions/CIK${cik}.json`
+            );
+
+            return {
+              cik,
+              name: submissions.name,
+            };
+          } catch (submissionError) {
+            // Fallback: return with generic name if submissions API fails
+            console.warn(`[SEC Client] Could not fetch name from submissions API, using ticker`);
+            return {
+              cik,
+              name: upperTicker,
+            };
+          }
+        }
+      } catch (localCacheError) {
+        console.log(`[SEC Client] Local cache not available, falling back to SEC API`);
+      }
+
+      // FALLBACK: Load ticker data from SEC (will use cache if available)
       const tickerData = await this.loadTickerData();
 
       // Find company by ticker
