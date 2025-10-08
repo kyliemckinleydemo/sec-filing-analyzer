@@ -184,8 +184,21 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
       // This API is more reliable and has better rate limits than HTML scraping
       console.log(`Fetching structured data from SEC Submissions API for CIK ${filing.cik}...`);
 
-      // Get company facts (XBRL structured data)
-      const companyFacts = await secClient.getCompanyFacts(filing.cik);
+      // Get company facts (XBRL structured data) with timeout
+      let companyFacts = null;
+      try {
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('XBRL API timeout')), 8000)
+        );
+        companyFacts = await Promise.race([
+          secClient.getCompanyFacts(filing.cik),
+          timeoutPromise
+        ]);
+        console.log(`✅ XBRL data fetched successfully`);
+      } catch (xbrlError: any) {
+        console.log(`⚠️ XBRL API failed: ${xbrlError.message}`);
+        // Continue without XBRL data
+      }
 
       // Build filing context from structured data
       let structuredContext = '';
@@ -265,26 +278,41 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
           // Rate limit before fetching (150ms minimum between requests)
           await new Promise(resolve => setTimeout(resolve, 150));
 
-          const txtResponse = await fetch(filing.filingUrl, {
-            headers: {
-              'User-Agent': 'SEC Filing Analyzer/1.0 (educational project)',
-              'Accept': 'text/html,application/xhtml+xml',
-            },
-          });
+          // Add timeout for filing fetch (max 10 seconds)
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-          if (txtResponse.ok) {
-            filingText = await txtResponse.text();
-            filingHtml = filingText; // Set for XBRL parser compatibility
-            console.log(`✅ Fetched filing text: ${filingText.length} characters`);
+          try {
+            const txtResponse = await fetch(filing.filingUrl, {
+              headers: {
+                'User-Agent': 'SEC Filing Analyzer/1.0 (educational project)',
+                'Accept': 'text/html,application/xhtml+xml',
+              },
+              signal: controller.signal,
+            });
+            clearTimeout(timeoutId);
 
-            // Parse with existing parser
-            parsed = filingParser.parseFiling(filingText, filing.filingType);
-            console.log(`Parsed filing: ${filingParser.getSummary(parsed)}`);
-          } else if (txtResponse.status === 403 || txtResponse.status === 429) {
-            console.log(`⚠️ SEC Archives rate limited (${txtResponse.status}), proceeding with XBRL data only`);
-            archivesBlocked = true;
-          } else {
-            console.log(`Filing URL returned ${txtResponse.status}, will use structured data only`);
+            if (txtResponse.ok) {
+              filingText = await txtResponse.text();
+              filingHtml = filingText; // Set for XBRL parser compatibility
+              console.log(`✅ Fetched filing text: ${filingText.length} characters`);
+
+              // Parse with existing parser
+              parsed = filingParser.parseFiling(filingText, filing.filingType);
+              console.log(`Parsed filing: ${filingParser.getSummary(parsed)}`);
+            } else if (txtResponse.status === 403 || txtResponse.status === 429) {
+              console.log(`⚠️ SEC Archives rate limited (${txtResponse.status}), proceeding with XBRL data only`);
+              archivesBlocked = true;
+            } else {
+              console.log(`Filing URL returned ${txtResponse.status}, will use structured data only`);
+            }
+          } catch (fetchError: any) {
+            clearTimeout(timeoutId);
+            if (fetchError.name === 'AbortError') {
+              console.log(`⚠️ Filing fetch timed out after 10s, proceeding with XBRL data only`);
+            } else {
+              throw fetchError;
+            }
           }
         } else {
           console.log(`No filing URL provided, skipping text fetch`);
