@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { SECClient } from '@/lib/sec-client';
+import { secClient } from '@/lib/sec-client';
 
 /**
  * Daily Cron Job: Fetch and process latest SEC filings
@@ -30,8 +30,6 @@ export async function GET(request: Request) {
       stored: 0,
       errors: [] as string[],
     };
-
-    const secClient = new SECClient();
 
     // For each priority ticker, fetch recent filings
     for (const ticker of priorityTickers) {
