@@ -513,7 +513,7 @@ Note: Specific MD&A content is unavailable. Provide general business commentary.
       // This helps us extract earnings surprises and guidance that may not be in the 10-Q
       if (
         filing.filingType === '10-Q' &&
-        (!parsed.mdaText || parsed.mdaText.length < 500) &&
+        (!parsed || !parsed.mdaText || parsed.mdaText.length < 500) &&
         xbrlFinancials &&
         (xbrlFinancials.revenue || xbrlFinancials.eps)
       ) {
