@@ -114,11 +114,20 @@ export async function GET(
     let filingContentSummary = undefined;
     let peRatio = undefined;
     let marketCap = undefined;
+    let riskScoreDelta = 0; // Default to 0 if no comparison available
 
     if (filing.analysisData) {
       try {
         const analysis = JSON.parse(filing.analysisData);
         filingContentSummary = analysis.filingContentSummary;
+
+        // Extract risk score delta from analysis (change from prior period)
+        if (analysis.risks?.riskScore !== undefined && analysis.risks?.priorRiskScore !== undefined) {
+          riskScoreDelta = analysis.risks.riskScore - analysis.risks.priorRiskScore;
+        } else {
+          // No prior period comparison available - default to 0 (no change)
+          riskScoreDelta = 0;
+        }
 
         // Check if we have financial metrics
         if (analysis.financialMetrics) {
@@ -217,7 +226,7 @@ export async function GET(
 
     // Generate prediction with research-backed enhanced features
     const features = {
-      riskScoreDelta: filing.riskScore || 0,
+      riskScoreDelta: riskScoreDelta, // Use calculated delta, not absolute score
       sentimentScore: filing.sentimentScore || 0,
       riskCountNew: 2, // Mock - would parse from analysisData
       filingType: filing.filingType as '10-K' | '10-Q' | '8-K',
