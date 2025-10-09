@@ -64,31 +64,15 @@ export async function GET(request: Request) {
         const ninety_days_ago = new Date();
         ninety_days_ago.setDate(ninety_days_ago.getDate() - 90);
 
-        const submissions = await secClient.getCompanySubmissions(cik);
-        const recentFilings = submissions?.filings?.recent;
+        const companyFilings = await secClient.getCompanyFilings(cik, ['10-K', '10-Q', '8-K']);
 
-        if (!recentFilings) {
+        if (!companyFilings || !companyFilings.filings || companyFilings.filings.length === 0) {
           results.errors.push(`${ticker}: No filings found`);
           continue;
         }
 
-        // Build array of filing objects
-        const filings = [];
-        for (let i = 0; i < recentFilings.form.length; i++) {
-          filings.push({
-            form: recentFilings.form[i],
-            filingDate: recentFilings.filingDate[i],
-            accessionNumber: recentFilings.accessionNumber[i],
-            primaryDocument: recentFilings.primaryDocument[i],
-            reportDate: recentFilings.reportDate?.[i],
-          });
-        }
-
-        const relevantFilings = filings
-          .filter((f: any) =>
-            ['10-K', '10-Q', '8-K'].includes(f.form) &&
-            new Date(f.filingDate) > ninety_days_ago
-          )
+        const relevantFilings = companyFilings.filings
+          .filter((f: any) => new Date(f.filingDate) > ninety_days_ago)
           .slice(0, 5); // Limit to 5 most recent
 
         console.log(`[Cron] Found ${relevantFilings.length} recent filings for ${ticker}`);
@@ -99,12 +83,6 @@ export async function GET(request: Request) {
             const company = await prisma.company.findUnique({ where: { ticker } });
             if (!company) continue;
 
-            // Construct filing URL
-            const accessionNoHyphens = filing.accessionNumber.replace(/-/g, '');
-            const filingUrl = filing.primaryDocument
-              ? `https://www.sec.gov/Archives/edgar/data/${cik}/${accessionNoHyphens}/${filing.primaryDocument}`
-              : '';
-
             await prisma.filing.upsert({
               where: { accessionNumber: filing.accessionNumber },
               create: {
@@ -114,7 +92,7 @@ export async function GET(request: Request) {
                 filingType: filing.form,
                 filingDate: new Date(filing.filingDate),
                 reportDate: filing.reportDate ? new Date(filing.reportDate) : null,
-                filingUrl,
+                filingUrl: filing.filingUrl,
               },
               update: {
                 filingDate: new Date(filing.filingDate),
