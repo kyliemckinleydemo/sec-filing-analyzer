@@ -299,7 +299,7 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
           });
         }
 
-        // Extract net income
+        // Extract net income with period context to avoid confusion
         if (usGaap.NetIncomeLoss) {
           const netIncomeData = usGaap.NetIncomeLoss;
           structuredContext += '\nNet Income Data:\n';
@@ -314,7 +314,10 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
             .slice(-3);
 
           recent.forEach((u: any) => {
-            structuredContext += `  ${u.end}: $${(u.val / 1e9).toFixed(2)}B\n`;
+            // Add context about period type to prevent confusion
+            const periodLabel = u.frame ? ` (${u.frame})` : '';
+            const startDate = u.start ? ` [${u.start} to ${u.end}]` : '';
+            structuredContext += `  ${u.end}${periodLabel}${startDate}: $${(u.val / 1e9).toFixed(2)}B\n`;
           });
         }
 
@@ -340,10 +343,15 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
 
       // Build analysis context based on what we have
       if (parsed && parsed.riskFactors && parsed.riskFactors.length > 100) {
-        // We successfully parsed the filing
+        // We successfully parsed the filing - use actual text, NOT structured data
         console.log('✅ Using parsed filing text (full Risk Factors and MD&A)');
         currentRisks = `${companyContext}\n\n${parsed.riskFactors}`;
         currentMDA = `${companyContext}\n\n${parsed.mdaText}`;
+
+        // IMPORTANT: Clear structuredContext to prevent mixing data sources
+        // The structured XBRL data will be used separately for financial metrics,
+        // but should NOT be included in qualitative risk/sentiment analysis
+        // to avoid Claude flagging normal period-over-period data as "conflicts"
       } else if (structuredContext.length > 50) {
         // We have structured financial data but no text sections
         console.log('⚠️ Using structured XBRL data only (SEC rate limiting prevented full text access)');
