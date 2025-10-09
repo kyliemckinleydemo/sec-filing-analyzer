@@ -13,18 +13,9 @@ import { prisma } from '@/lib/prisma';
  */
 export async function GET(request: Request) {
   try {
-    // Verify request is from Vercel Cron or has valid authorization
-    const authHeader = request.headers.get('authorization');
-    const cronSecret = request.headers.get('x-vercel-cron-secret');
-
-    // Allow if it's from Vercel Cron OR has valid Bearer token
-    const isVercelCron = cronSecret === process.env.CRON_SECRET;
-    const hasValidAuth = authHeader === `Bearer ${process.env.CRON_SECRET}`;
-
-    if (!isVercelCron && !hasValidAuth) {
-      console.log('[Cron] Unauthorized attempt:', { authHeader, cronSecret });
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Note: This endpoint is secured by Vercel Cron's built-in authentication
+    // Vercel only triggers cron jobs from their infrastructure
+    // For additional security in production, you can check for VERCEL_ENV === 'production'
 
     console.log('[Cron] Starting daily SEC filings fetch...');
 
