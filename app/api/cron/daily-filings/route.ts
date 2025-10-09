@@ -3,6 +3,9 @@ import { prisma } from '@/lib/prisma';
 import { secClient } from '@/lib/sec-client';
 import { TOP_1000_TICKERS } from '@/lib/top1000-tickers';
 
+// Mark route as dynamic to prevent static generation at build time
+export const dynamic = 'force-dynamic';
+
 /**
  * Daily Cron Job: Fetch and process latest SEC filings
  *
