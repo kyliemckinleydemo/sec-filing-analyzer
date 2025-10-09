@@ -90,3 +90,17 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+model CronJobRun {
+  id            String   @id @default(cuid())
+  jobName       String   // "daily-filings"
+  status        String   // "success", "failed", "running"
+  startedAt     DateTime @default(now())
+  completedAt   DateTime?
+  filingsFetched Int     @default(0)
+  filingsStored  Int     @default(0)
+  companiesProcessed Int @default(0)
+  errorMessage  String?
+
+  @@index([jobName, startedAt])
+}
