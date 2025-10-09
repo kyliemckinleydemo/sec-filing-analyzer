@@ -13,9 +13,16 @@ import { prisma } from '@/lib/prisma';
  */
 export async function GET(request: Request) {
   try {
-    // Verify cron secret to prevent unauthorized access
+    // Verify request is from Vercel Cron or has valid authorization
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    const cronSecret = request.headers.get('x-vercel-cron-secret');
+
+    // Allow if it's from Vercel Cron OR has valid Bearer token
+    const isVercelCron = cronSecret === process.env.CRON_SECRET;
+    const hasValidAuth = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+
+    if (!isVercelCron && !hasValidAuth) {
+      console.log('[Cron] Unauthorized attempt:', { authHeader, cronSecret });
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
