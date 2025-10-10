@@ -32,8 +32,15 @@ export async function GET(request: Request) {
     startDate = new Date(startDateParam);
     endDate = new Date(endDateParam);
   } else {
-    // Days back (default 90)
-    const days = daysParam ? parseInt(daysParam) : 90;
+    // Days back (default 90, max 50 to avoid timeouts)
+    let days = daysParam ? parseInt(daysParam) : 90;
+
+    // Limit to 50 days per run to avoid timeouts
+    if (days > 50) {
+      days = 50;
+      console.log(`[Backfill] Limiting to 50 days per run (requested ${daysParam} days). Run multiple times to backfill more.`);
+    }
+
     startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
   }
