@@ -85,9 +85,9 @@ export async function GET(request: Request) {
     cutoffDate.setDate(cutoffDate.getDate() - daysBack);
 
     // Chunked processing: limit companies per run to avoid timeouts
-    // With 300 second timeout and ~0.5-1 second per company (including SEC API rate limits),
-    // we can safely process ~200-250 companies per run
-    const COMPANIES_PER_RUN = 200;
+    // With 300 second timeout and ~1-2 seconds per company (including SEC API rate limits),
+    // we can safely process ~100 companies per run with buffer for safety
+    const COMPANIES_PER_RUN = 100;
     const batchSize = 50; // Process 50 companies at a time within the chunk
 
     // Determine which chunk to process based on last successful run
