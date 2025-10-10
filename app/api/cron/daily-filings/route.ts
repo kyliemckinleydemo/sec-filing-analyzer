@@ -18,8 +18,26 @@ export const dynamic = 'force-dynamic';
  * Flexible schedule: Can run daily, every 2 days, or weekly
  * Incremental fetching: Only grabs new filings since last successful run
  * Catch-up logic: On first run or after failures, fetches last 90 days
+ * Chunked processing: Processes companies in batches to avoid timeouts
  */
 export async function GET(request: Request) {
+  // Clean up stuck jobs (older than 10 minutes and still marked as running)
+  const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+  await prisma.cronJobRun.updateMany({
+    where: {
+      jobName: 'daily-filings',
+      status: 'running',
+      startedAt: {
+        lt: tenMinutesAgo,
+      },
+    },
+    data: {
+      status: 'failed',
+      completedAt: new Date(),
+      errorMessage: 'Job timed out - exceeded maximum execution time',
+    },
+  });
+
   // Create job run record
   const jobRun = await prisma.cronJobRun.create({
     data: {
@@ -66,14 +84,36 @@ export async function GET(request: Request) {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - daysBack);
 
-    // Fetch filings for each ticker
-    const batchSize = 50; // Process 50 companies at a time
-    const maxCompanies = TOP_1000_TICKERS.length; // Process all 1,000 companies
+    // Chunked processing: limit companies per run to avoid timeouts
+    // With 300 second timeout and ~0.5-1 second per company (including SEC API rate limits),
+    // we can safely process ~200-250 companies per run
+    const COMPANIES_PER_RUN = 200;
+    const batchSize = 50; // Process 50 companies at a time within the chunk
 
-    console.log(`[Cron] Processing ${maxCompanies} companies in batches of ${batchSize}...`);
+    // Determine which chunk to process based on last successful run
+    let startIndex = 0;
+    if (lastSuccessfulRun?.companiesProcessed) {
+      // Continue from where we left off (round robin through the list)
+      startIndex = lastSuccessfulRun.companiesProcessed % TOP_1000_TICKERS.length;
+    }
 
-    for (let i = 0; i < maxCompanies; i += batchSize) {
-      const batch = TOP_1000_TICKERS.slice(i, i + batchSize);
+    // Get the chunk of companies to process
+    let companiesToProcess: string[] = [];
+    if (startIndex + COMPANIES_PER_RUN <= TOP_1000_TICKERS.length) {
+      // Chunk fits within the array
+      companiesToProcess = TOP_1000_TICKERS.slice(startIndex, startIndex + COMPANIES_PER_RUN);
+    } else {
+      // Wrap around to the beginning
+      companiesToProcess = [
+        ...TOP_1000_TICKERS.slice(startIndex),
+        ...TOP_1000_TICKERS.slice(0, COMPANIES_PER_RUN - (TOP_1000_TICKERS.length - startIndex))
+      ];
+    }
+
+    console.log(`[Cron] Processing ${companiesToProcess.length} companies (index ${startIndex} to ${startIndex + companiesToProcess.length}) in batches of ${batchSize}...`);
+
+    for (let i = 0; i < companiesToProcess.length; i += batchSize) {
+      const batch = companiesToProcess.slice(i, i + batchSize);
 
       for (const ticker of batch) {
         try {
@@ -133,6 +173,11 @@ export async function GET(request: Request) {
 
     console.log('[Cron] Filings fetch complete:', results);
 
+    // Calculate cumulative total of companies processed
+    const cumulativeCompaniesProcessed = startIndex + results.companiesProcessed;
+    const totalCompaniesInList = TOP_1000_TICKERS.length;
+    const progressPercentage = Math.round((cumulativeCompaniesProcessed / totalCompaniesInList) * 100);
+
     // Mark job run as successful
     await prisma.cronJobRun.update({
       where: { id: jobRun.id },
@@ -141,7 +186,7 @@ export async function GET(request: Request) {
         completedAt: new Date(),
         filingsFetched: results.fetched,
         filingsStored: results.stored,
-        companiesProcessed: results.companiesProcessed,
+        companiesProcessed: cumulativeCompaniesProcessed,
       },
     });
 
@@ -152,6 +197,11 @@ export async function GET(request: Request) {
         ...results,
         daysLookedBack: daysBack,
         incrementalMode: !!lastSuccessfulRun,
+        chunkStartIndex: startIndex,
+        chunkSize: companiesToProcess.length,
+        cumulativeCompaniesProcessed,
+        totalCompanies: totalCompaniesInList,
+        progress: `${progressPercentage}%`,
       },
     });
   } catch (error: any) {
