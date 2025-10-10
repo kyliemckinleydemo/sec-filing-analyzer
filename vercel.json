@@ -15,7 +15,7 @@
   },
   "crons": [
     {
-      "path": "/api/cron/daily-filings",
+      "path": "/api/cron/daily-filings-rss",
       "schedule": "0 2 * * *"
     }
   ]
