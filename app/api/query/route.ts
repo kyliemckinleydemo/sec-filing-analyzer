@@ -30,48 +30,6 @@ export async function POST(request: Request) {
 
     // Query patterns (most specific first)
     const patterns: QueryPattern[] = [
-      // "List all 10-Qs in last [N] days with high risk scores"
-      {
-        pattern: /(?:list|show|find|get)\s+(?:all\s+)?(10-[KQ]|8-K)s?\s+(?:in\s+)?(?:the\s+)?last\s+(\d+)\s+days?\s+with\s+(high|low)\s+risk\s+scores?/i,
-        handler: async (matches) => {
-          const filingType = matches[1].toUpperCase();
-          const days = parseInt(matches[2]);
-          const riskLevel = matches[3].toLowerCase();
-          const startDate = new Date();
-          startDate.setDate(startDate.getDate() - days);
-
-          // Fetch filings with risk scores
-          const allFilings = await prisma.filing.findMany({
-            where: {
-              filingType: filingType,
-              filingDate: {
-                gte: startDate
-              },
-              riskScore: {
-                not: null
-              }
-            },
-            include: {
-              company: true
-            },
-            orderBy: {
-              filingDate: 'desc'
-            }
-          });
-
-          // Filter by risk level (high = > 7, low = < 4)
-          const threshold = riskLevel === 'high' ? 7 : 4;
-          const filings = allFilings.filter(filing => {
-            if (!filing.riskScore) return false;
-            return riskLevel === 'high'
-              ? filing.riskScore >= threshold
-              : filing.riskScore <= threshold;
-          }).slice(0, 100);
-
-          return { filings };
-        }
-      },
-
       // "Show me all [TICKER] filings in the last [N] days"
       {
         pattern: /(?:show|find|get|list)\s+(?:me\s+)?(?:all\s+)?(\w+)\s+filings?\s+(?:in\s+)?(?:the\s+)?last\s+(\d+)\s+days?/i,
