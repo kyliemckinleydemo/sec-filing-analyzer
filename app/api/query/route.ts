@@ -37,18 +37,19 @@ export async function POST(request: Request) {
           const filingType = matches[1].toUpperCase();
           const days = parseInt(matches[2]);
           const earningsResult = matches[3].toLowerCase();
+          const targetResult = earningsResult.startsWith('beat') ? 'beat' : 'miss';
           const startDate = new Date();
           startDate.setDate(startDate.getDate() - days);
 
-          const filings = await prisma.filing.findMany({
+          // Fetch all filings and filter in memory since analysisData is JSON string
+          const allFilings = await prisma.filing.findMany({
             where: {
               filingType: filingType,
               filingDate: {
                 gte: startDate
               },
-              analysis: {
-                path: ['earningsSurprise'],
-                equals: earningsResult.startsWith('beat') ? 'beat' : 'miss'
+              analysisData: {
+                not: null
               }
             },
             include: {
@@ -56,9 +57,19 @@ export async function POST(request: Request) {
             },
             orderBy: {
               filingDate: 'desc'
-            },
-            take: 100
+            }
           });
+
+          // Filter by earnings surprise in the JSON data
+          const filings = allFilings.filter(filing => {
+            if (!filing.analysisData) return false;
+            try {
+              const analysis = JSON.parse(filing.analysisData);
+              return analysis.earningsSurprise === targetResult;
+            } catch {
+              return false;
+            }
+          }).slice(0, 100);
 
           return { filings };
         }
