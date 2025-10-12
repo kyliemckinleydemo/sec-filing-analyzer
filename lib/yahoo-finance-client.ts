@@ -174,10 +174,10 @@ class YahooFinanceClient {
           regularMarketVolume: quote.regularMarketVolume,
           averageVolume: quote.averageDailyVolume10Day,
           beta: quote.beta,
-          dividendYield: quote.dividendYield,
-          trailingAnnualDividendRate: quote.trailingAnnualDividendRate,
-          epsTrailingTwelveMonths: quote.epsTrailingTwelveMonths,
-          epsForward: quote.epsForward,
+          dividendYield: (quote as any).dividendYield,
+          trailingAnnualDividendRate: (quote as any).trailingAnnualDividendRate,
+          epsTrailingTwelveMonths: (quote as any).epsTrailingTwelveMonths,
+          epsForward: (quote as any).epsForward,
         }
       };
 
