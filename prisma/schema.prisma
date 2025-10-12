@@ -17,6 +17,19 @@ model Company {
   name      String
   sector    String?
   industry  String?
+
+  // Yahoo Finance data
+  marketCap            Float?
+  peRatio              Float?
+  forwardPE            Float?
+  currentPrice         Float?
+  fiftyTwoWeekHigh     Float?
+  fiftyTwoWeekLow      Float?
+  analystTargetPrice   Float?
+  earningsDate         DateTime?
+  yahooFinanceData     String?  // JSON for additional data
+  yahooLastUpdated     DateTime?
+
   filings   Filing[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

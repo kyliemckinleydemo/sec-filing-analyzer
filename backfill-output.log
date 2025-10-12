@@ -1,0 +1,508 @@
+
+🚀 Starting local backfill
+Date range: 2025-01-15 to 2025-10-11
+Chunk size: 45 days
+
+
+=== Chunk 1 ===
+Processing: 2025-01-15 to 2025-02-28
+[DEBUG] 20250115: Parsed 16 filings
+[Catch-up] 20250115: Found 16 filings
+[DEBUG] 20250116: Parsed 18 filings
+[Catch-up] 20250116: Found 18 filings
+[DEBUG] 20250117: Parsed 13 filings
+[Catch-up] 20250117: Found 13 filings
+[DEBUG] 20250118: Invalid response format, skipping
+[Catch-up] 20250118: Found 0 filings
+[DEBUG] 20250121: Parsed 24 filings
+[Catch-up] 20250121: Found 24 filings
+[DEBUG] 20250122: Parsed 32 filings
+[Catch-up] 20250122: Found 32 filings
+[DEBUG] 20250123: Parsed 23 filings
+[Catch-up] 20250123: Found 23 filings
+[DEBUG] 20250124: Parsed 12 filings
+[Catch-up] 20250124: Found 12 filings
+[DEBUG] 20250125: Invalid response format, skipping
+[Catch-up] 20250125: Found 0 filings
+[DEBUG] 20250128: Parsed 40 filings
+[Catch-up] 20250128: Found 40 filings
+[DEBUG] 20250129: Parsed 48 filings
+[Catch-up] 20250129: Found 48 filings
+[DEBUG] 20250130: Parsed 54 filings
+[Catch-up] 20250130: Found 54 filings
+[DEBUG] 20250131: Parsed 41 filings
+[Catch-up] 20250131: Found 41 filings
+[DEBUG] 20250201: Invalid response format, skipping
+[Catch-up] 20250201: Found 0 filings
+[DEBUG] 20250204: Parsed 63 filings
+[Catch-up] 20250204: Found 63 filings
+[DEBUG] 20250205: Parsed 55 filings
+[Catch-up] 20250205: Found 55 filings
+[DEBUG] 20250206: Parsed 82 filings
+[Catch-up] 20250206: Found 82 filings
+[DEBUG] 20250207: Parsed 34 filings
+[Catch-up] 20250207: Found 34 filings
+[DEBUG] 20250208: Invalid response format, skipping
+[Catch-up] 20250208: Found 0 filings
+[DEBUG] 20250211: Parsed 42 filings
+[Catch-up] 20250211: Found 42 filings
+[DEBUG] 20250212: Parsed 57 filings
+[Catch-up] 20250212: Found 57 filings
+[DEBUG] 20250213: Parsed 74 filings
+[Catch-up] 20250213: Found 74 filings
+[DEBUG] 20250214: Parsed 50 filings
+[Catch-up] 20250214: Found 50 filings
+[DEBUG] 20250215: Invalid response format, skipping
+[Catch-up] 20250215: Found 0 filings
+[DEBUG] 20250218: Parsed 61 filings
+[Catch-up] 20250218: Found 61 filings
+[DEBUG] 20250219: Parsed 68 filings
+[Catch-up] 20250219: Found 68 filings
+[DEBUG] 20250220: Parsed 91 filings
+[Catch-up] 20250220: Found 91 filings
+[DEBUG] 20250221: Parsed 57 filings
+[Catch-up] 20250221: Found 57 filings
+[DEBUG] 20250222: Invalid response format, skipping
+[Catch-up] 20250222: Found 0 filings
+[DEBUG] 20250225: Parsed 78 filings
+[Catch-up] 20250225: Found 78 filings
+[DEBUG] 20250226: Parsed 74 filings
+[Catch-up] 20250226: Found 74 filings
+[DEBUG] 20250227: Parsed 89 filings
+[Catch-up] 20250227: Found 89 filings
+[DEBUG] 20250228: Parsed 61 filings
+[Catch-up] 20250228: Found 61 filings
+Found 1357 filings
+Error storing FOX: 
+Invalid `prisma.company.upsert()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/local-backfill.ts:75:48
+
+  72 for (const filing of filings) {
+  73   try {
+  74     // Upsert company
+→ 75     const company = await prisma.company.upsert(
+Unique constraint failed on the fields: (`cik`)
+Error storing FOX: 
+Invalid `prisma.company.upsert()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/local-backfill.ts:75:48
+
+  72 for (const filing of filings) {
+  73   try {
+  74     // Upsert company
+→ 75     const company = await prisma.company.upsert(
+Unique constraint failed on the fields: (`cik`)
+Stored 1355 filings
+Waiting 2 seconds before next chunk...
+
+=== Chunk 2 ===
+Processing: 2025-03-01 to 2025-04-13
+[DEBUG] 20250301: Invalid response format, skipping
+[Catch-up] 20250301: Found 0 filings
+[DEBUG] 20250304: Parsed 22 filings
+[Catch-up] 20250304: Found 22 filings
+[DEBUG] 20250305: Parsed 24 filings
+[Catch-up] 20250305: Found 24 filings
+[DEBUG] 20250306: Parsed 23 filings
+[Catch-up] 20250306: Found 23 filings
+[DEBUG] 20250307: Parsed 23 filings
+[Catch-up] 20250307: Found 23 filings
+[DEBUG] 20250308: Invalid response format, skipping
+[Catch-up] 20250308: Found 0 filings
+[DEBUG] 20250310: Parsed 31 filings
+[Catch-up] 20250310: Found 31 filings
+[DEBUG] 20250311: Parsed 32 filings
+[Catch-up] 20250311: Found 32 filings
+[DEBUG] 20250312: Parsed 24 filings
+[Catch-up] 20250312: Found 24 filings
+[DEBUG] 20250313: Parsed 23 filings
+[Catch-up] 20250313: Found 23 filings
+[DEBUG] 20250314: Parsed 25 filings
+[Catch-up] 20250314: Found 25 filings
+[DEBUG] 20250317: Parsed 23 filings
+[Catch-up] 20250317: Found 23 filings
+[DEBUG] 20250318: Parsed 13 filings
+[Catch-up] 20250318: Found 13 filings
+[DEBUG] 20250319: Parsed 18 filings
+[Catch-up] 20250319: Found 18 filings
+[DEBUG] 20250320: Parsed 30 filings
+[Catch-up] 20250320: Found 30 filings
+[DEBUG] 20250321: Parsed 14 filings
+[Catch-up] 20250321: Found 14 filings
+[DEBUG] 20250324: Parsed 16 filings
+[Catch-up] 20250324: Found 16 filings
+[DEBUG] 20250325: Parsed 15 filings
+[Catch-up] 20250325: Found 15 filings
+[DEBUG] 20250326: Parsed 13 filings
+[Catch-up] 20250326: Found 13 filings
+[DEBUG] 20250327: Parsed 24 filings
+[Catch-up] 20250327: Found 24 filings
+[DEBUG] 20250328: Parsed 14 filings
+[Catch-up] 20250328: Found 14 filings
+[DEBUG] 20250331: Parsed 22 filings
+[Catch-up] 20250331: Found 22 filings
+[DEBUG] 20250401: Parsed 23 filings
+[Catch-up] 20250401: Found 23 filings
+[DEBUG] 20250402: Parsed 19 filings
+[Catch-up] 20250402: Found 19 filings
+[DEBUG] 20250403: Parsed 18 filings
+[Catch-up] 20250403: Found 18 filings
+[DEBUG] 20250404: Parsed 16 filings
+[Catch-up] 20250404: Found 16 filings
+[DEBUG] 20250407: Parsed 11 filings
+[Catch-up] 20250407: Found 11 filings
+[DEBUG] 20250408: Parsed 14 filings
+[Catch-up] 20250408: Found 14 filings
+[DEBUG] 20250409: Parsed 11 filings
+[Catch-up] 20250409: Found 11 filings
+[DEBUG] 20250410: Parsed 18 filings
+[Catch-up] 20250410: Found 18 filings
+[DEBUG] 20250411: Parsed 15 filings
+[Catch-up] 20250411: Found 15 filings
+Found 574 filings
+Stored 574 filings
+Waiting 2 seconds before next chunk...
+
+=== Chunk 3 ===
+Processing: 2025-04-14 to 2025-05-28
+[DEBUG] 20250414: Parsed 11 filings
+[Catch-up] 20250414: Found 11 filings
+[DEBUG] 20250415: Parsed 13 filings
+[Catch-up] 20250415: Found 13 filings
+[DEBUG] 20250416: Parsed 28 filings
+[Catch-up] 20250416: Found 28 filings
+[DEBUG] 20250417: Parsed 24 filings
+[Catch-up] 20250417: Found 24 filings
+[DEBUG] 20250418: Parsed 9 filings
+[Catch-up] 20250418: Found 9 filings
+[DEBUG] 20250421: Parsed 14 filings
+[Catch-up] 20250421: Found 14 filings
+[DEBUG] 20250422: Parsed 47 filings
+[Catch-up] 20250422: Found 47 filings
+[DEBUG] 20250423: Parsed 73 filings
+[Catch-up] 20250423: Found 73 filings
+[DEBUG] 20250424: Parsed 81 filings
+[Catch-up] 20250424: Found 81 filings
+[DEBUG] 20250425: Parsed 49 filings
+[Catch-up] 20250425: Found 49 filings
+[DEBUG] 20250428: Parsed 42 filings
+[Catch-up] 20250428: Found 42 filings
+[DEBUG] 20250429: Parsed 97 filings
+[Catch-up] 20250429: Found 97 filings
+[DEBUG] 20250430: Parsed 107 filings
+[Catch-up] 20250430: Found 107 filings
+[DEBUG] 20250501: Parsed 149 filings
+[Catch-up] 20250501: Found 149 filings
+[DEBUG] 20250502: Parsed 79 filings
+[Catch-up] 20250502: Found 79 filings
+[DEBUG] 20250505: Parsed 63 filings
+[Catch-up] 20250505: Found 63 filings
+[DEBUG] 20250506: Parsed 100 filings
+[Catch-up] 20250506: Found 100 filings
+[DEBUG] 20250507: Parsed 104 filings
+[Catch-up] 20250507: Found 104 filings
+[DEBUG] 20250508: Parsed 110 filings
+[Catch-up] 20250508: Found 110 filings
+[DEBUG] 20250509: Parsed 61 filings
+[Catch-up] 20250509: Found 61 filings
+[DEBUG] 20250512: Parsed 50 filings
+[Catch-up] 20250512: Found 50 filings
+[DEBUG] 20250513: Parsed 26 filings
+[Catch-up] 20250513: Found 26 filings
+[DEBUG] 20250514: Parsed 38 filings
+[Catch-up] 20250514: Found 38 filings
+[DEBUG] 20250515: Parsed 55 filings
+[Catch-up] 20250515: Found 55 filings
+[DEBUG] 20250516: Parsed 39 filings
+[Catch-up] 20250516: Found 39 filings
+[DEBUG] 20250519: Parsed 40 filings
+[Catch-up] 20250519: Found 40 filings
+[DEBUG] 20250520: Parsed 26 filings
+[Catch-up] 20250520: Found 26 filings
+[DEBUG] 20250521: Parsed 41 filings
+[Catch-up] 20250521: Found 41 filings
+[DEBUG] 20250522: Parsed 50 filings
+[Catch-up] 20250522: Found 50 filings
+[DEBUG] 20250523: Parsed 33 filings
+[Catch-up] 20250523: Found 33 filings
+[DEBUG] 20250526: Invalid response format, skipping
+[Catch-up] 20250526: Found 0 filings
+[DEBUG] 20250527: Parsed 30 filings
+[Catch-up] 20250527: Found 30 filings
+[DEBUG] 20250528: Parsed 43 filings
+[Catch-up] 20250528: Found 43 filings
+Found 1732 filings
+Error storing FOX: 
+Invalid `prisma.company.upsert()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/local-backfill.ts:75:48
+
+  72 for (const filing of filings) {
+  73   try {
+  74     // Upsert company
+→ 75     const company = await prisma.company.upsert(
+Unique constraint failed on the fields: (`cik`)
+Error storing FOX: 
+Invalid `prisma.company.upsert()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/local-backfill.ts:75:48
+
+  72 for (const filing of filings) {
+  73   try {
+  74     // Upsert company
+→ 75     const company = await prisma.company.upsert(
+Unique constraint failed on the fields: (`cik`)
+Stored 1730 filings
+Waiting 2 seconds before next chunk...
+
+=== Chunk 4 ===
+Processing: 2025-05-29 to 2025-07-12
+[DEBUG] 20250529: Parsed 40 filings
+[Catch-up] 20250529: Found 40 filings
+[DEBUG] 20250530: Parsed 25 filings
+[Catch-up] 20250530: Found 25 filings
+[DEBUG] 20250602: Parsed 20 filings
+[Catch-up] 20250602: Found 20 filings
+[DEBUG] 20250603: Parsed 21 filings
+[Catch-up] 20250603: Found 21 filings
+[DEBUG] 20250604: Parsed 28 filings
+[Catch-up] 20250604: Found 28 filings
+[DEBUG] 20250605: Parsed 36 filings
+[Catch-up] 20250605: Found 36 filings
+[DEBUG] 20250606: Parsed 30 filings
+[Catch-up] 20250606: Found 30 filings
+[DEBUG] 20250609: Parsed 23 filings
+[Catch-up] 20250609: Found 23 filings
+[DEBUG] 20250610: Parsed 22 filings
+[Catch-up] 20250610: Found 22 filings
+[DEBUG] 20250611: Parsed 22 filings
+[Catch-up] 20250611: Found 22 filings
+[DEBUG] 20250612: Parsed 26 filings
+[Catch-up] 20250612: Found 26 filings
+[DEBUG] 20250613: Parsed 26 filings
+[Catch-up] 20250613: Found 26 filings
+[DEBUG] 20250616: Parsed 18 filings
+[Catch-up] 20250616: Found 18 filings
+[DEBUG] 20250617: Parsed 12 filings
+[Catch-up] 20250617: Found 12 filings
+[DEBUG] 20250618: Parsed 20 filings
+[Catch-up] 20250618: Found 20 filings
+[DEBUG] 20250619: Invalid response format, skipping
+[Catch-up] 20250619: Found 0 filings
+[DEBUG] 20250620: Parsed 24 filings
+[Catch-up] 20250620: Found 24 filings
+[DEBUG] 20250623: Parsed 19 filings
+[Catch-up] 20250623: Found 19 filings
+[DEBUG] 20250624: Parsed 22 filings
+[Catch-up] 20250624: Found 22 filings
+[DEBUG] 20250625: Parsed 17 filings
+[Catch-up] 20250625: Found 17 filings
+[DEBUG] 20250626: Parsed 20 filings
+[Catch-up] 20250626: Found 20 filings
+[DEBUG] 20250627: Parsed 20 filings
+[Catch-up] 20250627: Found 20 filings
+[DEBUG] 20250630: Parsed 23 filings
+[Catch-up] 20250630: Found 23 filings
+[DEBUG] 20250701: Parsed 23 filings
+[Catch-up] 20250701: Found 23 filings
+[DEBUG] 20250702: Parsed 14 filings
+[Catch-up] 20250702: Found 14 filings
+[DEBUG] 20250703: Parsed 14 filings
+[Catch-up] 20250703: Found 14 filings
+[DEBUG] 20250704: Invalid response format, skipping
+[Catch-up] 20250704: Found 0 filings
+[DEBUG] 20250707: Parsed 13 filings
+[Catch-up] 20250707: Found 13 filings
+[DEBUG] 20250708: Parsed 16 filings
+[Catch-up] 20250708: Found 16 filings
+[DEBUG] 20250709: Parsed 11 filings
+[Catch-up] 20250709: Found 11 filings
+[DEBUG] 20250710: Parsed 17 filings
+[Catch-up] 20250710: Found 17 filings
+[DEBUG] 20250711: Parsed 9 filings
+[Catch-up] 20250711: Found 9 filings
+Found 631 filings
+Stored 631 filings
+Waiting 2 seconds before next chunk...
+
+=== Chunk 5 ===
+Processing: 2025-07-13 to 2025-08-26
+[DEBUG] 20250714: Parsed 18 filings
+[Catch-up] 20250714: Found 18 filings
+[DEBUG] 20250715: Parsed 14 filings
+[Catch-up] 20250715: Found 14 filings
+[DEBUG] 20250716: Parsed 11 filings
+[Catch-up] 20250716: Found 11 filings
+[DEBUG] 20250717: Parsed 32 filings
+[Catch-up] 20250717: Found 32 filings
+[DEBUG] 20250718: Parsed 20 filings
+[Catch-up] 20250718: Found 20 filings
+[DEBUG] 20250721: Parsed 24 filings
+[Catch-up] 20250721: Found 24 filings
+[DEBUG] 20250722: Parsed 53 filings
+[Catch-up] 20250722: Found 53 filings
+[DEBUG] 20250723: Parsed 61 filings
+[Catch-up] 20250723: Found 61 filings
+[DEBUG] 20250724: Parsed 100 filings
+[Catch-up] 20250724: Found 100 filings
+[DEBUG] 20250725: Parsed 42 filings
+[Catch-up] 20250725: Found 42 filings
+[DEBUG] 20250728: Parsed 33 filings
+[Catch-up] 20250728: Found 33 filings
+[DEBUG] 20250729: Parsed 68 filings
+[Catch-up] 20250729: Found 68 filings
+[DEBUG] 20250730: Parsed 100 filings
+[Catch-up] 20250730: Found 100 filings
+[DEBUG] 20250731: Parsed 110 filings
+[Catch-up] 20250731: Found 110 filings
+[DEBUG] 20250801: Parsed 73 filings
+[Catch-up] 20250801: Found 73 filings
+[DEBUG] 20250804: Parsed 57 filings
+[Catch-up] 20250804: Found 57 filings
+[DEBUG] 20250805: Parsed 92 filings
+[Catch-up] 20250805: Found 92 filings
+[DEBUG] 20250806: Parsed 117 filings
+[Catch-up] 20250806: Found 117 filings
+[DEBUG] 20250807: Parsed 117 filings
+[Catch-up] 20250807: Found 117 filings
+[DEBUG] 20250808: Parsed 38 filings
+[Catch-up] 20250808: Found 38 filings
+[DEBUG] 20250811: Parsed 31 filings
+[Catch-up] 20250811: Found 31 filings
+[DEBUG] 20250812: Parsed 23 filings
+[Catch-up] 20250812: Found 23 filings
+[DEBUG] 20250813: Parsed 14 filings
+[Catch-up] 20250813: Found 14 filings
+[DEBUG] 20250814: Parsed 22 filings
+[Catch-up] 20250814: Found 22 filings
+[DEBUG] 20250815: Parsed 22 filings
+[Catch-up] 20250815: Found 22 filings
+[DEBUG] 20250818: Parsed 17 filings
+[Catch-up] 20250818: Found 17 filings
+[DEBUG] 20250819: Parsed 19 filings
+[Catch-up] 20250819: Found 19 filings
+[DEBUG] 20250820: Parsed 22 filings
+[Catch-up] 20250820: Found 22 filings
+[DEBUG] 20250821: Parsed 14 filings
+[Catch-up] 20250821: Found 14 filings
+[DEBUG] 20250822: Parsed 14 filings
+[Catch-up] 20250822: Found 14 filings
+[DEBUG] 20250825: Parsed 15 filings
+[Catch-up] 20250825: Found 15 filings
+[DEBUG] 20250826: Parsed 13 filings
+[Catch-up] 20250826: Found 13 filings
+Found 1406 filings
+Error storing FOX: 
+Invalid `prisma.company.upsert()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/local-backfill.ts:75:48
+
+  72 for (const filing of filings) {
+  73   try {
+  74     // Upsert company
+→ 75     const company = await prisma.company.upsert(
+Unique constraint failed on the fields: (`cik`)
+Error storing FOX: 
+Invalid `prisma.company.upsert()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/local-backfill.ts:75:48
+
+  72 for (const filing of filings) {
+  73   try {
+  74     // Upsert company
+→ 75     const company = await prisma.company.upsert(
+Unique constraint failed on the fields: (`cik`)
+Stored 1404 filings
+Waiting 2 seconds before next chunk...
+
+=== Chunk 6 ===
+Processing: 2025-08-27 to 2025-10-10
+[DEBUG] 20250827: Parsed 25 filings
+[Catch-up] 20250827: Found 25 filings
+[DEBUG] 20250828: Parsed 25 filings
+[Catch-up] 20250828: Found 25 filings
+[DEBUG] 20250829: Parsed 14 filings
+[Catch-up] 20250829: Found 14 filings
+[DEBUG] 20250901: Invalid response format, skipping
+[Catch-up] 20250901: Found 0 filings
+[DEBUG] 20250902: Parsed 32 filings
+[Catch-up] 20250902: Found 32 filings
+[DEBUG] 20250903: Parsed 20 filings
+[Catch-up] 20250903: Found 20 filings
+[DEBUG] 20250904: Parsed 29 filings
+[Catch-up] 20250904: Found 29 filings
+[DEBUG] 20250905: Parsed 21 filings
+[Catch-up] 20250905: Found 21 filings
+[DEBUG] 20250908: Parsed 19 filings
+[Catch-up] 20250908: Found 19 filings
+[DEBUG] 20250909: Parsed 25 filings
+[Catch-up] 20250909: Found 25 filings
+[DEBUG] 20250910: Parsed 18 filings
+[Catch-up] 20250910: Found 18 filings
+[DEBUG] 20250911: Parsed 15 filings
+[Catch-up] 20250911: Found 15 filings
+[DEBUG] 20250912: Parsed 8 filings
+[Catch-up] 20250912: Found 8 filings
+[DEBUG] 20250915: Parsed 20 filings
+[Catch-up] 20250915: Found 20 filings
+[DEBUG] 20250916: Parsed 10 filings
+[Catch-up] 20250916: Found 10 filings
+[DEBUG] 20250917: Parsed 11 filings
+[Catch-up] 20250917: Found 11 filings
+[DEBUG] 20250918: Parsed 24 filings
+[Catch-up] 20250918: Found 24 filings
+[DEBUG] 20250919: Parsed 22 filings
+[Catch-up] 20250919: Found 22 filings
+[DEBUG] 20250922: Parsed 13 filings
+[Catch-up] 20250922: Found 13 filings
+[DEBUG] 20250923: Parsed 9 filings
+[Catch-up] 20250923: Found 9 filings
+[DEBUG] 20250924: Parsed 13 filings
+[Catch-up] 20250924: Found 13 filings
+[DEBUG] 20250925: Parsed 11 filings
+[Catch-up] 20250925: Found 11 filings
+[DEBUG] 20250926: Parsed 15 filings
+[Catch-up] 20250926: Found 15 filings
+[DEBUG] 20250929: Parsed 24 filings
+[Catch-up] 20250929: Found 24 filings
+[DEBUG] 20250930: Parsed 18 filings
+[Catch-up] 20250930: Found 18 filings
+[DEBUG] 20251001: Parsed 26 filings
+[Catch-up] 20251001: Found 26 filings
+[DEBUG] 20251002: Parsed 15 filings
+[Catch-up] 20251002: Found 15 filings
+[DEBUG] 20251003: Parsed 18 filings
+[Catch-up] 20251003: Found 18 filings
+[DEBUG] 20251006: Parsed 16 filings
+[Catch-up] 20251006: Found 16 filings
+[DEBUG] 20251007: Parsed 12 filings
+[Catch-up] 20251007: Found 12 filings
+[DEBUG] 20251008: Parsed 15 filings
+[Catch-up] 20251008: Found 15 filings
+[DEBUG] 20251009: Parsed 17 filings
+[Catch-up] 20251009: Found 17 filings
+[DEBUG] 20251010: Parsed 7 filings
+[Catch-up] 20251010: Found 7 filings
+Found 567 filings
+Error storing FOX: 
+Invalid `prisma.company.upsert()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/local-backfill.ts:75:48
+
+  72 for (const filing of filings) {
+  73   try {
+  74     // Upsert company
+→ 75     const company = await prisma.company.upsert(
+Unique constraint failed on the fields: (`cik`)
+Error storing FOX: 
+Invalid `prisma.company.upsert()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/local-backfill.ts:75:48
+
+  72 for (const filing of filings) {
+  73   try {
+  74     // Upsert company
+→ 75     const company = await prisma.company.upsert(
+Unique constraint failed on the fields: (`cik`)
+Stored 565 filings
+
+✅ Backfill complete!
+
+Summary:
+  Chunks processed: 6
+  Filings fetched: 6267
+  Filings stored: 6259
+  Errors: 8

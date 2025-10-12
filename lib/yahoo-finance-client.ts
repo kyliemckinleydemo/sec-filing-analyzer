@@ -23,6 +23,19 @@ export interface CurrentQuote {
   timestamp: string;
 }
 
+export interface CompanyFinancials {
+  ticker: string;
+  marketCap?: number;
+  peRatio?: number;
+  forwardPE?: number;
+  currentPrice?: number;
+  fiftyTwoWeekHigh?: number;
+  fiftyTwoWeekLow?: number;
+  analystTargetPrice?: number;
+  earningsDate?: Date;
+  additionalData?: any;
+}
+
 class YahooFinanceClient {
   private baseUrl = 'https://query1.finance.yahoo.com/v8/finance';
 
@@ -126,6 +139,54 @@ class YahooFinanceClient {
     } catch (error) {
       console.error('Error fetching current quote from Yahoo Finance:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Get company financials and key metrics using yahoo-finance2 library
+   */
+  async getCompanyFinancials(ticker: string): Promise<CompanyFinancials | null> {
+    try {
+      console.log(`[Yahoo Finance] Fetching company data for ${ticker}`);
+
+      // Use yahoo-finance2 library (more reliable than raw API)
+      const yahooFinance = (await import('yahoo-finance2')).default;
+      const quote = await yahooFinance.quote(ticker);
+
+      if (!quote) {
+        console.log(`[Yahoo Finance] No data found for ${ticker}`);
+        return null;
+      }
+
+      const financials: CompanyFinancials = {
+        ticker,
+        marketCap: quote.marketCap,
+        currentPrice: quote.regularMarketPrice,
+        fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh,
+        fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
+        peRatio: quote.trailingPE,
+        forwardPE: quote.forwardPE,
+        analystTargetPrice: quote.targetMeanPrice,
+        earningsDate: quote.earningsTimestamp ? new Date(quote.earningsTimestamp * 1000) : undefined,
+        additionalData: {
+          shortName: quote.shortName,
+          longName: quote.longName,
+          regularMarketVolume: quote.regularMarketVolume,
+          averageVolume: quote.averageDailyVolume10Day,
+          beta: quote.beta,
+          dividendYield: quote.dividendYield,
+          trailingAnnualDividendRate: quote.trailingAnnualDividendRate,
+          epsTrailingTwelveMonths: quote.epsTrailingTwelveMonths,
+          epsForward: quote.epsForward,
+        }
+      };
+
+      console.log(`[Yahoo Finance] Successfully fetched data for ${ticker}`);
+      return financials;
+
+    } catch (error: any) {
+      console.error(`[Yahoo Finance] Error fetching data for ${ticker}:`, error.message);
+      return null;
     }
   }
 

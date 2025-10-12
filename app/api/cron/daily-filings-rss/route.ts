@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { secRSSClient } from '@/lib/sec-rss-client';
+import { yahooFinanceClient } from '@/lib/yahoo-finance-client';
 
 // Mark route as dynamic to prevent static generation at build time
 export const dynamic = 'force-dynamic';
@@ -149,6 +150,45 @@ export async function GET(request: Request) {
 
     console.log('[Cron RSS] Filings fetch complete:', results);
 
+    // Fetch Yahoo Finance data for companies with new filings
+    console.log('[Cron RSS] Fetching Yahoo Finance data for companies with new filings...');
+    let yahooFinanceUpdates = 0;
+    let yahooFinanceErrors = 0;
+
+    for (const ticker of uniqueCompanies) {
+      try {
+        const financials = await yahooFinanceClient.getCompanyFinancials(ticker);
+
+        if (financials) {
+          await prisma.company.update({
+            where: { ticker },
+            data: {
+              marketCap: financials.marketCap,
+              peRatio: financials.peRatio,
+              forwardPE: financials.forwardPE,
+              currentPrice: financials.currentPrice,
+              fiftyTwoWeekHigh: financials.fiftyTwoWeekHigh,
+              fiftyTwoWeekLow: financials.fiftyTwoWeekLow,
+              analystTargetPrice: financials.analystTargetPrice,
+              earningsDate: financials.earningsDate,
+              yahooFinanceData: JSON.stringify(financials.additionalData),
+              yahooLastUpdated: new Date()
+            }
+          });
+          yahooFinanceUpdates++;
+        }
+
+        // Rate limit: small delay between requests (100ms = 10 req/sec, well within limits)
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+      } catch (error: any) {
+        console.error(`[Cron RSS] Error fetching Yahoo Finance data for ${ticker}:`, error.message);
+        yahooFinanceErrors++;
+      }
+    }
+
+    console.log(`[Cron RSS] Yahoo Finance updates: ${yahooFinanceUpdates} success, ${yahooFinanceErrors} errors`);
+
     // Mark job run as successful
     await prisma.cronJobRun.update({
       where: { id: jobRun.id },
@@ -163,8 +203,12 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Fetched ${results.fetched} filings, stored ${results.stored} (${results.mode} mode)`,
-      results,
+      message: `Fetched ${results.fetched} filings, stored ${results.stored} (${results.mode} mode), updated ${yahooFinanceUpdates} companies with Yahoo Finance data`,
+      results: {
+        ...results,
+        yahooFinanceUpdates,
+        yahooFinanceErrors
+      },
     });
   } catch (error: any) {
     console.error('[Cron RSS] Error:', error);
