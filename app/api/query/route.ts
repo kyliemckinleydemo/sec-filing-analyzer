@@ -30,6 +30,40 @@ export async function POST(request: Request) {
 
     // Query patterns (most specific first)
     const patterns: QueryPattern[] = [
+      // "List all 10-Qs in last [N] days that were earnings beats"
+      {
+        pattern: /(?:list|show|find|get)\s+(?:all\s+)?(10-[KQ]|8-K)s?\s+(?:in\s+)?(?:the\s+)?last\s+(\d+)\s+days?\s+(?:that\s+were\s+)?(?:earnings?\s+)?(beats?|misses?)/i,
+        handler: async (matches) => {
+          const filingType = matches[1].toUpperCase();
+          const days = parseInt(matches[2]);
+          const earningsResult = matches[3].toLowerCase();
+          const startDate = new Date();
+          startDate.setDate(startDate.getDate() - days);
+
+          const filings = await prisma.filing.findMany({
+            where: {
+              filingType: filingType,
+              filingDate: {
+                gte: startDate
+              },
+              analysis: {
+                path: ['earningsSurprise'],
+                equals: earningsResult.startsWith('beat') ? 'beat' : 'miss'
+              }
+            },
+            include: {
+              company: true
+            },
+            orderBy: {
+              filingDate: 'desc'
+            },
+            take: 100
+          });
+
+          return { filings };
+        }
+      },
+
       // "Show me all [TICKER] filings in the last [N] days"
       {
         pattern: /(?:show|find|get|list)\s+(?:me\s+)?(?:all\s+)?(\w+)\s+filings?\s+(?:in\s+)?(?:the\s+)?last\s+(\d+)\s+days?/i,

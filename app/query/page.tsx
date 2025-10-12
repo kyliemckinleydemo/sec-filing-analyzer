@@ -21,23 +21,23 @@ export default function QueryPage() {
   const exampleQueries = [
     {
       icon: <TrendingUp className="w-5 h-5" />,
-      text: "Show me all 8-Ks filed this week",
-      category: "Recent Activity"
+      text: "List all 10-Qs in last 90 days that were earnings beats",
+      category: "Earnings Analysis"
     },
     {
       icon: <Building2 className="w-5 h-5" />,
-      text: "List all Apple filings in the last 30 days",
+      text: "List all Apple filings in the last 90 days",
       category: "Company Search"
     },
     {
       icon: <Calendar className="w-5 h-5" />,
-      text: "Which companies filed 10-Qs in September?",
-      category: "Date Range"
+      text: "Show me all 8-Ks filed this week",
+      category: "Recent Activity"
     },
     {
       icon: <FileText className="w-5 h-5" />,
-      text: "Show 10-Ks filed in Q1 2025",
-      category: "Filing Type"
+      text: "Which companies filed 10-Qs in September?",
+      category: "Date Range"
     }
   ];
 
