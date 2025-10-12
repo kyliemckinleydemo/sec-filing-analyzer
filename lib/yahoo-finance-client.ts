@@ -167,7 +167,7 @@ class YahooFinanceClient {
         peRatio: quote.trailingPE,
         forwardPE: quote.forwardPE,
         analystTargetPrice: (quote as any).targetMeanPrice, // Not in types but exists in API
-        earningsDate: quote.earningsTimestamp ? new Date(quote.earningsTimestamp * 1000) : undefined,
+        earningsDate: (quote as any).earningsTimestamp ? new Date((quote as any).earningsTimestamp * 1000) : undefined,
         additionalData: {
           shortName: quote.shortName,
           longName: quote.longName,
