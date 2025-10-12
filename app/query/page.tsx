@@ -21,12 +21,12 @@ export default function QueryPage() {
   const exampleQueries = [
     {
       icon: <TrendingUp className="w-5 h-5" />,
-      text: "List all 10-Qs in last 90 days with high risk scores",
-      category: "Risk Analysis"
+      text: "Show me all 10-Qs filed this month",
+      category: "Recent Filings"
     },
     {
       icon: <Building2 className="w-5 h-5" />,
-      text: "List all Apple filings in the last 90 days",
+      text: "List all AAPL filings in the last 90 days",
       category: "Company Search"
     },
     {
