@@ -21,8 +21,8 @@ export default function QueryPage() {
   const exampleQueries = [
     {
       icon: <TrendingUp className="w-5 h-5" />,
-      text: "List all 10-Qs in last 90 days that were earnings beats",
-      category: "Earnings Analysis"
+      text: "List all 10-Qs in last 90 days with high risk scores",
+      category: "Risk Analysis"
     },
     {
       icon: <Building2 className="w-5 h-5" />,

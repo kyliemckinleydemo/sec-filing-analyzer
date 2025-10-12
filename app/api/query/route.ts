@@ -30,25 +30,24 @@ export async function POST(request: Request) {
 
     // Query patterns (most specific first)
     const patterns: QueryPattern[] = [
-      // "List all 10-Qs in last [N] days that were earnings beats"
+      // "List all 10-Qs in last [N] days with high risk scores"
       {
-        pattern: /(?:list|show|find|get)\s+(?:all\s+)?(10-[KQ]|8-K)s?\s+(?:in\s+)?(?:the\s+)?last\s+(\d+)\s+days?\s+(?:that\s+were\s+)?(?:earnings?\s+)?(beats?|misses?)/i,
+        pattern: /(?:list|show|find|get)\s+(?:all\s+)?(10-[KQ]|8-K)s?\s+(?:in\s+)?(?:the\s+)?last\s+(\d+)\s+days?\s+with\s+(high|low)\s+risk\s+scores?/i,
         handler: async (matches) => {
           const filingType = matches[1].toUpperCase();
           const days = parseInt(matches[2]);
-          const earningsResult = matches[3].toLowerCase();
-          const targetResult = earningsResult.startsWith('beat') ? 'beat' : 'miss';
+          const riskLevel = matches[3].toLowerCase();
           const startDate = new Date();
           startDate.setDate(startDate.getDate() - days);
 
-          // Fetch all filings and filter in memory since analysisData is JSON string
+          // Fetch filings with risk scores
           const allFilings = await prisma.filing.findMany({
             where: {
               filingType: filingType,
               filingDate: {
                 gte: startDate
               },
-              analysisData: {
+              riskScore: {
                 not: null
               }
             },
@@ -60,15 +59,13 @@ export async function POST(request: Request) {
             }
           });
 
-          // Filter by earnings surprise in the JSON data
+          // Filter by risk level (high = > 7, low = < 4)
+          const threshold = riskLevel === 'high' ? 7 : 4;
           const filings = allFilings.filter(filing => {
-            if (!filing.analysisData) return false;
-            try {
-              const analysis = JSON.parse(filing.analysisData);
-              return analysis.earningsSurprise === targetResult;
-            } catch {
-              return false;
-            }
+            if (!filing.riskScore) return false;
+            return riskLevel === 'high'
+              ? filing.riskScore >= threshold
+              : filing.riskScore <= threshold;
           }).slice(0, 100);
 
           return { filings };
