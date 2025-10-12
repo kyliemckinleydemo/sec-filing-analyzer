@@ -31,6 +31,25 @@ export class SECRSSClient {
   private cikToTickerMap = new Map<string, string>();
 
   /**
+   * Fetch URL using curl as a fallback when fetch() is blocked
+   */
+  private async fetchWithCurl(url: string): Promise<string> {
+    const { exec } = await import('child_process');
+    const { promisify } = await import('util');
+    const execPromise = promisify(exec);
+
+    try {
+      const { stdout } = await execPromise(
+        `curl -s "${url}" -H "User-Agent: ${this.USER_AGENT}"`,
+        { maxBuffer: 10 * 1024 * 1024 } // 10MB buffer
+      );
+      return stdout;
+    } catch (error: any) {
+      throw new Error(`curl error: ${error.message}`);
+    }
+  }
+
+  /**
    * Fetch recent filings from SEC RSS feed
    * Much faster than individual API calls - gets all recent filings in one request
    */
@@ -77,22 +96,26 @@ export class SECRSSClient {
     // Example: https://www.sec.gov/Archives/edgar/daily-index/2025/QTR4/master.20251010.idx
     const url = `${this.BASE_URL}/Archives/edgar/daily-index/${year}/QTR${quarter}/master.${dateStr}.idx`;
 
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': this.USER_AGENT,
-      },
-    });
+    try {
+      // Use curl instead of fetch() to avoid being blocked by SEC
+      const indexText = await this.fetchWithCurl(url);
 
-    if (!response.ok) {
-      if (response.status === 404) {
+      // Check if it's an error page (HTML instead of index file)
+      // Look for the expected header format
+      if (indexText.trim().startsWith('<') || !indexText.includes('CIK|Company Name|Form Type')) {
         // No filings for this date (weekend/holiday)
+        console.log(`[DEBUG] ${dateStr}: Invalid response format, skipping`);
         return [];
       }
-      throw new Error(`SEC daily index error: ${response.statusText}`);
-    }
 
-    const indexText = await response.text();
-    return await this.parseDailyIndex(indexText, formTypes);
+      const result = await this.parseDailyIndex(indexText, formTypes);
+      console.log(`[DEBUG] ${dateStr}: Parsed ${result.length} filings`);
+      return result;
+    } catch (error: any) {
+      // No filings for this date (weekend/holiday/error)
+      console.log(`[DEBUG] ${dateStr}: Error - ${error.message}`);
+      return [];
+    }
   }
 
   /**
@@ -171,7 +194,7 @@ export class SECRSSClient {
 
   /**
    * Parse daily index file
-   * Format: Company Name|Form Type|CIK|Date Filed|File Name
+   * Format: CIK|Company Name|Form Type|Date Filed|File Name
    */
   private async parseDailyIndex(indexText: string, formTypes: string[]): Promise<SECFiling[]> {
     const filings: SECFiling[] = [];
@@ -186,7 +209,7 @@ export class SECRSSClient {
       const parts = line.split('|');
       if (parts.length < 5) continue;
 
-      const [companyName, formType, cik, dateStr, fileName] = parts.map(p => p.trim());
+      const [cik, companyName, formType, dateStr, fileName] = parts.map(p => p.trim());
 
       // Filter by form type
       if (!formTypes.includes(formType)) continue;
@@ -198,13 +221,16 @@ export class SECRSSClient {
 
       const accessionNumber = fileName.split('/').pop()?.replace('.txt', '') || '';
 
+      // Convert YYYYMMDD to YYYY-MM-DD format
+      const formattedDate = `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`;
+
       filings.push({
         accessionNumber,
         cik: cik.padStart(10, '0'),
         ticker,
         companyName,
         formType,
-        filingDate: dateStr,
+        filingDate: formattedDate,
         filingUrl: `${this.BASE_URL}/Archives/${fileName}`,
       });
     }
@@ -234,15 +260,9 @@ export class SECRSSClient {
    */
   private async loadCIKMapping(): Promise<void> {
     try {
-      const response = await fetch('https://www.sec.gov/files/company_tickers.json', {
-        headers: {
-          'User-Agent': this.USER_AGENT,
-        },
-      });
-
-      if (!response.ok) return;
-
-      const data = await response.json();
+      // Use curl to avoid being blocked
+      const jsonText = await this.fetchWithCurl('https://www.sec.gov/files/company_tickers.json');
+      const data = JSON.parse(jsonText);
 
       // Format: { "0": {"cik_str": 320193, "ticker": "AAPL", "title": "Apple Inc."}, ... }
       for (const key in data) {
@@ -268,9 +288,9 @@ export class SECRSSClient {
    * Format date as YYYYMMDD
    */
   private formatDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
     return `${year}${month}${day}`;
   }
 
