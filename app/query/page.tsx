@@ -114,7 +114,7 @@ export default function QueryPage() {
             Natural Language Query
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Search through 7,777+ filings from 636 companies using plain English
+            Track analyst estimates over time, compare filing impact, and search 7,777+ filings from 636 companies
           </p>
         </div>
 
@@ -127,7 +127,7 @@ export default function QueryPage() {
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Ask a question... (e.g., 'Show me all Apple 10-Ks filed this year')"
+                    placeholder="Ask a question... (e.g., 'Show AAPL analyst target price history')"
                     className="w-full h-14 pl-12 pr-4 text-lg border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
@@ -525,33 +525,33 @@ export default function QueryPage() {
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
               <CardHeader>
-                <CardTitle className="text-lg">Company Search</CardTitle>
+                <CardTitle className="text-lg">Historical Tracking</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-600">
-                  Find filings by ticker, company name, or CIK number
+                  Track analyst estimates, price targets, and metrics over time
                 </p>
               </CardContent>
             </Card>
 
             <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
               <CardHeader>
-                <CardTitle className="text-lg">Date Filtering</CardTitle>
+                <CardTitle className="text-lg">Filing Impact</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-600">
-                  Search by specific dates, ranges, or relative periods
+                  Compare estimates before and after SEC filings to measure impact
                 </p>
               </CardContent>
             </Card>
 
             <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
               <CardHeader>
-                <CardTitle className="text-lg">Filing Types</CardTitle>
+                <CardTitle className="text-lg">Sentiment Changes</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-600">
-                  Filter by 10-K, 10-Q, 8-K, and other SEC form types
+                  Find companies where analysts raised or lowered targets
                 </p>
               </CardContent>
             </Card>
