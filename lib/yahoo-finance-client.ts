@@ -158,6 +158,19 @@ class YahooFinanceClient {
         return null;
       }
 
+      // Validate earnings date is reasonable (between 1970 and 2100)
+      let validEarningsDate: Date | undefined = undefined;
+      if ((quote as any).earningsTimestamp) {
+        const timestamp = (quote as any).earningsTimestamp;
+        const date = new Date(timestamp * 1000);
+        const year = date.getFullYear();
+        if (year >= 1970 && year <= 2100) {
+          validEarningsDate = date;
+        } else {
+          console.log(`[Yahoo Finance] Invalid earnings date for ${ticker}: ${date.toISOString()} (year ${year})`);
+        }
+      }
+
       const financials: CompanyFinancials = {
         ticker,
         marketCap: quote.marketCap,
@@ -167,7 +180,7 @@ class YahooFinanceClient {
         peRatio: quote.trailingPE,
         forwardPE: quote.forwardPE,
         analystTargetPrice: (quote as any).targetMeanPrice, // Not in types but exists in API
-        earningsDate: (quote as any).earningsTimestamp ? new Date((quote as any).earningsTimestamp * 1000) : undefined,
+        earningsDate: validEarningsDate,
         additionalData: {
           shortName: quote.shortName,
           longName: quote.longName,
