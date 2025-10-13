@@ -18,7 +18,7 @@ model Company {
   sector    String?
   industry  String?
 
-  // Yahoo Finance data
+  // Yahoo Finance data (current snapshot)
   marketCap            Float?
   peRatio              Float?
   forwardPE            Float?
@@ -31,6 +31,7 @@ model Company {
   yahooLastUpdated     DateTime?
 
   filings   Filing[]
+  snapshots CompanySnapshot[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -59,6 +60,7 @@ model Filing {
 
   predictions     Prediction[]
   stockPrices     StockPrice[]
+  snapshots       CompanySnapshot[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -116,4 +118,56 @@ model CronJobRun {
   errorMessage  String?
 
   @@index([jobName, startedAt])
+}
+
+model CompanySnapshot {
+  id                   String   @id @default(cuid())
+  companyId            String
+  company              Company  @relation(fields: [companyId], references: [id])
+
+  // Snapshot timestamp
+  snapshotDate         DateTime @default(now())
+
+  // Price and valuation metrics
+  marketCap            Float?
+  currentPrice         Float?
+  peRatio              Float?
+  forwardPE            Float?
+  fiftyTwoWeekHigh     Float?
+  fiftyTwoWeekLow      Float?
+
+  // Analyst data
+  analystTargetPrice   Float?
+  analystRatingCount   Int?     // Total number of analysts covering
+  analystBuyCount      Int?     // Number of buy ratings
+  analystHoldCount     Int?     // Number of hold ratings
+  analystSellCount     Int?     // Number of sell ratings
+
+  // EPS estimates and actuals
+  epsActual            Float?   // Trailing twelve months EPS
+  epsEstimateCurrentQ  Float?   // Current quarter estimate
+  epsEstimateNextQ     Float?   // Next quarter estimate
+  epsEstimateCurrentY  Float?   // Current year estimate
+  epsEstimateNextY     Float?   // Next year estimate
+
+  // Revenue estimates
+  revenueEstimateCurrentQ Float?
+  revenueEstimateCurrentY Float?
+
+  // Additional metrics
+  dividendYield        Float?
+  beta                 Float?
+  volume               Float?
+  averageVolume        Float?
+
+  // What triggered this snapshot
+  triggerType          String?  // "daily_cron", "filing", "manual", "backfill"
+  filingId             String?
+  filing               Filing?  @relation(fields: [filingId], references: [id])
+
+  createdAt            DateTime @default(now())
+
+  @@index([companyId, snapshotDate])
+  @@index([snapshotDate])
+  @@index([triggerType])
 }

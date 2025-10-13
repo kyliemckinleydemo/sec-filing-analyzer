@@ -33,6 +33,30 @@ export interface CompanyFinancials {
   fiftyTwoWeekLow?: number;
   analystTargetPrice?: number;
   earningsDate?: Date;
+
+  // Analyst ratings
+  analystRatingCount?: number;
+  analystBuyCount?: number;
+  analystHoldCount?: number;
+  analystSellCount?: number;
+
+  // EPS estimates
+  epsActual?: number;
+  epsEstimateCurrentQ?: number;
+  epsEstimateNextQ?: number;
+  epsEstimateCurrentY?: number;
+  epsEstimateNextY?: number;
+
+  // Revenue estimates
+  revenueEstimateCurrentQ?: number;
+  revenueEstimateCurrentY?: number;
+
+  // Additional metrics
+  dividendYield?: number;
+  beta?: number;
+  volume?: number;
+  averageVolume?: number;
+
   additionalData?: any;
 }
 
@@ -179,18 +203,39 @@ class YahooFinanceClient {
         fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
         peRatio: quote.trailingPE,
         forwardPE: quote.forwardPE,
-        analystTargetPrice: (quote as any).targetMeanPrice, // Not in types but exists in API
+        analystTargetPrice: (quote as any).targetMeanPrice,
         earningsDate: validEarningsDate,
+
+        // Analyst ratings
+        analystRatingCount: (quote as any).averageAnalystRating ?
+          ((quote as any).numberOfAnalystOpinions || 0) : undefined,
+        analystBuyCount: undefined,  // Not directly available in quote endpoint
+        analystHoldCount: undefined,
+        analystSellCount: undefined,
+
+        // EPS data
+        epsActual: (quote as any).epsTrailingTwelveMonths,
+        epsEstimateCurrentQ: (quote as any).epsCurrentYear,  // Best approximation available
+        epsEstimateNextQ: undefined,  // Would need quoteSummary endpoint
+        epsEstimateCurrentY: (quote as any).epsCurrentYear,
+        epsEstimateNextY: (quote as any).epsForward,
+
+        // Revenue estimates (not in basic quote endpoint)
+        revenueEstimateCurrentQ: undefined,
+        revenueEstimateCurrentY: undefined,
+
+        // Additional metrics
+        dividendYield: (quote as any).dividendYield,
+        beta: quote.beta,
+        volume: quote.regularMarketVolume,
+        averageVolume: quote.averageDailyVolume10Day,
+
         additionalData: {
           shortName: quote.shortName,
           longName: quote.longName,
-          regularMarketVolume: quote.regularMarketVolume,
-          averageVolume: quote.averageDailyVolume10Day,
-          beta: quote.beta,
-          dividendYield: (quote as any).dividendYield,
           trailingAnnualDividendRate: (quote as any).trailingAnnualDividendRate,
-          epsTrailingTwelveMonths: (quote as any).epsTrailingTwelveMonths,
-          epsForward: (quote as any).epsForward,
+          averageAnalystRating: (quote as any).averageAnalystRating,
+          numberOfAnalystOpinions: (quote as any).numberOfAnalystOpinions,
         }
       };
 

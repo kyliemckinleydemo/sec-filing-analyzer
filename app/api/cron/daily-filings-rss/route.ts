@@ -160,22 +160,56 @@ export async function GET(request: Request) {
         const financials = await yahooFinanceClient.getCompanyFinancials(ticker);
 
         if (financials) {
-          await prisma.company.update({
+          const company = await prisma.company.findUnique({
             where: { ticker },
-            data: {
-              marketCap: financials.marketCap,
-              peRatio: financials.peRatio,
-              forwardPE: financials.forwardPE,
-              currentPrice: financials.currentPrice,
-              fiftyTwoWeekHigh: financials.fiftyTwoWeekHigh,
-              fiftyTwoWeekLow: financials.fiftyTwoWeekLow,
-              analystTargetPrice: financials.analystTargetPrice,
-              earningsDate: financials.earningsDate,
-              yahooFinanceData: JSON.stringify(financials.additionalData),
-              yahooLastUpdated: new Date()
-            }
+            select: { id: true }
           });
-          yahooFinanceUpdates++;
+
+          if (company) {
+            // Update current snapshot in Company table
+            await prisma.company.update({
+              where: { ticker },
+              data: {
+                marketCap: financials.marketCap,
+                peRatio: financials.peRatio,
+                forwardPE: financials.forwardPE,
+                currentPrice: financials.currentPrice,
+                fiftyTwoWeekHigh: financials.fiftyTwoWeekHigh,
+                fiftyTwoWeekLow: financials.fiftyTwoWeekLow,
+                analystTargetPrice: financials.analystTargetPrice,
+                earningsDate: financials.earningsDate,
+                yahooFinanceData: JSON.stringify(financials.additionalData),
+                yahooLastUpdated: new Date()
+              }
+            });
+
+            // Create historical snapshot
+            await prisma.companySnapshot.create({
+              data: {
+                companyId: company.id,
+                triggerType: 'daily_cron',
+                marketCap: financials.marketCap,
+                currentPrice: financials.currentPrice,
+                peRatio: financials.peRatio,
+                forwardPE: financials.forwardPE,
+                fiftyTwoWeekHigh: financials.fiftyTwoWeekHigh,
+                fiftyTwoWeekLow: financials.fiftyTwoWeekLow,
+                analystTargetPrice: financials.analystTargetPrice,
+                analystRatingCount: financials.analystRatingCount,
+                epsActual: financials.epsActual,
+                epsEstimateCurrentQ: financials.epsEstimateCurrentQ,
+                epsEstimateNextQ: financials.epsEstimateNextQ,
+                epsEstimateCurrentY: financials.epsEstimateCurrentY,
+                epsEstimateNextY: financials.epsEstimateNextY,
+                dividendYield: financials.dividendYield,
+                beta: financials.beta,
+                volume: financials.volume,
+                averageVolume: financials.averageVolume,
+              }
+            });
+
+            yahooFinanceUpdates++;
+          }
         }
 
         // Rate limit: small delay between requests (100ms = 10 req/sec, well within limits)
