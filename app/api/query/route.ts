@@ -30,6 +30,101 @@ export async function POST(request: Request) {
 
     // Query patterns (most specific first)
     const patterns: QueryPattern[] = [
+      // "Show me [TICKER] stock price and P/E ratio"
+      {
+        pattern: /(?:show|get|what(?:'s| is))(?:\s+me)?\s+(\w+)\s+(?:stock\s+)?(?:price|p\/e|pe|financials?|metrics?)/i,
+        handler: async (matches) => {
+          const ticker = matches[1].toUpperCase();
+
+          const company = await prisma.company.findUnique({
+            where: { ticker },
+            select: {
+              ticker: true,
+              name: true,
+              currentPrice: true,
+              peRatio: true,
+              forwardPE: true,
+              marketCap: true,
+              fiftyTwoWeekHigh: true,
+              fiftyTwoWeekLow: true,
+              analystTargetPrice: true,
+              yahooLastUpdated: true
+            }
+          });
+
+          if (!company) {
+            return { error: `Company ${ticker} not found` };
+          }
+
+          return { company };
+        }
+      },
+
+      // "List companies with P/E ratio < [N]"
+      {
+        pattern: /(?:list|show|find)\s+companies?\s+with\s+(?:p\/e|pe)\s+(?:ratio\s+)?(?:<|less than|under|below)\s+(\d+(?:\.\d+)?)/i,
+        handler: async (matches) => {
+          const maxPE = parseFloat(matches[1]);
+
+          const companies = await prisma.company.findMany({
+            where: {
+              peRatio: {
+                lte: maxPE,
+                gt: 0 // Exclude negative/zero P/E
+              }
+            },
+            select: {
+              ticker: true,
+              name: true,
+              currentPrice: true,
+              peRatio: true,
+              marketCap: true
+            },
+            orderBy: {
+              peRatio: 'asc'
+            },
+            take: 50
+          });
+
+          return { companies, message: `Companies with P/E ratio < ${maxPE}` };
+        }
+      },
+
+      // "Show companies with market cap > [N]B" or "> $[N]B"
+      {
+        pattern: /(?:list|show|find)\s+companies?\s+with\s+market\s+cap\s+(?:>|greater than|above|over)\s+\$?(\d+(?:\.\d+)?)\s*([bm])/i,
+        handler: async (matches) => {
+          const value = parseFloat(matches[1]);
+          const unit = matches[2].toLowerCase();
+          const multiplier = unit === 'b' ? 1e9 : 1e6;
+          const minMarketCap = value * multiplier;
+
+          const companies = await prisma.company.findMany({
+            where: {
+              marketCap: {
+                gte: minMarketCap
+              }
+            },
+            select: {
+              ticker: true,
+              name: true,
+              currentPrice: true,
+              marketCap: true,
+              peRatio: true
+            },
+            orderBy: {
+              marketCap: 'desc'
+            },
+            take: 50
+          });
+
+          return {
+            companies,
+            message: `Companies with market cap > $${value}${unit.toUpperCase()}`
+          };
+        }
+      },
+
       // "Show me all [TICKER] filings in the last [N] days"
       {
         pattern: /(?:show|find|get|list)\s+(?:me\s+)?(?:all\s+)?(\w+)\s+filings?\s+(?:in\s+)?(?:the\s+)?last\s+(\d+)\s+days?/i,

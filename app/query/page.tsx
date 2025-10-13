@@ -8,7 +8,9 @@ import { Search, Sparkles, TrendingUp, Calendar, Building2, FileText } from 'luc
 
 interface QueryResult {
   filings?: any[];
-  summary?: string;
+  companies?: any[];
+  company?: any;
+  message?: string;
   error?: string;
 }
 
@@ -21,23 +23,33 @@ export default function QueryPage() {
   const exampleQueries = [
     {
       icon: <TrendingUp className="w-5 h-5" />,
-      text: "Show me all 10-Qs filed this month",
-      category: "Recent Filings"
+      text: "Show me AAPL stock price and P/E ratio",
+      category: "Stock Metrics"
+    },
+    {
+      icon: <Building2 className="w-5 h-5" />,
+      text: "List companies with P/E ratio < 15",
+      category: "Valuation"
+    },
+    {
+      icon: <TrendingUp className="w-5 h-5" />,
+      text: "Show companies with market cap > 100B",
+      category: "Large Cap"
     },
     {
       icon: <Building2 className="w-5 h-5" />,
       text: "List all AAPL filings in the last 90 days",
-      category: "Company Search"
+      category: "Company Filings"
     },
     {
       icon: <Calendar className="w-5 h-5" />,
-      text: "Show me all 8-Ks filed this week",
-      category: "Recent Activity"
+      text: "Show me all 10-Qs filed this month",
+      category: "Recent Filings"
     },
     {
       icon: <FileText className="w-5 h-5" />,
-      text: "Which companies filed 10-Qs in September?",
-      category: "Date Range"
+      text: "Which companies filed 8-Ks this week?",
+      category: "Recent Activity"
     }
   ];
 
@@ -172,10 +184,115 @@ export default function QueryPage() {
                   <CardDescription className="text-red-600">{results.error}</CardDescription>
                 </CardHeader>
               </Card>
+            ) : results.company ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <span className="text-2xl font-bold text-blue-600">{results.company.ticker}</span>
+                    <span className="text-lg text-slate-600">{results.company.name}</span>
+                  </CardTitle>
+                  <CardDescription>Company Financials from Yahoo Finance</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    {results.company.currentPrice && (
+                      <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg">
+                        <div className="text-sm text-slate-600 mb-1">Current Price</div>
+                        <div className="text-2xl font-bold text-blue-700">${results.company.currentPrice.toFixed(2)}</div>
+                      </div>
+                    )}
+                    {results.company.marketCap && (
+                      <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg">
+                        <div className="text-sm text-slate-600 mb-1">Market Cap</div>
+                        <div className="text-2xl font-bold text-purple-700">
+                          ${(results.company.marketCap / 1e9).toFixed(2)}B
+                        </div>
+                      </div>
+                    )}
+                    {results.company.peRatio && (
+                      <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg">
+                        <div className="text-sm text-slate-600 mb-1">P/E Ratio</div>
+                        <div className="text-2xl font-bold text-green-700">{results.company.peRatio.toFixed(2)}</div>
+                      </div>
+                    )}
+                    {results.company.forwardPE && (
+                      <div className="p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg">
+                        <div className="text-sm text-slate-600 mb-1">Forward P/E</div>
+                        <div className="text-2xl font-bold text-orange-700">{results.company.forwardPE.toFixed(2)}</div>
+                      </div>
+                    )}
+                    {results.company.fiftyTwoWeekHigh && (
+                      <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <div className="text-sm text-slate-600 mb-1">52-Week High</div>
+                        <div className="text-xl font-bold text-slate-700">${results.company.fiftyTwoWeekHigh.toFixed(2)}</div>
+                      </div>
+                    )}
+                    {results.company.fiftyTwoWeekLow && (
+                      <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <div className="text-sm text-slate-600 mb-1">52-Week Low</div>
+                        <div className="text-xl font-bold text-slate-700">${results.company.fiftyTwoWeekLow.toFixed(2)}</div>
+                      </div>
+                    )}
+                    {results.company.analystTargetPrice && (
+                      <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 md:col-span-2">
+                        <div className="text-sm text-slate-600 mb-1">Analyst Target Price</div>
+                        <div className="text-xl font-bold text-slate-700">${results.company.analystTargetPrice.toFixed(2)}</div>
+                      </div>
+                    )}
+                  </div>
+                  {results.company.yahooLastUpdated && (
+                    <div className="mt-4 text-xs text-slate-500">
+                      Last updated: {new Date(results.company.yahooLastUpdated).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric'
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ) : results.companies && results.companies.length > 0 ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Found {results.companies.length} Compan{results.companies.length !== 1 ? 'ies' : 'y'}</CardTitle>
+                  <CardDescription>{results.message || 'Companies matching your query'}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {results.companies.map((company: any, idx: number) => (
+                      <div key={idx} className="p-4 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className="font-bold text-lg text-blue-600">{company.ticker}</span>
+                              <span className="text-sm text-slate-700">{company.name}</span>
+                            </div>
+                            <div className="flex gap-4 text-sm">
+                              {company.currentPrice && (
+                                <span className="text-slate-600">Price: <strong>${company.currentPrice.toFixed(2)}</strong></span>
+                              )}
+                              {company.peRatio && (
+                                <span className="text-slate-600">P/E: <strong>{company.peRatio.toFixed(2)}</strong></span>
+                              )}
+                              {company.marketCap && (
+                                <span className="text-slate-600">
+                                  Market Cap: <strong>${(company.marketCap / 1e9).toFixed(2)}B</strong>
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             ) : results.filings && results.filings.length > 0 ? (
               <Card>
                 <CardHeader>
-                  <CardTitle>Found {results.filings.length} Result{results.filings.length !== 1 ? 's' : ''}</CardTitle>
+                  <CardTitle>Found {results.filings.length} Filing{results.filings.length !== 1 ? 's' : ''}</CardTitle>
                   <CardDescription>
                     Showing filings matching your query
                   </CardDescription>
