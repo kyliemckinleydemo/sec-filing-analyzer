@@ -10,6 +10,10 @@ interface QueryResult {
   filings?: any[];
   companies?: any[];
   company?: any;
+  snapshots?: any[];
+  filing?: any;
+  before?: any;
+  after?: any;
   message?: string;
   error?: string;
 }
@@ -23,33 +27,33 @@ export default function QueryPage() {
   const exampleQueries = [
     {
       icon: <TrendingUp className="w-5 h-5" />,
-      text: "Show me AAPL stock price and P/E ratio",
-      category: "Stock Metrics"
+      text: "Show AAPL analyst target price history",
+      category: "Historical Trends"
     },
     {
       icon: <Building2 className="w-5 h-5" />,
-      text: "List companies with P/E ratio < 15",
-      category: "Valuation"
+      text: "Compare MSFT estimates before and after last filing",
+      category: "Filing Impact"
     },
     {
       icon: <TrendingUp className="w-5 h-5" />,
-      text: "Show companies with market cap > 100B",
-      category: "Large Cap"
+      text: "Companies where analyst target increased",
+      category: "Estimate Changes"
     },
     {
       icon: <Building2 className="w-5 h-5" />,
+      text: "Show me AAPL stock price and P/E ratio",
+      category: "Current Metrics"
+    },
+    {
+      icon: <Calendar className="w-5 h-5" />,
       text: "List all AAPL filings in the last 90 days",
       category: "Company Filings"
     },
     {
-      icon: <Calendar className="w-5 h-5" />,
-      text: "Show me all 10-Qs filed this month",
-      category: "Recent Filings"
-    },
-    {
       icon: <FileText className="w-5 h-5" />,
-      text: "Which companies filed 8-Ks this week?",
-      category: "Recent Activity"
+      text: "List companies with P/E ratio < 15",
+      category: "Valuation Screen"
     }
   ];
 
@@ -184,6 +188,167 @@ export default function QueryPage() {
                   <CardDescription className="text-red-600">{results.error}</CardDescription>
                 </CardHeader>
               </Card>
+            ) : results.snapshots && results.snapshots.length > 0 ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <span className="text-2xl font-bold text-blue-600">{results.company.ticker}</span>
+                    <span className="text-lg text-slate-600">{results.company.name}</span>
+                  </CardTitle>
+                  <CardDescription>{results.message || 'Historical Snapshots'}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {results.snapshots.map((snapshot: any, idx: number) => (
+                      <div key={idx} className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                        <div className="flex items-center justify-between">
+                          <div className="text-sm font-medium text-slate-700">
+                            {new Date(snapshot.snapshotDate).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </div>
+                          <div className="flex gap-4 text-sm">
+                            {snapshot.currentPrice && (
+                              <span className="text-slate-600">
+                                Price: <strong>${snapshot.currentPrice.toFixed(2)}</strong>
+                              </span>
+                            )}
+                            {snapshot.analystTargetPrice && (
+                              <span className="text-blue-600">
+                                Target: <strong>${snapshot.analystTargetPrice.toFixed(2)}</strong>
+                              </span>
+                            )}
+                            {snapshot.peRatio && (
+                              <span className="text-slate-600">
+                                P/E: <strong>{snapshot.peRatio.toFixed(2)}</strong>
+                              </span>
+                            )}
+                            {snapshot.epsEstimateCurrentY && (
+                              <span className="text-green-600">
+                                EPS Est: <strong>${snapshot.epsEstimateCurrentY.toFixed(2)}</strong>
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ) : results.before || results.after ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <span className="text-2xl font-bold text-blue-600">{results.company.ticker}</span>
+                    <span className="text-lg text-slate-600">{results.company.name}</span>
+                  </CardTitle>
+                  <CardDescription>{results.message || 'Before/After Comparison'}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {results.filing && (
+                    <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <div className="font-semibold text-blue-900 mb-1">Filing: {results.filing.filingType}</div>
+                      <div className="text-sm text-blue-700">
+                        {new Date(results.filing.filingDate).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </div>
+                    </div>
+                  )}
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3 text-slate-700">Before Filing</h3>
+                      {results.before ? (
+                        <div className="space-y-3">
+                          <div className="p-3 bg-slate-50 rounded">
+                            <div className="text-xs text-slate-500 mb-1">Snapshot Date</div>
+                            <div className="text-sm font-medium">
+                              {new Date(results.before.snapshotDate).toLocaleDateString()}
+                            </div>
+                          </div>
+                          {results.before.analystTargetPrice && (
+                            <div className="p-3 bg-slate-50 rounded">
+                              <div className="text-xs text-slate-500 mb-1">Analyst Target</div>
+                              <div className="text-lg font-bold text-blue-600">
+                                ${results.before.analystTargetPrice.toFixed(2)}
+                              </div>
+                            </div>
+                          )}
+                          {results.before.epsEstimateCurrentY && (
+                            <div className="p-3 bg-slate-50 rounded">
+                              <div className="text-xs text-slate-500 mb-1">EPS Estimate (Current Year)</div>
+                              <div className="text-lg font-bold text-green-600">
+                                ${results.before.epsEstimateCurrentY.toFixed(2)}
+                              </div>
+                            </div>
+                          )}
+                          {results.before.peRatio && (
+                            <div className="p-3 bg-slate-50 rounded">
+                              <div className="text-xs text-slate-500 mb-1">P/E Ratio</div>
+                              <div className="text-lg font-bold">{results.before.peRatio.toFixed(2)}</div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-sm text-slate-500">No snapshot before filing</div>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold mb-3 text-slate-700">After Filing</h3>
+                      {results.after ? (
+                        <div className="space-y-3">
+                          <div className="p-3 bg-slate-50 rounded">
+                            <div className="text-xs text-slate-500 mb-1">Snapshot Date</div>
+                            <div className="text-sm font-medium">
+                              {new Date(results.after.snapshotDate).toLocaleDateString()}
+                            </div>
+                          </div>
+                          {results.after.analystTargetPrice && (
+                            <div className="p-3 bg-green-50 rounded border border-green-200">
+                              <div className="text-xs text-green-700 mb-1">Analyst Target</div>
+                              <div className="text-lg font-bold text-green-700">
+                                ${results.after.analystTargetPrice.toFixed(2)}
+                                {results.before?.analystTargetPrice && (
+                                  <span className="text-sm ml-2">
+                                    ({results.after.analystTargetPrice > results.before.analystTargetPrice ? '+' : ''}
+                                    {((results.after.analystTargetPrice - results.before.analystTargetPrice) / results.before.analystTargetPrice * 100).toFixed(1)}%)
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          {results.after.epsEstimateCurrentY && (
+                            <div className="p-3 bg-green-50 rounded border border-green-200">
+                              <div className="text-xs text-green-700 mb-1">EPS Estimate (Current Year)</div>
+                              <div className="text-lg font-bold text-green-700">
+                                ${results.after.epsEstimateCurrentY.toFixed(2)}
+                                {results.before?.epsEstimateCurrentY && (
+                                  <span className="text-sm ml-2">
+                                    ({results.after.epsEstimateCurrentY > results.before.epsEstimateCurrentY ? '+' : ''}
+                                    {((results.after.epsEstimateCurrentY - results.before.epsEstimateCurrentY) / results.before.epsEstimateCurrentY * 100).toFixed(1)}%)
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                          {results.after.peRatio && (
+                            <div className="p-3 bg-slate-50 rounded">
+                              <div className="text-xs text-slate-500 mb-1">P/E Ratio</div>
+                              <div className="text-lg font-bold">{results.after.peRatio.toFixed(2)}</div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="text-sm text-slate-500">No snapshot after filing</div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             ) : results.company ? (
               <Card>
                 <CardHeader>
@@ -279,6 +444,17 @@ export default function QueryPage() {
                               {company.marketCap && (
                                 <span className="text-slate-600">
                                   Market Cap: <strong>${(company.marketCap / 1e9).toFixed(2)}B</strong>
+                                </span>
+                              )}
+                              {company.previousTarget !== undefined && company.latestTarget !== undefined && (
+                                <span className={company.change > 0 ? 'text-green-600' : 'text-red-600'}>
+                                  Target: <strong>${company.previousTarget.toFixed(2)}</strong> → <strong>${company.latestTarget.toFixed(2)}</strong>
+                                  <span className="ml-1">({company.change > 0 ? '+' : ''}{company.changePercent.toFixed(1)}%)</span>
+                                </span>
+                              )}
+                              {company.daysBetween !== undefined && (
+                                <span className="text-slate-500 text-xs">
+                                  {company.daysBetween} day{company.daysBetween !== 1 ? 's' : ''}
                                 </span>
                               )}
                             </div>

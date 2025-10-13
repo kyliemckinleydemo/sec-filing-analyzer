@@ -30,6 +30,176 @@ export async function POST(request: Request) {
 
     // Query patterns (most specific first)
     const patterns: QueryPattern[] = [
+      // "Show [TICKER] analyst target price history" or "track over time"
+      {
+        pattern: /(?:show|track|get)(?:\s+me)?\s+(\w+)\s+(?:analyst\s+)?(?:target\s+price|eps\s+estimate|p\/e\s+ratio)\s+(?:history|over\s+time|trend)/i,
+        handler: async (matches) => {
+          const ticker = matches[1].toUpperCase();
+
+          const company = await prisma.company.findUnique({
+            where: { ticker },
+            select: { id: true, name: true, ticker: true }
+          });
+
+          if (!company) {
+            return { error: `Company ${ticker} not found` };
+          }
+
+          const snapshots = await prisma.companySnapshot.findMany({
+            where: { companyId: company.id },
+            select: {
+              snapshotDate: true,
+              analystTargetPrice: true,
+              epsEstimateCurrentY: true,
+              epsEstimateNextY: true,
+              peRatio: true,
+              currentPrice: true,
+              triggerType: true
+            },
+            orderBy: { snapshotDate: 'desc' },
+            take: 30  // Last 30 snapshots
+          });
+
+          return {
+            company,
+            snapshots,
+            message: `Historical data for ${ticker} (${snapshots.length} snapshots)`
+          };
+        }
+      },
+
+      // "Compare [TICKER] estimates before and after last filing"
+      {
+        pattern: /(?:compare|show)\s+(\w+)\s+(?:estimates?|metrics?)\s+(?:before\s+and\s+after|around)\s+(?:last\s+)?filing/i,
+        handler: async (matches) => {
+          const ticker = matches[1].toUpperCase();
+
+          const company = await prisma.company.findUnique({
+            where: { ticker },
+            select: { id: true, name: true, ticker: true }
+          });
+
+          if (!company) {
+            return { error: `Company ${ticker} not found` };
+          }
+
+          // Get last filing
+          const lastFiling = await prisma.filing.findFirst({
+            where: { companyId: company.id },
+            orderBy: { filingDate: 'desc' },
+            select: {
+              id: true,
+              filingType: true,
+              filingDate: true,
+              filingUrl: true
+            }
+          });
+
+          if (!lastFiling) {
+            return { error: `No filings found for ${ticker}` };
+          }
+
+          // Get snapshot right after filing (if created)
+          const filingSnapshot = await prisma.companySnapshot.findFirst({
+            where: {
+              companyId: company.id,
+              filingId: lastFiling.id
+            },
+            orderBy: { snapshotDate: 'asc' }
+          });
+
+          // Get snapshot before filing
+          const beforeSnapshot = await prisma.companySnapshot.findFirst({
+            where: {
+              companyId: company.id,
+              snapshotDate: { lt: lastFiling.filingDate }
+            },
+            orderBy: { snapshotDate: 'desc' }
+          });
+
+          // Get most recent snapshot
+          const afterSnapshot = await prisma.companySnapshot.findFirst({
+            where: {
+              companyId: company.id,
+              snapshotDate: { gte: lastFiling.filingDate }
+            },
+            orderBy: { snapshotDate: 'asc' }
+          });
+
+          return {
+            company,
+            filing: lastFiling,
+            before: beforeSnapshot,
+            after: afterSnapshot || filingSnapshot,
+            message: `Comparing estimates before/after ${lastFiling.filingType} on ${lastFiling.filingDate.toISOString().split('T')[0]}`
+          };
+        }
+      },
+
+      // "Companies where analyst target increased/decreased"
+      {
+        pattern: /(?:companies?|show|list)\s+where\s+(?:analyst\s+)?target(?:\s+price)?\s+(increased?|decreased?|went\s+up|went\s+down)/i,
+        handler: async (matches) => {
+          const direction = matches[1].toLowerCase();
+          const isIncrease = direction.includes('increas') || direction.includes('up');
+
+          // Get companies with at least 2 snapshots
+          const companies = await prisma.company.findMany({
+            where: {
+              snapshots: {
+                some: {}
+              }
+            },
+            select: {
+              id: true,
+              ticker: true,
+              name: true,
+              snapshots: {
+                where: {
+                  analystTargetPrice: { not: null }
+                },
+                orderBy: { snapshotDate: 'desc' },
+                take: 2,
+                select: {
+                  snapshotDate: true,
+                  analystTargetPrice: true
+                }
+              }
+            }
+          });
+
+          // Calculate changes
+          const changes = companies
+            .filter(c => c.snapshots.length >= 2)
+            .map(c => {
+              const latest = c.snapshots[0];
+              const previous = c.snapshots[1];
+              const change = latest.analystTargetPrice! - previous.analystTargetPrice!;
+              const changePercent = (change / previous.analystTargetPrice!) * 100;
+
+              return {
+                ticker: c.ticker,
+                name: c.name,
+                previousTarget: previous.analystTargetPrice,
+                latestTarget: latest.analystTargetPrice,
+                change,
+                changePercent,
+                daysBetween: Math.floor(
+                  (latest.snapshotDate.getTime() - previous.snapshotDate.getTime()) / (1000 * 60 * 60 * 24)
+                )
+              };
+            })
+            .filter(c => isIncrease ? c.change > 0 : c.change < 0)
+            .sort((a, b) => Math.abs(b.changePercent) - Math.abs(a.changePercent))
+            .slice(0, 50);
+
+          return {
+            companies: changes,
+            message: `Companies where analyst target ${isIncrease ? 'increased' : 'decreased'} (${changes.length} found)`
+          };
+        }
+      },
+
       // "Show me [TICKER] stock price and P/E ratio"
       {
         pattern: /(?:show|get|what(?:'s| is))(?:\s+me)?\s+(\w+)\s+(?:stock\s+)?(?:price|p\/e|pe|financials?|metrics?)/i,
