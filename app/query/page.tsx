@@ -110,7 +110,7 @@ export default function QueryPage() {
             <Sparkles className="w-4 h-4" />
             Ask Questions About SEC Filings
           </div>
-          <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+          <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 pb-2 leading-tight">
             Natural Language Query
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
