@@ -13,7 +13,7 @@ datasource db {
 model Company {
   id        String   @id @default(cuid())
   ticker    String   @unique
-  cik       String   @unique
+  cik       String   // Removed @unique to allow GOOG and GOOGL to share CIK
   name      String
   sector    String?
   industry  String?
@@ -55,8 +55,14 @@ model Filing {
 
   // Prediction Results
   predicted7dReturn Float?  // Predicted 7-day return %
+  predicted30dReturn Float? // Predicted 30-day return %
   predictionConfidence Float? // 0-1 confidence score
-  actual7dReturn    Float?   // Actual return (backfilled)
+
+  // Actual returns (backfilled)
+  actual7dReturn    Float?   // Actual 7-day return %
+  actual30dReturn   Float?   // Actual 30-day return %
+  actual7dAlpha     Float?   // 7-day return vs SPX (market-relative)
+  actual30dAlpha    Float?   // 30-day return vs SPX
 
   predictions     Prediction[]
   stockPrices     StockPrice[]
@@ -170,4 +176,81 @@ model CompanySnapshot {
   @@index([companyId, snapshotDate])
   @@index([snapshotDate])
   @@index([triggerType])
+}
+
+model TechnicalIndicators {
+  id        String   @id @default(cuid())
+  ticker    String
+  date      DateTime
+
+  // Moving averages
+  ma30      Float?   // 30-day simple moving average
+  ma50      Float?   // 50-day simple moving average
+  ma200     Float?   // 200-day simple moving average
+
+  // Price to MA ratios (momentum signals)
+  priceToMA30   Float?  // Current price / MA30
+  priceToMA50   Float?  // Current price / MA50
+  priceToMA200  Float?  // Current price / MA200
+
+  // Momentum indicators
+  rsi14         Float?  // 14-day Relative Strength Index (0-100)
+  rsi30         Float?  // 30-day RSI
+  macd          Float?  // MACD line
+  macdSignal    Float?  // MACD signal line
+  macdHistogram Float?  // MACD histogram
+
+  // Volatility
+  atr14         Float?  // 14-day Average True Range
+  volatility30  Float?  // 30-day historical volatility
+
+  // Volume indicators
+  volumeMA30    Float?  // 30-day average volume
+  volumeRatio   Float?  // Current volume / MA30 volume
+
+  // Return windows (for regime detection)
+  return7d      Float?  // 7-day return
+  return30d     Float?  // 30-day return
+  return90d     Float?  // 90-day return
+
+  createdAt DateTime @default(now())
+
+  @@unique([ticker, date])
+  @@index([ticker])
+  @@index([date])
+}
+
+model MacroIndicators {
+  id    String   @id @default(cuid())
+  date  DateTime @unique
+
+  // Market indices (close prices and returns)
+  spxClose      Float?  // S&P 500 close
+  spxReturn7d   Float?  // S&P 500 7-day return
+  spxReturn30d  Float?  // S&P 500 30-day return
+
+  // Volatility
+  vixClose      Float?  // VIX close
+  vixMA30       Float?  // 30-day VIX average
+
+  // Interest rates
+  fedFundsRate      Float?  // Federal funds rate
+  treasury3m        Float?  // 3-month Treasury yield
+  treasury2y        Float?  // 2-year Treasury yield
+  treasury10y       Float?  // 10-year Treasury yield
+  yieldCurve2y10y   Float?  // 10y - 2y spread (inversion signal)
+
+  // Rate changes (for sensitivity analysis)
+  fedFundsChange30d Float?  // Rate change last 30 days
+  treasury10yChange30d Float? // 10y yield change last 30 days
+
+  // Sector performance (for relative strength)
+  techSectorReturn30d    Float?  // Technology sector 30-day return
+  financialSectorReturn30d Float? // Financial sector 30-day return
+  energySectorReturn30d   Float?  // Energy sector 30-day return
+  healthcareSectorReturn30d Float? // Healthcare sector 30-day return
+
+  createdAt DateTime @default(now())
+
+  @@index([date])
 }
