@@ -38,9 +38,9 @@ export async function GET(
       '8-K',
     ]);
 
-    // Store in database if not exists
+    // Store in database if not exists (lookup by ticker since CIK is not unique)
     let company = await prisma.company.findUnique({
-      where: { cik: companyInfo.cik },
+      where: { ticker: ticker.toUpperCase() },
     });
 
     if (!company) {
