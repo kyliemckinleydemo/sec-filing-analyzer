@@ -20,6 +20,10 @@
     {
       "path": "/api/cron/daily-filings-rss",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/update-analyst-data",
+      "schedule": "30 2 * * *"
     }
   ]
 }
