@@ -24,10 +24,6 @@
     {
       "path": "/api/cron/update-analyst-data",
       "schedule": "30 2 * * *"
-    },
-    {
-      "path": "/api/cron/paper-trading-close-positions",
-      "schedule": "0 3 * * *"
     }
   ]
 }
