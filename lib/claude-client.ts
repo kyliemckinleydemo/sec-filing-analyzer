@@ -30,6 +30,15 @@ export interface SentimentAnalysis {
   toneShift?: string;
 }
 
+export interface ConcernAssessment {
+  concernLevel: number; // 0-10 scale (0=no concerns, 10=severe concerns)
+  concernLabel: 'LOW' | 'MODERATE' | 'ELEVATED' | 'HIGH' | 'CRITICAL';
+  netAssessment: 'BULLISH' | 'NEUTRAL' | 'CAUTIOUS' | 'BEARISH';
+  concernFactors: string[]; // Negative signals
+  positiveFactors: string[]; // Positive signals
+  reasoning: string; // Plain English explanation
+}
+
 export interface FinancialMetrics {
   revenueGrowth?: string; // e.g., "+15% YoY"
   marginTrend?: string; // e.g., "Expanding" or "Contracting"
@@ -71,6 +80,7 @@ export interface FinancialMetrics {
 export interface FilingAnalysis {
   risks: RiskAnalysis;
   sentiment: SentimentAnalysis;
+  concernAssessment: ConcernAssessment; // NEW: Replaces simple sentiment with multi-factor concern scoring
   summary: string;
   filingContentSummary?: string; // NEW: TLDR of what the filing actually contains
   guidance?: string;
@@ -197,6 +207,75 @@ Rules:
 - toneShift: string describing change vs prior filing
 
 Return ONLY valid JSON. No additional text.`;
+
+  private readonly CONCERN_ASSESSMENT_PROMPT = `You are a financial analyst providing a comprehensive concern assessment of this SEC filing.
+
+ANALYSIS INPUTS:
+
+Risk Analysis:
+{riskAnalysis}
+
+Management Sentiment:
+{sentimentAnalysis}
+
+Financial Metrics:
+{financialMetrics}
+
+TASK: Generate a multi-factor concern assessment that synthesizes all available signals.
+
+SCORING GUIDANCE:
+- 0-2 (LOW): Positive developments, risks decreasing, strong results, optimistic tone
+- 3-4 (MODERATE): Mixed signals, stable conditions, normal business risks
+- 5-6 (ELEVATED): Some concerning developments, increased risks, cautious tone
+- 7-8 (HIGH): Multiple red flags, significant new risks, defensive tone, missed expectations
+- 9-10 (CRITICAL): Severe issues, existential threats, very negative developments
+
+CONCERN FACTORS TO CONSIDER:
+1. New high-severity risks (severity 7+)
+2. Risk trend (INCREASING is concerning)
+3. Earnings misses or guidance cuts
+4. Defensive/cautious management tone
+5. Margin compression or revenue deceleration
+6. Legal/regulatory issues
+7. Executive departures
+8. Liquidity concerns
+
+POSITIVE FACTORS TO CONSIDER:
+1. Risks removed or decreasing
+2. Earnings beats
+3. Guidance raised
+4. Optimistic management tone
+5. Revenue/margin expansion
+6. Market share gains
+7. New product launches
+8. Strategic wins
+
+NET ASSESSMENT:
+- BULLISH: Strong positives outweigh concerns (concern level 0-3)
+- NEUTRAL: Balanced or stable picture (concern level 4-5)
+- CAUTIOUS: Concerns outweigh positives (concern level 6-7)
+- BEARISH: Significant concerns with few positives (concern level 8-10)
+
+OUTPUT FORMAT (JSON):
+{
+  "concernLevel": 6.5,
+  "concernLabel": "ELEVATED",
+  "netAssessment": "CAUTIOUS",
+  "concernFactors": [
+    "3 new high-severity risks identified (avg severity 8/10)",
+    "Revenue growth decelerated from 15% to 8% YoY",
+    "Management tone shifted from confident to cautious"
+  ],
+  "positiveFactors": [
+    "Strong cash position maintained at $2.1B",
+    "Operating margins stable at 12%"
+  ],
+  "reasoning": "The elevated concern level (6.5/10) reflects multiple warning signs: significant new regulatory risks, slowing revenue growth, and a more defensive management tone. While the balance sheet remains solid, the trend is concerning for near-term stock performance."
+}
+
+CRITICAL: Your concern level MUST match the narrative factors you identify. If you list multiple high-severity risks and negative signals, the concern level should be 6+. If you list mostly positive factors, it should be 0-3.
+
+Return ONLY valid JSON.`;
 
   private readonly FINANCIAL_METRICS_PROMPT = `Extract key financial metrics and guidance from this SEC filing.
 
@@ -408,6 +487,76 @@ Focus on quantitative data that impacts stock price. If information isn't found,
     }
   }
 
+  async generateConcernAssessment(
+    risks: RiskAnalysis,
+    sentiment: SentimentAnalysis,
+    financialMetrics?: FinancialMetrics
+  ): Promise<ConcernAssessment> {
+    const prompt = this.CONCERN_ASSESSMENT_PROMPT
+      .replace('{riskAnalysis}', JSON.stringify(risks, null, 2))
+      .replace('{sentimentAnalysis}', JSON.stringify(sentiment, null, 2))
+      .replace('{financialMetrics}', JSON.stringify(financialMetrics || {}, null, 2));
+
+    try {
+      const response = await this.client.messages.create({
+        model: this.model,
+        max_tokens: 2048,
+        temperature: 0.3,
+        messages: [
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+      });
+
+      const content = response.content[0];
+      if (content.type !== 'text') {
+        throw new Error('Unexpected response type');
+      }
+
+      const jsonMatch = content.text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('Failed to parse JSON from concern assessment');
+      }
+
+      try {
+        const assessment = JSON.parse(jsonMatch[0]);
+
+        // Validate concern level matches label
+        if (assessment.concernLevel <= 2) assessment.concernLabel = 'LOW';
+        else if (assessment.concernLevel <= 4) assessment.concernLabel = 'MODERATE';
+        else if (assessment.concernLevel <= 6) assessment.concernLabel = 'ELEVATED';
+        else if (assessment.concernLevel <= 8) assessment.concernLabel = 'HIGH';
+        else assessment.concernLabel = 'CRITICAL';
+
+        return assessment;
+      } catch (parseError) {
+        console.error('Failed to parse concern assessment JSON, using fallback');
+        // Return neutral assessment
+        return {
+          concernLevel: 5.0,
+          concernLabel: 'MODERATE',
+          netAssessment: 'NEUTRAL',
+          concernFactors: ['Analysis parsing failed'],
+          positiveFactors: [],
+          reasoning: 'Unable to generate comprehensive assessment due to parsing error'
+        };
+      }
+    } catch (error) {
+      console.error('Error generating concern assessment:', error);
+      // Return neutral assessment as fallback
+      return {
+        concernLevel: 5.0,
+        concernLabel: 'MODERATE',
+        netAssessment: 'NEUTRAL',
+        concernFactors: ['Analysis generation failed'],
+        positiveFactors: [],
+        reasoning: 'Unable to generate comprehensive assessment due to error'
+      };
+    }
+  }
+
   async extractFinancialMetrics(filingText: string, priorMDA?: string): Promise<FinancialMetrics> {
     let prompt = this.FINANCIAL_METRICS_PROMPT.replace('{filingText}', filingText.slice(0, 30000)); // Limit size
 
@@ -591,6 +740,13 @@ Return ONLY bullet points, no introduction.`;
           : Promise.resolve(undefined),
       ]);
 
+      // Generate concern assessment AFTER we have all other signals
+      const concernAssessment = await this.generateConcernAssessment(
+        risks,
+        sentiment,
+        financialMetrics
+      );
+
       // Generate summary
       const summary = await this.generateExecutiveSummary(
         fullText,
@@ -601,6 +757,7 @@ Return ONLY bullet points, no introduction.`;
       return {
         risks,
         sentiment,
+        concernAssessment,
         summary,
         filingContentSummary,
         financialMetrics,

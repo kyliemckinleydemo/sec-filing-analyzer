@@ -188,14 +188,20 @@ export async function extractMLFeatures(input: MLPredictionInput) {
   const priceToTarget = analystTargetPrice > 0 ? (currentPrice / analystTargetPrice - 1) * 100 : 0;
 
   // Risk score and sentiment (would come from Claude analysis, use neutral defaults)
-  const riskScore = 5; // Neutral
-  const sentimentScore = 0; // Neutral
+  // NOTE: These are legacy features from the original model. New analyses use concernLevel
+  // which synthesizes risk, sentiment, and financial metrics into a single 0-10 score.
+  // For historical compatibility, we keep these defaults. Future model versions should
+  // replace riskScore+sentimentScore with concernLevel as primary feature.
+  const riskScore = 5; // Neutral (legacy feature)
+  const sentimentScore = 0; // Neutral (legacy feature)
+  const concernLevel = 5.0; // Moderate (NEW: multi-factor concern assessment, 0-10 scale)
 
   // Build feature object matching ML model expectations
   const features = {
     filingType,
     riskScore,
     sentimentScore,
+    concernLevel, // NEW: Will be primary feature in future model versions
     marketCap,
     currentPrice,
     peRatio,
