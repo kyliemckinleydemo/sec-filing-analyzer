@@ -254,3 +254,116 @@ model MacroIndicators {
 
   @@index([date])
 }
+
+// Paper Trading Portfolio
+model PaperPortfolio {
+  id                String   @id @default(cuid())
+  name              String   // "Main Portfolio", "Conservative", etc.
+  startingCapital   Float    @default(100000.00)
+  currentCash       Float    @default(100000.00)
+  totalValue        Float    @default(100000.00) // Cash + positions
+
+  // Performance metrics
+  totalReturn       Float    @default(0.00)   // % return since inception
+  winRate           Float    @default(0.00)   // % of winning trades
+  sharpeRatio       Float?                    // Risk-adjusted return
+  maxDrawdown       Float    @default(0.00)   // Worst peak-to-trough decline
+
+  // Trading stats
+  totalTrades       Int      @default(0)
+  winningTrades     Int      @default(0)
+  losingTrades      Int      @default(0)
+
+  // Settings
+  maxPositionSize   Float    @default(0.10)   // Max 10% per position
+  minConfidence     Float    @default(0.60)   // Only trade if >60% confidence
+  isActive          Boolean  @default(true)
+
+  trades            PaperTrade[]
+  snapshots         PortfolioSnapshot[]
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// Individual paper trades
+model PaperTrade {
+  id                String   @id @default(cuid())
+  portfolioId       String
+  portfolio         PaperPortfolio @relation(fields: [portfolioId], references: [id])
+
+  // Trade details
+  ticker            String
+  filingId          String   // The filing that triggered this trade
+  direction         String   // "LONG" or "SHORT"
+
+  // Entry
+  entryDate         DateTime
+  entryPrice        Float
+  shares            Int
+  entryValue        Float    // shares * entryPrice
+
+  // Exit
+  exitDate          DateTime?
+  exitPrice         Float?
+  exitValue         Float?   // shares * exitPrice
+
+  // P&L
+  realizedPnL       Float?   // exitValue - entryValue
+  realizedPnLPct    Float?   // (exitValue - entryValue) / entryValue * 100
+  unrealizedPnL     Float?   // Current P&L if still open
+
+  // Model prediction
+  predictedReturn   Float    // Model's 7-day return prediction
+  confidence        Float    // Model confidence (0-1)
+  actualReturn      Float?   // Actual return after exit
+
+  // Status
+  status            String   // "OPEN", "CLOSED", "CANCELLED"
+
+  // Risk management
+  stopLoss          Float?   // Auto-exit if price drops below
+  takeProfit        Float?   // Auto-exit if price rises above
+
+  // Fees (for realism)
+  entryCommission   Float    @default(0.00)
+  exitCommission    Float?
+
+  // Notes
+  notes             String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([portfolioId, status])
+  @@index([ticker])
+  @@index([entryDate])
+}
+
+// Daily portfolio snapshots for charting
+model PortfolioSnapshot {
+  id              String   @id @default(cuid())
+  portfolioId     String
+  portfolio       PaperPortfolio @relation(fields: [portfolioId], references: [id])
+
+  date            DateTime
+  totalValue      Float
+  cashBalance     Float
+  positionsValue  Float
+
+  // Daily metrics
+  dailyReturn     Float?   // % change from yesterday
+  dailyPnL        Float?   // $ change from yesterday
+
+  // Cumulative metrics
+  cumulativeReturn Float   // % return since inception
+  cumulativePnL    Float   // $ P&L since inception
+
+  // Open positions count
+  openPositions   Int      @default(0)
+
+  createdAt       DateTime @default(now())
+
+  @@unique([portfolioId, date])
+  @@index([portfolioId, date])
+}
