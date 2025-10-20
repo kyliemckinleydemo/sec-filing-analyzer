@@ -224,11 +224,14 @@ Financial Metrics:
 TASK: Generate a multi-factor concern assessment that synthesizes all available signals.
 
 SCORING GUIDANCE:
-- 0-2 (LOW): Positive developments, risks decreasing, strong results, optimistic tone
-- 3-4 (MODERATE): Mixed signals, stable conditions, normal business risks
-- 5-6 (ELEVATED): Some concerning developments, increased risks, cautious tone
-- 7-8 (HIGH): Multiple red flags, significant new risks, defensive tone, missed expectations
-- 9-10 (CRITICAL): Severe issues, existential threats, very negative developments
+- 0-2 (LOW): Strong positive developments, risks materially decreasing, beat expectations, very optimistic tone
+- 3-4 (MODERATE): Balanced picture, stable conditions, normal business risks, meeting expectations
+- 5-6 (ELEVATED): Some concerning developments, moderately increased risks, cautious tone, minor misses
+- 7-8 (HIGH): Multiple significant red flags, material new risks, defensive tone, meaningful earnings miss
+- 9-10 (CRITICAL): RARE - Existential threats (e.g., going concern warnings, major fraud, bankruptcy risk, regulatory shutdown)
+
+IMPORTANT: CRITICAL (9-10) should be VERY RARE - reserved for companies facing potential failure or severe existential threats.
+Most concerning but viable companies should score 6-8 (ELEVATED/HIGH), not 9-10.
 
 CONCERN FACTORS TO CONSIDER:
 1. New high-severity risks (severity 7+)
@@ -273,7 +276,13 @@ OUTPUT FORMAT (JSON):
   "reasoning": "The elevated concern level (6.5/10) reflects multiple warning signs: significant new regulatory risks, slowing revenue growth, and a more defensive management tone. While the balance sheet remains solid, the trend is concerning for near-term stock performance."
 }
 
-CRITICAL: Your concern level MUST match the narrative factors you identify. If you list multiple high-severity risks and negative signals, the concern level should be 6+. If you list mostly positive factors, it should be 0-3.
+CRITICAL CALIBRATION REQUIREMENTS:
+1. Your concern level MUST match the narrative factors you identify
+2. If you list multiple high-severity risks and negative signals, the concern level should be 6-8
+3. If you list mostly positive factors, it should be 0-3
+4. Reserve 9-10 ONLY for companies facing bankruptcy, fraud investigations, or regulatory shutdown
+5. Most mega-cap blue chip companies should score 3-6 even with multiple concerns (they have resources to weather issues)
+6. Think: "Would I avoid this stock entirely?" = 7-8. "Is the company at risk of failure?" = 9-10.
 
 Return ONLY valid JSON.`;
 
