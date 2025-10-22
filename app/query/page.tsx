@@ -51,9 +51,9 @@ export default function QueryPage() {
       category: "Current Metrics"
     },
     {
-      icon: <Calendar className="w-5 h-5" />,
-      text: "Show me TSLA filings in the last 30 days",
-      category: "Company Filings"
+      icon: <TrendingUp className="w-5 h-5" />,
+      text: "What is NVDA P/E ratio",
+      category: "Current Metrics"
     }
   ];
 
