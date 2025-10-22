@@ -149,6 +149,16 @@ export default function ChatPage() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
+                  <h3 className="font-semibold text-gray-800 mb-2">Financial Metrics</h3>
+                  <ul className="space-y-1 text-gray-600">
+                    <li>• Revenue + YoY growth</li>
+                    <li>• Net income + YoY growth</li>
+                    <li>• EPS + YoY growth</li>
+                    <li>• Gross & operating margins</li>
+                    <li>• Earnings surprises (beat/miss)</li>
+                  </ul>
+                </div>
+                <div>
                   <h3 className="font-semibold text-gray-800 mb-2">Stock Performance</h3>
                   <ul className="space-y-1 text-gray-600">
                     <li>• 7-day & 30-day returns</li>
@@ -174,16 +184,7 @@ export default function ChatPage() {
                     <li>• Ticker & company name</li>
                     <li>• Market cap (in billions)</li>
                     <li>• P/E ratio</li>
-                    <li>• Filing type & date</li>
-                  </ul>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-800 mb-2">ML Predictions</h3>
-                  <ul className="space-y-1 text-gray-600">
-                    <li>• Predicted 7-day return</li>
-                    <li>• Prediction confidence</li>
-                    <li>• Prediction accuracy</li>
-                    <li>• Prediction error (absolute)</li>
+                    <li>• Filing type & quarter</li>
                   </ul>
                 </div>
               </div>
@@ -218,20 +219,20 @@ export default function ChatPage() {
 
                 <div>
                   <h3 className="font-semibold text-green-600 mb-2 text-sm uppercase tracking-wide">
-                    💰 Market Performance
+                    💰 Financial Analysis
                   </h3>
                   <div className="space-y-2">
                     <button
-                      onClick={() => setInput('Which filings had the best 30-day returns?')}
+                      onClick={() => setInput('Which company had the best revenue growth last quarter?')}
                       className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-green-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-green-200"
                     >
-                      Which filings had the best 30-day returns?
+                      Best revenue growth last quarter?
                     </button>
                     <button
-                      onClick={() => setInput('Compare 7-day vs 30-day returns for the top 5 performers')}
+                      onClick={() => setInput('Show me companies with revenue over $50B and positive YoY growth')}
                       className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-green-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-green-200"
                     >
-                      Compare short-term vs long-term returns
+                      Large companies with positive growth?
                     </button>
                   </div>
                 </div>
