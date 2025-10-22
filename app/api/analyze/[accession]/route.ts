@@ -624,6 +624,27 @@ Note: Base analysis on general knowledge. Do not mention data access limitations
         };
         console.log('Merged inline XBRL data into financial metrics');
 
+        // ENHANCEMENT: Also fetch SEC Data API to enrich with YoY growth rates
+        // Inline XBRL doesn't include YoY calculations, so we need SEC API for complete data
+        if (filing.company.cik) {
+          try {
+            console.log(`Enriching with SEC Data API for YoY growth rates...`);
+            const structuredFinancials = await secDataAPI.getFinancialSummary(
+              filing.company.cik,
+              normalizedAccession
+            );
+            if (structuredFinancials) {
+              // Merge YoY growth data (prefer inline XBRL for absolute values, SEC API for growth)
+              analysis.financialMetrics.structuredData.revenueYoY = structuredFinancials.revenueYoY;
+              analysis.financialMetrics.structuredData.netIncomeYoY = structuredFinancials.netIncomeYoY;
+              analysis.financialMetrics.structuredData.epsYoY = structuredFinancials.epsYoY;
+              console.log(`✅ Enriched with YoY growth: Revenue ${structuredFinancials.revenueYoY || 'N/A'}, EPS ${structuredFinancials.epsYoY || 'N/A'}`);
+            }
+          } catch (enrichError) {
+            console.log('⚠️  Failed to enrich with YoY growth (continuing with inline XBRL only)');
+          }
+        }
+
         // NEW: Use preloaded Yahoo Finance data (already fetched in parallel with Claude)
         if (filing.company.ticker && xbrlFinancials.eps && xbrlFinancials.revenue) {
           try {
