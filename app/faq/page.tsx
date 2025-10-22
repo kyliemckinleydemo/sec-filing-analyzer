@@ -133,7 +133,12 @@ export default function FAQPage() {
       {/* Navigation */}
       <nav className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-blue-600">SEC Analyzer</h2>
+          <h2
+            className="text-2xl font-bold text-blue-600 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => router.push('/')}
+          >
+            SEC Analyzer
+          </h2>
           <div className="flex gap-4">
             <Button variant="ghost" onClick={() => router.push('/')}>
               Home

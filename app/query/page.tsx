@@ -71,7 +71,10 @@ export default function QueryPage() {
       {/* Navigation */}
       <nav className="container mx-auto px-4 py-4 border-b bg-white/50 backdrop-blur-sm">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+          <h2
+            className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => router.push('/')}
+          >
             SEC Analyzer
           </h2>
           <div className="flex gap-4">
