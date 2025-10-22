@@ -141,20 +141,141 @@ export default function ChatPage() {
 
       <main className="max-w-5xl mx-auto px-4 py-6">
         {messages.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Example Questions:
-            </h2>
-            <div className="space-y-2">
-              {exampleQueries.map((query, index) => (
-                <button
-                  key={index}
-                  onClick={() => setInput(query)}
-                  className="block w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-gray-700 text-sm transition-colors"
-                >
-                  {query}
-                </button>
-              ))}
+          <div className="space-y-6">
+            {/* Data Available Section */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                📊 Available Data
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-2">Financial Metrics</h3>
+                  <ul className="space-y-1 text-gray-600">
+                    <li>• Revenue + YoY growth</li>
+                    <li>• Net income + YoY growth</li>
+                    <li>• EPS + YoY growth</li>
+                    <li>• Gross & operating margins</li>
+                    <li>• Earnings surprises (beat/miss)</li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-2">Stock Performance</h3>
+                  <ul className="space-y-1 text-gray-600">
+                    <li>• 7-day & 30-day returns</li>
+                    <li>• Market-relative alpha</li>
+                    <li>• ML predictions vs actual</li>
+                    <li>• 52-week high/low</li>
+                    <li>• Current price & market cap</li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-2">Risk Analysis</h3>
+                  <ul className="space-y-1 text-gray-600">
+                    <li>• Concern level (0-10 scale)</li>
+                    <li>• Risk factors & changes</li>
+                    <li>• Management sentiment</li>
+                    <li>• Concern vs positive factors</li>
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-2">Company Info</h3>
+                  <ul className="space-y-1 text-gray-600">
+                    <li>• Ticker & company name</li>
+                    <li>• Market cap (in billions)</li>
+                    <li>• P/E ratio</li>
+                    <li>• Filing type & quarter</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Question Categories */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                💬 Question Categories
+              </h2>
+
+              <div className="space-y-6">
+                <div>
+                  <h3 className="font-semibold text-blue-600 mb-2 text-sm uppercase tracking-wide">
+                    📈 Stock Performance
+                  </h3>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => setInput('Which filing had the biggest stock price jump in 7 days?')}
+                      className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-blue-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-blue-200"
+                    >
+                      Which filing had the biggest stock price jump in 7 days?
+                    </button>
+                    <button
+                      onClick={() => setInput('Which filings outperformed the S&P 500 (positive alpha)?')}
+                      className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-blue-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-blue-200"
+                    >
+                      Which filings outperformed the S&P 500?
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-green-600 mb-2 text-sm uppercase tracking-wide">
+                    💰 Financial Analysis
+                  </h3>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => setInput('Which company with market cap between $100B and $500B had the best revenue growth in Q2 2025?')}
+                      className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-green-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-green-200"
+                    >
+                      Best revenue growth for $100B-$500B market cap in Q2 2025?
+                    </button>
+                    <button
+                      onClick={() => setInput('What was the average 7-day return for filings that beat earnings?')}
+                      className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-green-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-green-200"
+                    >
+                      Average 7-day return for earnings beats?
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-purple-600 mb-2 text-sm uppercase tracking-wide">
+                    🤖 ML Model Performance
+                  </h3>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => setInput('Show me companies where the ML prediction was accurate')}
+                      className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-purple-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-purple-200"
+                    >
+                      Where was ML prediction accurate?
+                    </button>
+                    <button
+                      onClick={() => setInput('Show me filings with negative actual returns despite positive predictions')}
+                      className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-purple-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-purple-200"
+                    >
+                      Where did ML get it wrong?
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-red-600 mb-2 text-sm uppercase tracking-wide">
+                    ⚠️ Risk & Concern Analysis
+                  </h3>
+                  <div className="space-y-2">
+                    <button
+                      onClick={() => setInput('Compare predicted vs actual returns for companies with low concern levels')}
+                      className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-red-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-red-200"
+                    >
+                      Returns for low concern level filings?
+                    </button>
+                    <button
+                      onClick={() => setInput('Which companies are near 52-week highs with strong revenue growth?')}
+                      className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-red-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-red-200"
+                    >
+                      Near 52-week highs with strong growth?
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         ) : (
