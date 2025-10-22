@@ -51,9 +51,9 @@ export default function QueryPage() {
       category: "Current Metrics"
     },
     {
-      icon: <FileText className="w-5 h-5" />,
-      text: "List companies with P/E ratio < 20",
-      category: "Valuation Screen"
+      icon: <Calendar className="w-5 h-5" />,
+      text: "Show me TSLA filings in the last 30 days",
+      category: "Company Filings"
     }
   ];
 
