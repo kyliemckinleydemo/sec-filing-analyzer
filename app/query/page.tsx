@@ -42,7 +42,7 @@ export default function QueryPage() {
     },
     {
       icon: <TrendingUp className="w-5 h-5" />,
-      text: "Show companies with market cap > 100B",
+      text: "Show companies with market cap > 500B",
       category: "Market Cap Filter"
     },
     {
