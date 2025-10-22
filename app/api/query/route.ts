@@ -15,6 +15,31 @@ interface QueryPattern {
   handler: (matches: RegExpMatchArray, query: string) => Promise<any>;
 }
 
+/**
+ * Serialize BigInt values to strings for JSON compatibility
+ */
+function serializeBigInt(obj: any): any {
+  if (obj === null || obj === undefined) return obj;
+
+  if (typeof obj === 'bigint') {
+    return Number(obj);
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(serializeBigInt);
+  }
+
+  if (typeof obj === 'object') {
+    const serialized: any = {};
+    for (const key in obj) {
+      serialized[key] = serializeBigInt(obj[key]);
+    }
+    return serialized;
+  }
+
+  return obj;
+}
+
 export async function POST(request: Request) {
   try {
     const { query } = await request.json();
@@ -749,7 +774,7 @@ export async function POST(request: Request) {
       const matches = normalizedQuery.match(pattern);
       if (matches) {
         const result = await handler(matches, normalizedQuery);
-        return NextResponse.json(result);
+        return NextResponse.json(serializeBigInt(result));
       }
     }
 
