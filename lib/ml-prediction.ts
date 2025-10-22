@@ -22,7 +22,7 @@ export interface MLPredictionResult {
  * This matches the 42 features required by the trained model
  */
 export async function extractMLFeatures(input: MLPredictionInput) {
-  const { ticker, filingType, filingDate } = input;
+  const { filingId, ticker, filingType, filingDate } = input;
 
   // Fetch company data
   const company = await prisma.company.findUnique({
@@ -32,6 +32,12 @@ export async function extractMLFeatures(input: MLPredictionInput) {
   if (!company) {
     throw new Error(`Company not found: ${ticker}`);
   }
+
+  // Fetch filing to get concernLevel (champion model feature)
+  const filing = await prisma.filing.findUnique({
+    where: { id: filingId },
+    select: { concernLevel: true }
+  });
 
   // For now, analyst activity data needs to be backfilled separately
   // In production, this should fetch from AnalystActivity table
@@ -194,7 +200,7 @@ export async function extractMLFeatures(input: MLPredictionInput) {
   // replace riskScore+sentimentScore with concernLevel as primary feature.
   const riskScore = 5; // Neutral (legacy feature)
   const sentimentScore = 0; // Neutral (legacy feature)
-  const concernLevel = 5.0; // Moderate (NEW: multi-factor concern assessment, 0-10 scale)
+  const concernLevel = filing?.concernLevel ?? 5.0; // Use actual concernLevel from filing, default to moderate if not yet analyzed
 
   // Build feature object matching ML model expectations
   const features = {
