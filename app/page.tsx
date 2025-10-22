@@ -43,14 +43,14 @@ export default function Home() {
       <section className="container mx-auto px-4 py-20">
         <div className="text-center space-y-6">
           <h1 className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-            AI-Powered SEC Filing Analysis
+            AI-Powered SEC Filing Intelligence
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Using SEC filings to predict 7 business day forward stock performance
+            Analyze financial data, predict stock movements, and chat with your filing data using natural language
           </p>
           <div className="inline-block bg-green-50 border border-green-200 rounded-lg px-4 py-2 mt-4">
             <p className="text-sm text-green-700">
-              <strong>v2.3:</strong> Optimized model with sentiment & risk analysis • 430 companies tracked
+              <strong>v3.0:</strong> Concern Level Scoring • XBRL Financial Data • Natural Language Chat • 430+ companies tracked
             </p>
           </div>
 
@@ -88,23 +88,24 @@ export default function Home() {
 
       {/* Features Section */}
       <section className="container mx-auto px-4 py-20">
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 gap-8">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <span className="text-4xl">🤖</span>
-                AI Analysis
+                AI Analysis & Risk Scoring
               </CardTitle>
               <CardDescription>
-                Claude AI analyzes filings to extract insights and detect material events
+                Claude AI analyzes filings with comprehensive concern level scoring
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-slate-600">
+                <li>• 0-10 concern level scoring (LOW to CRITICAL)</li>
                 <li>• Enhanced risk analysis (breaches, litigation, exec changes)</li>
                 <li>• Management sentiment & tone shifts</li>
                 <li>• Earnings surprise detection (beat/miss)</li>
-                <li>• Financial metrics extraction from XBRL</li>
+                <li>• XBRL financial data extraction with YoY growth</li>
               </ul>
             </CardContent>
           </Card>
@@ -125,6 +126,26 @@ export default function Home() {
                 <li>• Transparent model reasoning & feature breakdown</li>
                 <li>• Prediction vs actual comparison charts</li>
                 <li>• Buy/Sell/Hold signals based on magnitude</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span className="text-4xl">💬</span>
+                Natural Language Chat
+              </CardTitle>
+              <CardDescription>
+                Ask questions about filings using plain English
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li>• Query financial metrics & performance trends</li>
+                <li>• Compare ML predictions vs actual returns</li>
+                <li>• Analyze risk levels across companies</li>
+                <li>• Filter by ticker or search across all 430+ companies</li>
               </ul>
             </CardContent>
           </Card>
@@ -157,11 +178,15 @@ export default function Home() {
           <CardHeader className="text-center">
             <CardTitle className="text-3xl">Why Use This Tool?</CardTitle>
             <CardDescription className="text-lg mt-4">
-              Bloomberg costs $2K+/month and doesn't predict price movements.
+              Bloomberg costs $2K+/month with no ML predictions or AI analysis.
               <br />
-              Free tools just show raw filings with no analysis.
+              Free tools just show raw filings with no financial insights.
               <br />
-              <strong>Our tool: AI analysis + predictions at a fraction of the cost.</strong>
+              <strong>Our tool: AI risk scoring + XBRL financial data + stock predictions + natural language chat.</strong>
+              <br />
+              <span className="text-blue-600 font-semibold mt-2 inline-block">
+                All at a fraction of traditional terminal costs.
+              </span>
             </CardDescription>
           </CardHeader>
         </Card>
