@@ -89,10 +89,12 @@ export default function ChatPage() {
   };
 
   const exampleQueries = [
-    'How has Microsoft\'s risk profile changed over time?',
-    'Which companies have the highest concern levels?',
-    'Compare Apple and Google\'s latest filings',
-    'Show me companies with elevated risk recently',
+    'Which company with market cap between $100B and $500B had the best revenue growth in Q2 2025?',
+    'Compare revenue and EPS growth for Apple vs Microsoft',
+    'Show me companies with market cap over $200B that beat earnings estimates',
+    'Which companies have improving margins but elevated concern levels?',
+    'List companies with negative revenue growth and their concern scores',
+    'What was the highest EPS growth rate in Q1 2025?',
   ];
 
   return (
