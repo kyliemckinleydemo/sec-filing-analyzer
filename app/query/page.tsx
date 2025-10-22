@@ -28,32 +28,32 @@ export default function QueryPage() {
     {
       icon: <Building2 className="w-5 h-5" />,
       text: "Show me AAPL stock price and P/E ratio",
-      category: "Current Metrics"
+      category: "Company Metrics"
+    },
+    {
+      icon: <TrendingUp className="w-5 h-5" />,
+      text: "Show companies with dividend yield > 3",
+      category: "Dividend Screening"
+    },
+    {
+      icon: <TrendingUp className="w-5 h-5" />,
+      text: "Show companies with revenue growth > 20",
+      category: "Growth Screening"
+    },
+    {
+      icon: <FileText className="w-5 h-5" />,
+      text: "Find low beta stocks",
+      category: "Risk Screening"
+    },
+    {
+      icon: <TrendingUp className="w-5 h-5" />,
+      text: "Find undervalued stocks",
+      category: "Value Screening"
     },
     {
       icon: <Calendar className="w-5 h-5" />,
       text: "List all AAPL filings in the last 90 days",
       category: "Company Filings"
-    },
-    {
-      icon: <FileText className="w-5 h-5" />,
-      text: "List companies with P/E ratio < 15",
-      category: "Valuation Screen"
-    },
-    {
-      icon: <TrendingUp className="w-5 h-5" />,
-      text: "Show companies with market cap > 500B",
-      category: "Market Cap Filter"
-    },
-    {
-      icon: <Building2 className="w-5 h-5" />,
-      text: "What is MSFT current price",
-      category: "Current Metrics"
-    },
-    {
-      icon: <TrendingUp className="w-5 h-5" />,
-      text: "What is NVDA P/E ratio",
-      category: "Current Metrics"
     }
   ];
 
@@ -111,13 +111,13 @@ export default function QueryPage() {
         <div className="text-center space-y-4 mb-8">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-medium">
             <Sparkles className="w-4 h-4" />
-            Ask Questions About SEC Filings
+            Advanced Financial Screening & Analysis
           </div>
           <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 pb-2 leading-tight">
             Natural Language Query
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Track analyst estimates over time, compare filing impact, and search 7,777+ filings from 636 companies
+            Screen stocks by dividends, growth, valuation, and risk • Query financials, analyst ratings, and SEC filings • 640+ companies tracked
           </p>
         </div>
 
@@ -522,42 +522,76 @@ export default function QueryPage() {
         </section>
       )}
 
-      {/* Features Grid */}
+      {/* Available Data Section */}
       <section className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-6">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-8">📊 Queryable Financial Data</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-lg">Current Metrics</CardTitle>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Price & Valuation</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-slate-600">
-                  Query real-time stock prices, P/E ratios, and analyst targets
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-              <CardHeader>
-                <CardTitle className="text-lg">Company Filings</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-slate-600">
-                  Search SEC filings by company and date range
-                </p>
+                <ul className="text-xs text-slate-700 space-y-1">
+                  <li>• Current price</li>
+                  <li>• Market cap</li>
+                  <li>• P/E ratio & Forward P/E</li>
+                  <li>• 52-week high/low</li>
+                  <li>• Analyst target price</li>
+                </ul>
               </CardContent>
             </Card>
 
             <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-              <CardHeader>
-                <CardTitle className="text-lg">Valuation Screening</CardTitle>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Financial Fundamentals</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-slate-600">
-                  Filter companies by P/E ratio, market cap, and other metrics
-                </p>
+                <ul className="text-xs text-slate-700 space-y-1">
+                  <li>• Revenue & YoY growth</li>
+                  <li>• Net income & YoY growth</li>
+                  <li>• EPS & YoY growth</li>
+                  <li>• Gross margin</li>
+                  <li>• Operating margin</li>
+                </ul>
               </CardContent>
             </Card>
+
+            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Dividends & Risk</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="text-xs text-slate-700 space-y-1">
+                  <li>• Dividend yield</li>
+                  <li>• Beta (volatility)</li>
+                  <li>• Volume & avg volume</li>
+                  <li>• Analyst ratings</li>
+                  <li>• Analyst coverage</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">SEC Filings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="text-xs text-slate-700 space-y-1">
+                  <li>• 10-K, 10-Q, 8-K filings</li>
+                  <li>• Filing dates & ranges</li>
+                  <li>• Company-specific search</li>
+                  <li>• Date-based filtering</li>
+                  <li>• 640+ companies tracked</li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+            <p className="text-sm text-center text-slate-700">
+              <strong>Advanced Screening:</strong> Combine multiple criteria • Filter by growth rates • Find undervalued stocks • Screen dividends • Assess risk
+            </p>
           </div>
         </div>
       </section>

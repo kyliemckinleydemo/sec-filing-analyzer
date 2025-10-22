@@ -469,6 +469,259 @@ export async function POST(request: Request) {
         }
       },
 
+      // ==================================================================
+      // NEW FINANCIAL SCREENING QUERIES (Phase 1 enhancement)
+      // ==================================================================
+
+      // "Show companies with dividend yield > X%"
+      {
+        pattern: /(?:show|find|list)\s+companies?\s+with\s+dividend\s+yield\s+(?:>|greater than|above|over)\s+(\d+(?:\.\d+)?)/i,
+        handler: async (matches) => {
+          const minYield = parseFloat(matches[1]) / 100; // Convert to decimal
+
+          const companies = await prisma.company.findMany({
+            where: {
+              dividendYield: { gte: minYield }
+            },
+            select: {
+              ticker: true,
+              name: true,
+              currentPrice: true,
+              dividendYield: true,
+              marketCap: true,
+              peRatio: true
+            },
+            orderBy: { dividendYield: 'desc' },
+            take: 50
+          });
+
+          return {
+            companies,
+            message: `Companies with dividend yield > ${matches[1]}%`
+          };
+        }
+      },
+
+      // "Find low beta stocks" or "Show companies with beta < X"
+      {
+        pattern: /(?:show|find|list)\s+(?:companies?\s+with\s+)?(?:low\s+beta|beta\s+(?:<|less than|under|below)\s+(\d+(?:\.\d+)?))/i,
+        handler: async (matches) => {
+          const maxBeta = matches[1] ? parseFloat(matches[1]) : 0.9; // Default to 0.9 for "low beta"
+
+          const companies = await prisma.company.findMany({
+            where: {
+              beta: { lte: maxBeta, gte: 0 }
+            },
+            select: {
+              ticker: true,
+              name: true,
+              currentPrice: true,
+              beta: true,
+              marketCap: true,
+              peRatio: true
+            },
+            orderBy: { beta: 'asc' },
+            take: 50
+          });
+
+          return {
+            companies,
+            message: `Companies with beta < ${maxBeta}`
+          };
+        }
+      },
+
+      // "Show companies with revenue growth > X%"
+      {
+        pattern: /(?:show|find|list)\s+companies?\s+with\s+revenue\s+growth\s+(?:>|greater than|above|over)\s+(\d+(?:\.\d+)?)/i,
+        handler: async (matches) => {
+          const minGrowth = parseFloat(matches[1]);
+
+          const companies = await prisma.company.findMany({
+            where: {
+              latestRevenueYoY: { gte: minGrowth }
+            },
+            select: {
+              ticker: true,
+              name: true,
+              latestRevenue: true,
+              latestRevenueYoY: true,
+              latestQuarter: true,
+              marketCap: true,
+              peRatio: true
+            },
+            orderBy: { latestRevenueYoY: 'desc' },
+            take: 50
+          });
+
+          return {
+            companies,
+            message: `Companies with revenue growth > ${minGrowth}%`
+          };
+        }
+      },
+
+      // "Show companies with net income > $XB"
+      {
+        pattern: /(?:show|find|list)\s+companies?\s+with\s+net\s+income\s+(?:>|greater than|above|over)\s+\$?(\d+(?:\.\d+)?)\s*([bm])/i,
+        handler: async (matches) => {
+          const value = parseFloat(matches[1]);
+          const unit = matches[2].toLowerCase();
+          const multiplier = unit === 'b' ? 1e9 : 1e6;
+          const minNetIncome = value * multiplier;
+
+          const companies = await prisma.company.findMany({
+            where: {
+              latestNetIncome: { gte: minNetIncome }
+            },
+            select: {
+              ticker: true,
+              name: true,
+              latestNetIncome: true,
+              latestNetIncomeYoY: true,
+              latestQuarter: true,
+              marketCap: true
+            },
+            orderBy: { latestNetIncome: 'desc' },
+            take: 50
+          });
+
+          return {
+            companies,
+            message: `Companies with net income > $${value}${unit.toUpperCase()}`
+          };
+        }
+      },
+
+      // "Show companies with operating margin > X%"
+      {
+        pattern: /(?:show|find|list)\s+companies?\s+with\s+operating\s+margin\s+(?:>|greater than|above|over)\s+(\d+(?:\.\d+)?)/i,
+        handler: async (matches) => {
+          const minMargin = parseFloat(matches[1]);
+
+          const companies = await prisma.company.findMany({
+            where: {
+              latestOperatingMargin: { gte: minMargin }
+            },
+            select: {
+              ticker: true,
+              name: true,
+              latestOperatingMargin: true,
+              latestGrossMargin: true,
+              latestQuarter: true,
+              marketCap: true
+            },
+            orderBy: { latestOperatingMargin: 'desc' },
+            take: 50
+          });
+
+          return {
+            companies,
+            message: `Companies with operating margin > ${minMargin}%`
+          };
+        }
+      },
+
+      // "Find undervalued stocks" or "Show companies trading below target"
+      {
+        pattern: /(?:show|find|list)\s+(?:undervalued|companies?\s+trading\s+below\s+(?:analyst\s+)?target)/i,
+        handler: async () => {
+          const companies = await prisma.company.findMany({
+            where: {
+              currentPrice: { not: null },
+              analystTargetPrice: { not: null },
+              AND: [
+                { currentPrice: { lt: prisma.company.fields.analystTargetPrice } }
+              ]
+            },
+            select: {
+              ticker: true,
+              name: true,
+              currentPrice: true,
+              analystTargetPrice: true,
+              peRatio: true,
+              marketCap: true
+            },
+            orderBy: { currentPrice: 'asc' },
+            take: 50
+          });
+
+          // Calculate upside for each company
+          const companiesWithUpside = companies.map(c => ({
+            ...c,
+            upside: c.currentPrice && c.analystTargetPrice
+              ? ((c.analystTargetPrice - c.currentPrice) / c.currentPrice * 100).toFixed(1)
+              : null
+          }));
+
+          return {
+            companies: companiesWithUpside,
+            message: `Companies trading below analyst target price`
+          };
+        }
+      },
+
+      // "Show high beta stocks" or "Show volatile stocks"
+      {
+        pattern: /(?:show|find|list)\s+(?:high\s+beta|volatile)\s+(?:stocks?|companies?)/i,
+        handler: async () => {
+          const companies = await prisma.company.findMany({
+            where: {
+              beta: { gte: 1.3 }
+            },
+            select: {
+              ticker: true,
+              name: true,
+              currentPrice: true,
+              beta: true,
+              marketCap: true,
+              peRatio: true
+            },
+            orderBy: { beta: 'desc' },
+            take: 50
+          });
+
+          return {
+            companies,
+            message: `High beta stocks (beta > 1.3)`
+          };
+        }
+      },
+
+      // "Show companies near 52-week high"
+      {
+        pattern: /(?:show|find|list)\s+companies?\s+(?:near|at|close\s+to)\s+52-?week\s+high/i,
+        handler: async () => {
+          const companies = await prisma.company.findMany({
+            where: {
+              currentPrice: { not: null },
+              fiftyTwoWeekHigh: { not: null }
+            },
+            select: {
+              ticker: true,
+              name: true,
+              currentPrice: true,
+              fiftyTwoWeekHigh: true,
+              fiftyTwoWeekLow: true,
+              marketCap: true
+            },
+            take: 500 // Get more for filtering
+          });
+
+          // Filter to companies within 5% of 52-week high
+          const nearHigh = companies.filter(c => {
+            if (!c.currentPrice || !c.fiftyTwoWeekHigh) return false;
+            const percentFromHigh = ((c.fiftyTwoWeekHigh - c.currentPrice) / c.fiftyTwoWeekHigh) * 100;
+            return percentFromHigh <= 5;
+          }).slice(0, 50);
+
+          return {
+            companies: nearHigh,
+            message: `Companies within 5% of 52-week high`
+          };
+        }
+      },
+
       // Fallback: Just show recent filings
       {
         pattern: /./,

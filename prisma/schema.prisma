@@ -27,6 +27,26 @@ model Company {
   fiftyTwoWeekLow      Float?
   analystTargetPrice   Float?
   earningsDate         DateTime?
+
+  // Additional Yahoo Finance metrics (Phase 1 enhancement)
+  dividendYield        Float?   // Dividend yield percentage
+  beta                 Float?   // Volatility vs market (1.0 = market volatility)
+  volume               BigInt?  // Current volume
+  averageVolume        BigInt?  // Average daily volume
+  analystRating        Float?   // 1-5 scale (1=Strong Buy, 5=Sell)
+  analystRatingCount   Int?     // Number of analysts covering
+
+  // Latest financial fundamentals (from most recent filing's XBRL data)
+  latestRevenue        Float?   // Most recent quarterly revenue
+  latestRevenueYoY     Float?   // Revenue YoY growth %
+  latestNetIncome      Float?   // Most recent quarterly net income
+  latestNetIncomeYoY   Float?   // Net income YoY growth %
+  latestEPS            Float?   // Most recent quarterly EPS
+  latestEPSYoY         Float?   // EPS YoY growth %
+  latestGrossMargin    Float?   // Gross profit margin %
+  latestOperatingMargin Float?  // Operating margin %
+  latestQuarter        String?  // Quarter label (e.g., "Q1 2024")
+
   yahooFinanceData     String?  // JSON for additional data
   yahooLastUpdated     DateTime?
 
