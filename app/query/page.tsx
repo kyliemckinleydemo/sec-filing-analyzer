@@ -39,6 +39,21 @@ export default function QueryPage() {
       icon: <FileText className="w-5 h-5" />,
       text: "List companies with P/E ratio < 15",
       category: "Valuation Screen"
+    },
+    {
+      icon: <TrendingUp className="w-5 h-5" />,
+      text: "Show companies with market cap > 100B",
+      category: "Market Cap Filter"
+    },
+    {
+      icon: <Building2 className="w-5 h-5" />,
+      text: "What is MSFT current price",
+      category: "Current Metrics"
+    },
+    {
+      icon: <FileText className="w-5 h-5" />,
+      text: "List companies with P/E ratio < 20",
+      category: "Valuation Screen"
     }
   ];
 
