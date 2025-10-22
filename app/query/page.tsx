@@ -464,7 +464,7 @@ export default function QueryPage() {
                       <div
                         key={idx}
                         className="p-4 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer border border-slate-200"
-                        onClick={() => window.open(filing.filingUrl, '_blank')}
+                        onClick={() => router.push(`/company/${filing.company.ticker}`)}
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
