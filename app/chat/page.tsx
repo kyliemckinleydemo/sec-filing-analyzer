@@ -89,12 +89,13 @@ export default function ChatPage() {
   };
 
   const exampleQueries = [
-    'Which company with market cap between $100B and $500B had the best revenue growth in Q2 2025?',
-    'Compare revenue and EPS growth for Apple vs Microsoft',
-    'Show me companies with market cap over $200B that beat earnings estimates',
-    'Which companies have improving margins but elevated concern levels?',
-    'List companies with negative revenue growth and their concern scores',
-    'What was the highest EPS growth rate in Q1 2025?',
+    'Which filing had the biggest stock price jump in 7 days?',
+    'Show me companies where the ML prediction was accurate',
+    'Which filings outperformed the S&P 500 (positive alpha)?',
+    'Compare predicted vs actual returns for companies with low concern levels',
+    'Which companies are near 52-week highs with strong revenue growth?',
+    'Show me filings with negative actual returns despite positive predictions',
+    'What was the average 7-day return for filings that beat earnings?',
   ];
 
   return (

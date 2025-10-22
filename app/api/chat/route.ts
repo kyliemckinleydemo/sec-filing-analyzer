@@ -89,6 +89,11 @@ function buildFilingContext(filings: any[]) {
       marketCap: f.company.marketCap,
       marketCapB: marketCapB ? `$${marketCapB}B` : null,
       peRatio: f.company.peRatio,
+      fiftyTwoWeekHigh: f.company.fiftyTwoWeekHigh,
+      fiftyTwoWeekLow: f.company.fiftyTwoWeekLow,
+      distanceFrom52WeekHigh: f.company.currentPrice && f.company.fiftyTwoWeekHigh
+        ? `${(((f.company.currentPrice - f.company.fiftyTwoWeekHigh) / f.company.fiftyTwoWeekHigh) * 100).toFixed(1)}%`
+        : null,
 
       // Earnings Analysis
       epsSurprise: structuredData?.epsSurprise || null,
@@ -103,9 +108,20 @@ function buildFilingContext(filings: any[]) {
       riskScore: f.riskScore,
       sentimentScore: f.sentimentScore,
 
-      // Predictions & Returns
+      // Stock Performance Post-Filing
       predicted7dReturn: prediction?.predicted7dReturn || null,
       actual7dReturn: f.actual7dReturn || null,
+      actual30dReturn: f.actual30dReturn || null,
+      actual7dAlpha: f.actual7dAlpha || null,
+      actual30dAlpha: f.actual30dAlpha || null,
+
+      // Prediction Accuracy (if we have both predicted and actual)
+      predictionError7d: prediction?.predicted7dReturn && f.actual7dReturn
+        ? `${(Math.abs(prediction.predicted7dReturn - f.actual7dReturn)).toFixed(2)}%`
+        : null,
+      predictionAccuracy7d: prediction?.predicted7dReturn && f.actual7dReturn
+        ? (Math.abs(prediction.predicted7dReturn - f.actual7dReturn) < 3 ? 'accurate' : 'off')
+        : null,
 
       // Key Highlights (truncated for token efficiency)
       concernFactors: analysisData?.concernAssessment?.concernFactors?.slice(0, 2) || [],
@@ -160,6 +176,16 @@ DATA FIELDS EXPLAINED:
 - epsSurprise/revenueSurprise: Beat/miss vs analyst estimates
 - concernLevel: 0-10 scale (0=excellent, 10=critical concerns)
 - concernLabel: LOW/MODERATE/ELEVATED/HIGH/CRITICAL
+
+STOCK PRICE FIELDS:
+- currentPrice: Current stock price
+- fiftyTwoWeekHigh/Low: 52-week price range
+- distanceFrom52WeekHigh: How far from 52-week high (e.g., "-15.2%")
+- actual7dReturn/actual30dReturn: Stock return 7/30 days after filing
+- actual7dAlpha/actual30dAlpha: Return vs S&P 500 (market-relative)
+- predicted7dReturn: ML model's predicted 7-day return
+- predictionError7d: Difference between predicted and actual
+- predictionAccuracy7d: "accurate" (within 3%) or "off"
 
 USER QUESTION:
 ${message}
