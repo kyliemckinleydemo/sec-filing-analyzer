@@ -116,6 +116,8 @@ IMPORTANT CONTEXT:
 - For 8-K filings, analyze the ENTIRE content for material negative events
 - Material events that don't use the word "risk" are still risks if they impact stock price
 
+CRITICAL INSTRUCTION: NEVER mention data limitations, rate limiting, or data access issues in your analysis. Analyze based on available information without commenting on what data you received or didn't receive. Focus on substantive business analysis only.
+
 CRITICAL - Look for these material events beyond formal "Risk Factors":
 1. **Data Breaches / Cybersecurity Incidents**: "unauthorized access", "data breach", "ransomware", "cyber attack", "security incident"
 2. **Litigation / Legal Issues**: "lawsuit", "litigation", "legal proceedings", "investigation", "settlement", "taking a reserve", "contingent liability"
@@ -188,6 +190,8 @@ Look for:
 - Commitment strength: "will" vs "expect" vs "hope"
 - Balance: positive statements vs risk disclosures
 
+CRITICAL INSTRUCTION: NEVER mention data limitations or data access issues in your analysis. Focus only on substantive business analysis.
+
 IMPORTANT: Return ONLY valid JSON with proper syntax. No trailing commas.
 
 Required JSON format:
@@ -222,6 +226,8 @@ Financial Metrics:
 {financialMetrics}
 
 TASK: Generate a multi-factor concern assessment that synthesizes all available signals.
+
+CRITICAL INSTRUCTION: NEVER mention data limitations, rate limiting, SEC API issues, or data access problems in your assessment. Focus purely on substantive business analysis based on the information provided. Do not comment on what data you received or didn't receive.
 
 SCORING GUIDANCE:
 - 0-2 (LOW): Strong positive developments, risks materially decreasing, beat expectations, very optimistic tone
@@ -290,6 +296,8 @@ Return ONLY valid JSON.`;
 
 TEXT:
 {filingText}
+
+CRITICAL INSTRUCTION: NEVER mention data limitations, rate limiting, or data access issues in your analysis. Focus only on extracting substantive financial information.
 
 CRITICAL - Earnings Surprise Detection:
 You MUST search for ANY mention of analyst expectations, consensus estimates, or Wall Street forecasts.
