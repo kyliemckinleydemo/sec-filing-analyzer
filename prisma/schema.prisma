@@ -50,8 +50,9 @@ model Filing {
   // AI Analysis Results (JSON)
   analysisData    String?   // JSON stored as text
   aiSummary       String?   // Executive summary
-  riskScore       Float?    // 0-10 severity score
-  sentimentScore  Float?    // -1 to 1
+  riskScore       Float?    // 0-10 severity score (legacy)
+  sentimentScore  Float?    // -1 to 1 (legacy)
+  concernLevel    Float?    // 0-10 multi-factor concern assessment (NEW)
 
   // Prediction Results
   predicted7dReturn Float?  // Predicted 7-day return %

@@ -8,6 +8,7 @@ import { secDataAPI } from '@/lib/sec-data-api';
 import { xbrlParser } from '@/lib/xbrl-parser';
 import { financialDataClient } from '@/lib/yahoo-finance';
 import { yahooFinancePythonClient } from '@/lib/yahoo-finance-python';
+import { generateMLPrediction } from '@/lib/ml-prediction';
 
 /**
  * Analyze a specific SEC filing using Claude AI
@@ -852,7 +853,25 @@ Note: Specific MD&A content is unavailable. Provide general business commentary.
         }
       }
 
-      // Store analysis in database
+      // Generate ML prediction using the new 80% accuracy model
+      let mlPrediction = null;
+      try {
+        if (filing.company?.ticker) {
+          console.log(`[ML Prediction] Generating prediction for ${filing.company.ticker}...`);
+          mlPrediction = await generateMLPrediction({
+            filingId: filing.id,
+            ticker: filing.company.ticker,
+            filingType: filing.filingType,
+            filingDate: filing.filingDate
+          });
+          console.log(`[ML Prediction] ✅ Prediction generated: ${mlPrediction.predicted7dReturn.toFixed(2)}% (confidence: ${(mlPrediction.predictionConfidence * 100).toFixed(0)}%)`);
+        }
+      } catch (error: any) {
+        console.error('[ML Prediction] Failed to generate ML prediction:', error.message);
+        // Don't fail the entire analysis if ML prediction fails
+      }
+
+      // Store analysis in database (including ML predictions)
       await prisma.filing.update({
         where: { accessionNumber: normalizedAccession },
         data: {
@@ -860,6 +879,9 @@ Note: Specific MD&A content is unavailable. Provide general business commentary.
           aiSummary: analysis.summary,
           riskScore: analysis.risks.riskScore,
           sentimentScore: analysis.sentiment.sentimentScore,
+          concernLevel: analysis.concernAssessment?.concernLevel, // NEW: Champion model feature
+          predicted7dReturn: mlPrediction?.predicted7dReturn,
+          predictionConfidence: mlPrediction?.predictionConfidence,
         },
       });
 
@@ -885,6 +907,15 @@ Note: Specific MD&A content is unavailable. Provide general business commentary.
         summary: analysis.summary,
         riskScore: analysis.risks.riskScore,
         sentimentScore: analysis.sentiment.sentimentScore,
+        mlPrediction: mlPrediction ? {
+          predicted7dReturn: mlPrediction.predicted7dReturn,
+          predictionConfidence: mlPrediction.predictionConfidence,
+          tradingSignal: (mlPrediction.predictionConfidence >= 0.60 && Math.abs(mlPrediction.predicted7dReturn) >= 2.0)
+            ? (mlPrediction.predicted7dReturn > 0 ? 'BUY' : 'SELL')
+            : 'HOLD',
+          confidenceLabel: mlPrediction.predictionConfidence >= 0.80 ? 'HIGH' :
+                          mlPrediction.predictionConfidence >= 0.70 ? 'MEDIUM' : 'LOW',
+        } : null,
       };
 
       // Caching disabled for fresh analysis each time
