@@ -201,48 +201,61 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
           return null;
         }),
 
-        // Fetch filing HTML content (10s timeout)
+        // Fetch filing HTML content with retry logic (10s timeout per attempt)
         (async () => {
           if (!filing.filingUrl) {
             console.log(`No filing URL provided, skipping text fetch`);
             return { success: false, text: '', error: 'No URL' };
           }
 
-          console.log(`Attempting to fetch filing from Archives: ${filing.filingUrl}`);
-          await new Promise(resolve => setTimeout(resolve, 150)); // Rate limit
-
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-          try {
-            const txtResponse = await fetch(filing.filingUrl, {
-              headers: {
-                'User-Agent': 'SEC Filing Analyzer/1.0 (educational project)',
-                'Accept': 'text/html,application/xhtml+xml',
-              },
-              signal: controller.signal,
-            });
-            clearTimeout(timeoutId);
-
-            if (txtResponse.ok) {
-              const text = await txtResponse.text();
-              console.log(`✅ Fetched filing text: ${text.length} characters`);
-              return { success: true, text, error: null };
-            } else if (txtResponse.status === 403 || txtResponse.status === 429) {
-              console.log(`⚠️ SEC Archives rate limited (${txtResponse.status}), proceeding with XBRL data only`);
-              return { success: false, text: '', error: 'rate_limited' };
+          // Retry logic: Try up to 2 times with 3-second delay between attempts
+          for (let attempt = 0; attempt < 2; attempt++) {
+            if (attempt > 0) {
+              console.log(`⏳ Retrying filing fetch after 3s delay (attempt ${attempt + 1}/2)...`);
+              await new Promise(resolve => setTimeout(resolve, 3000));
             } else {
-              console.log(`Filing URL returned ${txtResponse.status}, will use structured data only`);
-              return { success: false, text: '', error: `HTTP ${txtResponse.status}` };
+              console.log(`Attempting to fetch filing from Archives: ${filing.filingUrl}`);
+              await new Promise(resolve => setTimeout(resolve, 150)); // Rate limit
             }
-          } catch (fetchError: any) {
-            clearTimeout(timeoutId);
-            if (fetchError.name === 'AbortError') {
-              console.log(`⚠️ Filing fetch timed out after 10s, proceeding with XBRL data only`);
-              return { success: false, text: '', error: 'timeout' };
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+            try {
+              const txtResponse = await fetch(filing.filingUrl, {
+                headers: {
+                  'User-Agent': 'SEC Filing Analyzer/1.0 (educational project)',
+                  'Accept': 'text/html,application/xhtml+xml',
+                },
+                signal: controller.signal,
+              });
+              clearTimeout(timeoutId);
+
+              if (txtResponse.ok) {
+                const text = await txtResponse.text();
+                console.log(`✅ Fetched filing text: ${text.length} characters`);
+                return { success: true, text, error: null };
+              } else if (txtResponse.status === 403 || txtResponse.status === 429) {
+                console.log(`⚠️ SEC Archives rate limited (${txtResponse.status})${attempt < 1 ? ', will retry...' : ', proceeding with XBRL data only'}`);
+                if (attempt < 1) continue; // Retry once
+                return { success: false, text: '', error: 'rate_limited' };
+              } else {
+                console.log(`Filing URL returned ${txtResponse.status}, will use structured data only`);
+                return { success: false, text: '', error: `HTTP ${txtResponse.status}` };
+              }
+            } catch (fetchError: any) {
+              clearTimeout(timeoutId);
+              if (fetchError.name === 'AbortError') {
+                console.log(`⚠️ Filing fetch timed out after 10s${attempt < 1 ? ', will retry...' : ', proceeding with XBRL data only'}`);
+                if (attempt < 1) continue; // Retry once on timeout
+                return { success: false, text: '', error: 'timeout' };
+              }
+              throw fetchError;
             }
-            throw fetchError;
           }
+
+          // Should never reach here, but TypeScript needs this
+          return { success: false, text: '', error: 'max_retries' };
         })().catch((error: any) => {
           console.log(`Could not fetch filing text (${error.message}), using structured data only`);
           return { success: false, text: '', error: error.message };
