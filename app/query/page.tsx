@@ -26,21 +26,6 @@ export default function QueryPage() {
 
   const exampleQueries = [
     {
-      icon: <TrendingUp className="w-5 h-5" />,
-      text: "Show AAPL analyst target price history",
-      category: "Historical Trends"
-    },
-    {
-      icon: <Building2 className="w-5 h-5" />,
-      text: "Compare MSFT estimates before and after last filing",
-      category: "Filing Impact"
-    },
-    {
-      icon: <TrendingUp className="w-5 h-5" />,
-      text: "Companies where analyst target increased",
-      category: "Estimate Changes"
-    },
-    {
       icon: <Building2 className="w-5 h-5" />,
       text: "Show me AAPL stock price and P/E ratio",
       category: "Current Metrics"
@@ -525,33 +510,33 @@ export default function QueryPage() {
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
               <CardHeader>
-                <CardTitle className="text-lg">Historical Tracking</CardTitle>
+                <CardTitle className="text-lg">Current Metrics</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-600">
-                  Track analyst estimates, price targets, and metrics over time
+                  Query real-time stock prices, P/E ratios, and analyst targets
                 </p>
               </CardContent>
             </Card>
 
             <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
               <CardHeader>
-                <CardTitle className="text-lg">Filing Impact</CardTitle>
+                <CardTitle className="text-lg">Company Filings</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-600">
-                  Compare estimates before and after SEC filings to measure impact
+                  Search SEC filings by company and date range
                 </p>
               </CardContent>
             </Card>
 
             <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
               <CardHeader>
-                <CardTitle className="text-lg">Sentiment Changes</CardTitle>
+                <CardTitle className="text-lg">Valuation Screening</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-slate-600">
-                  Find companies where analysts raised or lowered targets
+                  Filter companies by P/E ratio, market cap, and other metrics
                 </p>
               </CardContent>
             </Card>
