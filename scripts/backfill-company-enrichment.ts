@@ -41,10 +41,12 @@ async function backfillCompanyEnrichment() {
       // 1. Fetch Yahoo Finance data
       const financials = await yahooFinanceClient.getCompanyFinancials(company.ticker);
 
-      // 2. Get most recent filing with XBRL data
+      // 2. Get most recent 10-Q or 10-K filing with XBRL data
+      // (8-K filings don't have financial statements)
       const latestFiling = await prisma.filing.findFirst({
         where: {
           companyId: company.id,
+          filingType: { in: ['10-Q', '10-K'] },
           analysisData: { not: null }
         },
         orderBy: { filingDate: 'desc' },
