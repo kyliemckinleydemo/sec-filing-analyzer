@@ -27,28 +27,28 @@ export default function QueryPage() {
   const exampleQueries = [
     {
       icon: <Building2 className="w-5 h-5" />,
-      text: "Show me AAPL stock price and P/E ratio",
-      category: "Company Metrics"
-    },
-    {
-      icon: <TrendingUp className="w-5 h-5" />,
-      text: "Show companies with dividend yield > 3",
+      text: "Show companies with dividend yield > 3%",
       category: "Dividend Screening"
     },
     {
       icon: <TrendingUp className="w-5 h-5" />,
-      text: "Show companies with revenue growth > 20",
-      category: "Growth Screening"
+      text: "Find low beta stocks under 0.8",
+      category: "Low Volatility"
     },
     {
       icon: <FileText className="w-5 h-5" />,
-      text: "Find low beta stocks",
-      category: "Risk Screening"
+      text: "Show companies with revenue growth > 20%",
+      category: "Growth Screen"
     },
     {
       icon: <TrendingUp className="w-5 h-5" />,
       text: "Find undervalued stocks",
       category: "Value Screening"
+    },
+    {
+      icon: <Building2 className="w-5 h-5" />,
+      text: "Show companies with market cap > 500B",
+      category: "Large Cap Filter"
     },
     {
       icon: <Calendar className="w-5 h-5" />,

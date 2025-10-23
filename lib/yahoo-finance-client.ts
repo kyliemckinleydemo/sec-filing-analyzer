@@ -182,6 +182,17 @@ class YahooFinanceClient {
         return null;
       }
 
+      // Fetch beta from quoteSummary (not available in basic quote)
+      let beta: number | undefined = undefined;
+      try {
+        const summary = await yahooFinance.quoteSummary(ticker, {
+          modules: ['summaryDetail']
+        });
+        beta = (summary.summaryDetail as any)?.beta;
+      } catch (error: any) {
+        console.log(`[Yahoo Finance] Could not fetch beta for ${ticker}: ${error.message}`);
+      }
+
       // Validate earnings date is reasonable (between 1970 and 2100)
       let validEarningsDate: Date | undefined = undefined;
       if ((quote as any).earningsTimestamp) {
@@ -226,7 +237,7 @@ class YahooFinanceClient {
 
         // Additional metrics
         dividendYield: (quote as any).dividendYield,
-        beta: quote.beta,
+        beta: beta,  // Fetched from quoteSummary
         volume: quote.regularMarketVolume,
         averageVolume: quote.averageDailyVolume10Day,
 

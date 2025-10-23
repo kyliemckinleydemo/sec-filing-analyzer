@@ -55,11 +55,35 @@ async function backfillCompanyEnrichment() {
       });
 
       // Parse XBRL data from latest filing
+      // XBRL data is nested in analysisData.financialMetrics.structuredData
       let xbrlData: any = null;
       if (latestFiling?.analysisData) {
         try {
           const analysisData = JSON.parse(latestFiling.analysisData);
-          xbrlData = analysisData.structuredData || null;
+          const rawData = analysisData.financialMetrics?.structuredData;
+
+          if (rawData) {
+            // Helper to parse percentage strings like "+0.4%" or "-3.8%" to floats
+            const parsePercentage = (value: any): number | undefined => {
+              if (typeof value === 'number') return value;
+              if (typeof value === 'string') {
+                const match = value.match(/([+-]?\d+(?:\.\d+)?)/);
+                return match ? parseFloat(match[1]) : undefined;
+              }
+              return undefined;
+            };
+
+            xbrlData = {
+              revenue: rawData.revenue,
+              revenueYoY: parsePercentage(rawData.revenueYoY),
+              netIncome: rawData.netIncome,
+              netIncomeYoY: parsePercentage(rawData.netIncomeYoY),
+              eps: rawData.eps,
+              epsYoY: parsePercentage(rawData.epsYoY),
+              grossMargin: rawData.grossMargin,
+              operatingMargin: rawData.operatingMargin
+            };
+          }
         } catch (e) {
           console.log(`   ⚠️  Could not parse analysis data`);
         }
@@ -90,7 +114,8 @@ async function backfillCompanyEnrichment() {
         where: { id: company.id },
         data: {
           // Yahoo Finance metrics
-          dividendYield: financials?.dividendYield,
+          // dividendYield comes as percentage (0.4 = 0.4%), convert to decimal (0.004)
+          dividendYield: financials?.dividendYield ? financials.dividendYield / 100 : null,
           beta: financials?.beta,
           volume: financials?.volume ? BigInt(financials.volume) : null,
           averageVolume: financials?.averageVolume ? BigInt(financials.averageVolume) : null,
@@ -116,7 +141,8 @@ async function backfillCompanyEnrichment() {
 
       // Log what was added
       const updates: string[] = [];
-      if (financials?.dividendYield) updates.push(`dividend: ${(financials.dividendYield * 100).toFixed(2)}%`);
+      // financials.dividendYield is already a percentage (0.4 = 0.4%), no need to multiply
+      if (financials?.dividendYield) updates.push(`dividend: ${financials.dividendYield.toFixed(2)}%`);
       if (financials?.beta) updates.push(`beta: ${financials.beta.toFixed(2)}`);
       if (xbrlData?.revenue) {
         const revB = xbrlData.revenue / 1_000_000_000;
