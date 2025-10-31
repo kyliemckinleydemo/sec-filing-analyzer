@@ -66,8 +66,8 @@ export class PaperTradingEngine {
     }
 
     // Check predicted return magnitude
-    // Only trade if predicted return > 2% (worthwhile vs transaction costs)
-    if (Math.abs(signal.predictedReturn) < 2.0) {
+    // Only trade if predicted return > 1% (lowered to capture more opportunities)
+    if (Math.abs(signal.predictedReturn) < 1.0) {
       console.log(`[Paper Trading] Signal rejected: predicted return ${signal.predictedReturn}% too small`);
       return false;
     }
