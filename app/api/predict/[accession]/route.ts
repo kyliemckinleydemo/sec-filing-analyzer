@@ -271,7 +271,7 @@ export async function GET(
       },
     });
 
-    await prisma.prediction.create({
+    const predictionRecord = await prisma.prediction.create({
       data: {
         filingId: filing.id,
         predictedReturn: prediction.predicted7dReturn,
@@ -280,6 +280,42 @@ export async function GET(
         modelVersion: 'v2.0-research-2025', // Updated with 2024-2025 academic research
       },
     });
+
+    // Automatically evaluate for paper trading
+    let paperTradingResult = null;
+    try {
+      const { PaperTradingEngine } = await import('@/lib/paper-trading');
+
+      // Get the main portfolio
+      const portfolio = await prisma.paperPortfolio.findFirst({
+        where: { isActive: true }
+      });
+
+      if (portfolio) {
+        const engine = new PaperTradingEngine(portfolio.id);
+
+        const signal = {
+          ticker: filing.company.ticker || '',
+          filingId: filing.id,
+          predictedReturn: prediction.predicted7dReturn,
+          confidence: prediction.confidence,
+          direction: prediction.predicted7dReturn > 0 ? 'LONG' : 'SHORT' as 'LONG' | 'SHORT',
+          marketCap: filing.company.marketCap || undefined
+        };
+
+        const shouldTrade = await engine.evaluateTradeSignal(signal);
+
+        if (shouldTrade) {
+          paperTradingResult = await engine.executeTrade(signal);
+          console.log(`[Predict API] Paper trade executed:`, paperTradingResult);
+        } else {
+          console.log(`[Predict API] Signal did not meet trading criteria`);
+        }
+      }
+    } catch (error) {
+      console.error('[Predict API] Error in paper trading automation:', error);
+      // Don't fail the prediction if paper trading fails
+    }
 
     const result = {
       prediction: {
@@ -294,6 +330,7 @@ export async function GET(
         filingType: filing.filingType,
         company: filing.company.ticker,
       },
+      paperTrading: paperTradingResult || { evaluated: true, executed: false },
     };
 
     // Caching disabled
