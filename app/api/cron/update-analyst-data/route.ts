@@ -250,13 +250,49 @@ export async function GET(request: Request) {
 
     console.log(`[Cron] Analyst data update complete: ${updated} updated, ${errors} errors`);
 
+    // Also handle paper trading position closure (since we're limited to 2 cron jobs)
+    console.log('[Cron] Closing expired paper trading positions...');
+    let paperTradingClosed = 0;
+
+    try {
+      const { PaperTradingEngine } = await import('@/lib/paper-trading');
+
+      const portfolios = await prisma.paperPortfolio.findMany({
+        where: { isActive: true }
+      });
+
+      for (const portfolio of portfolios) {
+        try {
+          const engine = new PaperTradingEngine(portfolio.id);
+          const closed = await engine.closeExpiredPositions();
+          paperTradingClosed += closed;
+
+          if (closed > 0) {
+            await engine.updatePortfolioMetrics();
+            console.log(`[Cron] Portfolio "${portfolio.name}": closed ${closed} positions`);
+          }
+        } catch (error: any) {
+          console.error(`[Cron] Error processing portfolio ${portfolio.id}:`, error.message);
+        }
+      }
+
+      console.log(`[Cron] Paper trading: ${paperTradingClosed} positions closed`);
+    } catch (error: any) {
+      console.error('[Cron] Error in paper trading position closure:', error.message);
+    }
+
     return NextResponse.json({
       success: true,
-      message: `Updated analyst data for ${updated} filings`,
+      message: `Updated analyst data for ${updated} filings, closed ${paperTradingClosed} paper trading positions`,
       results: {
-        updated,
-        errors,
-        total: recentFilings.length
+        analystData: {
+          updated,
+          errors,
+          total: recentFilings.length
+        },
+        paperTrading: {
+          positionsClosed: paperTradingClosed
+        }
       }
     });
 
