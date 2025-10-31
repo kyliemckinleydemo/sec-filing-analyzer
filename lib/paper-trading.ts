@@ -134,15 +134,44 @@ export class PaperTradingEngine {
         console.log(`[Paper Trading] Could not fetch historical price, falling back to current price`);
       }
 
-      // If historical price not available, use current price (for recent filings)
+      // If historical price not available, try to get the most recent available price
       if (!entryPrice) {
-        const quote = await yahooFinance.quote(signal.ticker);
-        entryPrice = quote.regularMarketPrice || null;
-        console.log(`[Paper Trading] Using current market price for ${signal.ticker}: $${entryPrice}`);
+        try {
+          // Try to get any recent price data (last 7 days)
+          const recentData = await yahooFinance.chart(signal.ticker, {
+            period1: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+            period2: new Date(),
+            interval: '1d'
+          });
+
+          if (recentData.quotes && recentData.quotes.length > 0) {
+            // Use the most recent available closing price
+            const latestQuote = recentData.quotes[recentData.quotes.length - 1];
+            entryPrice = latestQuote.close || latestQuote.open || null;
+            console.log(`[Paper Trading] Using most recent price for ${signal.ticker}: $${entryPrice}`);
+          }
+        } catch (error) {
+          console.error(`[Paper Trading] Error fetching recent price:`, error);
+        }
+      }
+
+      // Last resort: try current quote (only works during market hours)
+      if (!entryPrice) {
+        try {
+          const quote = await yahooFinance.quote(signal.ticker);
+          entryPrice = quote.regularMarketPrice || quote.regularMarketPreviousClose || null;
+          console.log(`[Paper Trading] Using current/previous close price for ${signal.ticker}: $${entryPrice}`);
+        } catch (error) {
+          console.error(`[Paper Trading] Error fetching current quote:`, error);
+        }
       }
 
       if (!entryPrice) {
-        return { success: false, reason: 'Could not fetch entry price' };
+        return {
+          success: false,
+          reason: 'Could not fetch entry price - market may be closed or ticker invalid',
+          details: { ticker: signal.ticker, attemptedDate: nextTradingDay.toDateString() }
+        };
       }
 
       // Calculate position size
