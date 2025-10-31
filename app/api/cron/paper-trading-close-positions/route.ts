@@ -16,12 +16,16 @@ export const maxDuration = 300;
  * Schedule: 3:00 AM ET (after analyst data update completes)
  */
 export async function GET(request: Request) {
-  // Verify cron secret for security
+  // Verify request is from Vercel cron or has valid auth header
   const authHeader = request.headers.get('authorization');
+  const userAgent = request.headers.get('user-agent');
   const cronSecret = process.env.CRON_SECRET;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    console.error('[Cron] Unauthorized request - invalid or missing authorization header');
+  const isVercelCron = userAgent?.includes('vercel-cron/');
+  const hasValidAuth = cronSecret && authHeader === `Bearer ${cronSecret}`;
+
+  if (!isVercelCron && !hasValidAuth) {
+    console.error('[Cron] Unauthorized request - not from Vercel cron and no valid auth header');
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: 401 }

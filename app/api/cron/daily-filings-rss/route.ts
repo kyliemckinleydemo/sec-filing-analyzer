@@ -21,12 +21,16 @@ export const dynamic = 'force-dynamic';
  * - Handles missed days automatically
  */
 export async function GET(request: Request) {
-  // Verify cron secret for security
+  // Verify request is from Vercel cron or has valid auth header
   const authHeader = request.headers.get('authorization');
+  const userAgent = request.headers.get('user-agent');
   const cronSecret = process.env.CRON_SECRET;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-    console.error('[Cron RSS] Unauthorized request - invalid or missing authorization header');
+  const isVercelCron = userAgent?.includes('vercel-cron/');
+  const hasValidAuth = cronSecret && authHeader === `Bearer ${cronSecret}`;
+
+  if (!isVercelCron && !hasValidAuth) {
+    console.error('[Cron RSS] Unauthorized request - not from Vercel cron and no valid auth header');
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: 401 }
