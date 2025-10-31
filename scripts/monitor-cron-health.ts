@@ -20,15 +20,13 @@ interface CronJobStatus {
 const EXPECTED_SCHEDULES = {
   'daily-filings-rss': {
     schedule: '2:00 AM daily',
-    maxHoursBetweenRuns: 26 // Allow 2 hour buffer
+    maxHoursBetweenRuns: 26, // Allow 2 hour buffer
+    description: 'Fetches latest SEC filings via RSS feed'
   },
   'update-analyst-data': {
     schedule: '2:30 AM daily',
-    maxHoursBetweenRuns: 26
-  },
-  'paper-trading-close-positions': {
-    schedule: '3:00 AM daily',
-    maxHoursBetweenRuns: 26
+    maxHoursBetweenRuns: 26,
+    description: 'Updates analyst data + closes paper trading positions'
   }
 };
 
