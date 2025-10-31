@@ -124,6 +124,18 @@ async function getAnalystActivity(ticker: string, filingDate: Date): Promise<Ana
 }
 
 export async function GET(request: Request) {
+  // Verify cron secret for security
+  const authHeader = request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    console.error('[Cron] Unauthorized request - invalid or missing authorization header');
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
   try {
     console.log('[Cron] Starting analyst data update...');
 

@@ -21,6 +21,18 @@ export const dynamic = 'force-dynamic';
  * Chunked processing: Processes companies in batches to avoid timeouts
  */
 export async function GET(request: Request) {
+  // Verify cron secret for security
+  const authHeader = request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    console.error('[Cron] Unauthorized request - invalid or missing authorization header');
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
+
   // Clean up stuck jobs (older than 10 minutes and still marked as running)
   const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
   await prisma.cronJobRun.updateMany({
