@@ -185,94 +185,70 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
       // This API is more reliable and has better rate limits than HTML scraping
       console.log(`Fetching structured data from SEC Submissions API for CIK ${filing.cik}...`);
 
-      // PARALLELIZATION: Fetch all SEC data in parallel (XBRL, filing HTML, prior filing)
-      // This reduces total time from ~26s sequential to ~10s parallel
+      // SEQUENTIAL FETCHING: Fetch SEC data with delays to avoid rate limiting
+      // This is slower but prevents 429 errors from concurrent requests
       const timeoutPromise = (ms: number, name: string) => new Promise((_, reject) =>
         setTimeout(() => reject(new Error(`${name} timeout`)), ms)
       );
 
-      const [companyFacts, filingFetchResult, priorCompanyFacts] = await Promise.all([
-        // Fetch current filing XBRL data (8s timeout)
-        Promise.race([
-          secClient.getCompanyFacts(filing.cik),
-          timeoutPromise(8000, 'XBRL API')
-        ]).catch((error: any) => {
-          console.log(`⚠️ XBRL API failed: ${error.message}`);
-          return null;
-        }),
+      // Request 1: Fetch current filing XBRL data (with delay before request)
+      console.log('Fetching XBRL data with rate limit delay...');
+      await new Promise(resolve => setTimeout(resolve, 200)); // Rate limit delay
+      const companyFacts = await Promise.race([
+        secClient.getCompanyFacts(filing.cik),
+        timeoutPromise(8000, 'XBRL API')
+      ]).catch((error: any) => {
+        console.log(`⚠️ XBRL API failed: ${error.message}`);
+        return null;
+      });
 
-        // Fetch filing HTML content with retry logic (10s timeout per attempt)
-        (async () => {
-          if (!filing.filingUrl) {
-            console.log(`No filing URL provided, skipping text fetch`);
-            return { success: false, text: '', error: 'No URL' };
+      // Request 2: Fetch filing HTML content (single attempt, no retry)
+      let filingFetchResult = { success: false, text: '', error: 'No URL' };
+      if (filing.filingUrl) {
+        console.log(`Fetching filing HTML with rate limit delay: ${filing.filingUrl}`);
+        await new Promise(resolve => setTimeout(resolve, 200)); // Rate limit delay
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+        try {
+          const txtResponse = await fetch(filing.filingUrl, {
+            headers: {
+              'User-Agent': 'SEC Filing Analyzer/1.0 (educational project)',
+              'Accept': 'text/html,application/xhtml+xml',
+            },
+            signal: controller.signal,
+          });
+          clearTimeout(timeoutId);
+
+          if (txtResponse.ok) {
+            const text = await txtResponse.text();
+            console.log(`✅ Fetched filing text: ${text.length} characters`);
+            filingFetchResult = { success: true, text, error: null };
+          } else if (txtResponse.status === 403 || txtResponse.status === 429) {
+            console.log(`⚠️ SEC Archives rate limited (${txtResponse.status}), proceeding with XBRL data only`);
+            filingFetchResult = { success: false, text: '', error: 'rate_limited' };
+          } else {
+            console.log(`Filing URL returned ${txtResponse.status}, will use structured data only`);
+            filingFetchResult = { success: false, text: '', error: `HTTP ${txtResponse.status}` };
           }
-
-          // Retry logic: Try up to 2 times with 3-second delay between attempts
-          for (let attempt = 0; attempt < 2; attempt++) {
-            if (attempt > 0) {
-              console.log(`⏳ Retrying filing fetch after 3s delay (attempt ${attempt + 1}/2)...`);
-              await new Promise(resolve => setTimeout(resolve, 3000));
-            } else {
-              console.log(`Attempting to fetch filing from Archives: ${filing.filingUrl}`);
-              await new Promise(resolve => setTimeout(resolve, 150)); // Rate limit
-            }
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-            try {
-              const txtResponse = await fetch(filing.filingUrl, {
-                headers: {
-                  'User-Agent': 'SEC Filing Analyzer/1.0 (educational project)',
-                  'Accept': 'text/html,application/xhtml+xml',
-                },
-                signal: controller.signal,
-              });
-              clearTimeout(timeoutId);
-
-              if (txtResponse.ok) {
-                const text = await txtResponse.text();
-                console.log(`✅ Fetched filing text: ${text.length} characters`);
-                return { success: true, text, error: null };
-              } else if (txtResponse.status === 403 || txtResponse.status === 429) {
-                console.log(`⚠️ SEC Archives rate limited (${txtResponse.status})${attempt < 1 ? ', will retry...' : ', proceeding with XBRL data only'}`);
-                if (attempt < 1) continue; // Retry once
-                return { success: false, text: '', error: 'rate_limited' };
-              } else {
-                console.log(`Filing URL returned ${txtResponse.status}, will use structured data only`);
-                return { success: false, text: '', error: `HTTP ${txtResponse.status}` };
-              }
-            } catch (fetchError: any) {
-              clearTimeout(timeoutId);
-              if (fetchError.name === 'AbortError') {
-                console.log(`⚠️ Filing fetch timed out after 10s${attempt < 1 ? ', will retry...' : ', proceeding with XBRL data only'}`);
-                if (attempt < 1) continue; // Retry once on timeout
-                return { success: false, text: '', error: 'timeout' };
-              }
-              throw fetchError;
-            }
+        } catch (fetchError: any) {
+          clearTimeout(timeoutId);
+          if (fetchError.name === 'AbortError') {
+            console.log(`⚠️ Filing fetch timed out after 10s, proceeding with XBRL data only`);
+            filingFetchResult = { success: false, text: '', error: 'timeout' };
+          } else {
+            console.log(`Could not fetch filing text (${fetchError.message}), using structured data only`);
+            filingFetchResult = { success: false, text: '', error: fetchError.message };
           }
+        }
+      } else {
+        console.log(`No filing URL provided, skipping text fetch`);
+      }
 
-          // Should never reach here, but TypeScript needs this
-          return { success: false, text: '', error: 'max_retries' };
-        })().catch((error: any) => {
-          console.log(`Could not fetch filing text (${error.message}), using structured data only`);
-          return { success: false, text: '', error: error.message };
-        }),
-
-        // Fetch prior filing XBRL data (8s timeout) - only if we have a prior filing
-        priorFiling ? Promise.race([
-          (async () => {
-            console.log(`Fetching prior filing structured data for ${priorFiling.accessionNumber}...`);
-            return await secClient.getCompanyFacts(priorFiling.cik);
-          })(),
-          timeoutPromise(8000, 'Prior XBRL API')
-        ]).catch((error: any) => {
-          console.log(`⚠️ Prior filing XBRL failed: ${error.message}`);
-          return null;
-        }) : Promise.resolve(null)
-      ]);
+      // REMOVED: Prior filing XBRL fetch to reduce rate limiting
+      // Prior period comparison is nice-to-have but not critical
+      const priorCompanyFacts = null;
 
       // Log results
       if (companyFacts) {
