@@ -148,7 +148,16 @@ ANALYSIS REQUIREMENTS:
    - DECREASING: Risks removed, issues resolved, positive developments
    - STABLE: No significant changes
 
-5. Extract 3 most material changes for investors
+5. Calculate overall riskScore (0-10 scale):
+   CRITICAL: Higher score = MORE risk/concern (10 = maximum risk, 0 = minimal risk)
+   - Consider both the number and severity of new risks
+   - Factor in whether risks are increasing, stable, or decreasing
+   - 8-10: Multiple high-severity risks (7+), trend INCREASING, major concerns
+   - 5-7: Moderate risks or some high-severity risks, mixed trend
+   - 2-4: Minor risks, stable or improving trend
+   - 0-1: Minimal risks, trend DECREASING
+
+6. Extract 3 most material changes for investors
    - Focus on what matters for stock price
    - Be specific about the change, not just the risk
    - For 8-Ks: Focus on the material event being disclosed
@@ -182,6 +191,13 @@ TEXT:
 {mdaText}
 
 Score sentiment on scale -1 (very negative) to +1 (very positive).
+
+SCORING GUIDANCE:
+- 0.7 to 1.0: Very optimistic, confident, bullish outlook
+- 0.3 to 0.6: Moderately optimistic, generally positive
+- -0.2 to 0.2: Neutral, balanced tone
+- -0.6 to -0.3: Moderately cautious, some concerns
+- -1.0 to -0.7: Very cautious, defensive, pessimistic
 
 Look for:
 - Optimistic language: "strong", "confident", "expect growth"
@@ -243,18 +259,32 @@ CONCERN FACTORS TO CONSIDER:
 1. New high-severity risks (severity 7+)
 2. Risk trend (INCREASING is concerning)
 3. Earnings misses or guidance cuts
-4. Defensive/cautious management tone
+   CRITICAL: "Earnings miss" means actual results BELOW analyst expectations (negative)
+   CRITICAL: "Guidance cut/lowered" means company REDUCED future outlook (negative)
+4. Defensive/cautious management tone (negative sentiment score)
 5. Margin compression or revenue deceleration
+   CRITICAL: Margin compression means earnings/net income growing SLOWER than revenue
+   - If earnings grow 4% and revenue grows 6%, margins are COMPRESSING (bad)
+   - If earnings grow 8% and revenue grows 5%, margins are EXPANDING (good)
+   CRITICAL: Revenue deceleration means revenue growth rate SLOWING over time
+   - If revenue grew 15% last quarter but only 8% this quarter, that's deceleration (concerning)
 6. Legal/regulatory issues
 7. Executive departures
 8. Liquidity concerns
 
 POSITIVE FACTORS TO CONSIDER:
-1. Risks removed or decreasing
+1. Risks removed or decreasing (lower severity or eliminated)
 2. Earnings beats
+   CRITICAL: "Earnings beat" means actual results ABOVE analyst expectations (positive)
 3. Guidance raised
-4. Optimistic management tone
+   CRITICAL: "Guidance raised" means company INCREASED future outlook (positive)
+4. Optimistic management tone (positive sentiment score)
 5. Revenue/margin expansion
+   CRITICAL: Margin expansion means earnings/net income growing FASTER than revenue
+   - If earnings grow 8% and revenue grows 5%, margins are EXPANDING (positive signal)
+   - If earnings grow 4% and revenue grows 6%, margins are COMPRESSING (negative signal)
+   CRITICAL: Revenue acceleration means revenue growth rate INCREASING over time
+   - If revenue grew 8% last quarter but 15% this quarter, that's acceleration (positive)
 6. Market share gains
 7. New product launches
 8. Strategic wins
@@ -304,15 +334,24 @@ You MUST search for ANY mention of analyst expectations, consensus estimates, or
 
 Common phrases to look for:
 1. BEATS: "exceeded expectations", "beat analyst estimates", "surpassed consensus", "above estimates", "better than expected", "topped forecasts", "outperformed expectations"
+   CRITICAL: A "beat" means actual results ABOVE expectations (positive)
 2. MISSES: "fell short", "missed estimates", "below expectations", "below consensus", "disappointed", "underperformed expectations"
+   CRITICAL: A "miss" means actual results BELOW expectations (negative)
 3. EXPLICIT COMPARISONS: "EPS of $X.XX vs estimate of $Y.YY", "$X.X billion vs consensus $Y.Y billion"
 4. IMPLIED BEATS: If the filing mentions "strong quarter" or "record results" along with specific numbers, this often implies a beat
 5. IMPLIED MISSES: If the filing is defensive or mentions "challenges" along with results, this may imply a miss
 
 Extract the following:
 1. Revenue growth rates (YoY, QoQ)
+   CRITICAL: Higher positive growth % = better (e.g., +15% is better than +8%)
+   CRITICAL: Negative growth = revenue declining (concerning)
+   CRITICAL: Include both the current period and prior period if available for comparison
 2. Profit margin trends (expanding/contracting)
+   CRITICAL: "Expanding" means margins are INCREASING (earnings growing faster than revenue - positive)
+   CRITICAL: "Contracting" means margins are DECREASING (earnings growing slower than revenue - negative)
+   CRITICAL: "Stable" means margins roughly unchanged
 3. Forward guidance (raised/lowered/maintained)
+   CRITICAL: "raised" = increased outlook (positive), "lowered" = reduced outlook (negative)
 4. **EARNINGS SURPRISES** (beat/miss vs expectations) - THIS IS CRITICAL
 5. Key business metrics (user growth, ARPU, etc.)
 6. Management outlook statements
