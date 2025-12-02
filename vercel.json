@@ -24,10 +24,6 @@
     {
       "path": "/api/cron/update-analyst-data",
       "schedule": "0 14 * * *"
-    },
-    {
-      "path": "/api/cron/supervisor",
-      "schedule": "0 6 * * *"
     }
   ]
 }
