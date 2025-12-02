@@ -72,7 +72,7 @@ class SECDataAPIClient {
 
   // Required User-Agent header for SEC APIs
   private headers = {
-    'User-Agent': 'SEC Filing Analyzer support@example.com',
+    'User-Agent': 'SEC Filing Analyzer contact@bluecomet.ai',
     'Accept': 'application/json',
   };
 

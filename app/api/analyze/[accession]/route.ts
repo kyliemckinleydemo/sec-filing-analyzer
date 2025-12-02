@@ -214,7 +214,7 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
         try {
           const txtResponse = await fetch(filing.filingUrl, {
             headers: {
-              'User-Agent': 'SEC Filing Analyzer/1.0 (educational project)',
+              'User-Agent': 'SEC Filing Analyzer contact@bluecomet.ai',
               'Accept': 'text/html,application/xhtml+xml',
             },
             signal: controller.signal,
