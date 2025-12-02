@@ -42,7 +42,7 @@ export default function QueryPage() {
     },
     {
       icon: <TrendingUp className="w-5 h-5" />,
-      text: "Find undervalued stocks",
+      text: "Find undervalued stocks (vs analyst targets)",
       category: "Value Screening"
     },
     {

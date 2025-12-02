@@ -651,13 +651,11 @@ export async function POST(request: Request) {
       {
         pattern: /(?:show|find|list)\s+(?:undervalued|companies?\s+trading\s+below\s+(?:analyst\s+)?target)/i,
         handler: async () => {
-          const companies = await prisma.company.findMany({
+          // Fetch all companies with both price and target price
+          const allCompanies = await prisma.company.findMany({
             where: {
               currentPrice: { not: null },
-              analystTargetPrice: { not: null },
-              AND: [
-                { currentPrice: { lt: prisma.company.fields.analystTargetPrice } }
-              ]
+              analystTargetPrice: { not: null }
             },
             select: {
               ticker: true,
@@ -666,21 +664,21 @@ export async function POST(request: Request) {
               analystTargetPrice: true,
               peRatio: true,
               marketCap: true
-            },
-            orderBy: { currentPrice: 'asc' },
-            take: 50
+            }
           });
 
-          // Calculate upside for each company
-          const companiesWithUpside = companies.map(c => ({
-            ...c,
-            upside: c.currentPrice && c.analystTargetPrice
-              ? ((c.analystTargetPrice - c.currentPrice) / c.currentPrice * 100).toFixed(1)
-              : null
-          }));
+          // Filter to companies trading below analyst target
+          const undervaluedCompanies = allCompanies
+            .filter(c => c.currentPrice! < c.analystTargetPrice!)
+            .map(c => ({
+              ...c,
+              upside: ((c.analystTargetPrice! - c.currentPrice!) / c.currentPrice! * 100).toFixed(1)
+            }))
+            .sort((a, b) => parseFloat(b.upside) - parseFloat(a.upside)) // Sort by highest upside
+            .slice(0, 50);
 
           return {
-            companies: companiesWithUpside,
+            companies: undervaluedCompanies,
             message: `Companies trading below analyst target price`
           };
         }
