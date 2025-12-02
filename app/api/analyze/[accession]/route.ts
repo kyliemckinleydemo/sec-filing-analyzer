@@ -248,7 +248,7 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
 
       // REMOVED: Prior filing XBRL fetch to reduce rate limiting
       // Prior period comparison is nice-to-have but not critical
-      const priorCompanyFacts = null;
+      const priorCompanyFacts: any = null;
 
       // Log results
       if (companyFacts) {
