@@ -67,3 +67,66 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Print styles for filing reports */
+@media print {
+  /* Hide unnecessary elements */
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Remove backgrounds and shadows for print */
+  body {
+    background: white !important;
+  }
+
+  /* Page breaks between major sections */
+  [data-print-section="prediction"],
+  [data-print-section="analysis"],
+  [data-print-section="concern"],
+  [data-print-section="analyst"],
+  [data-print-section="financial"],
+  [data-print-section="risks"],
+  [data-print-section="stock-chart"] {
+    page-break-before: always;
+    page-break-inside: avoid;
+  }
+
+  /* Avoid breaking inside cards */
+  .card,
+  [class*="Card"] {
+    page-break-inside: avoid;
+  }
+
+  /* Ensure charts and graphs print well */
+  svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Remove gradients for better print quality */
+  [class*="gradient"] {
+    background: white !important;
+  }
+
+  /* Simplify borders for print */
+  [class*="border-"] {
+    border-color: #e5e7eb !important;
+  }
+
+  /* Make text more readable */
+  .text-slate-600,
+  .text-slate-700 {
+    color: #374151 !important;
+  }
+
+  /* Add page header/footer space */
+  @page {
+    margin: 1in 0.75in;
+  }
+
+  /* First section should not have page break */
+  [data-print-section="summary"] {
+    page-break-before: avoid;
+  }
+}

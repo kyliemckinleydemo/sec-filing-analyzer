@@ -438,18 +438,30 @@ export default function FilingPage() {
     );
   }
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
         <div className="mb-8">
-          <Button
-            variant="outline"
-            onClick={() => router.back()}
-            className="mb-4"
-          >
-            ← Back
-          </Button>
+          <div className="flex gap-2 mb-4 print:hidden">
+            <Button
+              variant="outline"
+              onClick={() => router.back()}
+            >
+              ← Back
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handlePrint}
+              className="gap-2"
+            >
+              <span>🖨️</span> Print Report
+            </Button>
+          </div>
           <h1 className="text-4xl font-bold">{data.filing.company?.name || 'Company'}</h1>
           <p className="text-lg text-slate-600 mt-2">
             {data.filing.filingType} Filed on{' '}
@@ -459,7 +471,7 @@ export default function FilingPage() {
 
         {/* Filing Content Summary - What the filing actually contains */}
         {data.analysis?.filingContentSummary && (
-          <Card className="mb-6 border-2 border-slate-300 bg-gradient-to-r from-slate-50 to-slate-100">
+          <Card className="mb-6 border-2 border-slate-300 bg-gradient-to-r from-slate-50 to-slate-100" data-print-section="summary">
             <CardHeader>
               <CardTitle className="text-2xl">📄 Filing Summary</CardTitle>
               <CardDescription>What this {data.filing.filingType} filing contains</CardDescription>
@@ -476,7 +488,7 @@ export default function FilingPage() {
 
         {/* ML Prediction Card - NEW 80% ACCURACY MODEL */}
         {data.mlPrediction && (
-          <Card className="mb-6 border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-blue-50 shadow-lg">
+          <Card className="mb-6 border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-blue-50 shadow-lg" data-print-section="prediction">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-2xl">🎯 ML Price Prediction</CardTitle>
@@ -1088,7 +1100,7 @@ export default function FilingPage() {
 
         {/* Stock Price Performance Chart */}
         {stockPrices && stockPrices.prices && stockPrices.prices.length > 0 && (
-          <Card className="mb-6 border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
+          <Card className="mb-6 border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50" data-print-section="stock-chart">
             <CardHeader>
               <CardTitle className="text-2xl">📊 Stock Price Performance</CardTitle>
               <CardDescription>
@@ -1234,7 +1246,7 @@ export default function FilingPage() {
 
         {/* Financial Metrics Card */}
         {data.analysis?.financialMetrics && (
-          <Card className="mb-6 border-2 border-green-200 bg-gradient-to-r from-green-50 to-emerald-50">
+          <Card className="mb-6 border-2 border-green-200 bg-gradient-to-r from-green-50 to-emerald-50" data-print-section="financial">
             <CardHeader>
               <CardTitle className="text-2xl">💰 Key Financial Metrics</CardTitle>
               <CardDescription>Extracted from filing content</CardDescription>
@@ -1504,7 +1516,7 @@ export default function FilingPage() {
 
           {/* Risk Analysis */}
           {data.analysis && (
-            <Card>
+            <Card data-print-section="risks">
               <CardHeader>
                 <CardTitle>⚠️ Risk Analysis</CardTitle>
                 <CardDescription>
@@ -1545,7 +1557,7 @@ export default function FilingPage() {
 
           {/* Concern Assessment */}
           {data.analysis?.concernAssessment && (
-            <Card>
+            <Card data-print-section="concern">
               <CardHeader>
                 <CardTitle>⚠️ Concern Assessment</CardTitle>
                 <CardDescription>
@@ -1614,7 +1626,7 @@ export default function FilingPage() {
 
           {/* Analyst Activity & Sentiment */}
           {data.analysis?.analyst && (
-            <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+            <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50" data-print-section="analyst">
               <CardHeader>
                 <CardTitle>📊 Analyst Activity & Sentiment (30 Days Before Filing)</CardTitle>
                 <CardDescription>
