@@ -224,7 +224,7 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
           if (txtResponse.ok) {
             const text = await txtResponse.text();
             console.log(`✅ Fetched filing text: ${text.length} characters`);
-            filingFetchResult = { success: true, text, error: null };
+            filingFetchResult = { success: true, text, error: '' };
           } else if (txtResponse.status === 403 || txtResponse.status === 429) {
             console.log(`⚠️ SEC Archives rate limited (${txtResponse.status}), proceeding with XBRL data only`);
             filingFetchResult = { success: false, text: '', error: 'rate_limited' };
