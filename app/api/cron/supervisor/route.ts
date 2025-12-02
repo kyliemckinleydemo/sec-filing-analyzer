@@ -7,13 +7,13 @@ export const maxDuration = 60;
 /**
  * Supervisor Cron Job: Monitor and fix stuck jobs
  *
- * Runs every 15 minutes to:
+ * Runs daily to:
  * - Detect stuck jobs (running > 10 min)
  * - Mark them as failed
  * - Check if daily jobs ran successfully in last 24h
  * - Send email alerts if critical issues detected
  *
- * Schedule: */15 * * * * (every 15 minutes)
+ * Schedule: 0 6 * * * (daily at 6 AM UTC)
  */
 
 interface SupervisorReport {
