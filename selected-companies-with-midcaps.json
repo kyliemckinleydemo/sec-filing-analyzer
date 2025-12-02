@@ -1,0 +1,1358 @@
+{
+  "generatedAt": "2025-10-14T14:01:46.208Z",
+  "totalSelected": 169,
+  "companies": [
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA CORP",
+      "marketCapB": "4456.6",
+      "sector": null,
+      "rank": 1,
+      "category": "Mega Cap (>$500B)"
+    },
+    {
+      "ticker": "MSFT",
+      "name": "MICROSOFT CORP",
+      "marketCapB": "3798.1",
+      "sector": null,
+      "rank": 2,
+      "category": "Mega Cap (>$500B)"
+    },
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "marketCapB": "3639.9",
+      "sector": null,
+      "rank": 3,
+      "category": "Mega Cap (>$500B)"
+    },
+    {
+      "ticker": "GOOGL",
+      "name": "Alphabet Inc.",
+      "marketCapB": "2866.1",
+      "sector": null,
+      "rank": 4,
+      "category": "Mega Cap (>$500B)"
+    },
+    {
+      "ticker": "AMZN",
+      "name": "AMAZON COM INC",
+      "marketCapB": "2307.6",
+      "sector": null,
+      "rank": 5,
+      "category": "Mega Cap (>$500B)"
+    },
+    {
+      "ticker": "META",
+      "name": "Meta Platforms, Inc.",
+      "marketCapB": "1771.8",
+      "sector": null,
+      "rank": 6,
+      "category": "Mega Cap (>$500B)"
+    },
+    {
+      "ticker": "AVGO",
+      "name": "Broadcom Inc.",
+      "marketCapB": "1533.0",
+      "sector": null,
+      "rank": 7,
+      "category": "Mega Cap (>$500B)"
+    },
+    {
+      "ticker": "TSLA",
+      "name": "Tesla, Inc.",
+      "marketCapB": "1374.9",
+      "sector": null,
+      "rank": 8,
+      "category": "Mega Cap (>$500B)"
+    },
+    {
+      "ticker": "ORCL",
+      "name": "ORACLE CORP",
+      "marketCapB": "835.2",
+      "sector": null,
+      "rank": 9,
+      "category": "Mega Cap (>$500B)"
+    },
+    {
+      "ticker": "JPM",
+      "name": "JPMORGAN CHASE & CO",
+      "marketCapB": "827.4",
+      "sector": null,
+      "rank": 10,
+      "category": "Mega Cap (>$500B)"
+    },
+    {
+      "ticker": "XOM",
+      "name": "EXXON MOBIL CORP",
+      "marketCapB": "472.1",
+      "sector": null,
+      "rank": 11,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "JNJ",
+      "name": "JOHNSON & JOHNSON",
+      "marketCapB": "459.3",
+      "sector": null,
+      "rank": 12,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "COST",
+      "name": "COSTCO WHOLESALE CORP /NEW",
+      "marketCapB": "412.2",
+      "sector": null,
+      "rank": 13,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "ABBV",
+      "name": "AbbVie Inc.",
+      "marketCapB": "407.2",
+      "sector": null,
+      "rank": 14,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "HD",
+      "name": "HOME DEPOT, INC.",
+      "marketCapB": "374.0",
+      "sector": null,
+      "rank": 15,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "BAC",
+      "name": "BANK OF AMERICA CORP /DE/",
+      "marketCapB": "360.3",
+      "sector": null,
+      "rank": 16,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "PG",
+      "name": "PROCTER & GAMBLE Co",
+      "marketCapB": "350.3",
+      "sector": null,
+      "rank": 17,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "AMD",
+      "name": "ADVANCED MICRO DEVICES INC",
+      "marketCapB": "348.5",
+      "sector": null,
+      "rank": 18,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "UNH",
+      "name": "UNITEDHEALTH GROUP INC",
+      "marketCapB": "321.1",
+      "sector": null,
+      "rank": 19,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "GE",
+      "name": "GENERAL ELECTRIC CO",
+      "marketCapB": "309.1",
+      "sector": null,
+      "rank": 20,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "CVX",
+      "name": "CHEVRON CORP",
+      "marketCapB": "300.0",
+      "sector": null,
+      "rank": 21,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "KO",
+      "name": "COCA COLA CO",
+      "marketCapB": "288.5",
+      "sector": null,
+      "rank": 22,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "CSCO",
+      "name": "CISCO SYSTEMS, INC.",
+      "marketCapB": "268.6",
+      "sector": null,
+      "rank": 23,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "IBM",
+      "name": "INTERNATIONAL BUSINESS MACHINES CORP",
+      "marketCapB": "258.8",
+      "sector": null,
+      "rank": 24,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "TMUS",
+      "name": "T-Mobile US, Inc.",
+      "marketCapB": "257.5",
+      "sector": null,
+      "rank": 25,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "PM",
+      "name": "Philip Morris International Inc.",
+      "marketCapB": "249.8",
+      "sector": null,
+      "rank": 26,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "WFC",
+      "name": "WELLS FARGO & COMPANY/MN",
+      "marketCapB": "248.7",
+      "sector": null,
+      "rank": 27,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "MS",
+      "name": "MORGAN STANLEY",
+      "marketCapB": "242.4",
+      "sector": null,
+      "rank": 28,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "GS",
+      "name": "GOLDMAN SACHS GROUP INC",
+      "marketCapB": "231.4",
+      "sector": null,
+      "rank": 29,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "ABT",
+      "name": "ABBOTT LABORATORIES",
+      "marketCapB": "230.7",
+      "sector": null,
+      "rank": 30,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "CAT",
+      "name": "CATERPILLAR INC",
+      "marketCapB": "230.2",
+      "sector": null,
+      "rank": 31,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "CRM",
+      "name": "Salesforce, Inc.",
+      "marketCapB": "230.1",
+      "sector": null,
+      "rank": 32,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "AXP",
+      "name": "AMERICAN EXPRESS CO",
+      "marketCapB": "220.1",
+      "sector": null,
+      "rank": 33,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "MRK",
+      "name": "Merck & Co., Inc.",
+      "marketCapB": "214.8",
+      "sector": null,
+      "rank": 34,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "LIN",
+      "name": "LINDE PLC",
+      "marketCapB": "212.8",
+      "sector": null,
+      "rank": 35,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "MCD",
+      "name": "MCDONALDS CORP",
+      "marketCapB": "211.9",
+      "sector": null,
+      "rank": 36,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "RTX",
+      "name": "RTX Corp",
+      "marketCapB": "211.1",
+      "sector": null,
+      "rank": 37,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "PEP",
+      "name": "PEPSICO INC",
+      "marketCapB": "205.2",
+      "sector": null,
+      "rank": 38,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "MU",
+      "name": "MICRON TECHNOLOGY INC",
+      "marketCapB": "203.8",
+      "sector": null,
+      "rank": 39,
+      "category": "Large Cap ($200-500B)"
+    },
+    {
+      "ticker": "TMO",
+      "name": "THERMO FISHER SCIENTIFIC INC.",
+      "marketCapB": "198.2",
+      "sector": null,
+      "rank": 40,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "DIS",
+      "name": "Walt Disney Co",
+      "marketCapB": "196.3",
+      "sector": null,
+      "rank": 41,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "T",
+      "name": "AT&T INC.",
+      "marketCapB": "185.0",
+      "sector": null,
+      "rank": 42,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "NOW",
+      "name": "ServiceNow, Inc.",
+      "marketCapB": "184.4",
+      "sector": null,
+      "rank": 43,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "INTU",
+      "name": "INTUIT INC.",
+      "marketCapB": "178.9",
+      "sector": null,
+      "rank": 44,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "BLK",
+      "name": "BlackRock, Inc.",
+      "marketCapB": "175.3",
+      "sector": null,
+      "rank": 45,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "C",
+      "name": "CITIGROUP INC",
+      "marketCapB": "172.9",
+      "sector": null,
+      "rank": 46,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "NEE",
+      "name": "NEXTERA ENERGY INC",
+      "marketCapB": "171.6",
+      "sector": null,
+      "rank": 47,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "VZ",
+      "name": "VERIZON COMMUNICATIONS INC",
+      "marketCapB": "168.0",
+      "sector": null,
+      "rank": 48,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "BKNG",
+      "name": "Booking Holdings Inc.",
+      "marketCapB": "167.4",
+      "sector": null,
+      "rank": 49,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "AMAT",
+      "name": "APPLIED MATERIALS INC /DE",
+      "marketCapB": "167.3",
+      "sector": null,
+      "rank": 50,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "SCHW",
+      "name": "SCHWAB CHARLES CORP",
+      "marketCapB": "166.9",
+      "sector": null,
+      "rank": 51,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "LRCX",
+      "name": "LAM RESEARCH CORP",
+      "marketCapB": "165.7",
+      "sector": null,
+      "rank": 52,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "QCOM",
+      "name": "QUALCOMM INC/DE",
+      "marketCapB": "165.6",
+      "sector": null,
+      "rank": 53,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "TJX",
+      "name": "TJX COMPANIES INC /DE/",
+      "marketCapB": "156.2",
+      "sector": null,
+      "rank": 54,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "AMGN",
+      "name": "AMGEN INC",
+      "marketCapB": "156.2",
+      "sector": null,
+      "rank": 55,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "TXN",
+      "name": "TEXAS INSTRUMENTS INC",
+      "marketCapB": "156.1",
+      "sector": null,
+      "rank": 56,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "ISRG",
+      "name": "INTUITIVE SURGICAL INC",
+      "marketCapB": "154.0",
+      "sector": null,
+      "rank": 57,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "ACN",
+      "name": "Accenture plc",
+      "marketCapB": "149.4",
+      "sector": null,
+      "rank": 58,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "APH",
+      "name": "AMPHENOL CORP /DE/",
+      "marketCapB": "148.6",
+      "sector": null,
+      "rank": 59,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "SPGI",
+      "name": "S&P Global Inc.",
+      "marketCapB": "148.4",
+      "sector": null,
+      "rank": 60,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "GILD",
+      "name": "GILEAD SCIENCES, INC.",
+      "marketCapB": "145.4",
+      "sector": null,
+      "rank": 61,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "DHR",
+      "name": "DANAHER CORP /DE/",
+      "marketCapB": "145.0",
+      "sector": null,
+      "rank": 62,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "ETN",
+      "name": "Eaton Corp plc",
+      "marketCapB": "143.7",
+      "sector": null,
+      "rank": 63,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "BSX",
+      "name": "BOSTON SCIENTIFIC CORP",
+      "marketCapB": "141.4",
+      "sector": null,
+      "rank": 64,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "ADBE",
+      "name": "ADOBE INC.",
+      "marketCapB": "141.3",
+      "sector": null,
+      "rank": 65,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "PFE",
+      "name": "PFIZER INC",
+      "marketCapB": "140.9",
+      "sector": null,
+      "rank": 66,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "PGR",
+      "name": "PROGRESSIVE CORP/OH/",
+      "marketCapB": "140.7",
+      "sector": null,
+      "rank": 67,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "SYK",
+      "name": "STRYKER CORP",
+      "marketCapB": "139.4",
+      "sector": null,
+      "rank": 68,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "UNP",
+      "name": "UNION PACIFIC CORP",
+      "marketCapB": "133.7",
+      "sector": null,
+      "rank": 69,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "LOW",
+      "name": "LOWES COMPANIES INC",
+      "marketCapB": "130.2",
+      "sector": null,
+      "rank": 70,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "COF",
+      "name": "CAPITAL ONE FINANCIAL CORP",
+      "marketCapB": "129.5",
+      "sector": null,
+      "rank": 71,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "KLAC",
+      "name": "KLA CORP",
+      "marketCapB": "129.4",
+      "sector": null,
+      "rank": 72,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "HON",
+      "name": "HONEYWELL INTERNATIONAL INC",
+      "marketCapB": "127.6",
+      "sector": null,
+      "rank": 73,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "DE",
+      "name": "DEERE & CO",
+      "marketCapB": "120.7",
+      "sector": null,
+      "rank": 74,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "ADP",
+      "name": "AUTOMATIC DATA PROCESSING INC",
+      "marketCapB": "115.5",
+      "sector": null,
+      "rank": 75,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "CEG",
+      "name": "Constellation Energy Corp",
+      "marketCapB": "115.1",
+      "sector": null,
+      "rank": 76,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "CB",
+      "name": "Chubb Ltd",
+      "marketCapB": "112.8",
+      "sector": null,
+      "rank": 77,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "MO",
+      "name": "ALTRIA GROUP, INC.",
+      "marketCapB": "111.8",
+      "sector": null,
+      "rank": 78,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "WELL",
+      "name": "WELLTOWER INC.",
+      "marketCapB": "111.0",
+      "sector": null,
+      "rank": 79,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "ADI",
+      "name": "ANALOG DEVICES INC",
+      "marketCapB": "110.8",
+      "sector": null,
+      "rank": 80,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "COP",
+      "name": "CONOCOPHILLIPS",
+      "marketCapB": "109.5",
+      "sector": null,
+      "rank": 81,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "SO",
+      "name": "SOUTHERN CO",
+      "marketCapB": "108.1",
+      "sector": null,
+      "rank": 82,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "VRTX",
+      "name": "VERTEX PHARMACEUTICALS INC / MA",
+      "marketCapB": "104.6",
+      "sector": null,
+      "rank": 83,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "PLD",
+      "name": "Prologis, Inc.",
+      "marketCapB": "103.3",
+      "sector": null,
+      "rank": 84,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "MMC",
+      "name": "MARSH & MCLENNAN COMPANIES, INC.",
+      "marketCapB": "101.8",
+      "sector": null,
+      "rank": 85,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "CVS",
+      "name": "CVS HEALTH Corp",
+      "marketCapB": "98.8",
+      "sector": null,
+      "rank": 86,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "DUK",
+      "name": "Duke Energy CORP",
+      "marketCapB": "98.8",
+      "sector": null,
+      "rank": 87,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "CME",
+      "name": "CME GROUP INC.",
+      "marketCapB": "97.8",
+      "sector": null,
+      "rank": 88,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "HCA",
+      "name": "HCA Healthcare, Inc.",
+      "marketCapB": "97.1",
+      "sector": null,
+      "rank": 89,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "NKE",
+      "name": "NIKE, Inc.",
+      "marketCapB": "96.4",
+      "sector": null,
+      "rank": 90,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "MCK",
+      "name": "MCKESSON CORP",
+      "marketCapB": "95.0",
+      "sector": null,
+      "rank": 91,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "NEM",
+      "name": "NEWMONT Corp /DE/",
+      "marketCapB": "93.5",
+      "sector": null,
+      "rank": 92,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "TT",
+      "name": "Trane Technologies plc",
+      "marketCapB": "92.2",
+      "sector": null,
+      "rank": 93,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "PH",
+      "name": "PARKER HANNIFIN CORP",
+      "marketCapB": "90.7",
+      "sector": null,
+      "rank": 94,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "ICE",
+      "name": "Intercontinental Exchange, Inc.",
+      "marketCapB": "90.2",
+      "sector": null,
+      "rank": 95,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "GD",
+      "name": "GENERAL DYNAMICS CORP",
+      "marketCapB": "89.6",
+      "sector": null,
+      "rank": 96,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "BMY",
+      "name": "BRISTOL MYERS SQUIBB CO",
+      "marketCapB": "89.5",
+      "sector": null,
+      "rank": 97,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "NOC",
+      "name": "NORTHROP GRUMMAN CORP /DE/",
+      "marketCapB": "89.3",
+      "sector": null,
+      "rank": 98,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "SBUX",
+      "name": "STARBUCKS CORP",
+      "marketCapB": "89.2",
+      "sector": null,
+      "rank": 99,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "CDNS",
+      "name": "CADENCE DESIGN SYSTEMS INC",
+      "marketCapB": "89.1",
+      "sector": null,
+      "rank": 100,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "WM",
+      "name": "WASTE MANAGEMENT INC",
+      "marketCapB": "88.3",
+      "sector": null,
+      "rank": 101,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "AMT",
+      "name": "AMERICAN TOWER CORP /MA/",
+      "marketCapB": "87.4",
+      "sector": null,
+      "rank": 102,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "MCO",
+      "name": "MOODYS CORP /DE/",
+      "marketCapB": "86.8",
+      "sector": null,
+      "rank": 103,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "ORLY",
+      "name": "O REILLY AUTOMOTIVE INC",
+      "marketCapB": "86.7",
+      "sector": null,
+      "rank": 104,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "SHW",
+      "name": "SHERWIN WILLIAMS CO",
+      "marketCapB": "83.0",
+      "sector": null,
+      "rank": 105,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "RCL",
+      "name": "ROYAL CARIBBEAN CRUISES LTD",
+      "marketCapB": "82.7",
+      "sector": null,
+      "rank": 106,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "SNPS",
+      "name": "SYNOPSYS INC",
+      "marketCapB": "81.5",
+      "sector": null,
+      "rank": 107,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "CI",
+      "name": "Cigna Group",
+      "marketCapB": "80.3",
+      "sector": null,
+      "rank": 108,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "ELV",
+      "name": "Elevance Health, Inc.",
+      "marketCapB": "79.5",
+      "sector": null,
+      "rank": 109,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "MDLZ",
+      "name": "Mondelez International, Inc.",
+      "marketCapB": "79.5",
+      "sector": null,
+      "rank": 110,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "MMM",
+      "name": "3M CO",
+      "marketCapB": "79.2",
+      "sector": null,
+      "rank": 111,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "EQIX",
+      "name": "EQUINIX INC",
+      "marketCapB": "78.3",
+      "sector": null,
+      "rank": 112,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "AON",
+      "name": "Aon plc",
+      "marketCapB": "77.7",
+      "sector": null,
+      "rank": 113,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "AJG",
+      "name": "Arthur J. Gallagher & Co.",
+      "marketCapB": "77.4",
+      "sector": null,
+      "rank": 114,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "ECL",
+      "name": "ECOLAB INC.",
+      "marketCapB": "77.2",
+      "sector": null,
+      "rank": 115,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "WMB",
+      "name": "WILLIAMS COMPANIES, INC.",
+      "marketCapB": "76.5",
+      "sector": null,
+      "rank": 116,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "MSI",
+      "name": "Motorola Solutions, Inc.",
+      "marketCapB": "76.0",
+      "sector": null,
+      "rank": 117,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "CTAS",
+      "name": "CINTAS CORP",
+      "marketCapB": "75.5",
+      "sector": null,
+      "rank": 118,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "HWM",
+      "name": "Howmet Aerospace Inc.",
+      "marketCapB": "74.2",
+      "sector": null,
+      "rank": 119,
+      "category": "Small-Mid Cap ($50-200B)"
+    },
+    {
+      "ticker": "EA",
+      "name": "ELECTRONIC ARTS INC.",
+      "marketCapB": "49.9",
+      "sector": null,
+      "rank": 120,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "CARR",
+      "name": "CARRIER GLOBAL Corp",
+      "marketCapB": "48.2",
+      "sector": null,
+      "rank": 121,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "SLB",
+      "name": "SCHLUMBERGER LIMITED/NV",
+      "marketCapB": "47.4",
+      "sector": null,
+      "rank": 122,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "GWW",
+      "name": "W.W. GRAINGER, INC.",
+      "marketCapB": "45.3",
+      "sector": null,
+      "rank": 123,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "AIG",
+      "name": "AMERICAN INTERNATIONAL GROUP, INC.",
+      "marketCapB": "45.0",
+      "sector": null,
+      "rank": 124,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "OKE",
+      "name": "ONEOK INC /NEW/",
+      "marketCapB": "43.5",
+      "sector": null,
+      "rank": 125,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "CPRT",
+      "name": "COPART INC",
+      "marketCapB": "42.5",
+      "sector": null,
+      "rank": 126,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "OXY",
+      "name": "OCCIDENTAL PETROLEUM CORP /DE/",
+      "marketCapB": "41.5",
+      "sector": null,
+      "rank": 127,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "FICO",
+      "name": "FAIR ISAAC CORP",
+      "marketCapB": "40.0",
+      "sector": null,
+      "rank": 128,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "WDC",
+      "name": "WESTERN DIGITAL CORP",
+      "marketCapB": "39.6",
+      "sector": null,
+      "rank": 129,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "A",
+      "name": "AGILENT TECHNOLOGIES, INC.",
+      "marketCapB": "38.7",
+      "sector": null,
+      "rank": 130,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "ROK",
+      "name": "ROCKWELL AUTOMATION, INC",
+      "marketCapB": "37.5",
+      "sector": null,
+      "rank": 131,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "CCL",
+      "name": "CARNIVAL CORP",
+      "marketCapB": "36.4",
+      "sector": null,
+      "rank": 132,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "PRU",
+      "name": "PRUDENTIAL FINANCIAL INC",
+      "marketCapB": "34.9",
+      "sector": null,
+      "rank": 133,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "VRSK",
+      "name": "Verisk Analytics, Inc.",
+      "marketCapB": "34.0",
+      "sector": null,
+      "rank": 134,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "TRGP",
+      "name": "Targa Resources Corp.",
+      "marketCapB": "32.8",
+      "sector": null,
+      "rank": 135,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "HPE",
+      "name": "Hewlett Packard Enterprise Co",
+      "marketCapB": "32.2",
+      "sector": null,
+      "rank": 136,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "BRO",
+      "name": "BROWN & BROWN, INC.",
+      "marketCapB": "31.6",
+      "sector": null,
+      "rank": 137,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "NRG",
+      "name": "NRG ENERGY, INC.",
+      "marketCapB": "31.0",
+      "sector": null,
+      "rank": 138,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "IR",
+      "name": "Ingersoll Rand Inc.",
+      "marketCapB": "30.2",
+      "sector": null,
+      "rank": 139,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "WRB",
+      "name": "BERKLEY W R CORP",
+      "marketCapB": "29.5",
+      "sector": null,
+      "rank": 140,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "EFX",
+      "name": "EQUIFAX INC",
+      "marketCapB": "28.4",
+      "sector": null,
+      "rank": 141,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "AEE",
+      "name": "AMEREN CORP",
+      "marketCapB": "28.0",
+      "sector": null,
+      "rank": 142,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "KEYS",
+      "name": "Keysight Technologies, Inc.",
+      "marketCapB": "27.4",
+      "sector": null,
+      "rank": 143,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "TDY",
+      "name": "TELEDYNE TECHNOLOGIES INC",
+      "marketCapB": "26.6",
+      "sector": null,
+      "rank": 144,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "EXPE",
+      "name": "Expedia Group, Inc.",
+      "marketCapB": "26.0",
+      "sector": null,
+      "rank": 145,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "SYF",
+      "name": "Synchrony Financial",
+      "marketCapB": "25.3",
+      "sector": null,
+      "rank": 146,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "ULTA",
+      "name": "Ulta Beauty, Inc.",
+      "marketCapB": "24.6",
+      "sector": null,
+      "rank": 147,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "LDOS",
+      "name": "Leidos Holdings, Inc.",
+      "marketCapB": "24.1",
+      "sector": null,
+      "rank": 148,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "PTC",
+      "name": "PTC INC.",
+      "marketCapB": "23.6",
+      "sector": null,
+      "rank": 149,
+      "category": "Mid Cap ($20-50B)"
+    },
+    {
+      "ticker": "WAT",
+      "name": "WATERS CORP /DE/",
+      "marketCapB": "19.7",
+      "sector": null,
+      "rank": 150,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "PKG",
+      "name": "PACKAGING CORP OF AMERICA",
+      "marketCapB": "18.6",
+      "sector": null,
+      "rank": 151,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "GPC",
+      "name": "GENUINE PARTS CO",
+      "marketCapB": "18.1",
+      "sector": null,
+      "rank": 152,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "ESS",
+      "name": "ESSEX PROPERTY TRUST, INC.",
+      "marketCapB": "17.7",
+      "sector": null,
+      "rank": 153,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "CTRA",
+      "name": "Coterra Energy Inc.",
+      "marketCapB": "17.4",
+      "sector": null,
+      "rank": 154,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "SNA",
+      "name": "Snap-on Inc",
+      "marketCapB": "17.1",
+      "sector": null,
+      "rank": 155,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "MAA",
+      "name": "MID AMERICA APARTMENT COMMUNITIES INC.",
+      "marketCapB": "16.1",
+      "sector": null,
+      "rank": 156,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "IFF",
+      "name": "INTERNATIONAL FLAVORS & FRAGRANCES INC",
+      "marketCapB": "15.3",
+      "sector": null,
+      "rank": 157,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "ALLE",
+      "name": "Allegion plc",
+      "marketCapB": "14.9",
+      "sector": null,
+      "rank": 158,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "DOW",
+      "name": "DOW INC.",
+      "marketCapB": "14.6",
+      "sector": null,
+      "rank": 159,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "LYB",
+      "name": "LyondellBasell Industries N.V.",
+      "marketCapB": "14.4",
+      "sector": null,
+      "rank": 160,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "KIM",
+      "name": "KIMCO REALTY CORP",
+      "marketCapB": "14.1",
+      "sector": null,
+      "rank": 161,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "BLDR",
+      "name": "Builders FirstSource, Inc.",
+      "marketCapB": "13.5",
+      "sector": null,
+      "rank": 162,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "REG",
+      "name": "REGENCY CENTERS CORP",
+      "marketCapB": "12.9",
+      "sector": null,
+      "rank": 163,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "ARE",
+      "name": "ALEXANDRIA REAL ESTATE EQUITIES, INC.",
+      "marketCapB": "12.6",
+      "sector": null,
+      "rank": 164,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "RNR",
+      "name": "RENAISSANCERE HOLDINGS LTD",
+      "marketCapB": "12.3",
+      "sector": null,
+      "rank": 165,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "WTRG",
+      "name": "Essential Utilities, Inc.",
+      "marketCapB": "11.4",
+      "sector": null,
+      "rank": 166,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "SJM",
+      "name": "J M SMUCKER Co",
+      "marketCapB": "11.2",
+      "sector": null,
+      "rank": 167,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "GL",
+      "name": "GLOBE LIFE INC.",
+      "marketCapB": "11.0",
+      "sector": null,
+      "rank": 168,
+      "category": "Small Cap ($10-20B)"
+    },
+    {
+      "ticker": "SF",
+      "name": "STIFEL FINANCIAL CORP",
+      "marketCapB": "10.9",
+      "sector": null,
+      "rank": 169,
+      "category": "Small Cap ($10-20B)"
+    }
+  ]
+}

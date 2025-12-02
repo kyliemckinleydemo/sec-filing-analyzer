@@ -1,0 +1,91 @@
+🚀 CHAMPION VS CHALLENGER MODEL COMPARISON
+
+════════════════════════════════════════════════════════════════════════════════
+
+Testing:
+  LEGACY MODEL:   riskScore + sentimentScore (original features)
+  CHAMPION MODEL: concernLevel (synthesized multi-factor assessment)
+
+════════════════════════════════════════════════════════════════════════════════
+
+🏋️  Training LEGACY model (riskScore + sentimentScore)...
+
+════════════════════════════════════════════════════════════════════════════════
+LEGACY MODEL (riskScore + sentimentScore)
+Direction Accuracy: 44.8% (±8.5)
+MAE: 5.233
+R²: -0.340
+
+/Users/johnmckinley/sec-filing-analyzer/scripts/train_legacy_model.py:43: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.
+The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.
+
+For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.
+
+
+  X[col].fillna(X[col].median(), inplace=True)
+
+
+🏋️  Training CHAMPION model (concernLevel)...
+
+════════════════════════════════════════════════════════════════════════════════
+CHAMPION MODEL (concernLevel)
+Direction Accuracy: 49.0% (±8.1)
+MAE: 5.016
+R²: -0.234
+
+/Users/johnmckinley/sec-filing-analyzer/scripts/train_champion_model_simple.py:42: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.
+The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.
+
+For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.
+
+
+  X[col].fillna(X[col].median(), inplace=True)
+
+
+
+
+════════════════════════════════════════════════════════════════════════════════
+   CHAMPION VS CHALLENGER COMPARISON REPORT
+════════════════════════════════════════════════════════════════════════════════
+
+📊 RESULTS SUMMARY
+
+────────────────────────────────────────────────────────────────────────────────
+Model                     Feature                        Direction %     MAE       
+────────────────────────────────────────────────────────────────────────────────
+LEGACY MODEL              riskScore + sentimentScore     44.8% ±8.5  5.233
+CHAMPION MODEL            concernLevel                   49.0% ±8.1  5.016
+────────────────────────────────────────────────────────────────────────────────
+
+📈 ACCURACY COMPARISON
+
+✅ CHAMPION WINS by 4.1 percentage points!
+   Champion: 49.0% accuracy
+   Legacy:   44.8% accuracy
+
+📉 ERROR COMPARISON (lower is better)
+
+✅ CHAMPION WINS with 0.216 lower MAE!
+   Champion MAE: 5.016
+   Legacy MAE:   5.233
+
+════════════════════════════════════════════════════════════════════════════════
+   VERDICT
+════════════════════════════════════════════════════════════════════════════════
+
+🏆 CHAMPION MODEL (concernLevel) is the WINNER!
+
+   The concernLevel feature (synthesizing risk + sentiment + financials)
+   provides better predictions than the legacy riskScore + sentimentScore.
+
+   ✅ RECOMMENDATION: Deploy champion model with concernLevel to production
+
+════════════════════════════════════════════════════════════════════════════════
+
+📝 Full report saved to: champion-challenger-final-report.txt
+
+npm notice
+npm notice New patch version of npm available! 11.6.0 -> 11.6.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+npm notice To update run: npm install -g npm@11.6.2
+npm notice

@@ -1,0 +1,167 @@
+================================================================================
+   CHAMPION MODEL TRAINING WITH CONCERN LEVEL
+================================================================================
+📊 Loading data with concernLevel feature...
+   Loaded 352 samples with concernLevel
+
+🔧 Preparing features (use_concern=True)...
+   ✅ Using CONCERN LEVEL (excluding legacy riskScore/sentimentScore)
+   Dropping 14 features with >50% missing: ['analystTargetPrice', 'priceToTarget', 'ma30', 'ma50', 'ma200', 'priceToMA30', 'priceToMA50', 'rsi14', 'macd', 'volatility30', 'return30d', 'spxReturn7d', 'spxReturn30d', 'vixClose']
+   Features: 19
+   Samples: 352
+   Key feature: concernLevel ✓
+
+📈 Target Statistics:
+   Mean return: 0.50%
+   Std dev: 6.57%
+   Min: -21.07%, Max: 26.97%
+   % Positive: 52.6%
+
+🎯 Feature Importance Analysis...
+
+   Top 15 Most Important Features:
+    1. concernLevel                  : 0.1537
+    2. priceToLow                    : 0.0982
+    3. netUpgrades                   : 0.0800
+    4. priceToHigh                   : 0.0782
+    5. marketCap                     : 0.0679
+    6. forwardPE                     : 0.0598
+    7. peRatio                       : 0.0596
+    8. analystUpsidePotential        : 0.0541
+    9. analystCoverage               : 0.0464
+   10. downgradesLast30d             : 0.0455
+   11. analystConsensusScore         : 0.0400
+   12. is_10Q                        : 0.0396
+   13. currentPrice                  : 0.0329
+   14. fiftyTwoWeekLow               : 0.0325
+   15. is_10K                        : 0.0314
+
+================================================================================
+   MODEL COMPARISON (WITH CONCERN LEVEL)
+================================================================================
+
+🔬 Evaluating Linear (OLS)...
+   Fold 1: Direction=48.3%, MAE=6.331, R²=-0.757
+   Fold 2: Direction=53.4%, MAE=4.838, R²=-0.061
+   Fold 3: Direction=55.2%, MAE=4.811, R²=0.064
+   Fold 4: Direction=32.8%, MAE=5.425, R²=-0.399
+   Fold 5: Direction=53.4%, MAE=4.339, R²=0.007
+
+   ✅ Average: Direction=48.6% (±8.3), MAE=5.149, R²=-0.229
+
+🔬 Evaluating Ridge (L2)...
+   Fold 1: Direction=48.3%, MAE=6.139, R²=-0.668
+   Fold 2: Direction=51.7%, MAE=4.833, R²=-0.059
+   Fold 3: Direction=55.2%, MAE=4.800, R²=0.067
+   Fold 4: Direction=32.8%, MAE=5.412, R²=-0.402
+   Fold 5: Direction=50.0%, MAE=4.339, R²=0.004
+
+   ✅ Average: Direction=47.6% (±7.8), MAE=5.105, R²=-0.212
+
+🔬 Evaluating Lasso (L1)...
+   Fold 1: Direction=48.3%, MAE=5.900, R²=-0.585
+   Fold 2: Direction=53.4%, MAE=4.822, R²=-0.062
+   Fold 3: Direction=60.3%, MAE=4.808, R²=0.044
+   Fold 4: Direction=34.5%, MAE=5.182, R²=-0.335
+   Fold 5: Direction=46.6%, MAE=4.281, R²=-0.004
+
+   ✅ Average: Direction=48.6% (±8.5), MAE=4.998, R²=-0.188
+
+🔬 Evaluating ElasticNet...
+   Fold 1: Direction=48.3%, MAE=5.811, R²=-0.539
+   Fold 2: Direction=53.4%, MAE=4.791, R²=-0.046
+   Fold 3: Direction=55.2%, MAE=4.818, R²=0.050
+   Fold 4: Direction=34.5%, MAE=5.154, R²=-0.328
+   Fold 5: Direction=50.0%, MAE=4.289, R²=-0.001
+
+   ✅ Average: Direction=48.3% (±7.3), MAE=4.973, R²=-0.173
+
+🔬 Evaluating RandomForest...
+   Fold 1: Direction=46.6%, MAE=5.688, R²=-0.523
+   Fold 2: Direction=55.2%, MAE=4.850, R²=-0.171
+   Fold 3: Direction=51.7%, MAE=5.398, R²=-0.159
+   Fold 4: Direction=34.5%, MAE=5.411, R²=-0.474
+   Fold 5: Direction=56.9%, MAE=3.734, R²=0.158
+
+   ✅ Average: Direction=49.0% (±8.1), MAE=5.016, R²=-0.234
+
+🔬 Evaluating GradientBoosting...
+   Fold 1: Direction=48.3%, MAE=6.436, R²=-0.879
+   Fold 2: Direction=53.4%, MAE=5.402, R²=-0.328
+   Fold 3: Direction=53.4%, MAE=5.381, R²=-0.177
+   Fold 4: Direction=31.0%, MAE=6.510, R²=-1.067
+   Fold 5: Direction=58.6%, MAE=4.399, R²=0.040
+
+   ✅ Average: Direction=49.0% (±9.5), MAE=5.626, R²=-0.482
+
+================================================================================
+   RESULTS SUMMARY
+================================================================================
+
+Model                Direction %     MAE        R²        
+--------------------------------------------------------------------------------
+RandomForest           49.0% ±8.1     5.016    -0.234
+GradientBoosting       49.0% ±9.5     5.626    -0.482
+Linear (OLS)           48.6% ±8.3     5.149    -0.229
+Lasso (L1)             48.6% ±8.5     4.998    -0.188
+ElasticNet             48.3% ±7.3     4.973    -0.173
+Ridge (L2)             47.6% ±7.8     5.105    -0.212
+
+🏆 BEST CHAMPION MODEL: RandomForest
+   Direction Accuracy: 49.0% (±8.1%)
+   MAE: 5.016
+   R²: -0.234
+
+🏆 Training final RandomForest model on full dataset...
+
+   Feature Importances (Top 15):
+   concernLevel                  : 0.146731
+   priceToLow                    : 0.106429
+   priceToHigh                   : 0.083251
+   netUpgrades                   : 0.080872
+   marketCap                     : 0.067458
+   forwardPE                     : 0.063487
+   peRatio                       : 0.059388
+   analystUpsidePotential        : 0.053523
+   analystCoverage               : 0.047072
+   analystConsensusScore         : 0.044347
+   downgradesLast30d             : 0.042188
+   is_10Q                        : 0.036385
+   is_10K                        : 0.032727
+   fiftyTwoWeekLow               : 0.029866
+   currentPrice                  : 0.029178
+
+💾 Saving champion model...
+   ✅ Saved to models/champion_model.pkl
+
+================================================================================
+   SEGMENT ANALYSIS
+================================================================================
+
+   MEGA-CAP (97 samples):
+      Direction Accuracy: 81.4%
+      MAE: 3.893
+
+   LARGE-CAP (130 samples):
+      Direction Accuracy: 81.5%
+      MAE: 1.868
+
+   MID-CAP (91 samples):
+      Direction Accuracy: 85.7%
+      MAE: 1.868
+
+   SMALL-CAP (34 samples):
+      Direction Accuracy: 76.5%
+      MAE: 1.696
+
+================================================================================
+   ✅ CHAMPION MODEL TRAINING COMPLETE
+================================================================================
+
+   Best Model: RandomForest
+   Direction Accuracy: 49.0%
+   Uses concernLevel: YES ✓
+
+   📋 NEXT STEP:
+      Run champion-challenger comparison: npx tsx scripts/champion-challenger-final.ts
+

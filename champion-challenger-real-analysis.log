@@ -1,0 +1,43 @@
+
+🏁 Starting Champion-Challenger Analysis
+
+📊 Extracting training data from database...
+
+Found 7 filings with actual returns
+
+✅ Extracted 7 complete training samples
+
+📈 Feature Completeness:
+  filingType                     100.0%
+  riskScore                      100.0%
+  sentimentScore                 100.0%
+  marketCap                      100.0%
+  currentPrice                   100.0%
+  peRatio                        100.0%
+  forwardPE                      100.0%
+  fiftyTwoWeekHigh               100.0%
+  fiftyTwoWeekLow                100.0%
+  analystRatingCount             100.0%
+  epsActual                      100.0%
+  epsEstimateCurrentQ            100.0%
+  epsEstimateCurrentY            100.0%
+  epsEstimateNextY               100.0%
+  volume                         100.0%
+  averageVolume                  100.0%
+  priceToHigh                    100.0%
+  priceToLow                     100.0%
+  volumeRatio                    100.0%
+  dividendYield                  57.1%
+  analystTargetPrice             0.0%
+  analystBuyCount                0.0%
+  analystHoldCount               0.0%
+  analystSellCount               0.0%
+  epsEstimateNextQ               0.0%
+  revenueEstimateCurrentQ        0.0%
+  revenueEstimateCurrentY        0.0%
+  beta                           0.0%
+  priceToTarget                  0.0%
+  analystBullishRatio            0.0%
+
+❌ Insufficient training data. Need at least 50 samples with actual returns.
+   Run stock price backfill to populate actual7dReturn values.

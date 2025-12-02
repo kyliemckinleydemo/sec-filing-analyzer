@@ -319,10 +319,10 @@ model PaperTrade {
   direction         String   // "LONG" or "SHORT"
 
   // Entry
-  entryDate         DateTime
-  entryPrice        Float
-  shares            Int
-  entryValue        Float    // shares * entryPrice
+  entryDate         DateTime?  // Null for PENDING trades
+  entryPrice        Float?     // Null for PENDING trades
+  shares            Int?       // Null for PENDING trades
+  entryValue        Float?     // Null for PENDING trades
 
   // Exit
   exitDate          DateTime?
@@ -340,7 +340,7 @@ model PaperTrade {
   actualReturn      Float?   // Actual return after exit
 
   // Status
-  status            String   // "OPEN", "CLOSED", "CANCELLED"
+  status            String   // "PENDING", "OPEN", "CLOSED", "CANCELLED"
 
   // Risk management
   stopLoss          Float?   // Auto-exit if price drops below

@@ -1,0 +1,162 @@
+🔍 ANALYZING MEGA-CAP AND LARGE-CAP CHARACTERISTICS
+
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Sample Distribution:
+   Mega-cap: 146
+   Large-cap: 216
+   Mid-cap: 214
+   Small-cap: 111
+
+
+════════════════════════════════════════════════════════════════════════════════
+📈 MEGA-CAP ANALYSIS (146 samples)
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Return Characteristics:
+   Average 7-day return: 166.43%
+   Std deviation: 824.22%
+   Positive returns: 86/146 (58.9%)
+   Negative returns: 60/146 (41.1%)
+   Min: -1582.23%
+   Max: 2697.20%
+
+🎯 AI Analysis Scores:
+   Average risk score: 1.2
+   Average sentiment score: 0.0
+
+👥 Analyst Coverage:
+   Filings with analyst data: 126/146
+   Average # of analysts: 41.6
+   Max analysts: 62
+
+📈 Analyst Activity (7 days before filing):
+   Filings with activity: 12/146 (8.2%)
+   Total upgrades: 13
+   Total downgrades: 10
+   Upgrades per active filing: 1.08
+   Downgrades per active filing: 0.83
+
+📊 Data Completeness:
+   Filing date range: 2023-10-20 to 2025-10-02
+
+
+════════════════════════════════════════════════════════════════════════════════
+📈 LARGE-CAP ANALYSIS (216 samples)
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Return Characteristics:
+   Average 7-day return: 40.59%
+   Std deviation: 464.05%
+   Positive returns: 122/216 (56.5%)
+   Negative returns: 94/216 (43.5%)
+   Min: -2107.17%
+   Max: 2223.72%
+
+🎯 AI Analysis Scores:
+   Average risk score: 2.2
+   Average sentiment score: 0.0
+
+👥 Analyst Coverage:
+   Filings with analyst data: 165/216
+   Average # of analysts: 27.5
+   Max analysts: 51
+
+📈 Analyst Activity (7 days before filing):
+   Filings with activity: 11/216 (5.1%)
+   Total upgrades: 8
+   Total downgrades: 4
+   Upgrades per active filing: 0.73
+   Downgrades per active filing: 0.36
+
+📊 Data Completeness:
+   Filing date range: 2023-10-18 to 2025-10-09
+
+
+════════════════════════════════════════════════════════════════════════════════
+📈 MID-CAP ANALYSIS (214 samples)
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Return Characteristics:
+   Average 7-day return: -22.63%
+   Std deviation: 469.44%
+   Positive returns: 98/214 (45.8%)
+   Negative returns: 116/214 (54.2%)
+   Min: -2071.06%
+   Max: 2084.19%
+
+🎯 AI Analysis Scores:
+   Average risk score: 3.8
+   Average sentiment score: 0.0
+
+👥 Analyst Coverage:
+   Filings with analyst data: 99/214
+   Average # of analysts: 26.4
+   Max analysts: 39
+
+📈 Analyst Activity (7 days before filing):
+   Filings with activity: 7/214 (3.3%)
+   Total upgrades: 3
+   Total downgrades: 4
+   Upgrades per active filing: 0.43
+   Downgrades per active filing: 0.57
+
+📊 Data Completeness:
+   Filing date range: 2023-10-26 to 2025-10-10
+
+
+════════════════════════════════════════════════════════════════════════════════
+📈 SMALL-CAP ANALYSIS (111 samples)
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Return Characteristics:
+   Average 7-day return: -46.69%
+   Std deviation: 478.02%
+   Positive returns: 49/111 (44.1%)
+   Negative returns: 61/111 (55.0%)
+   Min: -1339.55%
+   Max: 1405.77%
+
+🎯 AI Analysis Scores:
+   Average risk score: 4.6
+   Average sentiment score: 0.0
+
+👥 Analyst Coverage:
+   Filings with analyst data: 34/111
+   Average # of analysts: 16.7
+   Max analysts: 33
+
+📈 Analyst Activity (7 days before filing):
+   Filings with activity: 4/111 (3.6%)
+   Total upgrades: 4
+   Total downgrades: 0
+   Upgrades per active filing: 1.00
+   Downgrades per active filing: 0.00
+
+📊 Data Completeness:
+   Filing date range: 2025-07-15 to 2025-10-10
+
+
+════════════════════════════════════════════════════════════════════════════════
+💡 KEY INSIGHTS FOR MEGA/LARGE-CAP IMPROVEMENT
+════════════════════════════════════════════════════════════════════════════════
+
+1. VOLATILITY COMPARISON:
+   Mega-cap std dev: 824.22%
+   Large-cap std dev: 464.05%
+   Mid-cap std dev: 469.44%
+   → Higher volatility = harder to predict
+
+2. ANALYST COVERAGE:
+   → Mega/large-caps have MORE analyst coverage
+   → Analyst activity features should help more for these segments
+
+3. FEATURE AVAILABILITY:
+   → Check if momentum indicators (MA, RSI) are available
+   → Check if macro indicators (VIX, S&P) are available
+
+4. POTENTIAL IMPROVEMENTS:
+   ✅ Widen analyst activity window (7d → 30d)
+   ✅ Add momentum indicators if available
+   ✅ Add macro context (market regime)
+   ✅ Consider interaction features (risk × sentiment)

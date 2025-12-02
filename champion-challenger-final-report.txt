@@ -1,0 +1,22 @@
+
+CHAMPION VS CHALLENGER COMPARISON REPORT
+Generated: 2025-10-21T21:42:07.743Z
+
+LEGACY MODEL (riskScore + sentimentScore):
+  Direction Accuracy: 44.8% (±8.5%)
+  MAE: 5.233
+  R²: -0.340
+
+CHAMPION MODEL (concernLevel):
+  Direction Accuracy: 49.0% (±8.1%)
+  MAE: 5.016
+  R²: -0.234
+
+DIFFERENCE:
+  Direction Accuracy: +4.1 percentage points
+  MAE: -0.216
+
+VERDICT:
+CHAMPION WINS
+
+RECOMMENDATION: Deploy champion model with concernLevel to production

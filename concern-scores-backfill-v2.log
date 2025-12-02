@@ -1,0 +1,2522 @@
+🔄 Starting Concern Score Backfill
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 Found 426 filings with analysis data
+
+⏭️  PG 10-Q (2023-10-18) - Already has concern score
+⏭️  NFLX 10-Q (2023-10-20) - Already has concern score
+⏭️  TSLA 10-Q (2023-10-23) - Already has concern score
+⏭️  KO 10-Q (2023-10-24) - Already has concern score
+⏭️  MSFT 10-Q (2023-10-24) - Already has concern score
+⏭️  TMUS 10-Q (2023-10-25) - Already has concern score
+⏭️  GOOG 10-Q (2023-10-25) - Already has concern score
+⏭️  VZ 10-Q (2023-10-26) - Already has concern score
+⏭️  MA 10-Q (2023-10-26) - Already has concern score
+⏭️  JNJ 10-Q (2023-10-27) - Already has concern score
+⏭️  AMZN 10-Q (2023-10-27) - Already has concern score
+⏭️  WFC 10-Q (2023-10-31) - Already has concern score
+⏭️  XOM 10-Q (2023-10-31) - Already has concern score
+⏭️  QCOM 10-K (2023-11-01) - Already has concern score
+⏭️  ABT 10-Q (2023-11-01) - Already has concern score
+⏭️  AMD 10-Q (2023-11-01) - Already has concern score
+⏭️  COP 10-Q (2023-11-02) - Already has concern score
+⏭️  MCD 10-Q (2023-11-02) - Already has concern score
+⏭️  LLY 10-Q (2023-11-02) - Already has concern score
+⏭️  CVX 10-Q (2023-11-02) - Already has concern score
+
+🔍 Processing: AAPL 10-K (2023-11-03)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: TMO 10-Q (2023-11-03)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+⏭️  MRK 10-Q (2023-11-03) - Already has concern score
+
+🔍 Processing: ABBV 10-Q (2023-11-06)
+❌ Failed: ABBV 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: UNH 10-Q (2023-11-06)
+❌ Failed: UNH 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: PFE 10-Q (2023-11-08)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 4
+
+🔍 Processing: V 10-K (2023-11-15)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: HD 10-Q (2023-11-21)
+❌ Failed: HD 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: NVDA 10-Q (2023-11-21)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: CSCO 10-Q (2023-11-21)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: DIS 10-K (2023-11-21)
+   Concern Level: 10.0/10 (CRITICAL)
+   Assessment: UNABLE_TO_ASSESS
+   Warning Signs: 6
+   Positive Factors: 3
+
+🔍 Processing: WMT 10-Q (2023-11-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: CRM 10-Q (2023-11-30)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 8
+
+🔍 Processing: ORCL 10-Q (2023-12-12)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+📈 Progress: 10/426 processed (21 skipped, 3 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 110 minutes
+
+
+🔍 Processing: AVGO 10-K (2023-12-14)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: COST 10-Q (2023-12-20)
+❌ Failed: COST 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: NKE 10-Q (2024-01-05)
+❌ Failed: NKE 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: ADBE 10-K (2024-01-17)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 5
+
+🔍 Processing: PG 10-Q (2024-01-23)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 3
+   Positive Factors: 5
+
+🔍 Processing: V 10-Q (2024-01-26)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 3
+   Positive Factors: 8
+
+🔍 Processing: NFLX 10-K (2024-01-26)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: TSLA 10-K (2024-01-29)
+   Concern Level: 6.0/10 (ELEVATED)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 7
+
+🔍 Processing: MSFT 10-Q (2024-01-30)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 11
+
+🔍 Processing: AMD 10-K (2024-01-31)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: QCOM 10-Q (2024-01-31)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+🔍 Processing: GOOG 10-K (2024-01-31)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+📈 Progress: 20/426 processed (21 skipped, 5 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 103 minutes
+
+
+🔍 Processing: TMUS 10-K (2024-02-02)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: AAPL 10-Q (2024-02-02)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: AMZN 10-K (2024-02-02)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: META 10-K (2024-02-02)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: DIS 10-Q (2024-02-07)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 4
+
+🔍 Processing: VZ 10-K (2024-02-09)
+❌ Failed: VZ 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: PEP 10-K (2024-02-09)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 3
+
+🔍 Processing: MA 10-K (2024-02-13)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: COP 10-K (2024-02-15)
+❌ Failed: COP 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: JNJ 10-K (2024-02-16)
+❌ Failed: JNJ 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: ABT 10-K (2024-02-16)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: KO 10-K (2024-02-20)
+❌ Failed: KO 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: WFC 10-K (2024-02-20)
+❌ Failed: WFC 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: CSCO 10-Q (2024-02-20)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: ABBV 10-K (2024-02-20)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+📈 Progress: 30/426 processed (21 skipped, 10 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 107 minutes
+
+
+🔍 Processing: LLY 10-K (2024-02-21)
+   Concern Level: 5.5/10 (ELEVATED)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 6
+
+🔍 Processing: NVDA 10-K (2024-02-21)
+   Concern Level: 1.5/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 8
+
+🔍 Processing: TMO 10-K (2024-02-22)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: PFE 10-K (2024-02-22)
+   Concern Level: 6.0/10 (ELEVATED)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 6
+
+🔍 Processing: MCD 10-K (2024-02-22)
+❌ Failed: MCD 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: CVX 10-K (2024-02-26)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: MRK 10-K (2024-02-26)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: XOM 10-K (2024-02-28)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: UNH 10-K (2024-02-28)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: CRM 10-K (2024-03-06)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 2
+
+🔍 Processing: ORCL 10-Q (2024-03-12)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+📈 Progress: 40/426 processed (21 skipped, 11 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 101 minutes
+
+
+🔍 Processing: HD 10-K (2024-03-13)
+❌ Failed: HD 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: COST 10-Q (2024-03-13)
+❌ Failed: COST 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: AVGO 10-Q (2024-03-14)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: WMT 10-K (2024-03-15)
+❌ Failed: WMT 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: ADBE 10-Q (2024-03-27)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: NKE 10-Q (2024-04-04)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 4
+
+🔍 Processing: PG 10-Q (2024-04-19)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 8
+
+🔍 Processing: NFLX 10-Q (2024-04-22)
+❌ Failed: NFLX 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: PEP 10-Q (2024-04-23)
+   Concern Level: 4.5/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 6
+
+🔍 Processing: TSLA 10-Q (2024-04-24)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: V 10-Q (2024-04-24)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 3
+   Positive Factors: 5
+
+🔍 Processing: MSFT 10-Q (2024-04-25)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 8
+
+🔍 Processing: META 10-Q (2024-04-25)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: VZ 10-Q (2024-04-25)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+📈 Progress: 50/426 processed (21 skipped, 15 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 100 minutes
+
+
+🔍 Processing: TMUS 10-Q (2024-04-26)
+❌ Failed: TMUS 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: GOOG 10-Q (2024-04-26)
+❌ Failed: GOOG 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: XOM 10-Q (2024-04-29)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: LLY 10-Q (2024-04-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: MA 10-Q (2024-05-01)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: AMZN 10-Q (2024-05-01)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: JNJ 10-Q (2024-05-01)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 5
+
+🔍 Processing: AMD 10-Q (2024-05-01)
+❌ Failed: AMD 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: QCOM 10-Q (2024-05-01)
+❌ Failed: QCOM 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: ABT 10-Q (2024-05-02)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: COP 10-Q (2024-05-02)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: KO 10-Q (2024-05-02)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: WFC 10-Q (2024-05-02)
+❌ Failed: WFC 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: CVX 10-Q (2024-05-02)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: TMO 10-Q (2024-05-03)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+📈 Progress: 60/426 processed (21 skipped, 20 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 102 minutes
+
+
+🔍 Processing: AAPL 10-Q (2024-05-03)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: MRK 10-Q (2024-05-03)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 3
+   Positive Factors: 5
+
+🔍 Processing: ABBV 10-Q (2024-05-03)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: DIS 10-Q (2024-05-07)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: PFE 10-Q (2024-05-08)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 3
+
+🔍 Processing: MCD 10-Q (2024-05-08)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: UNH 10-Q (2024-05-09)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: CSCO 10-Q (2024-05-21)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: HD 10-Q (2024-05-21)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: NVDA 10-Q (2024-05-29)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+📈 Progress: 70/426 processed (21 skipped, 20 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 97 minutes
+
+
+🔍 Processing: CRM 10-Q (2024-05-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+🔍 Processing: COST 10-Q (2024-06-06)
+❌ Failed: COST 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: WMT 10-Q (2024-06-07)
+❌ Failed: WMT 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: AVGO 10-Q (2024-06-13)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: ORCL 10-K (2024-06-20)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: ADBE 10-Q (2024-06-26)
+❌ Failed: ADBE 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: PEP 10-Q (2024-07-11)
+   Concern Level: 6.0/10 (ELEVATED)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 5
+
+🔍 Processing: NFLX 10-Q (2024-07-19)
+❌ Failed: NFLX 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: GOOG 10-Q (2024-07-24)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: V 10-Q (2024-07-24)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: TSLA 10-Q (2024-07-24)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: NKE 10-K (2024-07-25)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: JNJ 10-Q (2024-07-25)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 4
+
+🔍 Processing: VZ 10-Q (2024-07-25)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+📈 Progress: 80/426 processed (21 skipped, 24 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 94 minutes
+
+
+🔍 Processing: KO 10-Q (2024-07-29)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 6
+
+🔍 Processing: MSFT 10-K (2024-07-30)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 9
+
+🔍 Processing: ABT 10-Q (2024-07-31)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: TMUS 10-Q (2024-07-31)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: MA 10-Q (2024-07-31)
+❌ Failed: MA 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: QCOM 10-Q (2024-07-31)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: AMD 10-Q (2024-07-31)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: WFC 10-Q (2024-08-01)
+❌ Failed: WFC 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: META 10-Q (2024-08-01)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: COP 10-Q (2024-08-01)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 4
+
+🔍 Processing: AMZN 10-Q (2024-08-02)
+❌ Failed: AMZN 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: AAPL 10-Q (2024-08-02)
+❌ Failed: AAPL 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: TMO 10-Q (2024-08-02)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 5
+
+🔍 Processing: PG 10-K (2024-08-05)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+📈 Progress: 90/426 processed (21 skipped, 28 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 92 minutes
+
+
+🔍 Processing: PFE 10-Q (2024-08-05)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 3
+
+🔍 Processing: XOM 10-Q (2024-08-05)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+🔍 Processing: MRK 10-Q (2024-08-05)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 8
+
+🔍 Processing: DIS 10-Q (2024-08-07)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 4
+
+🔍 Processing: ABBV 10-Q (2024-08-07)
+❌ Failed: ABBV 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: CVX 10-Q (2024-08-07)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 5
+
+🔍 Processing: MCD 10-Q (2024-08-08)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: LLY 10-Q (2024-08-08)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 6
+
+🔍 Processing: UNH 10-Q (2024-08-09)
+❌ Failed: UNH 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: HD 10-Q (2024-08-20)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: NVDA 10-Q (2024-08-28)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+🔍 Processing: CRM 10-Q (2024-08-29)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+📈 Progress: 100/426 processed (21 skipped, 30 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 88 minutes
+
+
+🔍 Processing: WMT 10-Q (2024-08-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: CSCO 10-K (2024-09-05)
+   Concern Level: 10.0/10 (CRITICAL)
+   Assessment: UNABLE_TO_ASSESS
+   Warning Signs: 5
+   Positive Factors: 2
+
+🔍 Processing: ORCL 10-Q (2024-09-10)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: AVGO 10-Q (2024-09-11)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: ADBE 10-Q (2024-09-25)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: NKE 10-Q (2024-10-07)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: PEP 10-Q (2024-10-08)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 5
+
+🔍 Processing: COST 10-K (2024-10-09)
+❌ Failed: COST 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: NFLX 10-Q (2024-10-18)
+   Concern Level: 1.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 2
+   Positive Factors: 7
+
+🔍 Processing: PG 10-Q (2024-10-18)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 6
+
+🔍 Processing: TMUS 10-Q (2024-10-23)
+❌ Failed: TMUS 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: JNJ 10-Q (2024-10-23)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 3
+
+📈 Progress: 110/426 processed (21 skipped, 32 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 84 minutes
+
+
+🔍 Processing: KO 10-Q (2024-10-24)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 3
+   Positive Factors: 4
+
+🔍 Processing: TSLA 10-Q (2024-10-24)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: VZ 10-Q (2024-10-25)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 6
+   Positive Factors: 3
+
+🔍 Processing: BAC 10-Q (2024-10-29)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: LLY 10-Q (2024-10-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: JPM 10-Q (2024-10-30)
+❌ Failed: JPM 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: GOOG 10-Q (2024-10-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: AMD 10-Q (2024-10-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: MSFT 10-Q (2024-10-30)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 8
+
+🔍 Processing: WFC 10-Q (2024-10-31)
+❌ Failed: WFC 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: COP 10-Q (2024-10-31)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 3
+
+🔍 Processing: MA 10-Q (2024-10-31)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+📈 Progress: 120/426 processed (21 skipped, 34 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 81 minutes
+
+
+🔍 Processing: META 10-Q (2024-10-31)
+❌ Failed: META 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: ABT 10-Q (2024-10-31)
+❌ Failed: ABT 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: AAPL 10-K (2024-11-01)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: TMO 10-Q (2024-11-01)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: AMZN 10-Q (2024-11-01)
+❌ Failed: AMZN 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: ABBV 10-Q (2024-11-04)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: UNH 10-Q (2024-11-04)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: XOM 10-Q (2024-11-04)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: PFE 10-Q (2024-11-04)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 4
+
+🔍 Processing: MRK 10-Q (2024-11-06)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 3
+   Positive Factors: 5
+
+🔍 Processing: QCOM 10-K (2024-11-06)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: CVX 10-Q (2024-11-07)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+🔍 Processing: MCD 10-Q (2024-11-07)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+📈 Progress: 130/426 processed (21 skipped, 37 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 79 minutes
+
+
+🔍 Processing: V 10-K (2024-11-13)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: DIS 10-K (2024-11-14)
+❌ Failed: DIS 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: HD 10-Q (2024-11-19)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+🔍 Processing: CSCO 10-Q (2024-11-19)
+❌ Failed: CSCO 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: NVDA 10-Q (2024-11-20)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: CRM 10-Q (2024-12-04)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: WMT 10-Q (2024-12-06)
+❌ Failed: WMT 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: ORCL 10-Q (2024-12-10)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: COST 10-Q (2024-12-19)
+❌ Failed: COST 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: AVGO 10-K (2024-12-20)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: NKE 10-Q (2025-01-03)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 2
+
+🔍 Processing: ADBE 10-K (2025-01-13)
+   Concern Level: 1.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 6
+
+🔍 Processing: PG 10-Q (2025-01-22)
+❌ Failed: PG 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: NFLX 10-K (2025-01-27)
+❌ Failed: NFLX 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: MSFT 10-Q (2025-01-29)
+❌ Failed: MSFT 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: TSLA 10-K (2025-01-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: META 10-K (2025-01-30)
+❌ Failed: META 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: V 10-Q (2025-01-31)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 6
+
+📈 Progress: 140/426 processed (21 skipped, 45 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 77 minutes
+
+
+🔍 Processing: TMUS 10-K (2025-01-31)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: AAPL 10-Q (2025-01-31)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: PEP 10-K (2025-02-04)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+🔍 Processing: QCOM 10-Q (2025-02-05)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: DIS 10-Q (2025-02-05)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: GOOG 10-K (2025-02-05)
+❌ Failed: GOOG 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: AMD 10-K (2025-02-05)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: AMZN 10-K (2025-02-07)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 6
+   Positive Factors: 3
+
+🔍 Processing: VZ 10-K (2025-02-12)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: MA 10-K (2025-02-12)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: JNJ 10-K (2025-02-13)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+📈 Progress: 150/426 processed (21 skipped, 46 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 73 minutes
+
+
+🔍 Processing: JPM 10-K (2025-02-14)
+❌ Failed: JPM 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: ABBV 10-K (2025-02-14)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: COP 10-K (2025-02-18)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: CSCO 10-Q (2025-02-18)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: LLY 10-K (2025-02-19)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: XOM 10-K (2025-02-19)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 6
+   Positive Factors: 3
+
+🔍 Processing: TMO 10-K (2025-02-20)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: KO 10-K (2025-02-20)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: ABT 10-K (2025-02-21)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: CVX 10-K (2025-02-21)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: BAC 10-K (2025-02-25)
+   Concern Level: 10.0/10 (CRITICAL)
+   Assessment: UNABLE_TO_ASSESS
+   Warning Signs: 6
+   Positive Factors: 3
+
+📈 Progress: 160/426 processed (21 skipped, 47 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 70 minutes
+
+
+🔍 Processing: WFC 10-K (2025-02-25)
+❌ Failed: WFC 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: MRK 10-K (2025-02-25)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: MCD 10-K (2025-02-25)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+🔍 Processing: NVDA 10-K (2025-02-26)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: UNH 10-K (2025-02-27)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: PFE 10-K (2025-02-27)
+   Concern Level: 4.5/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 9
+
+🔍 Processing: CRM 10-K (2025-03-05)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: ORCL 10-Q (2025-03-11)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: AVGO 10-Q (2025-03-12)
+❌ Failed: AVGO 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: COST 10-Q (2025-03-13)
+❌ Failed: COST 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: WMT 10-K (2025-03-14)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: HD 10-K (2025-03-21)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: ADBE 10-Q (2025-03-26)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+📈 Progress: 170/426 processed (21 skipped, 50 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 67 minutes
+
+
+🔍 Processing: NKE 10-Q (2025-04-03)
+❌ Failed: NKE 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: NFLX 10-Q (2025-04-18)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: TSLA 10-Q (2025-04-23)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: JNJ 10-Q (2025-04-23)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: PG 10-Q (2025-04-24)
+❌ Failed: PG 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: TMUS 10-Q (2025-04-24)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: PEP 10-Q (2025-04-24)
+   Concern Level: 6.0/10 (ELEVATED)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 5
+
+🔍 Processing: GOOG 10-Q (2025-04-25)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: VZ 10-Q (2025-04-25)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 3
+   Positive Factors: 5
+
+🔍 Processing: WFC 10-Q (2025-04-29)
+❌ Failed: WFC 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: QCOM 10-Q (2025-04-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: V 10-Q (2025-04-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: MSFT 10-Q (2025-04-30)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 6
+
+📈 Progress: 180/426 processed (21 skipped, 53 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 64 minutes
+
+
+🔍 Processing: BAC 10-Q (2025-04-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: ABT 10-Q (2025-04-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: JPM 10-Q (2025-05-01)
+❌ Failed: JPM 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: MA 10-Q (2025-05-01)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: META 10-Q (2025-05-01)
+❌ Failed: META 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: KO 10-Q (2025-05-01)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 7
+
+🔍 Processing: LLY 10-Q (2025-05-01)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: TMO 10-Q (2025-05-02)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: AMZN 10-Q (2025-05-02)
+❌ Failed: AMZN 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: AAPL 10-Q (2025-05-02)
+❌ Failed: AAPL 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: MRK 10-Q (2025-05-02)
+❌ Failed: MRK 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: XOM 10-Q (2025-05-05)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+🔍 Processing: PFE 10-Q (2025-05-05)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: AMD 10-Q (2025-05-07)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: UNH 10-Q (2025-05-07)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+📈 Progress: 190/426 processed (21 skipped, 58 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 62 minutes
+
+
+🔍 Processing: DIS 10-Q (2025-05-07)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 3
+
+🔍 Processing: COP 10-Q (2025-05-08)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 5
+
+🔍 Processing: CVX 10-Q (2025-05-08)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: ABBV 10-Q (2025-05-09)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: MCD 10-Q (2025-05-12)
+❌ Failed: MCD 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: CSCO 10-Q (2025-05-20)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: HD 10-Q (2025-05-28)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 6
+
+🔍 Processing: NVDA 10-Q (2025-05-28)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: CRM 10-Q (2025-05-29)
+❌ Failed: CRM 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: COST 10-Q (2025-06-05)
+❌ Failed: COST 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: WMT 10-Q (2025-06-06)
+❌ Failed: WMT 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: AVGO 10-Q (2025-06-11)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: ORCL 10-K (2025-06-18)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: ADBE 10-Q (2025-06-25)
+   Concern Level: 6.8/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 6
+
+📈 Progress: 200/426 processed (21 skipped, 62 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 59 minutes
+
+
+🔍 Processing: ADBE 10-Q (2025-06-25)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 5
+
+🔍 Processing: SNA 10-Q (2025-07-17)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 9
+   Positive Factors: 5
+
+🔍 Processing: NKE 10-K (2025-07-17)
+❌ Failed: NKE 10-K - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: PEP 10-Q (2025-07-17)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 4
+
+🔍 Processing: NFLX 10-Q (2025-07-18)
+   Concern Level: 5.8/10 (ELEVATED)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 7
+
+🔍 Processing: NFLX 10-Q (2025-07-18)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: ARE 10-Q (2025-07-21)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: BEARISH
+   Warning Signs: 8
+   Positive Factors: 3
+
+🔍 Processing: NOC 10-Q (2025-07-22)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: BEARISH
+   Warning Signs: 8
+   Positive Factors: 3
+
+🔍 Processing: EFX 10-Q (2025-07-22)
+   Concern Level: 5.5/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 6
+
+🔍 Processing: TMUS 10-Q (2025-07-23)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: ISRG 10-Q (2025-07-23)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 6
+
+📈 Progress: 210/426 processed (21 skipped, 63 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 56 minutes
+
+
+🔍 Processing: RNR 10-Q (2025-07-24)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: BEARISH
+   Warning Signs: 9
+   Positive Factors: 4
+
+🔍 Processing: HLX 10-Q (2025-07-24)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: BEARISH
+   Warning Signs: 8
+   Positive Factors: 3
+
+🔍 Processing: JNJ 10-Q (2025-07-24)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 4
+
+🔍 Processing: GOOG 10-Q (2025-07-24)
+❌ Failed: GOOG 10-Q - Cannot read properties of null (reading 'toFixed')
+⏭️  TSLA 10-Q (2025-07-24) - Already has concern score
+
+🔍 Processing: JNJ 10-Q (2025-07-24)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 6
+
+🔍 Processing: TSLA 10-Q (2025-07-24)
+❌ Failed: TSLA 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: KO 10-Q (2025-07-24)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: IBM 10-Q (2025-07-24)
+   Concern Level: 3.5/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 6
+
+🔍 Processing: ALLE 10-Q (2025-07-24)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 7
+
+🔍 Processing: NOW 10-Q (2025-07-24)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: BULLISH
+   Warning Signs: 4
+   Positive Factors: 7
+
+🔍 Processing: KO 10-Q (2025-07-24)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 5
+
+🔍 Processing: VZ 10-Q (2025-07-25)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+📈 Progress: 220/426 processed (22 skipped, 65 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 53 minutes
+
+
+🔍 Processing: TDY 10-Q (2025-07-28)
+   Concern Level: 7.2/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 5
+
+🔍 Processing: MAT 10-Q (2025-07-29)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: BEARISH
+   Warning Signs: 10
+   Positive Factors: 3
+
+🔍 Processing: MDLZ 10-Q (2025-07-29)
+   Concern Level: 7.2/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 10
+   Positive Factors: 4
+
+🔍 Processing: TXN 10-Q (2025-07-29)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 8
+
+🔍 Processing: V 10-Q (2025-07-30)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 3
+   Positive Factors: 5
+
+🔍 Processing: QCOM 10-Q (2025-07-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: MSFT 10-K (2025-07-30)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 7
+
+🔍 Processing: RSG 10-Q (2025-07-30)
+   Concern Level: 6.0/10 (ELEVATED)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 8
+
+🔍 Processing: CDNS 10-Q (2025-07-30)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 5
+
+🔍 Processing: QCOM 10-Q (2025-07-30)
+   Concern Level: 6.8/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 5
+
+📈 Progress: 230/426 processed (22 skipped, 65 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 50 minutes
+
+
+🔍 Processing: ABT 10-Q (2025-07-30)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 5
+
+🔍 Processing: ABT 10-Q (2025-07-30)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: FICO 10-Q (2025-07-30)
+   Concern Level: 6.8/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 7
+
+🔍 Processing: ESS 10-Q (2025-07-30)
+   Concern Level: 4.5/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 6
+
+🔍 Processing: MSFT 10-K (2025-07-30)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 6
+❌ Failed: MSFT 10-K - 
+Invalid `prisma.filing.update()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-concern-scores.ts:101:27
+
+   98 };
+   99 
+  100 // Update filing with new concern data
+→ 101 await prisma.filing.update(
+An operation failed because it depends on one or more records that were required but not found. No record was found for an update.
+
+🔍 Processing: PRU 10-Q (2025-07-31)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 4
+
+🔍 Processing: META 10-Q (2025-07-31)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 9
+   Positive Factors: 6
+
+🔍 Processing: MAA 10-Q (2025-07-31)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 6
+
+🔍 Processing: BAC 10-Q (2025-07-31)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: MA 10-Q (2025-07-31)
+   Concern Level: 5.5/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 6
+   Positive Factors: 6
+
+🔍 Processing: IR 10-Q (2025-07-31)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: BEARISH
+   Warning Signs: 8
+   Positive Factors: 4
+
+📈 Progress: 240/426 processed (22 skipped, 66 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 47 minutes
+
+
+🔍 Processing: META 10-Q (2025-07-31)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: BLDR 10-Q (2025-07-31)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: BEARISH
+   Warning Signs: 9
+   Positive Factors: 3
+
+🔍 Processing: SO 10-Q (2025-07-31)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 5
+
+🔍 Processing: MA 10-Q (2025-07-31)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 8
+
+🔍 Processing: PTC 10-Q (2025-07-31)
+   Concern Level: 3.5/10 (MODERATE)
+   Assessment: BULLISH
+   Warning Signs: 4
+   Positive Factors: 9
+
+🔍 Processing: TMO 10-Q (2025-08-01)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: AAPL 10-Q (2025-08-01)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: BSX 10-Q (2025-08-01)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 6
+
+🔍 Processing: SYK 10-Q (2025-08-01)
+   Concern Level: 6.8/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 6
+
+🔍 Processing: TMO 10-Q (2025-08-01)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 9
+   Positive Factors: 5
+
+📈 Progress: 250/426 processed (22 skipped, 66 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 44 minutes
+
+
+🔍 Processing: AMZN 10-Q (2025-08-01)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 6
+
+🔍 Processing: AMZN 10-Q (2025-08-01)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: AAPL 10-Q (2025-08-01)
+   Concern Level: 5.8/10 (ELEVATED)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 5
+
+🔍 Processing: LYB 10-Q (2025-08-01)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: BEARISH
+   Warning Signs: 8
+   Positive Factors: 4
+
+🔍 Processing: KIM 10-Q (2025-08-01)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 8
+
+🔍 Processing: GWW 10-Q (2025-08-01)
+   Concern Level: 4.5/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 7
+
+🔍 Processing: SPGI 10-Q (2025-08-01)
+   Concern Level: 2.5/10 (MODERATE)
+   Assessment: BULLISH
+   Warning Signs: 4
+   Positive Factors: 10
+
+🔍 Processing: GS 10-Q (2025-08-01)
+   Concern Level: 5.5/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+🔍 Processing: XOM 10-Q (2025-08-04)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: CAKE 10-Q (2025-08-04)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 5
+
+📈 Progress: 260/426 processed (22 skipped, 66 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 41 minutes
+
+
+🔍 Processing: WMB 10-Q (2025-08-04)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 6
+
+🔍 Processing: XOM 10-Q (2025-08-04)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 4
+
+🔍 Processing: HCA 10-Q (2025-08-04)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 6
+
+🔍 Processing: ABBV 10-Q (2025-08-04)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 8
+
+🔍 Processing: PG 10-K (2025-08-04)
+   Concern Level: 6.3/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 5
+
+🔍 Processing: WRB 10-Q (2025-08-04)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 2
+   Positive Factors: 13
+
+🔍 Processing: WAT 10-Q (2025-08-04)
+   Concern Level: 4.5/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 7
+
+🔍 Processing: ABBV 10-Q (2025-08-04)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: PG 10-K (2025-08-04)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: MRK 10-Q (2025-08-05)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+📈 Progress: 270/426 processed (22 skipped, 66 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 38 minutes
+
+
+🔍 Processing: WFC 10-Q (2025-08-05)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: PFE 10-Q (2025-08-05)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 3
+
+🔍 Processing: CTRA 10-Q (2025-08-05)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 6
+
+🔍 Processing: PFE 10-Q (2025-08-05)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 9
+   Positive Factors: 6
+
+🔍 Processing: ETN 10-Q (2025-08-05)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 5
+
+🔍 Processing: JPM 10-Q (2025-08-05)
+❌ Failed: JPM 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: JPM 10-Q (2025-08-05)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 5
+
+🔍 Processing: VRTX 10-Q (2025-08-05)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 6
+
+🔍 Processing: MRK 10-Q (2025-08-05)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 3
+   Positive Factors: 6
+
+🔍 Processing: GNRC 10-Q (2025-08-05)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 5
+
+🔍 Processing: LDOS 10-Q (2025-08-05)
+   Concern Level: 5.5/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 7
+
+📈 Progress: 280/426 processed (22 skipped, 67 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 35 minutes
+
+
+🔍 Processing: AMGN 10-Q (2025-08-06)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 6
+
+🔍 Processing: BLK 10-Q (2025-08-06)
+   Concern Level: 6.8/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 10
+   Positive Factors: 6
+
+🔍 Processing: GL 10-Q (2025-08-06)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 5
+
+🔍 Processing: DIS 10-Q (2025-08-06)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 3
+   Positive Factors: 6
+
+🔍 Processing: DIS 10-Q (2025-08-06)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 5
+
+🔍 Processing: CAT 10-Q (2025-08-06)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: BEARISH
+   Warning Signs: 8
+   Positive Factors: 3
+
+🔍 Processing: AMD 10-Q (2025-08-06)
+❌ Failed: AMD 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: ROK 10-Q (2025-08-06)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 7
+
+🔍 Processing: MCD 10-Q (2025-08-06)
+   Concern Level: 10.0/10 (CRITICAL)
+   Assessment: UNABLE_TO_ASSESS
+   Warning Signs: 5
+   Positive Factors: 2
+
+🔍 Processing: ADP 10-K (2025-08-06)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 6
+   Positive Factors: 6
+
+🔍 Processing: MCD 10-Q (2025-08-06)
+   Concern Level: 2.5/10 (MODERATE)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 10
+
+📈 Progress: 290/426 processed (22 skipped, 68 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 33 minutes
+
+
+🔍 Processing: COP 10-Q (2025-08-07)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 3
+
+🔍 Processing: LLY 10-Q (2025-08-07)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: CVX 10-Q (2025-08-07)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 9
+   Positive Factors: 4
+
+🔍 Processing: CVX 10-Q (2025-08-07)
+❌ Failed: CVX 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: TRGP 10-Q (2025-08-07)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 9
+   Positive Factors: 6
+
+🔍 Processing: COP 10-Q (2025-08-07)
+   Concern Level: 5.5/10 (ELEVATED)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 8
+
+🔍 Processing: ORLY 10-Q (2025-08-08)
+   Concern Level: 4.5/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 8
+
+🔍 Processing: KLAC 10-K (2025-08-08)
+   Concern Level: 7.2/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 9
+   Positive Factors: 3
+
+🔍 Processing: SCHW 10-Q (2025-08-08)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 10
+
+🔍 Processing: EXPE 10-Q (2025-08-08)
+   Concern Level: 7.2/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 4
+
+🔍 Processing: LRCX 10-K (2025-08-11)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 6
+   Positive Factors: 5
+
+📈 Progress: 300/426 processed (22 skipped, 69 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 30 minutes
+
+
+🔍 Processing: UNH 10-Q (2025-08-11)
+❌ Failed: UNH 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: WDC 10-K (2025-08-14)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 4
+
+🔍 Processing: PH 10-K (2025-08-22)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 6
+   Positive Factors: 10
+
+🔍 Processing: HD 10-Q (2025-08-26)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 3
+   Positive Factors: 5
+
+🔍 Processing: NVDA 10-Q (2025-08-27)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 3
+
+🔍 Processing: NVDA 10-Q (2025-08-27)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 5
+   Positive Factors: 12
+
+🔍 Processing: SJM 10-Q (2025-08-27)
+   Concern Level: 8.0/10 (HIGH)
+   Assessment: BEARISH
+   Warning Signs: 9
+   Positive Factors: 3
+
+🔍 Processing: ULTA 10-Q (2025-08-28)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 4
+
+🔍 Processing: KEYS 10-Q (2025-08-29)
+   Concern Level: 4.5/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 8
+
+🔍 Processing: TJX 10-Q (2025-08-29)
+   Concern Level: 3.0/10 (MODERATE)
+   Assessment: BULLISH
+   Warning Signs: 4
+   Positive Factors: 9
+
+🔍 Processing: WMT 10-Q (2025-08-29)
+❌ Failed: WMT 10-Q - Cannot read properties of null (reading 'toFixed')
+
+🔍 Processing: A 10-Q (2025-08-29)
+   Concern Level: 5.5/10 (ELEVATED)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 6
+
+📈 Progress: 310/426 processed (22 skipped, 71 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 27 minutes
+
+
+🔍 Processing: CSCO 10-K (2025-09-03)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: INTU 10-K (2025-09-03)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 6
+
+🔍 Processing: CSCO 10-K (2025-09-03)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 7
+
+🔍 Processing: CRM 10-Q (2025-09-04)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: CRM 10-Q (2025-09-04)
+   Concern Level: 5.5/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 8
+
+🔍 Processing: ORCL 10-Q (2025-09-10)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: AVGO 10-Q (2025-09-10)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 2
+   Positive Factors: 11
+
+🔍 Processing: ORCL 10-Q (2025-09-10)
+   Concern Level: 6.8/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 9
+   Positive Factors: 6
+
+🔍 Processing: AVGO 10-Q (2025-09-10)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: ADBE 8-K (2025-09-11)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 8
+
+📈 Progress: 320/426 processed (22 skipped, 71 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 24 minutes
+
+
+🔍 Processing: ADBE 10-Q (2025-09-24)
+   Concern Level: 7.0/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 8
+   Positive Factors: 5
+
+🔍 Processing: ADBE 10-Q (2025-09-24)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 4
+
+🔍 Processing: CPRT 10-K (2025-09-26)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 5
+
+🔍 Processing: NKE 10-Q (2025-10-01)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 5
+   Positive Factors: 3
+
+🔍 Processing: NKE 10-Q (2025-10-01)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: BEARISH
+   Warning Signs: 7
+   Positive Factors: 3
+
+🔍 Processing: TSLA 8-K (2025-10-02)
+   Concern Level: 6.8/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 4
+
+🔍 Processing: MU 10-K (2025-10-03)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 6
+
+🔍 Processing: COST 10-K (2025-10-08)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 4
+
+🔍 Processing: COST 10-K (2025-10-08)
+   Concern Level: 4.0/10 (MODERATE)
+   Assessment: NEUTRAL
+   Warning Signs: 4
+   Positive Factors: 6
+
+🔍 Processing: CTAS 10-Q (2025-10-08)
+   Concern Level: 2.0/10 (LOW)
+   Assessment: BULLISH
+   Warning Signs: 3
+   Positive Factors: 10
+
+📈 Progress: 330/426 processed (22 skipped, 71 failed)
+⏱️  Rate: 0.06 filings/sec
+⏳ Estimated time remaining: 21 minutes
+
+
+🔍 Processing: PEP 10-Q (2025-10-09)
+   Concern Level: 7.5/10 (HIGH)
+   Assessment: BEARISH
+   Warning Signs: 8
+   Positive Factors: 3
+
+🔍 Processing: PEP 10-Q (2025-10-09)
+   Concern Level: 6.5/10 (HIGH)
+   Assessment: CAUTIOUS
+   Warning Signs: 7
+   Positive Factors: 4
+
+🔍 Processing: ACN 10-K (2025-10-10)
+   Concern Level: 5.0/10 (ELEVATED)
+   Assessment: NEUTRAL
+   Warning Signs: 6
+   Positive Factors: 10
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Backfill Complete!
+
+📊 Summary:
+   Total filings: 426
+   Processed: 333
+   Skipped (already had concern): 22
+   Failed: 71
+   Total time: 94.9 minutes
+
+❌ Errors:
+   - ABBV 10-Q: Cannot read properties of null (reading 'toFixed')
+   - UNH 10-Q: Cannot read properties of null (reading 'toFixed')
+   - HD 10-Q: Cannot read properties of null (reading 'toFixed')
+   - COST 10-Q: Cannot read properties of null (reading 'toFixed')
+   - NKE 10-Q: Cannot read properties of null (reading 'toFixed')
+   - VZ 10-K: Cannot read properties of null (reading 'toFixed')
+   - COP 10-K: Cannot read properties of null (reading 'toFixed')
+   - JNJ 10-K: Cannot read properties of null (reading 'toFixed')
+   - KO 10-K: Cannot read properties of null (reading 'toFixed')
+   - WFC 10-K: Cannot read properties of null (reading 'toFixed')
+   - MCD 10-K: Cannot read properties of null (reading 'toFixed')
+   - HD 10-K: Cannot read properties of null (reading 'toFixed')
+   - COST 10-Q: Cannot read properties of null (reading 'toFixed')
+   - WMT 10-K: Cannot read properties of null (reading 'toFixed')
+   - NFLX 10-Q: Cannot read properties of null (reading 'toFixed')
+   - TMUS 10-Q: Cannot read properties of null (reading 'toFixed')
+   - GOOG 10-Q: Cannot read properties of null (reading 'toFixed')
+   - AMD 10-Q: Cannot read properties of null (reading 'toFixed')
+   - QCOM 10-Q: Cannot read properties of null (reading 'toFixed')
+   - WFC 10-Q: Cannot read properties of null (reading 'toFixed')
+   - COST 10-Q: Cannot read properties of null (reading 'toFixed')
+   - WMT 10-Q: Cannot read properties of null (reading 'toFixed')
+   - ADBE 10-Q: Cannot read properties of null (reading 'toFixed')
+   - NFLX 10-Q: Cannot read properties of null (reading 'toFixed')
+   - MA 10-Q: Cannot read properties of null (reading 'toFixed')
+   - WFC 10-Q: Cannot read properties of null (reading 'toFixed')
+   - AMZN 10-Q: Cannot read properties of null (reading 'toFixed')
+   - AAPL 10-Q: Cannot read properties of null (reading 'toFixed')
+   - ABBV 10-Q: Cannot read properties of null (reading 'toFixed')
+   - UNH 10-Q: Cannot read properties of null (reading 'toFixed')
+   - COST 10-K: Cannot read properties of null (reading 'toFixed')
+   - TMUS 10-Q: Cannot read properties of null (reading 'toFixed')
+   - JPM 10-Q: Cannot read properties of null (reading 'toFixed')
+   - WFC 10-Q: Cannot read properties of null (reading 'toFixed')
+   - META 10-Q: Cannot read properties of null (reading 'toFixed')
+   - ABT 10-Q: Cannot read properties of null (reading 'toFixed')
+   - AMZN 10-Q: Cannot read properties of null (reading 'toFixed')
+   - DIS 10-K: Cannot read properties of null (reading 'toFixed')
+   - CSCO 10-Q: Cannot read properties of null (reading 'toFixed')
+   - WMT 10-Q: Cannot read properties of null (reading 'toFixed')
+   - COST 10-Q: Cannot read properties of null (reading 'toFixed')
+   - PG 10-Q: Cannot read properties of null (reading 'toFixed')
+   - NFLX 10-K: Cannot read properties of null (reading 'toFixed')
+   - MSFT 10-Q: Cannot read properties of null (reading 'toFixed')
+   - META 10-K: Cannot read properties of null (reading 'toFixed')
+   - GOOG 10-K: Cannot read properties of null (reading 'toFixed')
+   - JPM 10-K: Cannot read properties of null (reading 'toFixed')
+   - WFC 10-K: Cannot read properties of null (reading 'toFixed')
+   - AVGO 10-Q: Cannot read properties of null (reading 'toFixed')
+   - COST 10-Q: Cannot read properties of null (reading 'toFixed')
+   - NKE 10-Q: Cannot read properties of null (reading 'toFixed')
+   - PG 10-Q: Cannot read properties of null (reading 'toFixed')
+   - WFC 10-Q: Cannot read properties of null (reading 'toFixed')
+   - JPM 10-Q: Cannot read properties of null (reading 'toFixed')
+   - META 10-Q: Cannot read properties of null (reading 'toFixed')
+   - AMZN 10-Q: Cannot read properties of null (reading 'toFixed')
+   - AAPL 10-Q: Cannot read properties of null (reading 'toFixed')
+   - MRK 10-Q: Cannot read properties of null (reading 'toFixed')
+   - MCD 10-Q: Cannot read properties of null (reading 'toFixed')
+   - CRM 10-Q: Cannot read properties of null (reading 'toFixed')
+   - COST 10-Q: Cannot read properties of null (reading 'toFixed')
+   - WMT 10-Q: Cannot read properties of null (reading 'toFixed')
+   - NKE 10-K: Cannot read properties of null (reading 'toFixed')
+   - GOOG 10-Q: Cannot read properties of null (reading 'toFixed')
+   - TSLA 10-Q: Cannot read properties of null (reading 'toFixed')
+   - MSFT 10-K: 
+Invalid `prisma.filing.update()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-concern-scores.ts:101:27
+
+   98 };
+   99 
+  100 // Update filing with new concern data
+→ 101 await prisma.filing.update(
+An operation failed because it depends on one or more records that were required but not found. No record was found for an update.
+   - JPM 10-Q: Cannot read properties of null (reading 'toFixed')
+   - AMD 10-Q: Cannot read properties of null (reading 'toFixed')
+   - CVX 10-Q: Cannot read properties of null (reading 'toFixed')
+   - UNH 10-Q: Cannot read properties of null (reading 'toFixed')
+   - WMT 10-Q: Cannot read properties of null (reading 'toFixed')
+
+🔍 Verifying backfilled data...
+
+✅ 354 filings now have concern scores
+📈 Ready for ML model training!
+
+📊 Concern Level Distribution:
+   LOW (0-2): 18 (5.1%)
+   MODERATE (3-4): 36 (10.2%)
+   ELEVATED (5-6): 200 (56.5%)
+   HIGH (7-8): 87 (24.6%)
+   CRITICAL (9-10): 13 (3.7%)
+
+✨ Backfill complete! You can now train the new ML model.
+

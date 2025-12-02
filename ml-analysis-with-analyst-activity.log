@@ -1,0 +1,157 @@
+================================================================================
+   PROPER MACHINE LEARNING ANALYSIS
+================================================================================
+📊 Loading data...
+   Loaded 424 samples
+
+🔧 Preparing features...
+   Dropping 14 features with >50% missing: ['analystTargetPrice', 'priceToTarget', 'ma30', 'ma50', 'ma200', 'priceToMA30', 'priceToMA50', 'rsi14', 'macd', 'volatility30', 'return30d', 'spxReturn7d', 'spxReturn30d', 'vixClose']
+   Features: 20
+   Samples: 424
+   Feature list: ['riskScore', 'sentimentScore', 'marketCap', 'currentPrice', 'peRatio', 'forwardPE', 'fiftyTwoWeekHigh', 'fiftyTwoWeekLow', 'priceToHigh', 'priceToLow']...
+
+📈 Target Statistics:
+   Mean return: 0.55%
+   Std dev: 6.39%
+   Min: -21.07%, Max: 26.97%
+   % Positive: 53.8%
+
+🎯 Feature Importance Analysis...
+
+   Top 10 Most Important Features:
+   1. priceToLow: 0.1176
+   2. riskScore: 0.0953
+   3. priceToHigh: 0.0883
+   4. peRatio: 0.0717
+   5. forwardPE: 0.0706
+   6. marketCap: 0.0688
+   7. analystCoverage: 0.0652
+   8. analystUpsidePotential: 0.0559
+   9. sentimentScore: 0.0466
+   10. analystConsensusScore: 0.0460
+
+================================================================================
+   MODEL COMPARISON
+================================================================================
+
+🔬 Evaluating Linear (OLS)...
+   Fold 1: Direction=47.1%, MAE=5.668, R²=-1.090
+   Fold 2: Direction=48.6%, MAE=5.550, R²=-0.041
+   Fold 3: Direction=55.7%, MAE=4.346, R²=0.012
+   Fold 4: Direction=31.4%, MAE=5.590, R²=-0.482
+   Fold 5: Direction=41.4%, MAE=4.547, R²=0.003
+
+   ✅ Average: Direction=44.9% (±8.1), MAE=5.140, R²=-0.320
+
+🔬 Evaluating Ridge (L2)...
+   Fold 1: Direction=51.4%, MAE=5.543, R²=-0.987
+   Fold 2: Direction=50.0%, MAE=5.535, R²=-0.040
+   Fold 3: Direction=57.1%, MAE=4.329, R²=0.015
+   Fold 4: Direction=32.9%, MAE=5.515, R²=-0.440
+   Fold 5: Direction=40.0%, MAE=4.556, R²=0.003
+
+   ✅ Average: Direction=46.3% (±8.7), MAE=5.096, R²=-0.290
+
+🔬 Evaluating Lasso (L1)...
+   Fold 1: Direction=52.9%, MAE=5.304, R²=-0.818
+   Fold 2: Direction=51.4%, MAE=5.441, R²=-0.036
+   Fold 3: Direction=57.1%, MAE=4.218, R²=0.023
+   Fold 4: Direction=30.0%, MAE=5.177, R²=-0.286
+   Fold 5: Direction=42.9%, MAE=4.472, R²=-0.022
+
+   ✅ Average: Direction=46.9% (±9.6), MAE=4.922, R²=-0.228
+
+🔬 Evaluating ElasticNet...
+   Fold 1: Direction=51.4%, MAE=5.251, R²=-0.764
+   Fold 2: Direction=52.9%, MAE=5.459, R²=-0.040
+   Fold 3: Direction=61.4%, MAE=4.250, R²=0.018
+   Fold 4: Direction=28.6%, MAE=5.199, R²=-0.285
+   Fold 5: Direction=42.9%, MAE=4.498, R²=-0.014
+
+   ✅ Average: Direction=47.4% (±11.1), MAE=4.931, R²=-0.217
+
+🔬 Evaluating RandomForest...
+   Fold 1: Direction=40.0%, MAE=5.227, R²=-0.919
+   Fold 2: Direction=51.4%, MAE=5.545, R²=-0.135
+   Fold 3: Direction=54.3%, MAE=4.831, R²=-0.311
+   Fold 4: Direction=45.7%, MAE=5.544, R²=-0.488
+   Fold 5: Direction=57.1%, MAE=4.295, R²=0.011
+
+   ✅ Average: Direction=49.7% (±6.2), MAE=5.089, R²=-0.369
+
+🔬 Evaluating GradientBoosting...
+   Fold 1: Direction=41.4%, MAE=5.960, R²=-1.412
+   Fold 2: Direction=58.6%, MAE=5.816, R²=-0.260
+   Fold 3: Direction=51.4%, MAE=5.168, R²=-0.438
+   Fold 4: Direction=48.6%, MAE=5.547, R²=-0.517
+   Fold 5: Direction=51.4%, MAE=4.837, R²=-0.110
+
+   ✅ Average: Direction=50.3% (±5.5), MAE=5.466, R²=-0.548
+
+================================================================================
+   RESULTS SUMMARY
+================================================================================
+
+Model                Direction %     MAE        R²        
+--------------------------------------------------------------------------------
+GradientBoosting       50.3% ±5.5     5.466    -0.548
+RandomForest           49.7% ±6.2     5.089    -0.369
+ElasticNet             47.4% ±11.1     4.931    -0.217
+Lasso (L1)             46.9% ±9.6     4.922    -0.228
+Ridge (L2)             46.3% ±8.7     5.096    -0.290
+Linear (OLS)           44.9% ±8.1     5.140    -0.320
+
+🏆 BEST MODEL: GradientBoosting
+   Direction Accuracy: 50.3% (±5.5%)
+   MAE: 5.466
+   R²: -0.548
+
+🏆 Training final GradientBoosting model on full dataset...
+
+   Model Coefficients (Top 15 by absolute value):
+   currentPrice: 3.560246
+   fiftyTwoWeekLow: -2.243347
+   fiftyTwoWeekHigh: -1.576467
+   peRatio: -1.398109
+   forwardPE: 1.281195
+   marketCap: -1.147923
+   analystCoverage: 1.019258
+   majorDowngrades: 0.885681
+   analystUpsidePotential: -0.788443
+   downgradesLast7d: -0.676384
+   upgradesLast7d: -0.539131
+   majorUpgrades: 0.339719
+   riskScore: -0.226710
+   priceToHigh: -0.148514
+   sentimentScore: 0.147337
+
+   Intercept: 0.551727
+
+================================================================================
+   SEGMENT ANALYSIS
+================================================================================
+
+   MEGA-CAP (126 samples):
+      Direction Accuracy: 61.9%
+      MAE: 5.799
+
+   LARGE-CAP (165 samples):
+      Direction Accuracy: 61.2%
+      MAE: 3.136
+
+   MID-CAP (99 samples):
+      Direction Accuracy: 69.7%
+      MAE: 3.483
+
+   SMALL-CAP (34 samples):
+      Direction Accuracy: 70.6%
+      MAE: 2.251
+
+================================================================================
+   NEXT STEPS
+================================================================================
+
+   1. If accuracy < 65%: Backfill more data (need 500+ samples)
+   2. If accuracy ≥ 65%: Deploy this model to production
+   3. Consider adding 30-day returns for +8-12 point improvement
+

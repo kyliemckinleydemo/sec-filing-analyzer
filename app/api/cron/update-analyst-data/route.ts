@@ -254,8 +254,11 @@ export async function GET(request: Request) {
 
     console.log(`[Cron] Analyst data update complete: ${updated} updated, ${errors} errors`);
 
-    // Also handle paper trading position closure (since we're limited to 2 cron jobs)
-    console.log('[Cron] Closing expired paper trading positions...');
+    // Also handle paper trading operations (since we're limited to 2 cron jobs)
+    // 1. Execute pending trades at market open
+    // 2. Close expired positions (7+ days)
+    console.log('[Cron] Processing paper trading operations...');
+    let pendingExecuted = 0;
     let paperTradingClosed = 0;
 
     try {
@@ -268,26 +271,40 @@ export async function GET(request: Request) {
       for (const portfolio of portfolios) {
         try {
           const engine = new PaperTradingEngine(portfolio.id);
+
+          // Execute any PENDING trades at market open (if market is open)
+          const executed = await engine.executePendingTrades();
+          pendingExecuted += executed;
+
+          if (executed > 0) {
+            console.log(`[Cron] Portfolio "${portfolio.name}": executed ${executed} pending trades`);
+          }
+
+          // Close expired positions
           const closed = await engine.closeExpiredPositions();
           paperTradingClosed += closed;
 
           if (closed > 0) {
-            await engine.updatePortfolioMetrics();
             console.log(`[Cron] Portfolio "${portfolio.name}": closed ${closed} positions`);
+          }
+
+          // Update metrics after trading operations
+          if (executed > 0 || closed > 0) {
+            await engine.updatePortfolioMetrics();
           }
         } catch (error: any) {
           console.error(`[Cron] Error processing portfolio ${portfolio.id}:`, error.message);
         }
       }
 
-      console.log(`[Cron] Paper trading: ${paperTradingClosed} positions closed`);
+      console.log(`[Cron] Paper trading: ${pendingExecuted} pending trades executed, ${paperTradingClosed} positions closed`);
     } catch (error: any) {
-      console.error('[Cron] Error in paper trading position closure:', error.message);
+      console.error('[Cron] Error in paper trading operations:', error.message);
     }
 
     return NextResponse.json({
       success: true,
-      message: `Updated analyst data for ${updated} filings, closed ${paperTradingClosed} paper trading positions`,
+      message: `Updated analyst data for ${updated} filings, executed ${pendingExecuted} pending trades, closed ${paperTradingClosed} paper trading positions`,
       results: {
         analystData: {
           updated,
@@ -295,6 +312,7 @@ export async function GET(request: Request) {
           total: recentFilings.length
         },
         paperTrading: {
+          pendingExecuted,
           positionsClosed: paperTradingClosed
         }
       }

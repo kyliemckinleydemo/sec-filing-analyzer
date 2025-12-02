@@ -1,0 +1,13 @@
+
+🏁 Starting Champion-Challenger Analysis
+
+📊 Extracting training data from database...
+
+Found 0 filings with actual returns
+
+✅ Extracted 0 complete training samples
+
+❌ Error: TypeError: Cannot convert undefined or null to object
+    at Function.keys (<anonymous>)
+    at extractTrainingData (/Users/johnmckinley/sec-filing-analyzer/scripts/champion-challenger-analysis.ts:205:27)
+    at async main (/Users/johnmckinley/sec-filing-analyzer/scripts/champion-challenger-analysis.ts:672:18)

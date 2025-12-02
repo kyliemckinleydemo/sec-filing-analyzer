@@ -1,0 +1,822 @@
+🚀 Backfilling Momentum Indicators
+
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Found 687 filings with stock price data
+
+📈 Processing 197 unique tickers
+
+════════════════════════════════════════════════════════════════════════════════
+
+📅 Date range: 2023-02-10 to 2025-10-10
+   (Includes 250-day lookback for MA200 calculation)
+
+  📊 Fetching S&P 500 and VIX data from Yahoo Finance...
+    ⚠️  Error fetching market data: Yahoo Finance returned 401
+
+[1/197] Processing PG...
+  📊 Found 79 historical prices
+  ✅ Created 49 technical indicator snapshots
+
+[2/197] Processing NFLX...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[3/197] Processing TSLA...
+  📊 Found 116 historical prices
+  ✅ Created 86 technical indicator snapshots
+
+[4/197] Processing MSFT...
+  📊 Found 112 historical prices
+  ✅ Created 82 technical indicator snapshots
+
+[5/197] Processing KO...
+  📊 Found 73 historical prices
+  ✅ Created 43 technical indicator snapshots
+
+[6/197] Processing TMUS...
+  📊 Found 85 historical prices
+  ✅ Created 55 technical indicator snapshots
+
+[7/197] Processing GOOG...
+  ⚠️  Only 0 price points, skipping (need 30+)
+
+[7/197] Processing VZ...
+  📊 Found 95 historical prices
+  ✅ Created 65 technical indicator snapshots
+
+[8/197] Processing MA...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[9/197] Processing AMZN...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[10/197] Processing JNJ...
+  📊 Found 103 historical prices
+  ✅ Created 73 technical indicator snapshots
+
+[11/197] Processing XOM...
+  📊 Found 110 historical prices
+  ✅ Created 80 technical indicator snapshots
+
+[12/197] Processing WFC...
+  📊 Found 83 historical prices
+  ✅ Created 53 technical indicator snapshots
+
+[13/197] Processing QCOM...
+  📊 Found 94 historical prices
+  ✅ Created 64 technical indicator snapshots
+
+[14/197] Processing ABT...
+  📊 Found 133 historical prices
+  ✅ Created 103 technical indicator snapshots
+
+[15/197] Processing AMD...
+  📊 Found 95 historical prices
+  ✅ Created 65 technical indicator snapshots
+
+[16/197] Processing MCD...
+  📊 Found 85 historical prices
+  ✅ Created 55 technical indicator snapshots
+
+[17/197] Processing COP...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[18/197] Processing CVX...
+  📊 Found 105 historical prices
+  ✅ Created 75 technical indicator snapshots
+
+[19/197] Processing LLY...
+  📊 Found 70 historical prices
+  ✅ Created 40 technical indicator snapshots
+
+[20/197] Processing TMO...
+  📊 Found 110 historical prices
+  ✅ Created 80 technical indicator snapshots
+
+[21/197] Processing MRK...
+  📊 Found 95 historical prices
+  ✅ Created 65 technical indicator snapshots
+
+[22/197] Processing AAPL...
+  📊 Found 76 historical prices
+  ✅ Created 46 technical indicator snapshots
+
+[23/197] Processing ABBV...
+  📊 Found 109 historical prices
+  ✅ Created 79 technical indicator snapshots
+
+[24/197] Processing UNH...
+  📊 Found 83 historical prices
+  ✅ Created 53 technical indicator snapshots
+
+[25/197] Processing PFE...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[26/197] Processing V...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[27/197] Processing HD...
+  📊 Found 74 historical prices
+  ✅ Created 44 technical indicator snapshots
+
+[28/197] Processing DIS...
+  📊 Found 107 historical prices
+  ✅ Created 77 technical indicator snapshots
+
+[29/197] Processing NVDA...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[30/197] Processing CSCO...
+  📊 Found 78 historical prices
+  ✅ Created 48 technical indicator snapshots
+
+[31/197] Processing WMT...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[32/197] Processing CRM...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[33/197] Processing ORCL...
+  📊 Found 83 historical prices
+  ✅ Created 53 technical indicator snapshots
+
+[34/197] Processing AVGO...
+  📊 Found 83 historical prices
+  ✅ Created 53 technical indicator snapshots
+
+[35/197] Processing COST...
+  📊 Found 106 historical prices
+  ✅ Created 76 technical indicator snapshots
+
+[36/197] Processing NKE...
+  📊 Found 70 historical prices
+  ✅ Created 40 technical indicator snapshots
+
+[37/197] Processing ADBE...
+  📊 Found 143 historical prices
+  ✅ Created 113 technical indicator snapshots
+
+[38/197] Processing META...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[39/197] Processing PEP...
+  📊 Found 64 historical prices
+  ✅ Created 34 technical indicator snapshots
+
+[40/197] Processing BAC...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[41/197] Processing JPM...
+  📊 Found 98 historical prices
+  ✅ Created 68 technical indicator snapshots
+
+[42/197] Processing SPGI...
+  📊 Found 128 historical prices
+  ✅ Created 98 technical indicator snapshots
+
+[43/197] Processing A...
+  📊 Found 102 historical prices
+  ✅ Created 72 technical indicator snapshots
+
+[44/197] Processing BLK...
+  📊 Found 86 historical prices
+  ✅ Created 56 technical indicator snapshots
+
+[45/197] Processing GS...
+  📊 Found 82 historical prices
+  ✅ Created 52 technical indicator snapshots
+
+[46/197] Processing MMC...
+  📊 Found 70 historical prices
+  ✅ Created 40 technical indicator snapshots
+
+[47/197] Processing SNA...
+  📊 Found 70 historical prices
+  ✅ Created 40 technical indicator snapshots
+
+[48/197] Processing SCHW...
+  📊 Found 86 historical prices
+  ✅ Created 56 technical indicator snapshots
+
+[49/197] Processing WRB...
+  📊 Found 81 historical prices
+  ✅ Created 51 technical indicator snapshots
+
+[50/197] Processing ARE...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[51/197] Processing RTX...
+  📊 Found 116 historical prices
+  ✅ Created 86 technical indicator snapshots
+
+[52/197] Processing ISRG...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[53/197] Processing NOC...
+  📊 Found 100 historical prices
+  ✅ Created 70 technical indicator snapshots
+
+[54/197] Processing EFX...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[55/197] Processing NOW...
+  📊 Found 117 historical prices
+  ✅ Created 87 technical indicator snapshots
+
+[56/197] Processing TDY...
+  📊 Found 74 historical prices
+  ✅ Created 44 technical indicator snapshots
+
+[57/197] Processing GD...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[58/197] Processing BSX...
+  📊 Found 101 historical prices
+  ✅ Created 71 technical indicator snapshots
+
+[59/197] Processing RNR...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[60/197] Processing IBM...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[61/197] Processing GE...
+  📊 Found 116 historical prices
+  ✅ Created 86 technical indicator snapshots
+
+[62/197] Processing NEM...
+  📊 Found 116 historical prices
+  ✅ Created 86 technical indicator snapshots
+
+[63/197] Processing ALLE...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[64/197] Processing HLX...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[65/197] Processing CME...
+  📊 Found 104 historical prices
+  ✅ Created 74 technical indicator snapshots
+
+[66/197] Processing GL...
+  📊 Found 77 historical prices
+  ✅ Created 47 technical indicator snapshots
+
+[67/197] Processing ESS...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[68/197] Processing UNP...
+  📊 Found 101 historical prices
+  ✅ Created 71 technical indicator snapshots
+
+[69/197] Processing MDLZ...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[70/197] Processing TXN...
+  📊 Found 107 historical prices
+  ✅ Created 77 technical indicator snapshots
+
+[71/197] Processing CARR...
+  📊 Found 97 historical prices
+  ✅ Created 67 technical indicator snapshots
+
+[72/197] Processing BKNG...
+  📊 Found 108 historical prices
+  ✅ Created 78 technical indicator snapshots
+
+[73/197] Processing MAT...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[74/197] Processing VRSK...
+  📊 Found 86 historical prices
+  ✅ Created 56 technical indicator snapshots
+
+[75/197] Processing EQIX...
+  📊 Found 82 historical prices
+  ✅ Created 52 technical indicator snapshots
+
+[76/197] Processing FICO...
+  📊 Found 91 historical prices
+  ✅ Created 61 technical indicator snapshots
+
+[77/197] Processing TT...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[78/197] Processing CDNS...
+  📊 Found 96 historical prices
+  ✅ Created 66 technical indicator snapshots
+
+[79/197] Processing RSG...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[80/197] Processing WDC...
+  📊 Found 82 historical prices
+  ✅ Created 52 technical indicator snapshots
+
+[81/197] Processing PTC...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[82/197] Processing ADP...
+  📊 Found 76 historical prices
+  ✅ Created 46 technical indicator snapshots
+
+[83/197] Processing SYK...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[84/197] Processing MGPI...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[85/197] Processing DHR...
+  📊 Found 99 historical prices
+  ✅ Created 69 technical indicator snapshots
+
+[86/197] Processing BMY...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[87/197] Processing MAA...
+  📊 Found 95 historical prices
+  ✅ Created 65 technical indicator snapshots
+
+[88/197] Processing IR...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[89/197] Processing BLDR...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[90/197] Processing SO...
+  📊 Found 102 historical prices
+  ✅ Created 72 technical indicator snapshots
+
+[91/197] Processing KIM...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[92/197] Processing PRU...
+  📊 Found 111 historical prices
+  ✅ Created 81 technical indicator snapshots
+
+[93/197] Processing GWW...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[94/197] Processing NEE...
+  📊 Found 83 historical prices
+  ✅ Created 53 technical indicator snapshots
+
+[95/197] Processing CL...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[96/197] Processing LYB...
+  📊 Found 99 historical prices
+  ✅ Created 69 technical indicator snapshots
+
+[97/197] Processing LIN...
+  📊 Found 110 historical prices
+  ✅ Created 80 technical indicator snapshots
+
+[98/197] Processing WAT...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[99/197] Processing WMB...
+  📊 Found 109 historical prices
+  ✅ Created 79 technical indicator snapshots
+
+[100/197] Processing APH...
+  📊 Found 85 historical prices
+  ✅ Created 55 technical indicator snapshots
+
+[101/197] Processing HCA...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[102/197] Processing CAKE...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[103/197] Processing WELL...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[104/197] Processing CTRA...
+  📊 Found 104 historical prices
+  ✅ Created 74 technical indicator snapshots
+
+[105/197] Processing LDOS...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[106/197] Processing VRTX...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[107/197] Processing ETN...
+  📊 Found 108 historical prices
+  ✅ Created 78 technical indicator snapshots
+
+[108/197] Processing AMGN...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[109/197] Processing GNRC...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[110/197] Processing IFF...
+  📊 Found 73 historical prices
+  ✅ Created 43 technical indicator snapshots
+
+[111/197] Processing CAT...
+  📊 Found 90 historical prices
+  ✅ Created 60 technical indicator snapshots
+
+[112/197] Processing CB...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[113/197] Processing REG...
+  📊 Found 93 historical prices
+  ✅ Created 63 technical indicator snapshots
+
+[114/197] Processing ROK...
+  📊 Found 107 historical prices
+  ✅ Created 77 technical indicator snapshots
+
+[115/197] Processing WTRG...
+  📊 Found 84 historical prices
+  ✅ Created 54 technical indicator snapshots
+
+[116/197] Processing TRGP...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[117/197] Processing URI...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[118/197] Processing MSI...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[119/197] Processing EXPE...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[120/197] Processing ORLY...
+  📊 Found 105 historical prices
+  ✅ Created 75 technical indicator snapshots
+
+[121/197] Processing KLAC...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[122/197] Processing OKE...
+  📊 Found 74 historical prices
+  ✅ Created 44 technical indicator snapshots
+
+[123/197] Processing LRCX...
+  📊 Found 93 historical prices
+  ✅ Created 63 technical indicator snapshots
+
+[124/197] Processing GPC...
+  📊 Found 87 historical prices
+  ✅ Created 57 technical indicator snapshots
+
+[125/197] Processing GILD...
+  📊 Found 101 historical prices
+  ✅ Created 71 technical indicator snapshots
+
+[126/197] Processing BRO...
+  📊 Found 75 historical prices
+  ✅ Created 45 technical indicator snapshots
+
+[127/197] Processing EA...
+  📊 Found 100 historical prices
+  ✅ Created 70 technical indicator snapshots
+
+[128/197] Processing MMM...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[129/197] Processing CVS...
+  📊 Found 96 historical prices
+  ✅ Created 66 technical indicator snapshots
+
+[130/197] Processing PKG...
+  📊 Found 82 historical prices
+  ✅ Created 52 technical indicator snapshots
+
+[131/197] Processing AJG...
+  📊 Found 93 historical prices
+  ✅ Created 63 technical indicator snapshots
+
+[132/197] Processing AIG...
+  📊 Found 99 historical prices
+  ✅ Created 69 technical indicator snapshots
+
+[133/197] Processing KEYS...
+  📊 Found 78 historical prices
+  ✅ Created 48 technical indicator snapshots
+
+[134/197] Processing MAR...
+  📊 Found 70 historical prices
+  ✅ Created 40 technical indicator snapshots
+
+[135/197] Processing HWM...
+  📊 Found 70 historical prices
+  ✅ Created 40 technical indicator snapshots
+
+[136/197] Processing PGR...
+  📊 Found 90 historical prices
+  ✅ Created 60 technical indicator snapshots
+
+[137/197] Processing TJX...
+  📊 Found 77 historical prices
+  ✅ Created 47 technical indicator snapshots
+
+[138/197] Processing INTU...
+  📊 Found 79 historical prices
+  ✅ Created 49 technical indicator snapshots
+
+[139/197] Processing MCO...
+  📊 Found 70 historical prices
+  ✅ Created 40 technical indicator snapshots
+
+[140/197] Processing FTNT...
+  📊 Found 70 historical prices
+  ✅ Created 40 technical indicator snapshots
+
+[141/197] Processing PH...
+  📊 Found 77 historical prices
+  ✅ Created 47 technical indicator snapshots
+
+[142/197] Processing WM...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[143/197] Processing SJM...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[144/197] Processing UMBF...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[145/197] Processing ECL...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[146/197] Processing ULTA...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[147/197] Processing SF...
+  📊 Found 91 historical prices
+  ✅ Created 61 technical indicator snapshots
+
+[148/197] Processing DOW...
+  📊 Found 75 historical prices
+  ✅ Created 45 technical indicator snapshots
+
+[149/197] Processing CI...
+  📊 Found 73 historical prices
+  ✅ Created 43 technical indicator snapshots
+
+[150/197] Processing PM...
+  📊 Found 84 historical prices
+  ✅ Created 54 technical indicator snapshots
+
+[151/197] Processing AON...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[152/197] Processing CPRT...
+  📊 Found 87 historical prices
+  ✅ Created 57 technical indicator snapshots
+
+[153/197] Processing SNPS...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[154/197] Processing SYF...
+  📊 Found 83 historical prices
+  ✅ Created 53 technical indicator snapshots
+
+[155/197] Processing C...
+  📊 Found 80 historical prices
+  ✅ Created 50 technical indicator snapshots
+
+[156/197] Processing DUK...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[157/197] Processing COF...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[158/197] Processing ELV...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[159/197] Processing AXP...
+  📊 Found 80 historical prices
+  ✅ Created 50 technical indicator snapshots
+
+[160/197] Processing HPE...
+  📊 Found 76 historical prices
+  ✅ Created 46 technical indicator snapshots
+
+[161/197] Processing T...
+  📊 Found 77 historical prices
+  ✅ Created 47 technical indicator snapshots
+
+[162/197] Processing AMT...
+  📊 Found 77 historical prices
+  ✅ Created 47 technical indicator snapshots
+
+[163/197] Processing INDB...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[164/197] Processing ADI...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[165/197] Processing AMAT...
+  📊 Found 77 historical prices
+  ✅ Created 47 technical indicator snapshots
+
+[166/197] Processing PLD...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[167/197] Processing CNX...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[168/197] Processing MCK...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[169/197] Processing BK...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[170/197] Processing MU...
+  📊 Found 75 historical prices
+  ✅ Created 45 technical indicator snapshots
+
+[171/197] Processing RCL...
+  📊 Found 75 historical prices
+  ✅ Created 45 technical indicator snapshots
+
+[172/197] Processing MS...
+  📊 Found 75 historical prices
+  ✅ Created 45 technical indicator snapshots
+
+[173/197] Processing CTAS...
+  📊 Found 74 historical prices
+  ✅ Created 44 technical indicator snapshots
+
+[174/197] Processing JCI...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[175/197] Processing SBUX...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[176/197] Processing ACN...
+  📊 Found 73 historical prices
+  ✅ Created 43 technical indicator snapshots
+
+[177/197] Processing AEE...
+  📊 Found 72 historical prices
+  ✅ Created 42 technical indicator snapshots
+
+[178/197] Processing CSX...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[179/197] Processing LCII...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[180/197] Processing NSC...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[181/197] Processing CEG...
+  📊 Found 71 historical prices
+  ✅ Created 41 technical indicator snapshots
+
+[182/197] Processing CCL...
+  📊 Found 70 historical prices
+  ✅ Created 40 technical indicator snapshots
+
+[183/197] Processing HON...
+  📊 Found 69 historical prices
+  ✅ Created 39 technical indicator snapshots
+
+[184/197] Processing NRG...
+  📊 Found 69 historical prices
+  ✅ Created 39 technical indicator snapshots
+
+[185/197] Processing SHW...
+  📊 Found 69 historical prices
+  ✅ Created 39 technical indicator snapshots
+
+[186/197] Processing OXY...
+  📊 Found 68 historical prices
+  ✅ Created 38 technical indicator snapshots
+
+[187/197] Processing VST...
+  📊 Found 67 historical prices
+  ✅ Created 37 technical indicator snapshots
+
+[188/197] Processing SLB...
+  📊 Found 66 historical prices
+  ✅ Created 36 technical indicator snapshots
+
+[189/197] Processing ICE...
+  📊 Found 66 historical prices
+  ✅ Created 36 technical indicator snapshots
+
+[190/197] Processing VOYA...
+  📊 Found 66 historical prices
+  ✅ Created 36 technical indicator snapshots
+
+[191/197] Processing GLW...
+  📊 Found 65 historical prices
+  ✅ Created 35 technical indicator snapshots
+
+[192/197] Processing AZO...
+  📊 Found 65 historical prices
+  ✅ Created 35 technical indicator snapshots
+
+[193/197] Processing MO...
+  📊 Found 64 historical prices
+  ✅ Created 34 technical indicator snapshots
+
+[194/197] Processing LOW...
+  📊 Found 64 historical prices
+  ✅ Created 34 technical indicator snapshots
+
+[195/197] Processing ZTS...
+  📊 Found 64 historical prices
+  ✅ Created 34 technical indicator snapshots
+
+[196/197] Processing DE...
+  📊 Found 64 historical prices
+  ✅ Created 34 technical indicator snapshots
+
+════════════════════════════════════════════════════════════════════════════════
+📊 Creating Macro Indicators
+
+✅ Created 0 macro indicator snapshots
+
+════════════════════════════════════════════════════════════════════════════════
+📊 SUMMARY
+════════════════════════════════════════════════════════════════════════════════
+✅ Tickers processed:     196
+❌ Errors:                0
+📈 Macro dates created:   0
+
+✅ Next: Update champion-challenger analysis to use momentum features
+   The models will now have access to:
+   - Moving averages (MA30, MA50, MA200)
+   - RSI, MACD momentum indicators
+   - S&P 500 market context
+   - VIX volatility regime
+

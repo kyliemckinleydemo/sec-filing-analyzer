@@ -33,20 +33,51 @@ export async function extractMLFeatures(input: MLPredictionInput) {
     throw new Error(`Company not found: ${ticker}`);
   }
 
-  // Fetch filing to get concernLevel (champion model feature)
+  // Fetch filing to get concernLevel and analyst activity data
   const filing = await prisma.filing.findUnique({
     where: { id: filingId },
-    select: { concernLevel: true }
+    select: {
+      concernLevel: true,
+      analysisData: true
+    }
   });
 
-  // For now, analyst activity data needs to be backfilled separately
-  // In production, this should fetch from AnalystActivity table
-  // For initial testing, we'll use defaults
-  const upgradesLast30d = 0;
-  const downgradesLast30d = 0;
-  const netUpgrades = 0;
-  const majorUpgrades = 0;
-  const majorDowngrades = 0;
+  // Extract analyst activity from analysisData JSON
+  let upgradesLast30d = 0;
+  let downgradesLast30d = 0;
+  let netUpgrades = 0;
+  let majorUpgrades = 0;
+  let majorDowngrades = 0;
+
+  if (filing?.analysisData) {
+    try {
+      const analysis = typeof filing.analysisData === 'string'
+        ? JSON.parse(filing.analysisData)
+        : filing.analysisData;
+
+      if (analysis.analyst?.activity) {
+        upgradesLast30d = analysis.analyst.activity.upgradesLast30d || 0;
+        downgradesLast30d = analysis.analyst.activity.downgradesLast30d || 0;
+        netUpgrades = analysis.analyst.activity.netUpgrades || 0;
+        majorUpgrades = analysis.analyst.activity.majorUpgrades || 0;
+        majorDowngrades = analysis.analyst.activity.majorDowngrades || 0;
+
+        console.log(`[ML Features] Extracted analyst activity for ${ticker}:`, {
+          upgradesLast30d,
+          downgradesLast30d,
+          netUpgrades,
+          majorUpgrades,
+          majorDowngrades
+        });
+      } else {
+        console.warn(`[ML Features] No analyst activity data found in analysisData for ${ticker}`);
+      }
+    } catch (error) {
+      console.error(`[ML Features] Error parsing analysisData for ${ticker}:`, error);
+    }
+  } else {
+    console.warn(`[ML Features] No analysisData found for filing ${filingId}`);
+  }
 
   // Fetch latest Yahoo Finance data
   let yahooData;

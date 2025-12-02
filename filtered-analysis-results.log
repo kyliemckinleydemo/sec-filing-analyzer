@@ -1,0 +1,105 @@
+🏁 Starting FILTERED Champion-Challenger Analysis
+
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Extracting FILTERED training data...
+
+Filters:
+  ✓ Filing types: 10-K, 10-Q only (earnings reports)
+  ✓ Market cap: >$500B (mega-caps only)
+  ✓ Data completeness: Core features required
+
+Found 97 filings matching filing type filter
+
+✅ Extracted 11 clean samples
+
+Filtered out:
+  Not mega-cap: 86
+  Missing core data: 0
+  Missing snapshot: 0
+
+📈 Feature Completeness:
+  Core features: 100% (by design)
+  Momentum: 11/11 (100.0%)
+  Macro: 11/11 (100.0%)
+
+🏆 Running Model Comparisons...
+
+
+════════════════════════════════════════════════════════════════════════════════
+     FILTERED CHAMPION-CHALLENGER ANALYSIS REPORT
+════════════════════════════════════════════════════════════════════════════════
+
+Dataset: 11 FILTERED mega-cap earnings reports
+Filters Applied:
+  ✓ Filing Types: 10-K, 10-Q only
+  ✓ Market Cap: >$500B only
+  ✓ Data Quality: Core features required
+
+Filing Type Distribution:
+  10-K (Annual): 1 samples
+  10-Q (Quarterly): 10 samples
+
+────────────────────────────────────────────────────────────────────────────────
+1. OVERALL PERFORMANCE
+────────────────────────────────────────────────────────────────────────────────
+
+Metric                    Original Linear (60.   Linear + Momentum      Champion (Rule-Based  
+────────────────────────────────────────────────────────────────────────────────
+Direction Accuracy %      54.5                   54.5                   54.5                  
+MAE                       NaN                    NaN                    NaN                   
+RMSE                      NaN                    NaN                    NaN                   
+R-squared                 NaN                    NaN                    NaN                   
+
+────────────────────────────────────────────────────────────────────────────────
+2. ACCURACY BY FILING TYPE
+────────────────────────────────────────────────────────────────────────────────
+
+10-K:
+  Original Linear (60.8% Proven)     : 0.0% (1 samples)
+  Linear + Momentum                  : 0.0% (1 samples)
+  Champion (Rule-Based)              : 0.0% (1 samples)
+
+10-Q:
+  Original Linear (60.8% Proven)     : 60.0% (10 samples)
+  Linear + Momentum                  : 60.0% (10 samples)
+  Champion (Rule-Based)              : 60.0% (10 samples)
+
+════════════════════════════════════════════════════════════════════════════════
+3. COMPARISON TO PREVIOUS RESULTS
+════════════════════════════════════════════════════════════════════════════════
+
+Original 171-Sample Analysis (Oct 14):
+  Linear Model: 60.8% accuracy
+  Dataset: ALL mega-caps, mixed filing types
+
+Current 360-Sample Analysis (Oct 15):
+  Linear Model: 53.6% accuracy
+  Dataset: Mixed market caps, mixed filing types
+  Issue: 73% were 8-K filings (noise)
+
+This Filtered Analysis:
+  Original Linear: 54.5% accuracy
+  Linear + Momentum: 54.5% accuracy
+  Dataset: 11 mega-cap earnings reports only
+
+════════════════════════════════════════════════════════════════════════════════
+4. RECOMMENDATION
+════════════════════════════════════════════════════════════════════════════════
+
+🥇 Best Model: Original Linear (60.8% Proven)
+   Direction Accuracy: 54.5%
+   Mean Absolute Error: NaN%
+
+❌ INSUFFICIENT: Need more data or different approach
+
+Sample size: 11 (may be too small)
+Recommendation: Backfill 2 years of mega-cap 10-K/10-Q filings
+Target: 200+ earnings reports for statistical power
+
+════════════════════════════════════════════════════════════════════════════════
+
+
+
+📄 Full report saved to: filtered-champion-challenger-report.txt
+

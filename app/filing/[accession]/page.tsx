@@ -42,6 +42,19 @@ interface FilingAnalysisData {
       positiveFactors: string[];
       reasoning: string;
     };
+    analyst?: {
+      consensusScore: number | null;
+      upsidePotential: number | null;
+      numberOfAnalysts: number | null;
+      targetPrice: number | null;
+      activity: {
+        upgradesLast30d: number;
+        downgradesLast30d: number;
+        netUpgrades: number;
+        majorUpgrades: number;
+        majorDowngrades: number;
+      };
+    };
     summary: string;
     filingContentSummary?: string;
     financialMetrics?: {
@@ -1594,6 +1607,104 @@ export default function FilingPage() {
                       </ul>
                     </div>
                   )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Analyst Activity & Sentiment */}
+          {data.analysis?.analyst && (
+            <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50">
+              <CardHeader>
+                <CardTitle>📊 Analyst Activity & Sentiment (30 Days Before Filing)</CardTitle>
+                <CardDescription>
+                  Most important feature in ML prediction model • Street momentum signals
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Activity Summary */}
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="bg-white p-4 rounded-lg border border-purple-200">
+                      <p className="text-sm text-slate-600 mb-1">Net Upgrades</p>
+                      <p className={`text-3xl font-bold ${
+                        data.analysis.analyst.activity.netUpgrades > 0 ? 'text-green-600' :
+                        data.analysis.analyst.activity.netUpgrades < 0 ? 'text-red-600' : 'text-slate-600'
+                      }`}>
+                        {data.analysis.analyst.activity.netUpgrades > 0 ? '+' : ''}
+                        {data.analysis.analyst.activity.netUpgrades}
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        {data.analysis.analyst.activity.upgradesLast30d} upgrades, {data.analysis.analyst.activity.downgradesLast30d} downgrades
+                      </p>
+                    </div>
+
+                    <div className="bg-white p-4 rounded-lg border border-purple-200">
+                      <p className="text-sm text-slate-600 mb-1">Major Firm Activity</p>
+                      <div className="flex gap-4">
+                        <div>
+                          <p className="text-2xl font-bold text-green-600">↑ {data.analysis.analyst.activity.majorUpgrades}</p>
+                          <p className="text-xs text-slate-500">Major upgrades</p>
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold text-red-600">↓ {data.analysis.analyst.activity.majorDowngrades}</p>
+                          <p className="text-xs text-slate-500">Major downgrades</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white p-4 rounded-lg border border-purple-200">
+                      <p className="text-sm text-slate-600 mb-1">Consensus</p>
+                      <p className="text-3xl font-bold text-blue-600">
+                        {data.analysis.analyst.consensusScore !== null ? data.analysis.analyst.consensusScore : 'N/A'}
+                        {data.analysis.analyst.consensusScore !== null && '/100'}
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        {data.analysis.analyst.consensusScore !== null && data.analysis.analyst.consensusScore >= 75 && 'Strong Buy consensus'}
+                        {data.analysis.analyst.consensusScore !== null && data.analysis.analyst.consensusScore >= 60 && data.analysis.analyst.consensusScore < 75 && 'Buy consensus'}
+                        {data.analysis.analyst.consensusScore !== null && data.analysis.analyst.consensusScore >= 40 && data.analysis.analyst.consensusScore < 60 && 'Hold consensus'}
+                        {data.analysis.analyst.consensusScore !== null && data.analysis.analyst.consensusScore < 40 && 'Sell consensus'}
+                        {data.analysis.analyst.consensusScore === null && 'Not available'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Target Price & Upside */}
+                  {data.analysis.analyst.targetPrice !== null && (
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p className="text-sm text-slate-600">Analyst Target Price</p>
+                          <p className="text-2xl font-bold text-blue-700">
+                            ${data.analysis.analyst.targetPrice.toFixed(2)}
+                          </p>
+                        </div>
+                        {data.analysis.analyst.upsidePotential !== null && (
+                          <div className="text-right">
+                            <p className="text-sm text-slate-600">Upside Potential</p>
+                            <p className={`text-2xl font-bold ${
+                              data.analysis.analyst.upsidePotential > 0 ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                              {data.analysis.analyst.upsidePotential > 0 ? '+' : ''}
+                              {data.analysis.analyst.upsidePotential.toFixed(1)}%
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      {data.analysis.analyst.numberOfAnalysts !== null && (
+                        <p className="text-xs text-slate-500 mt-2">
+                          Based on {data.analysis.analyst.numberOfAnalysts} analyst{data.analysis.analyst.numberOfAnalysts !== 1 ? 's' : ''}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* ML Model Note */}
+                  <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+                    <p className="text-sm text-purple-900">
+                      <strong>📈 ML Model Impact:</strong> Net analyst upgrades in the 30 days before filing is the <strong>most important feature</strong> in our RandomForest ML prediction model (80% directional accuracy). Upgrades signal positive street momentum and often predict short-term price gains.
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>

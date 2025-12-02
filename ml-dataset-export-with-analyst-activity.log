@@ -1,0 +1,110 @@
+🚀 EXPORTING ML DATASET
+
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Found 424 filings with returns and AI analysis
+
+✅ Processed 424 complete samples
+
+📈 Dataset Breakdown:
+   Filing types: 95 10-K, 329 10-Q
+   Market caps: 126 mega, 165 large, 99 mid, 34 small
+
+📊 Feature Completeness:
+   Technical indicators: 139/424 (32.8%)
+   Macro indicators: 163/424 (38.4%)
+   PE ratio: 422/424 (99.5%)
+   Analyst consensus: 424/424 (100.0%)
+   Analyst activity: 424/424 (100.0%)
+     - With upgrades: 22
+     - With downgrades: 16
+   Analyst target: 0/424 (0.0%)
+
+✅ Exported to data/ml_dataset.csv
+✅ Exported metadata to data/ml_dataset_metadata.json
+
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+
+📋 NEXT STEPS:
+   1. Run Python ML analysis: python scripts/ml_analysis.py
+   2. Or backfill more returns: npx tsx scripts/backfill-stock-prices.ts
+

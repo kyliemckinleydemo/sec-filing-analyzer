@@ -1,0 +1,172 @@
+/**
+ * Analyze Mid-Cap Additions
+ *
+ * Only analyzes companies from the new mid-cap selection that haven't been analyzed yet
+ */
+
+import { prisma } from '../lib/prisma';
+import { claudeClient } from '../lib/claude-client';
+import * as fs from 'fs';
+
+async function main() {
+  console.log('🚀 Analyzing Mid-Cap Company Additions\n');
+  console.log('═'.repeat(80));
+
+  // Load the new selection
+  const selectionData = JSON.parse(fs.readFileSync('selected-companies-with-midcaps.json', 'utf-8'));
+  const selectedTickers = selectionData.companies.map((c: any) => c.ticker);
+
+  console.log(`\n📋 Loaded ${selectedTickers.length} companies from new selection\n`);
+
+  // Find which ones haven't been analyzed yet
+  const companies = await prisma.company.findMany({
+    where: {
+      ticker: { in: selectedTickers },
+    },
+    include: {
+      filings: {
+        where: {
+          filingType: { in: ['10-K', '10-Q', '8-K'] },
+        },
+        orderBy: { filingDate: 'desc' },
+        take: 5,
+      },
+    },
+  });
+
+  // Filter to only companies that need analysis
+  const needAnalysis: Array<{company: any; filing: any}> = [];
+
+  for (const company of companies) {
+    // Find a filing that doesn't have analysis yet
+    const unanalyzedFiling = company.filings.find(f => !f.analysisData);
+
+    if (unanalyzedFiling) {
+      needAnalysis.push({ company, filing: unanalyzedFiling });
+    }
+  }
+
+  console.log(`📊 Analysis Status:`);
+  console.log(`  Total companies in selection: ${companies.length}`);
+  console.log(`  Need analysis: ${needAnalysis.length}`);
+  console.log(`  Already analyzed: ${companies.length - needAnalysis.length}\n`);
+
+  if (needAnalysis.length === 0) {
+    console.log('✅ All companies already analyzed!\n');
+    await prisma.$disconnect();
+    return;
+  }
+
+  console.log(`🔄 Will analyze ${needAnalysis.length} new companies\n`);
+  console.log('═'.repeat(80));
+
+  let analyzed = 0;
+  let errors = 0;
+
+  // Process in batches
+  const batchSize = 5;
+  for (let i = 0; i < needAnalysis.length; i += batchSize) {
+    const batch = needAnalysis.slice(i, i + batchSize);
+
+    console.log(`\n📦 Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(needAnalysis.length / batchSize)}`);
+    console.log('─'.repeat(80));
+
+    for (let j = 0; j < batch.length; j++) {
+      const { company, filing } = batch[j];
+      const idx = i + j + 1;
+
+      console.log(`\n[${idx}/${needAnalysis.length}] Processing ${company.ticker} (${company.name})...`);
+      const marketCapB = company.marketCap ? (company.marketCap / 1_000_000_000).toFixed(0) : 'N/A';
+      console.log(`  Market Cap: $${marketCapB}B`);
+      console.log(`  📄 Filing: ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}`);
+      console.log(`     Accession: ${filing.accessionNumber}`);
+
+      try {
+        // Fetch filing content
+        console.log(`  🌐 Fetching filing content from SEC...`);
+        const response = await fetch(filing.filingUrl);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch filing: ${response.statusText}`);
+        }
+
+        const html = await response.text();
+        const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+
+        // Extract sections
+        const riskMatch = text.match(/RISK FACTORS(.{0,50000})/i);
+        const riskText = riskMatch ? riskMatch[1].substring(0, 15000) : text.substring(0, 15000);
+
+        const mdaMatch = text.match(/MANAGEMENT'?S DISCUSSION AND ANALYSIS(.{0,50000})/i);
+        const mdaText = mdaMatch ? mdaMatch[1].substring(0, 15000) : text.substring(15000, 30000);
+
+        // Run Claude analysis
+        console.log(`  🤖 Running Claude AI analysis...`);
+        const analysis = await claudeClient.analyzeFullFiling(riskText, mdaText, undefined, undefined);
+
+        const riskScore = analysis.risks?.riskScore ?? 5.0;
+        const sentimentScore = analysis.sentiment?.sentimentScore ?? 0.0;
+
+        // Update filing
+        await prisma.filing.update({
+          where: { id: filing.id },
+          data: {
+            analysisData: JSON.stringify(analysis),
+            aiSummary: analysis.summary,
+            riskScore,
+            sentimentScore,
+          },
+        });
+
+        console.log(`  ✅ Analysis complete!`);
+        console.log(`     Risk Score: ${riskScore.toFixed(2)}/10`);
+        console.log(`     Sentiment: ${sentimentScore.toFixed(2)} (${analysis.sentiment?.tone || 'N/A'})`);
+
+        analyzed++;
+
+        // Small delay
+        if (j < batch.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
+
+      } catch (error) {
+        console.log(`  ❌ Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        errors++;
+      }
+    }
+
+    // Delay between batches
+    if (i + batchSize < needAnalysis.length) {
+      console.log(`\n⏳ Waiting 10 seconds before next batch...`);
+      await new Promise(resolve => setTimeout(resolve, 10000));
+    }
+  }
+
+  console.log('\n' + '═'.repeat(80));
+  console.log('📊 ANALYSIS SUMMARY');
+  console.log('═'.repeat(80));
+  console.log(`✅ Newly Analyzed:      ${analyzed}`);
+  console.log(`❌ Failed:              ${errors}`);
+  console.log('');
+
+  // Check total dataset size now
+  const totalAnalyzed = await prisma.filing.count({
+    where: {
+      analysisData: { not: null },
+      riskScore: { not: null },
+      sentimentScore: { not: null },
+    },
+  });
+
+  console.log(`📈 Total analyzed filings in database: ${totalAnalyzed}`);
+  console.log('');
+  console.log('✅ Next step: Run stock price backfill');
+  console.log('   npx tsx scripts/backfill-stock-prices.ts');
+  console.log('');
+
+  await prisma.$disconnect();
+}
+
+main().catch(error => {
+  console.error('Fatal error:', error);
+  process.exit(1);
+});

@@ -1,0 +1,110 @@
+🎯 Confidence Calibration Analysis
+
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Analyzing 360 filings for confidence calibration
+
+
+════════════════════════════════════════════════════════════════════════════════
+           CONFIDENCE CALIBRATION ANALYSIS
+════════════════════════════════════════════════════════════════════════════════
+
+Total predictions: 360
+  High confidence (65-100):   180 predictions
+  Medium confidence (50-64):  171 predictions
+  Low confidence (0-49):      9 predictions
+
+────────────────────────────────────────────────────────────────────────────────
+1. CALIBRATION BY CONFIDENCE LEVEL
+────────────────────────────────────────────────────────────────────────────────
+
+Is our confidence score well-calibrated?
+(High confidence should = high accuracy)
+
+High Confidence:
+  Samples:          180
+  Avg Confidence:   68.1
+  Direction Acc:    0.0%
+  Avg Error:        NaN%
+  Calibration:      ⚠️ Over-confident
+
+Medium Confidence:
+  Samples:          171
+  Avg Confidence:   55.1
+  Direction Acc:    0.0%
+  Avg Error:        NaN%
+  Calibration:      ⚠️ Over-confident
+
+Low Confidence:
+  Samples:          9
+  Avg Confidence:   49.5
+  Direction Acc:    0.0%
+  Avg Error:        NaN%
+  Calibration:      ⚠️ Over-confident
+
+────────────────────────────────────────────────────────────────────────────────
+2. CONFIDENCE FACTORS ANALYSIS
+────────────────────────────────────────────────────────────────────────────────
+
+Correct predictions avg confidence: NaN
+Incorrect predictions avg confidence: 61.5
+Difference: NaN points
+
+Feature Completeness:
+  Correct predictions:   NaN%
+  Incorrect predictions: 62.9%
+  Impact: NaN points
+
+────────────────────────────────────────────────────────────────────────────────
+3. CONFIDENCE BY MARKET CAP
+────────────────────────────────────────────────────────────────────────────────
+
+Mega-Cap (>$500B):
+  Samples:        31
+  Avg Confidence: 72.7
+  Direction Acc:  0.0%
+  Avg Error:      NaN%
+
+Large-Cap ($200-500B):
+  Samples:        68
+  Avg Confidence: 57.1
+  Direction Acc:  0.0%
+  Avg Error:      NaN%
+
+Mid-Cap ($50-200B):
+  Samples:        150
+  Avg Confidence: 67.1
+  Direction Acc:  0.0%
+  Avg Error:      NaN%
+
+Small-Cap (<$50B):
+  Samples:        111
+  Avg Confidence: 53.4
+  Direction Acc:  0.0%
+  Avg Error:      NaN%
+
+════════════════════════════════════════════════════════════════════════════════
+4. RECOMMENDATIONS FOR UI
+════════════════════════════════════════════════════════════════════════════════
+
+⚠️  RECALIBRATION NEEDED: Confidence scores do not match accuracy
+
+Recommended actions:
+1. Adjust confidence threshold boundaries
+2. Re-weight confidence factors
+3. Add more historical data for calibration
+
+Confidence Score Formula:
+  = 0.40 × Feature Completeness
+  + 0.30 × Historical Accuracy (segment)
+  + 0.20 × Model Certainty (signal strength)
+  + 0.10 × Volatility Score (inverse)
+  + Bonus for Mega/Mid-caps
+
+════════════════════════════════════════════════════════════════════════════════
+
+
+
+📄 Detailed results saved to: confidence-calibration-results.json
+📄 Report saved to: confidence-calibration-report.txt
+

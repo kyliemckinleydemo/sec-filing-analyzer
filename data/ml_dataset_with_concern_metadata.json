@@ -1,0 +1,40 @@
+{
+  "exportDate": "2025-10-21T00:18:20.323Z",
+  "totalSamples": 352,
+  "dateRange": {
+    "earliest": "2023-10-18T00:00:00.000Z",
+    "latest": "2025-10-10T00:00:00.000Z"
+  },
+  "breakdown": {
+    "filingTypes": {
+      "10-K": 78,
+      "10-Q": 274
+    },
+    "marketCaps": {
+      "mega": 97,
+      "large": 130,
+      "mid": 91,
+      "small": 34
+    }
+  },
+  "concernLevelStats": {
+    "average": 5.35028409090909,
+    "min": 1,
+    "max": 10,
+    "distribution": {
+      "low": 19,
+      "moderate": 41,
+      "elevated": 242,
+      "high": 37,
+      "critical": 13
+    }
+  },
+  "featureCompleteness": {
+    "technical": 131,
+    "macro": 146,
+    "peRatio": 350,
+    "analystTarget": 0,
+    "analystConsensus": 352,
+    "analystActivity": 352
+  }
+}

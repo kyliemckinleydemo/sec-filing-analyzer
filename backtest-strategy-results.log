@@ -1,0 +1,64 @@
+🔬 COMPREHENSIVE STRATEGY BACKTEST
+
+════════════════════════════════════════════════════════════════════════════════
+Starting Capital: $100,000
+Max Position Size: 10%
+Min Confidence: 60%
+Min Predicted Return: 1%
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Dataset: 424 filings with actual returns
+
+
+════════════════════════════════════════════════════════════════════════════════
+📈 BACKTEST RESULTS
+════════════════════════════════════════════════════════════════════════════════
+
+Portfolio Performance:
+  Total Return: 2.63%
+  Total Trades: 418
+  Final Value: $102,632.90
+
+Win/Loss Statistics:
+  Win Rate: 52.9%
+  Winning Trades: 221
+  Losing Trades: 197
+  Profit Factor: 1.22
+
+Return Metrics:
+  Average Return per Trade: 0.006%
+  Average Win: $65.67
+  Average Loss: $60.31
+
+Risk Metrics:
+  Sharpe Ratio: 0.93
+  Max Drawdown: 2.12%
+  Alpha: 2.63%
+
+🏆 Top 10 Winning Trades:
+  1. ORCL (10-Q) - P&L: $903.69 | Predicted: 3.50% | Actual: 26.97%
+  2. LDOS (10-Q) - P&L: $334.49 | Predicted: 3.50% | Actual: 10.06%
+  3. ORCL (10-Q) - P&L: $325.39 | Predicted: 1.25% | Actual: 26.97%
+  4. AVGO (10-Q) - P&L: $323.33 | Predicted: 4.85% | Actual: 6.93%
+  5. TSLA (10-Q) - P&L: $319.14 | Predicted: 1.25% | Actual: 26.68%
+  6. META (10-K) - P&L: $298.28 | Predicted: 1.65% | Actual: 19.05%
+  7. TSLA (10-Q) - P&L: $273.21 | Predicted: 1.25% | Actual: 22.72%
+  8. UNH (10-Q) - P&L: $264.35 | Predicted: 1.25% | Actual: 22.24%
+  9. ORCL (10-Q) - P&L: $260.10 | Predicted: 1.25% | Actual: 21.76%
+  10. DIS (10-Q) - P&L: $250.66 | Predicted: 1.25% | Actual: 20.84%
+
+❌ Top 10 Losing Trades:
+  1. VRTX (10-Q) - P&L: $-699.28 | Predicted: 3.50% | Actual: -20.71%
+  2. UNH (10-Q) - P&L: $-258.09 | Predicted: 1.25% | Actual: -21.07%
+  3. EFX (10-Q) - P&L: $-247.77 | Predicted: 3.50% | Actual: -7.20%
+  4. ACN (10-K) - P&L: $-204.56 | Predicted: 2.90% | Actual: -7.15%
+  5. RSG (10-Q) - P&L: $-194.11 | Predicted: 3.50% | Actual: -5.66%
+  6. NVDA (10-Q) - P&L: $-193.07 | Predicted: 1.25% | Actual: -15.82%
+  7. QCOM (10-Q) - P&L: $-185.33 | Predicted: 2.00% | Actual: -9.48%
+  8. GWW (10-Q) - P&L: $-182.25 | Predicted: 2.00% | Actual: -9.33%
+  9. AMD (10-Q) - P&L: $-181.02 | Predicted: 1.25% | Actual: -14.79%
+  10. NVDA (10-Q) - P&L: $-176.48 | Predicted: 3.00% | Actual: -6.05%
+
+════════════════════════════════════════════════════════════════════════════════
+✅ Backtest Complete
+

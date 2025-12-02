@@ -1,0 +1,147 @@
+
+🏁 Starting Champion-Challenger Analysis
+
+📊 Extracting training data from database...
+
+Found 171 filings with actual returns
+
+✅ Extracted 171 complete training samples
+
+📈 Feature Completeness:
+  filingType                     100.0%
+  riskScore                      100.0%
+  sentimentScore                 100.0%
+  marketCap                      100.0%
+  currentPrice                   100.0%
+  forwardPE                      100.0%
+  fiftyTwoWeekHigh               100.0%
+  fiftyTwoWeekLow                100.0%
+  epsActual                      100.0%
+  epsEstimateNextY               100.0%
+  volume                         100.0%
+  averageVolume                  100.0%
+  priceToHigh                    100.0%
+  priceToLow                     100.0%
+  volumeRatio                    100.0%
+  epsEstimateCurrentQ            99.4%
+  epsEstimateCurrentY            99.4%
+  analystRatingCount             97.7%
+  peRatio                        97.1%
+  dividendYield                  83.6%
+  analystTargetPrice             0.0%
+  analystBuyCount                0.0%
+  analystHoldCount               0.0%
+  analystSellCount               0.0%
+  epsEstimateNextQ               0.0%
+  revenueEstimateCurrentQ        0.0%
+  revenueEstimateCurrentY        0.0%
+  beta                           0.0%
+  priceToTarget                  0.0%
+  analystBullishRatio            0.0%
+
+🏆 Running CHAMPION model (current rule-based engine)...
+
+📈 Running CHALLENGER 1 (Stepwise Linear Regression)...
+
+Selected 14 features with >50% completeness
+Features: riskScore, sentimentScore, marketCap, currentPrice, peRatio, forwardPE, analystRatingCount, epsActual, epsEstimateCurrentY, epsEstimateNextY, dividendYield, priceToHigh, priceToLow, volumeRatio
+
+Top 10 Features by Importance:
+  currentPrice              β=-0.0038  importance=2.0347
+  epsEstimateCurrentY       β=0.0399  importance=0.8522
+  epsActual                 β=0.0450  importance=0.7580
+  peRatio                   β=0.0210  importance=0.7123
+  epsEstimateNextY          β=0.0287  importance=0.6205
+  marketCap                 β=0.0000  importance=0.5451
+  volumeRatio               β=1.5333  importance=0.4882
+  sentimentScore            β=3.1723  importance=0.4085
+  dividendYield             β=-0.2342  importance=0.3688
+  forwardPE                 β=0.0098  importance=0.1736
+
+🌳 Running CHALLENGER 2 (Enhanced Non-Linear Model)...
+
+Features: Polynomial terms, interactions, market cap sweet spots, valuation ratios
+
+Top 10 Non-Linear Feature Effects:
+  peEffect                  variance=227.3403
+  riskEffect                variance=9.7894
+  peExpansionEffect         variance=1.7137
+  priceHighEffect           variance=1.2305
+  epsGrowthEffect           variance=0.8916
+  marketCapEffect           variance=0.7240
+  filingTypeEffect          variance=0.1158
+  sentimentEffect           variance=0.0641
+  dividendEffect            variance=0.0352
+  volumeEffect              variance=0.0235
+
+
+════════════════════════════════════════════════════════════════════════════════
+           CHAMPION-CHALLENGER MODEL ANALYSIS REPORT
+════════════════════════════════════════════════════════════════════════════════
+
+Dataset: 171 filings with actual 7-day returns
+Date Range: 2025-07-17 to 2025-10-10
+
+────────────────────────────────────────────────────────────────────────────────
+1. OVERALL PERFORMANCE METRICS
+────────────────────────────────────────────────────────────────────────────────
+
+Metric                    Champion        Challenger 1    Challenger 2   
+────────────────────────────────────────────────────────────────────────────────
+MAE (Mean Abs Error)      4.438           2.773           3.266          
+RMSE                      5.622           3.764           5.045          
+R-squared                 -0.979          0.113           -0.594         
+Direction Accuracy %      50.3            60.8            46.2           
+Mean Error (Bias)         -3.354          0.000           -0.635         
+Median Error              -3.489          0.148           -0.305         
+
+────────────────────────────────────────────────────────────────────────────────
+2. DIRECTIONAL PREDICTION ACCURACY
+────────────────────────────────────────────────────────────────────────────────
+
+Direction                 Champion        Challenger 1    Challenger 2   
+────────────────────────────────────────────────────────────────────────────────
+Up Predictions            20.0            60.6            40.3           
+Down Predictions          51.2            61.0            49.5           
+
+────────────────────────────────────────────────────────────────────────────────
+3. ACCURACY BY FILING TYPE
+────────────────────────────────────────────────────────────────────────────────
+
+Filing Type               Champion        Challenger 1    Challenger 2   
+────────────────────────────────────────────────────────────────────────────────
+10-K (Annual)             62.5            37.5            75.0           
+10-Q (Quarterly)          45.8            62.5            50.0           
+8-K (Current Report)      51.3            61.7            42.6           
+
+────────────────────────────────────────────────────────────────────────────────
+4. ACCURACY BY MARKET CAP
+────────────────────────────────────────────────────────────────────────────────
+
+Market Cap                Champion        Challenger 1    Challenger 2   
+────────────────────────────────────────────────────────────────────────────────
+Small Cap (<$200B)        0.0             0.0             0.0            
+Large Cap ($200-500B)     0.0             0.0             0.0            
+Mega Cap (>$500B)         50.3            60.8            46.2           
+
+════════════════════════════════════════════════════════════════════════════════
+5. RECOMMENDATION
+════════════════════════════════════════════════════════════════════════════════
+
+Based on comprehensive analysis:
+
+1st Place: Challenger 1 (Linear) (Score: 33.09)
+   - Direction Accuracy: 60.8%
+   - Mean Absolute Error: 2.773
+
+2nd Place: Challenger 2 (Non-Linear) (Score: 13.54)
+3rd Place: Champion (Rule-Based) (Score: 5.91)
+
+🔄 RECOMMENDATION: Consider replacing Champion with Challenger 1 (Linear)
+   The new model shows 459.6% improvement.
+
+════════════════════════════════════════════════════════════════════════════════
+
+
+📄 Full report saved to: champion-challenger-report-2025-10-14.txt
+

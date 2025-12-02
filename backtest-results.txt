@@ -1,0 +1,2184 @@
+═══════════════════════════════════════════════════════
+           PAPER TRADING BACKTEST
+═══════════════════════════════════════════════════════
+
+Found 424 filings with ML predictions
+
+⚙️  Backtest Settings:
+   Starting Capital: $100,000
+   Min Confidence: 60%
+   Min Return: 2%
+   Max Position: 10%
+   Hold Period: 7 days
+
+🔄 Processing filings...
+
+[1/424] PG - Tue Oct 17 2023
+   Predicted: +2.49% (82% confidence)
+   📊 Entry:  Wed Oct 18 2023 @ $150.06
+   📊 Exit:   Wed Oct 25 2023 @ $150.60
+   💰 P&L:    +$5.02 (+0.26%)
+   🎯 Actual: +0.36%
+   💵 Cash:   $100,005.02
+
+[3/424] TSLA - Sun Oct 22 2023
+   Predicted: -6.94% (95% confidence)
+   📊 Entry:  Mon Oct 23 2023 @ $210.00
+   📊 Exit:   Mon Oct 30 2023 @ $197.36
+   💰 P&L:    $-393.84 (-6.05%)
+   🎯 Actual: -6.02%
+   💵 Cash:   $99,611.18
+
+[4/424] MSFT - Mon Oct 23 2023
+   Predicted: +2.43% (82% confidence)
+   📊 Entry:  Tue Oct 24 2023 @ $331.30
+   📊 Exit:   Tue Oct 31 2023 @ $338.11
+   💰 P&L:    +$32.05 (+1.93%)
+   🎯 Actual: +2.06%
+   💵 Cash:   $99,643.23
+
+[5/424] KO - Mon Oct 23 2023
+   Predicted: +3.83% (89% confidence)
+   📊 Entry:  Tue Oct 24 2023 @ $55.65
+   📊 Exit:   Tue Oct 31 2023 @ $56.49
+   💰 P&L:    +$49.24 (+1.45%)
+   🎯 Actual: +1.51%
+   💵 Cash:   $99,692.47
+
+[7/424] GOOG - Tue Oct 24 2023
+   Predicted: -10.58% (95% confidence)
+   📊 Entry:  Wed Oct 25 2023 @ $129.77
+   📊 Exit:   Wed Nov 01 2023 @ $127.57
+   💰 P&L:    $-169.20 (-1.72%)
+   🎯 Actual: -1.70%
+   💵 Cash:   $99,523.27
+
+[8/424] VZ - Wed Oct 25 2023
+   Predicted: +5.08% (95% confidence)
+   📊 Entry:  Thu Oct 26 2023 @ $33.66
+   📊 Exit:   Thu Nov 02 2023 @ $35.90
+   💰 P&L:    +$316.08 (+6.61%)
+   🎯 Actual: +6.65%
+   💵 Cash:   $99,839.35
+
+[9/424] MA - Wed Oct 25 2023
+   Predicted: -2.20% (81% confidence)
+   📊 Entry:  Thu Oct 26 2023 @ $371.02
+   📊 Exit:   Thu Nov 02 2023 @ $382.69
+   💰 P&L:    +$44.68 (+3.01%)
+   🎯 Actual: +3.15%
+   💵 Cash:   $99,884.03
+
+[10/424] AMZN - Thu Oct 26 2023
+   Predicted: +15.47% (95% confidence)
+   📊 Entry:  Fri Oct 27 2023 @ $126.20
+   📊 Exit:   Fri Nov 03 2023 @ $138.60
+   💰 P&L:    +$977.60 (+9.81%)
+   🎯 Actual: +9.83%
+   💵 Cash:   $100,861.631
+
+[12/424] WFC - Mon Oct 30 2023
+   Predicted: +4.84% (94% confidence)
+   📊 Entry:  Tue Oct 31 2023 @ $39.64
+   📊 Exit:   Tue Nov 07 2023 @ $41.04
+   💰 P&L:    +$160.40 (+3.49%)
+   🎯 Actual: +3.53%
+   💵 Cash:   $101,022.031
+
+[14/424] QCOM - Tue Oct 31 2023
+   Predicted: +10.76% (95% confidence)
+   📊 Entry:  Wed Nov 01 2023 @ $109.17
+   📊 Exit:   Wed Nov 08 2023 @ $120.06
+   💰 P&L:    +$999.88 (+9.96%)
+   🎯 Actual: +9.98%
+   💵 Cash:   $102,021.911
+
+[15/424] AMD - Tue Oct 31 2023
+   Predicted: +15.18% (95% confidence)
+   📊 Entry:  Wed Nov 01 2023 @ $98.58
+   📊 Exit:   Wed Nov 08 2023 @ $113.59
+   💰 P&L:    +$1544.03 (+15.21%)
+   🎯 Actual: +15.23%
+   💵 Cash:   $103,565.94
+
+[18/424] MCD - Wed Nov 01 2023
+   Predicted: +2.11% (81% confidence)
+   📊 Entry:  Thu Nov 02 2023 @ $263.59
+   📊 Exit:   Thu Nov 09 2023 @ $266.91
+   💰 P&L:    +$17.92 (+1.13%)
+   🎯 Actual: +1.26%
+   💵 Cash:   $103,583.86
+
+[19/424] LLY - Wed Nov 01 2023
+   Predicted: +11.66% (95% confidence)
+   📊 Entry:  Thu Nov 02 2023 @ $578.33
+   📊 Exit:   Thu Nov 09 2023 @ $591.32
+   💰 P&L:    +$218.83 (+2.23%)
+   🎯 Actual: +2.25%
+   💵 Cash:   $103,802.69
+
+[23/424] AAPL - Thu Nov 02 2023
+   Predicted: +2.73% (84% confidence)
+   📊 Entry:  Fri Nov 03 2023 @ $174.24
+   📊 Exit:   Fri Nov 10 2023 @ $186.40
+   💰 P&L:    +$156.08 (+6.89%)
+   🎯 Actual: +6.98%
+   💵 Cash:   $103,958.77
+
+[26/424] PFE - Tue Nov 07 2023
+   Predicted: -6.37% (95% confidence)
+   📊 Entry:  Wed Nov 08 2023 @ $30.92
+   📊 Exit:   Wed Nov 15 2023 @ $30.19
+   💰 P&L:    $-150.19 (-2.39%)
+   🎯 Actual: -2.36%
+   💵 Cash:   $103,808.58
+
+[27/424] V - Tue Nov 14 2023
+   Predicted: +2.14% (81% confidence)
+   📊 Entry:  Wed Nov 15 2023 @ $246.81
+   📊 Exit:   Wed Nov 22 2023 @ $253.72
+   💰 P&L:    +$46.37 (+2.68%)
+   🎯 Actual: +2.80%
+   💵 Cash:   $103,854.95
+
+[28/424] NVDA - Mon Nov 20 2023
+   Predicted: -4.30% (91% confidence)
+   📊 Entry:  Tue Nov 21 2023 @ $50.13
+   📊 Exit:   Tue Nov 28 2023 @ $47.82
+   💰 P&L:    $-188.71 (-4.65%)
+   🎯 Actual: -4.60%
+   💵 Cash:   $103,666.245
+
+[33/424] CRM - Wed Nov 29 2023
+   Predicted: +8.15% (95% confidence)
+   📊 Entry:  Thu Nov 30 2023 @ $249.05
+   📊 Exit:   Thu Dec 07 2023 @ $248.85
+   💰 P&L:    $-8.40 (-0.11%)
+   🎯 Actual: -0.08%
+   💵 Cash:   $103,657.845
+
+[34/424] ORCL - Mon Dec 11 2023
+   Predicted: -8.80% (95% confidence)
+   📊 Entry:  Tue Dec 12 2023 @ $102.70
+   📊 Exit:   Tue Dec 19 2023 @ $106.25
+   💰 P&L:    +$296.20 (+3.43%)
+   🎯 Actual: +3.46%
+   💵 Cash:   $103,954.046
+
+[37/424] NKE - Thu Jan 04 2024
+   Predicted: +3.52% (88% confidence)
+   📊 Entry:  Fri Jan 05 2024 @ $102.46
+   📊 Exit:   Fri Jan 12 2024 @ $105.06
+   💰 P&L:    +$78.60 (+2.47%)
+   🎯 Actual: +2.54%
+   💵 Cash:   $104,032.645
+
+[39/424] PG - Mon Jan 22 2024
+   Predicted: +5.61% (95% confidence)
+   📊 Entry:  Tue Jan 23 2024 @ $153.11
+   📊 Exit:   Tue Jan 30 2024 @ $157.49
+   💰 P&L:    +$155.68 (+2.82%)
+   🎯 Actual: +2.86%
+   💵 Cash:   $104,188.326
+
+[42/424] TSLA - Sun Jan 28 2024
+   Predicted: -5.17% (95% confidence)
+   📊 Entry:  Mon Jan 29 2024 @ $185.63
+   📊 Exit:   Mon Feb 05 2024 @ $181.06
+   💰 P&L:    $-125.39 (-2.50%)
+   🎯 Actual: -2.46%
+   💵 Cash:   $104,062.935
+
+[44/424] GOOG - Tue Jan 30 2024
+   Predicted: -4.99% (95% confidence)
+   📊 Entry:  Wed Jan 31 2024 @ $145.39
+   📊 Exit:   Wed Feb 07 2024 @ $146.68
+   💰 P&L:    +$40.57 (+0.85%)
+   🎯 Actual: +0.89%
+   💵 Cash:   $104,103.505
+
+[46/424] AMD - Tue Jan 30 2024
+   Predicted: -2.43% (82% confidence)
+   📊 Entry:  Wed Jan 31 2024 @ $165.74
+   📊 Exit:   Wed Feb 07 2024 @ $170.94
+   💰 P&L:    +$60.40 (+3.04%)
+   🎯 Actual: +3.14%
+   💵 Cash:   $104,163.905
+
+[47/424] META - Thu Feb 01 2024
+   Predicted: +19.05% (95% confidence)
+   📊 Entry:  Fri Feb 02 2024 @ $459.60
+   📊 Exit:   Fri Feb 09 2024 @ $468.11
+   💰 P&L:    +$185.22 (+1.83%)
+   🎯 Actual: +1.85%
+   💵 Cash:   $104,349.125
+
+[49/424] AMZN - Thu Feb 01 2024
+   Predicted: +6.63% (95% confidence)
+   📊 Entry:  Fri Feb 02 2024 @ $169.19
+   📊 Exit:   Fri Feb 09 2024 @ $174.45
+   💰 P&L:    +$197.88 (+3.08%)
+   🎯 Actual: +3.11%
+   💵 Cash:   $104,547.005
+
+[51/424] DIS - Tue Feb 06 2024
+   Predicted: +11.25% (95% confidence)
+   📊 Entry:  Wed Feb 07 2024 @ $97.39
+   📊 Exit:   Wed Feb 14 2024 @ $111.56
+   💰 P&L:    +$1514.19 (+14.53%)
+   🎯 Actual: +14.55%
+   💵 Cash:   $106,061.194
+
+[52/424] PEP - Thu Feb 08 2024
+   Predicted: -3.45% (87% confidence)
+   📊 Entry:  Fri Feb 09 2024 @ $171.20
+   📊 Exit:   Fri Feb 16 2024 @ $166.32
+   💰 P&L:    $-89.84 (-2.92%)
+   🎯 Actual: -2.85%
+   💵 Cash:   $105,971.355
+
+[55/424] COP - Wed Feb 14 2024
+   Predicted: +2.50% (82% confidence)
+   📊 Entry:  Thu Feb 15 2024 @ $109.04
+   📊 Exit:   Thu Feb 22 2024 @ $112.22
+   💰 P&L:    +$61.60 (+2.82%)
+   🎯 Actual: +2.92%
+   💵 Cash:   $106,032.955
+
+[57/424] ABT - Thu Feb 15 2024
+   Predicted: +4.73% (94% confidence)
+   📊 Entry:  Fri Feb 16 2024 @ $113.50
+   📊 Exit:   Fri Feb 23 2024 @ $119.46
+   💰 P&L:    +$242.36 (+5.21%)
+   🎯 Actual: +5.25%
+   💵 Cash:   $106,275.314
+
+[59/424] WFC - Mon Feb 19 2024
+   Predicted: +4.56% (93% confidence)
+   📊 Entry:  Tue Feb 20 2024 @ $51.50
+   📊 Exit:   Tue Feb 27 2024 @ $54.81
+   💰 P&L:    +$285.97 (+6.38%)
+   🎯 Actual: +6.43%
+   💵 Cash:   $106,561.285
+
+[62/424] NVDA - Tue Feb 20 2024
+   Predicted: +13.32% (95% confidence)
+   📊 Entry:  Wed Feb 21 2024 @ $68.01
+   📊 Exit:   Wed Feb 28 2024 @ $77.66
+   💰 P&L:    +$1504.49 (+14.18%)
+   🎯 Actual: +14.20%
+   💵 Cash:   $108,065.777
+
+[65/424] TMO - Wed Feb 21 2024
+   Predicted: +3.47% (87% confidence)
+   📊 Entry:  Thu Feb 22 2024 @ $555.00
+   📊 Exit:   Thu Feb 29 2024 @ $570.18
+   💰 P&L:    +$73.90 (+2.66%)
+   🎯 Actual: +2.74%
+   💵 Cash:   $108,139.677
+
+[66/424] PFE - Wed Feb 21 2024
+   Predicted: -2.28% (81% confidence)
+   📊 Entry:  Thu Feb 22 2024 @ $27.59
+   📊 Exit:   Thu Feb 29 2024 @ $26.56
+   💰 P&L:    $-76.16 (-3.83%)
+   🎯 Actual: -3.73%
+   💵 Cash:   $108,063.517
+
+[67/424] CVX - Sun Feb 25 2024
+   Predicted: -3.61% (88% confidence)
+   📊 Entry:  Mon Feb 26 2024 @ $154.54
+   📊 Exit:   Mon Mar 04 2024 @ $148.88
+   💰 P&L:    $-126.52 (-3.72%)
+   🎯 Actual: -3.66%
+   💵 Cash:   $107,936.998
+
+[68/424] MRK - Sun Feb 25 2024
+   Predicted: -3.72% (89% confidence)
+   📊 Entry:  Mon Feb 26 2024 @ $129.38
+   📊 Exit:   Mon Mar 04 2024 @ $124.05
+   💰 P&L:    $-145.91 (-4.18%)
+   🎯 Actual: -4.12%
+   💵 Cash:   $107,791.088
+
+[70/424] UNH - Tue Feb 27 2024
+   Predicted: -7.84% (95% confidence)
+   📊 Entry:  Wed Feb 28 2024 @ $495.44
+   📊 Exit:   Wed Mar 06 2024 @ $472.60
+   💰 P&L:    $-367.44 (-4.64%)
+   🎯 Actual: -4.61%
+   💵 Cash:   $107,423.648
+
+[71/424] CRM - Tue Mar 05 2024
+   Predicted: +2.63% (83% confidence)
+   📊 Entry:  Wed Mar 06 2024 @ $304.65
+   📊 Exit:   Wed Mar 13 2024 @ $304.68
+   💰 P&L:    $-1.79 (-0.08%)
+   🎯 Actual: +0.01%
+   💵 Cash:   $107,421.858
+
+[72/424] ORCL - Mon Mar 11 2024
+   Predicted: +11.98% (95% confidence)
+   📊 Entry:  Tue Mar 12 2024 @ $126.26
+   📊 Exit:   Tue Mar 19 2024 @ $129.19
+   💰 P&L:    +$247.05 (+2.30%)
+   🎯 Actual: +2.32%
+   💵 Cash:   $107,668.908
+
+[79/424] PG - Thu Apr 18 2024
+   Predicted: +3.34% (87% confidence)
+   📊 Entry:  Fri Apr 19 2024 @ $154.98
+   📊 Exit:   Fri Apr 26 2024 @ $161.29
+   💰 P&L:    +$124.20 (+4.01%)
+   🎯 Actual: +4.07%
+   💵 Cash:   $107,793.108
+
+[82/424] TSLA - Tue Apr 23 2024
+   Predicted: +26.68% (95% confidence)
+   📊 Entry:  Wed Apr 24 2024 @ $162.84
+   📊 Exit:   Wed May 01 2024 @ $179.99
+   💰 P&L:    +$1129.90 (+10.51%)
+   🎯 Actual: +10.53%
+   💵 Cash:   $108,923.008
+
+[83/424] V - Tue Apr 23 2024
+   Predicted: -2.01% (80% confidence)
+   📊 Entry:  Wed Apr 24 2024 @ $282.57
+   📊 Exit:   Wed May 01 2024 @ $267.32
+   💰 P&L:    $-93.50 (-5.51%)
+   🎯 Actual: -5.40%
+   💵 Cash:   $108,829.508
+
+[84/424] META - Wed Apr 24 2024
+   Predicted: -11.01% (95% confidence)
+   📊 Entry:  Thu Apr 25 2024 @ $421.40
+   📊 Exit:   Thu May 02 2024 @ $441.68
+   💰 P&L:    +$505.00 (+4.79%)
+   🎯 Actual: +4.81%
+   💵 Cash:   $109,334.508
+
+[86/424] MSFT - Wed Apr 24 2024
+   Predicted: -3.45% (87% confidence)
+   📊 Entry:  Thu Apr 25 2024 @ $394.03
+   📊 Exit:   Thu May 02 2024 @ $397.84
+   💰 P&L:    +$28.48 (+0.90%)
+   🎯 Actual: +0.97%
+   💵 Cash:   $109,362.988
+
+[87/424] GOOG - Thu Apr 25 2024
+   Predicted: +6.65% (95% confidence)
+   📊 Entry:  Fri Apr 26 2024 @ $175.99
+   📊 Exit:   Fri May 03 2024 @ $168.99
+   💰 P&L:    $-275.00 (-4.01%)
+   🎯 Actual: -3.98%
+   💵 Cash:   $109,087.988
+
+[89/424] XOM - Sun Apr 28 2024
+   Predicted: -2.42% (82% confidence)
+   📊 Entry:  Mon Apr 29 2024 @ $117.76
+   📊 Exit:   Mon May 06 2024 @ $116.75
+   💰 P&L:    $-20.18 (-0.95%)
+   🎯 Actual: -0.86%
+   💵 Cash:   $109,067.808
+
+[90/424] LLY - Mon Apr 29 2024
+   Predicted: +4.00% (90% confidence)
+   📊 Entry:  Tue Apr 30 2024 @ $775.00
+   📊 Exit:   Tue May 07 2024 @ $777.77
+   💰 P&L:    +$11.85 (+0.31%)
+   🎯 Actual: +0.36%
+   💵 Cash:   $109,079.658
+
+[91/424] AMZN - Tue Apr 30 2024
+   Predicted: +7.86% (95% confidence)
+   📊 Entry:  Wed May 01 2024 @ $181.64
+   📊 Exit:   Wed May 08 2024 @ $188.00
+   💰 P&L:    +$277.84 (+3.48%)
+   🎯 Actual: +3.50%
+   💵 Cash:   $109,357.498
+
+[92/424] JNJ - Tue Apr 30 2024
+   Predicted: +2.86% (84% confidence)
+   📊 Entry:  Wed May 01 2024 @ $148.74
+   📊 Exit:   Wed May 08 2024 @ $148.95
+   💰 P&L:    +$1.57 (+0.06%)
+   🎯 Actual: +0.14%
+   💵 Cash:   $109,359.068
+
+[94/424] AMD - Tue Apr 30 2024
+   Predicted: -2.49% (82% confidence)
+   📊 Entry:  Wed May 01 2024 @ $148.11
+   📊 Exit:   Wed May 08 2024 @ $153.62
+   💰 P&L:    +$80.65 (+3.63%)
+   🎯 Actual: +3.72%
+   💵 Cash:   $109,439.718
+
+[95/424] QCOM - Tue Apr 30 2024
+   Predicted: +8.62% (95% confidence)
+   📊 Entry:  Wed May 01 2024 @ $164.51
+   📊 Exit:   Wed May 08 2024 @ $180.55
+   💰 P&L:    +$864.16 (+9.73%)
+   🎯 Actual: +9.75%
+   💵 Cash:   $110,303.878
+
+[98/424] WFC - Wed May 01 2024
+   Predicted: +2.87% (84% confidence)
+   📊 Entry:  Thu May 02 2024 @ $60.12
+   📊 Exit:   Thu May 09 2024 @ $61.28
+   💰 P&L:    +$49.04 (+1.85%)
+   🎯 Actual: +1.93%
+   💵 Cash:   $110,352.918
+
+[104/424] AAPL - Thu May 02 2024
+   Predicted: +6.67% (95% confidence)
+   📊 Entry:  Fri May 03 2024 @ $186.65
+   📊 Exit:   Fri May 10 2024 @ $183.05
+   💰 P&L:    $-135.20 (-1.96%)
+   🎯 Actual: -1.93%
+   💵 Cash:   $110,217.719
+
+[105/424] DIS - Mon May 06 2024
+   Predicted: -9.14% (95% confidence)
+   📊 Entry:  Tue May 07 2024 @ $107.25
+   📊 Exit:   Tue May 14 2024 @ $105.35
+   💰 P&L:    $-171.10 (-1.79%)
+   🎯 Actual: -1.77%
+   💵 Cash:   $110,046.619
+
+[106/424] PFE - Tue May 07 2024
+   Predicted: +2.20% (81% confidence)
+   📊 Entry:  Wed May 08 2024 @ $27.70
+   📊 Exit:   Wed May 15 2024 @ $28.82
+   💰 P&L:    +$76.40 (+3.94%)
+   🎯 Actual: +4.04%
+   💵 Cash:   $110,123.019
+
+[108/424] UNH - Wed May 08 2024
+   Predicted: +2.85% (84% confidence)
+   📊 Entry:  Thu May 09 2024 @ $502.14
+   📊 Exit:   Thu May 16 2024 @ $521.27
+   💰 P&L:    +$93.65 (+3.73%)
+   🎯 Actual: +3.81%
+   💵 Cash:   $110,216.669
+
+[110/424] HD - Mon May 20 2024
+   Predicted: -2.70% (83% confidence)
+   📊 Entry:  Tue May 21 2024 @ $339.00
+   📊 Exit:   Tue May 28 2024 @ $328.70
+   💰 P&L:    $-74.10 (-3.12%)
+   🎯 Actual: -3.04%
+   💵 Cash:   $110,142.569
+
+[111/424] NVDA - Tue May 28 2024
+   Predicted: +2.23% (81% confidence)
+   📊 Entry:  Wed May 29 2024 @ $113.05
+   📊 Exit:   Wed Jun 05 2024 @ $122.44
+   💰 P&L:    +$157.63 (+8.20%)
+   🎯 Actual: +8.31%
+   💵 Cash:   $110,300.199
+
+[112/424] CRM - Wed May 29 2024
+   Predicted: -12.92% (95% confidence)
+   📊 Entry:  Thu May 30 2024 @ $223.40
+   📊 Exit:   Thu Jun 06 2024 @ $242.76
+   💰 P&L:    +$946.64 (+8.65%)
+   🎯 Actual: +8.67%
+   💵 Cash:   $111,246.839
+
+[115/424] AVGO - Wed Jun 12 2024
+   Predicted: +15.98% (95% confidence)
+   📊 Entry:  Thu Jun 13 2024 @ $171.00
+   📊 Exit:   Thu Jun 20 2024 @ $173.46
+   💰 P&L:    +$157.64 (+1.42%)
+   🎯 Actual: +1.44%
+   💵 Cash:   $111,404.478
+
+[116/424] ORCL - Wed Jun 19 2024
+   Predicted: -3.27% (86% confidence)
+   📊 Entry:  Thu Jun 20 2024 @ $145.32
+   📊 Exit:   Thu Jun 27 2024 @ $140.18
+   💰 P&L:    $-109.94 (-3.60%)
+   🎯 Actual: -3.54%
+   💵 Cash:   $111,294.538
+
+[117/424] ADBE - Tue Jun 25 2024
+   Predicted: +7.75% (95% confidence)
+   📊 Entry:  Wed Jun 26 2024 @ $528.58
+   📊 Exit:   Wed Jul 03 2024 @ $570.15
+   💰 P&L:    +$621.55 (+7.84%)
+   🎯 Actual: +7.86%
+   💵 Cash:   $111,916.088
+
+[118/424] PEP - Wed Jul 10 2024
+   Predicted: +3.85% (89% confidence)
+   📊 Entry:  Thu Jul 11 2024 @ $159.10
+   📊 Exit:   Thu Jul 18 2024 @ $170.37
+   💰 P&L:    +$268.48 (+7.03%)
+   🎯 Actual: +7.08%
+   💵 Cash:   $112,184.568
+
+[120/424] GOOG - Tue Jul 23 2024
+   Predicted: -6.39% (95% confidence)
+   📊 Entry:  Wed Jul 24 2024 @ $175.39
+   📊 Exit:   Wed Jul 31 2024 @ $173.15
+   💰 P&L:    $-87.12 (-1.31%)
+   🎯 Actual: -1.28%
+   💵 Cash:   $112,097.448
+
+[121/424] TSLA - Tue Jul 23 2024
+   Predicted: -9.64% (95% confidence)
+   📊 Entry:  Wed Jul 24 2024 @ $225.42
+   📊 Exit:   Wed Jul 31 2024 @ $232.07
+   💰 P&L:    +$297.25 (+2.93%)
+   🎯 Actual: +2.95%
+   💵 Cash:   $112,394.698
+
+[123/424] NKE - Wed Jul 24 2024
+   Predicted: +5.30% (95% confidence)
+   📊 Entry:  Thu Jul 25 2024 @ $71.53
+   📊 Exit:   Thu Aug 01 2024 @ $73.85
+   💰 P&L:    +$181.28 (+3.21%)
+   🎯 Actual: +3.24%
+   💵 Cash:   $112,575.978
+
+[125/424] VZ - Wed Jul 24 2024
+   Predicted: +2.14% (81% confidence)
+   📊 Entry:  Thu Jul 25 2024 @ $39.86
+   📊 Exit:   Thu Aug 01 2024 @ $40.85
+   💰 P&L:    +$45.52 (+2.38%)
+   🎯 Actual: +2.48%
+   💵 Cash:   $112,621.498
+
+[127/424] MSFT - Mon Jul 29 2024
+   Predicted: -7.40% (95% confidence)
+   📊 Entry:  Tue Jul 30 2024 @ $427.72
+   📊 Exit:   Tue Aug 06 2024 @ $399.61
+   💰 P&L:    $-507.98 (-6.60%)
+   🎯 Actual: -6.57%
+   💵 Cash:   $112,113.518
+
+[128/424] TMUS - Tue Jul 30 2024
+   Predicted: +8.27% (95% confidence)
+   📊 Entry:  Wed Jul 31 2024 @ $180.33
+   📊 Exit:   Wed Aug 07 2024 @ $190.59
+   💰 P&L:    +$490.48 (+5.67%)
+   🎯 Actual: +5.69%
+   💵 Cash:   $112,603.997
+
+[129/424] QCOM - Tue Jul 30 2024
+   Predicted: -4.92% (95% confidence)
+   📊 Entry:  Wed Jul 31 2024 @ $175.58
+   📊 Exit:   Wed Aug 07 2024 @ $156.12
+   💰 P&L:    $-566.34 (-11.12%)
+   🎯 Actual: -11.08%
+   💵 Cash:   $112,037.657
+
+[131/424] AMD - Tue Jul 30 2024
+   Predicted: -5.97% (95% confidence)
+   📊 Entry:  Wed Jul 31 2024 @ $150.73
+   📊 Exit:   Wed Aug 07 2024 @ $128.67
+   💰 P&L:    $-928.52 (-14.67%)
+   🎯 Actual: -14.64%
+   💵 Cash:   $111,109.137
+
+[132/424] ABT - Tue Jul 30 2024
+   Predicted: +3.97% (90% confidence)
+   📊 Entry:  Wed Jul 31 2024 @ $105.50
+   📊 Exit:   Wed Aug 07 2024 @ $109.94
+   💰 P&L:    +$162.28 (+4.16%)
+   🎯 Actual: +4.21%
+   💵 Cash:   $111,271.417
+
+[133/424] META - Wed Jul 31 2024
+   Predicted: +2.97% (85% confidence)
+   📊 Entry:  Thu Aug 01 2024 @ $521.00
+   📊 Exit:   Thu Aug 08 2024 @ $509.63
+   💰 P&L:    $-58.85 (-2.26%)
+   🎯 Actual: -2.18%
+   💵 Cash:   $111,212.567
+
+[134/424] COP - Wed Jul 31 2024
+   Predicted: -3.84% (89% confidence)
+   📊 Entry:  Thu Aug 01 2024 @ $112.45
+   📊 Exit:   Thu Aug 08 2024 @ $108.27
+   💰 P&L:    $-139.94 (-3.77%)
+   🎯 Actual: -3.72%
+   💵 Cash:   $111,072.627
+
+[135/424] WFC - Wed Jul 31 2024
+   Predicted: -11.88% (95% confidence)
+   📊 Entry:  Thu Aug 01 2024 @ $59.26
+   📊 Exit:   Thu Aug 08 2024 @ $52.76
+   💰 P&L:    $-1217.50 (-10.99%)
+   🎯 Actual: -10.97%
+   💵 Cash:   $109,855.127
+
+[136/424] AAPL - Thu Aug 01 2024
+   Predicted: -2.31% (82% confidence)
+   📊 Entry:  Fri Aug 02 2024 @ $219.15
+   📊 Exit:   Fri Aug 09 2024 @ $216.24
+   💰 P&L:    $-28.19 (-1.43%)
+   🎯 Actual: -1.33%
+   💵 Cash:   $109,826.937
+
+[137/424] TMO - Thu Aug 01 2024
+   Predicted: -3.49% (87% confidence)
+   📊 Entry:  Fri Aug 02 2024 @ $621.95
+   📊 Exit:   Fri Aug 09 2024 @ $596.18
+   💰 P&L:    $-130.85 (-4.21%)
+   🎯 Actual: -4.14%
+   💵 Cash:   $109,696.087
+
+[138/424] AMZN - Thu Aug 01 2024
+   Predicted: -9.93% (95% confidence)
+   📊 Entry:  Fri Aug 02 2024 @ $166.75
+   📊 Exit:   Fri Aug 09 2024 @ $166.94
+   💰 P&L:    +$9.78 (+0.09%)
+   🎯 Actual: +0.11%
+   💵 Cash:   $109,705.868
+
+[139/424] XOM - Sun Aug 04 2024
+   Predicted: +3.69% (88% confidence)
+   📊 Entry:  Mon Aug 05 2024 @ $115.54
+   📊 Exit:   Mon Aug 12 2024 @ $119.00
+   💰 P&L:    +$101.80 (+2.94%)
+   🎯 Actual: +2.99%
+   💵 Cash:   $109,807.668
+
+[140/424] PFE - Sun Aug 04 2024
+   Predicted: -4.34% (92% confidence)
+   📊 Entry:  Mon Aug 05 2024 @ $29.09
+   📊 Exit:   Mon Aug 12 2024 @ $28.45
+   💰 P&L:    $-98.00 (-2.25%)
+   🎯 Actual: -2.20%
+   💵 Cash:   $109,709.668
+
+[144/424] DIS - Tue Aug 06 2024
+   Predicted: -4.86% (94% confidence)
+   📊 Entry:  Wed Aug 07 2024 @ $88.00
+   📊 Exit:   Wed Aug 14 2024 @ $86.30
+   💰 P&L:    $-98.90 (-1.97%)
+   🎯 Actual: -1.93%
+   💵 Cash:   $109,610.768
+
+[145/424] ABBV - Tue Aug 06 2024
+   Predicted: +2.97% (85% confidence)
+   📊 Entry:  Wed Aug 07 2024 @ $187.90
+   📊 Exit:   Wed Aug 14 2024 @ $193.00
+   💰 P&L:    +$69.40 (+2.64%)
+   🎯 Actual: +2.71%
+   💵 Cash:   $109,680.168
+
+[147/424] LLY - Wed Aug 07 2024
+   Predicted: +20.66% (95% confidence)
+   📊 Entry:  Thu Aug 08 2024 @ $875.00
+   📊 Exit:   Thu Aug 15 2024 @ $931.58
+   💰 P&L:    +$676.96 (+6.45%)
+   🎯 Actual: +6.47%
+   💵 Cash:   $110,357.128
+
+[148/424] UNH - Thu Aug 08 2024
+   Predicted: +2.36% (82% confidence)
+   📊 Entry:  Fri Aug 09 2024 @ $564.54
+   📊 Exit:   Fri Aug 16 2024 @ $577.68
+   💰 P&L:    +$37.42 (+2.21%)
+   🎯 Actual: +2.33%
+   💵 Cash:   $110,394.548
+
+[149/424] HD - Mon Aug 19 2024
+   Predicted: +3.04% (85% confidence)
+   📊 Entry:  Tue Aug 20 2024 @ $360.65
+   📊 Exit:   Tue Aug 27 2024 @ $373.18
+   💰 P&L:    +$85.71 (+3.40%)
+   🎯 Actual: +3.47%
+   💵 Cash:   $110,480.258
+
+[150/424] NVDA - Tue Aug 27 2024
+   Predicted: -15.82% (95% confidence)
+   📊 Entry:  Wed Aug 28 2024 @ $128.12
+   📊 Exit:   Wed Sep 04 2024 @ $106.21
+   💰 P&L:    $-1886.26 (-17.12%)
+   🎯 Actual: -17.10%
+   💵 Cash:   $108,593.998
+
+[151/424] CRM - Wed Aug 28 2024
+   Predicted: -4.33% (92% confidence)
+   📊 Entry:  Thu Aug 29 2024 @ $271.01
+   📊 Exit:   Thu Sep 05 2024 @ $246.12
+   💰 P&L:    $-375.35 (-9.23%)
+   🎯 Actual: -9.18%
+   💵 Cash:   $108,218.648
+
+[154/424] ORCL - Mon Sep 09 2024
+   Predicted: +21.76% (95% confidence)
+   📊 Entry:  Tue Sep 10 2024 @ $154.23
+   📊 Exit:   Tue Sep 17 2024 @ $167.47
+   💰 P&L:    +$924.80 (+8.57%)
+   🎯 Actual: +8.58%
+   💵 Cash:   $109,143.449
+
+[155/424] AVGO - Tue Sep 10 2024
+   Predicted: +9.62% (95% confidence)
+   📊 Entry:  Wed Sep 11 2024 @ $148.39
+   📊 Exit:   Wed Sep 18 2024 @ $161.67
+   💰 P&L:    +$887.76 (+8.93%)
+   🎯 Actual: +8.95%
+   💵 Cash:   $110,031.209
+
+[156/424] ADBE - Tue Sep 24 2024
+   Predicted: -4.06% (90% confidence)
+   📊 Entry:  Wed Sep 25 2024 @ $526.02
+   📊 Exit:   Wed Oct 02 2024 @ $505.81
+   💰 P&L:    $-143.47 (-3.90%)
+   🎯 Actual: -3.84%
+   💵 Cash:   $109,887.738
+
+[158/424] PEP - Mon Oct 07 2024
+   Predicted: +5.32% (95% confidence)
+   📊 Entry:  Tue Oct 08 2024 @ $167.72
+   📊 Exit:   Tue Oct 15 2024 @ $175.90
+   💰 P&L:    +$267.94 (+4.84%)
+   🎯 Actual: +4.88%
+   💵 Cash:   $110,155.678
+
+[160/424] NFLX - Thu Oct 17 2024
+   Predicted: +9.73% (95% confidence)
+   📊 Entry:  Fri Oct 18 2024 @ $737.64
+   📊 Exit:   Fri Oct 25 2024 @ $754.68
+   💰 P&L:    +$219.52 (+2.29%)
+   🎯 Actual: +2.31%
+   💵 Cash:   $110,375.198
+
+[162/424] TMUS - Tue Oct 22 2024
+   Predicted: +3.21% (86% confidence)
+   📊 Entry:  Wed Oct 23 2024 @ $217.53
+   📊 Exit:   Wed Oct 30 2024 @ $222.77
+   💰 P&L:    +$71.36 (+2.34%)
+   🎯 Actual: +2.41%
+   💵 Cash:   $110,446.558
+
+[163/424] JNJ - Tue Oct 22 2024
+   Predicted: -2.06% (80% confidence)
+   📊 Entry:  Wed Oct 23 2024 @ $162.82
+   📊 Exit:   Wed Oct 30 2024 @ $160.61
+   💰 P&L:    $-26.31 (-1.47%)
+   🎯 Actual: -1.36%
+   💵 Cash:   $110,420.248
+
+[164/424] TSLA - Wed Oct 23 2024
+   Predicted: +20.55% (95% confidence)
+   📊 Entry:  Thu Oct 24 2024 @ $244.68
+   📊 Exit:   Thu Oct 31 2024 @ $249.85
+   💰 P&L:    +$230.65 (+2.09%)
+   🎯 Actual: +2.11%
+   💵 Cash:   $110,650.898
+
+[165/424] KO - Wed Oct 23 2024
+   Predicted: -3.07% (85% confidence)
+   📊 Entry:  Thu Oct 24 2024 @ $67.65
+   📊 Exit:   Thu Oct 31 2024 @ $65.31
+   💰 P&L:    $-100.28 (-3.53%)
+   🎯 Actual: -3.46%
+   💵 Cash:   $110,550.618
+
+[167/424] BAC - Mon Oct 28 2024
+   Predicted: -3.03% (85% confidence)
+   📊 Entry:  Tue Oct 29 2024 @ $42.59
+   📊 Exit:   Tue Nov 05 2024 @ $41.88
+   💰 P&L:    $-48.86 (-1.74%)
+   🎯 Actual: -1.67%
+   💵 Cash:   $110,501.758
+
+[169/424] MSFT - Tue Oct 29 2024
+   Predicted: -4.74% (94% confidence)
+   📊 Entry:  Wed Oct 30 2024 @ $437.44
+   📊 Exit:   Wed Nov 06 2024 @ $420.18
+   💰 P&L:    $-191.86 (-3.99%)
+   🎯 Actual: -3.95%
+   💵 Cash:   $110,309.898
+
+[170/424] LLY - Tue Oct 29 2024
+   Predicted: -10.79% (95% confidence)
+   📊 Entry:  Wed Oct 30 2024 @ $798.50
+   📊 Exit:   Wed Nov 06 2024 @ $776.38
+   💰 P&L:    $-289.56 (-2.79%)
+   🎯 Actual: -2.77%
+   💵 Cash:   $110,020.338
+
+[172/424] AMD - Tue Oct 29 2024
+   Predicted: -14.79% (95% confidence)
+   📊 Entry:  Wed Oct 30 2024 @ $153.01
+   📊 Exit:   Wed Nov 06 2024 @ $145.10
+   💰 P&L:    $-563.61 (-5.19%)
+   🎯 Actual: -5.17%
+   💵 Cash:   $109,456.729
+
+[173/424] COP - Wed Oct 30 2024
+   Predicted: +10.34% (95% confidence)
+   📊 Entry:  Thu Oct 31 2024 @ $106.97
+   📊 Exit:   Thu Nov 07 2024 @ $112.40
+   💰 P&L:    +$541.00 (+5.06%)
+   🎯 Actual: +5.08%
+   💵 Cash:   $109,997.729
+
+[174/424] ABT - Wed Oct 30 2024
+   Predicted: +2.05% (80% confidence)
+   📊 Entry:  Thu Oct 31 2024 @ $113.57
+   📊 Exit:   Thu Nov 07 2024 @ $115.30
+   💰 P&L:    +$23.95 (+1.41%)
+   🎯 Actual: +1.52%
+   💵 Cash:   $110,021.679
+
+[175/424] WFC - Wed Oct 30 2024
+   Predicted: +10.79% (95% confidence)
+   📊 Entry:  Thu Oct 31 2024 @ $65.10
+   📊 Exit:   Thu Nov 07 2024 @ $69.82
+   💰 P&L:    +$795.68 (+7.23%)
+   🎯 Actual: +7.25%
+   💵 Cash:   $110,817.359
+
+[177/424] META - Wed Oct 30 2024
+   Predicted: -3.34% (87% confidence)
+   📊 Entry:  Thu Oct 31 2024 @ $585.00
+   📊 Exit:   Thu Nov 07 2024 @ $591.70
+   💰 P&L:    +$31.50 (+1.08%)
+   🎯 Actual: +1.15%
+   💵 Cash:   $110,848.859
+
+[179/424] AMZN - Thu Oct 31 2024
+   Predicted: +12.69% (95% confidence)
+   📊 Entry:  Fri Nov 01 2024 @ $199.00
+   📊 Exit:   Fri Nov 08 2024 @ $208.18
+   💰 P&L:    +$502.90 (+4.59%)
+   🎯 Actual: +4.61%
+   💵 Cash:   $111,351.759
+
+[182/424] UNH - Sun Nov 03 2024
+   Predicted: +12.10% (95% confidence)
+   📊 Entry:  Mon Nov 04 2024 @ $566.74
+   📊 Exit:   Mon Nov 11 2024 @ $625.25
+   💰 P&L:    +$1109.69 (+10.31%)
+   🎯 Actual: +10.32%
+   💵 Cash:   $112,461.449
+
+[183/424] PFE - Sun Nov 03 2024
+   Predicted: -5.48% (95% confidence)
+   📊 Entry:  Mon Nov 04 2024 @ $28.10
+   📊 Exit:   Mon Nov 11 2024 @ $26.24
+   💰 P&L:    $-388.88 (-6.65%)
+   🎯 Actual: -6.62%
+   💵 Cash:   $112,072.569
+
+[184/424] ABBV - Sun Nov 03 2024
+   Predicted: -12.99% (95% confidence)
+   📊 Entry:  Mon Nov 04 2024 @ $203.79
+   📊 Exit:   Mon Nov 11 2024 @ $174.43
+   💰 P&L:    $-1587.44 (-14.43%)
+   🎯 Actual: -14.41%
+   💵 Cash:   $110,485.129
+
+[186/424] MRK - Tue Nov 05 2024
+   Predicted: -3.02% (85% confidence)
+   📊 Entry:  Wed Nov 06 2024 @ $103.18
+   📊 Exit:   Wed Nov 13 2024 @ $98.50
+   💰 P&L:    $-128.36 (-4.61%)
+   🎯 Actual: -4.54%
+   💵 Cash:   $110,356.769
+
+[190/424] DIS - Wed Nov 13 2024
+   Predicted: +11.23% (95% confidence)
+   📊 Entry:  Thu Nov 14 2024 @ $110.33
+   📊 Exit:   Thu Nov 21 2024 @ $114.72
+   💰 P&L:    +$437.00 (+3.96%)
+   🎯 Actual: +3.98%
+   💵 Cash:   $110,793.769
+
+[191/424] CSCO - Mon Nov 18 2024
+   Predicted: +2.50% (82% confidence)
+   📊 Entry:  Tue Nov 19 2024 @ $56.68
+   📊 Exit:   Tue Nov 26 2024 @ $59.59
+   💰 P&L:    +$114.40 (+5.05%)
+   🎯 Actual: +5.13%
+   💵 Cash:   $110,908.169
+
+[192/424] HD - Mon Nov 18 2024
+   Predicted: +4.44% (92% confidence)
+   📊 Entry:  Tue Nov 19 2024 @ $408.38
+   📊 Exit:   Tue Nov 26 2024 @ $429.52
+   💰 P&L:    +$230.54 (+5.13%)
+   🎯 Actual: +5.18%
+   💵 Cash:   $111,138.709
+
+[193/424] NVDA - Tue Nov 19 2024
+   Predicted: -6.86% (95% confidence)
+   📊 Entry:  Wed Nov 20 2024 @ $147.41
+   📊 Exit:   Wed Nov 27 2024 @ $135.34
+   💰 P&L:    $-593.43 (-8.22%)
+   🎯 Actual: -8.19%
+   💵 Cash:   $110,545.278
+
+[194/424] CRM - Tue Dec 03 2024
+   Predicted: +5.25% (95% confidence)
+   📊 Entry:  Wed Dec 04 2024 @ $366.81
+   📊 Exit:   Wed Dec 11 2024 @ $354.85
+   💰 P&L:    $-181.40 (-3.30%)
+   🎯 Actual: -3.26%
+   💵 Cash:   $110,363.879
+
+[196/424] ORCL - Mon Dec 09 2024
+   Predicted: -10.09% (95% confidence)
+   📊 Entry:  Tue Dec 10 2024 @ $173.46
+   📊 Exit:   Tue Dec 17 2024 @ $169.71
+   💰 P&L:    $-227.00 (-2.18%)
+   🎯 Actual: -2.16%
+   💵 Cash:   $110,136.879
+
+[198/424] AVGO - Thu Dec 19 2024
+   Predicted: +12.39% (95% confidence)
+   📊 Entry:  Fri Dec 20 2024 @ $220.36
+   📊 Exit:   Fri Dec 27 2024 @ $241.75
+   💰 P&L:    +$1046.11 (+9.69%)
+   🎯 Actual: +9.71%
+   💵 Cash:   $111,182.989
+
+[199/424] NKE - Thu Jan 02 2025
+   Predicted: -3.35% (87% confidence)
+   📊 Entry:  Fri Jan 03 2025 @ $73.92
+   📊 Exit:   Fri Jan 10 2025 @ $71.20
+   💰 P&L:    $-118.96 (-3.74%)
+   🎯 Actual: -3.68%
+   💵 Cash:   $111,064.029
+
+[200/424] ADBE - Sun Jan 12 2025
+   Predicted: +6.82% (95% confidence)
+   📊 Entry:  Mon Jan 13 2025 @ $404.27
+   📊 Exit:   Mon Jan 20 2025 @ $436.36
+   💰 P&L:    +$543.53 (+7.91%)
+   🎯 Actual: +7.94%
+   💵 Cash:   $111,607.558
+
+[201/424] PG - Tue Jan 21 2025
+   Predicted: +2.76% (84% confidence)
+   📊 Entry:  Wed Jan 22 2025 @ $167.10
+   📊 Exit:   Wed Jan 29 2025 @ $166.23
+   💰 P&L:    $-15.05 (-0.60%)
+   🎯 Actual: -0.52%
+   💵 Cash:   $111,592.508
+
+[203/424] MSFT - Tue Jan 28 2025
+   Predicted: -7.79% (95% confidence)
+   📊 Entry:  Wed Jan 29 2025 @ $446.69
+   📊 Exit:   Wed Feb 05 2025 @ $413.29
+   💰 P&L:    $-603.20 (-7.50%)
+   🎯 Actual: -7.48%
+   💵 Cash:   $110,989.308
+
+[204/424] META - Wed Jan 29 2025
+   Predicted: +4.20% (91% confidence)
+   📊 Entry:  Thu Jan 30 2025 @ $696.82
+   📊 Exit:   Thu Feb 06 2025 @ $711.99
+   💰 P&L:    +$89.02 (+2.13%)
+   🎯 Actual: +2.18%
+   💵 Cash:   $111,078.328
+
+[205/424] TSLA - Wed Jan 29 2025
+   Predicted: -2.81% (84% confidence)
+   📊 Entry:  Thu Jan 30 2025 @ $410.78
+   📊 Exit:   Thu Feb 06 2025 @ $374.32
+   💰 P&L:    $-220.76 (-8.96%)
+   🎯 Actual: -8.88%
+   💵 Cash:   $110,857.568
+
+[206/424] TMUS - Thu Jan 30 2025
+   Predicted: +5.46% (95% confidence)
+   📊 Entry:  Fri Jan 31 2025 @ $234.50
+   📊 Exit:   Fri Feb 07 2025 @ $246.24
+   💰 P&L:    +$279.76 (+4.97%)
+   🎯 Actual: +5.01%
+   💵 Cash:   $111,137.329
+
+[209/424] PEP - Mon Feb 03 2025
+   Predicted: -3.94% (90% confidence)
+   📊 Entry:  Tue Feb 04 2025 @ $146.10
+   📊 Exit:   Tue Feb 11 2025 @ $145.64
+   💰 P&L:    $-13.96 (-0.37%)
+   🎯 Actual: -0.31%
+   💵 Cash:   $111,123.368
+
+[210/424] AMD - Tue Feb 04 2025
+   Predicted: -7.03% (95% confidence)
+   📊 Entry:  Wed Feb 05 2025 @ $107.61
+   📊 Exit:   Wed Feb 12 2025 @ $111.72
+   💰 P&L:    +$277.48 (+3.79%)
+   🎯 Actual: +3.82%
+   💵 Cash:   $111,400.848
+
+[212/424] GOOG - Tue Feb 04 2025
+   Predicted: -9.94% (95% confidence)
+   📊 Entry:  Wed Feb 05 2025 @ $193.10
+   📊 Exit:   Wed Feb 12 2025 @ $185.43
+   💰 P&L:    $-416.18 (-3.99%)
+   🎯 Actual: -3.97%
+   💵 Cash:   $110,984.668
+
+[213/424] DIS - Tue Feb 04 2025
+   Predicted: -3.78% (89% confidence)
+   📊 Entry:  Wed Feb 05 2025 @ $115.70
+   📊 Exit:   Wed Feb 12 2025 @ $109.23
+   💰 P&L:    $-209.04 (-5.65%)
+   🎯 Actual: -5.59%
+   💵 Cash:   $110,775.628
+
+[214/424] AMZN - Thu Feb 06 2025
+   Predicted: -3.54% (88% confidence)
+   📊 Entry:  Fri Feb 07 2025 @ $232.50
+   📊 Exit:   Fri Feb 14 2025 @ $228.68
+   💰 P&L:    $-55.48 (-1.70%)
+   🎯 Actual: -1.64%
+   💵 Cash:   $110,720.148
+
+[218/424] JPM - Thu Feb 13 2025
+   Predicted: -3.45% (87% confidence)
+   📊 Entry:  Fri Feb 14 2025 @ $277.37
+   📊 Exit:   Fri Feb 21 2025 @ $264.24
+   💰 P&L:    $-146.43 (-4.80%)
+   🎯 Actual: -4.73%
+   💵 Cash:   $110,573.718
+
+[219/424] ABBV - Thu Feb 13 2025
+   Predicted: +3.84% (89% confidence)
+   📊 Entry:  Fri Feb 14 2025 @ $193.95
+   📊 Exit:   Fri Feb 21 2025 @ $202.08
+   💰 P&L:    +$152.47 (+4.14%)
+   🎯 Actual: +4.19%
+   💵 Cash:   $110,726.188
+
+[221/424] CSCO - Mon Feb 17 2025
+   Predicted: -2.09% (80% confidence)
+   📊 Entry:  Tue Feb 18 2025 @ $65.30
+   📊 Exit:   Tue Feb 25 2025 @ $64.27
+   💰 P&L:    $-30.84 (-1.69%)
+   🎯 Actual: -1.58%
+   💵 Cash:   $110,695.348
+
+[222/424] LLY - Tue Feb 18 2025
+   Predicted: +5.20% (95% confidence)
+   📊 Entry:  Wed Feb 19 2025 @ $857.18
+   📊 Exit:   Wed Feb 26 2025 @ $915.01
+   💰 P&L:    +$344.98 (+6.71%)
+   🎯 Actual: +6.75%
+   💵 Cash:   $111,040.328
+
+[227/424] ABT - Thu Feb 20 2025
+   Predicted: +2.03% (80% confidence)
+   📊 Entry:  Fri Feb 21 2025 @ $132.41
+   📊 Exit:   Fri Feb 28 2025 @ $138.01
+   💰 P&L:    +$70.80 (+4.11%)
+   🎯 Actual: +4.23%
+   💵 Cash:   $111,111.128
+
+[229/424] BAC - Mon Feb 24 2025
+   Predicted: +2.47% (82% confidence)
+   📊 Entry:  Tue Feb 25 2025 @ $44.53
+   📊 Exit:   Tue Mar 04 2025 @ $42.67
+   💰 P&L:    $-95.00 (-4.27%)
+   🎯 Actual: -4.18%
+   💵 Cash:   $111,016.128
+
+[230/424] MRK - Mon Feb 24 2025
+   Predicted: +2.06% (80% confidence)
+   📊 Entry:  Tue Feb 25 2025 @ $91.75
+   📊 Exit:   Tue Mar 04 2025 @ $92.56
+   💰 P&L:    +$14.20 (+0.77%)
+   🎯 Actual: +0.88%
+   💵 Cash:   $111,030.328
+
+[232/424] NVDA - Tue Feb 25 2025
+   Predicted: -8.40% (95% confidence)
+   📊 Entry:  Wed Feb 26 2025 @ $129.99
+   📊 Exit:   Wed Mar 05 2025 @ $117.30
+   💰 P&L:    $-864.92 (-9.78%)
+   🎯 Actual: -9.76%
+   💵 Cash:   $110,165.407
+
+[234/424] UNH - Wed Feb 26 2025
+   Predicted: +2.67% (83% confidence)
+   📊 Entry:  Thu Feb 27 2025 @ $466.17
+   📊 Exit:   Thu Mar 06 2025 @ $487.72
+   💰 P&L:    +$105.75 (+4.54%)
+   🎯 Actual: +4.62%
+   💵 Cash:   $110,271.157
+
+[235/424] CRM - Tue Mar 04 2025
+   Predicted: -3.58% (88% confidence)
+   📊 Entry:  Wed Mar 05 2025 @ $287.22
+   📊 Exit:   Wed Mar 12 2025 @ $284.58
+   💰 P&L:    $-33.68 (-0.98%)
+   🎯 Actual: -0.92%
+   💵 Cash:   $110,237.477
+
+[236/424] ORCL - Mon Mar 10 2025
+   Predicted: +3.51% (88% confidence)
+   📊 Entry:  Tue Mar 11 2025 @ $143.42
+   📊 Exit:   Tue Mar 18 2025 @ $149.45
+   💰 P&L:    +$136.69 (+4.14%)
+   🎯 Actual: +4.20%
+   💵 Cash:   $110,374.167
+
+[238/424] COST - Wed Mar 12 2025
+   Predicted: -2.48% (82% confidence)
+   📊 Entry:  Thu Mar 13 2025 @ $922.00
+   📊 Exit:   Thu Mar 20 2025 @ $895.40
+   💰 P&L:    $-55.20 (-2.99%)
+   🎯 Actual: -2.89%
+   💵 Cash:   $110,318.967
+
+[240/424] HD - Thu Mar 20 2025
+   Predicted: +2.03% (80% confidence)
+   📊 Entry:  Fri Mar 21 2025 @ $352.09
+   📊 Exit:   Fri Mar 28 2025 @ $358.15
+   💰 P&L:    +$28.30 (+1.61%)
+   🎯 Actual: +1.72%
+   💵 Cash:   $110,347.267
+
+[241/424] ADBE - Tue Mar 25 2025
+   Predicted: -5.06% (95% confidence)
+   📊 Entry:  Wed Mar 26 2025 @ $403.00
+   📊 Exit:   Wed Apr 02 2025 @ $385.78
+   💰 P&L:    $-225.86 (-4.31%)
+   🎯 Actual: -4.27%
+   💵 Cash:   $110,121.407
+
+[242/424] NKE - Wed Apr 02 2025
+   Predicted: -8.68% (95% confidence)
+   📊 Entry:  Thu Apr 03 2025 @ $56.37
+   📊 Exit:   Thu Apr 10 2025 @ $54.40
+   💰 P&L:    $-319.17 (-3.52%)
+   🎯 Actual: -3.49%
+   💵 Cash:   $109,802.238
+
+[243/424] NFLX - Thu Apr 17 2025
+   Predicted: +12.73% (95% confidence)
+   📊 Entry:  Fri Apr 18 2025 @ $984.40
+   📊 Exit:   Fri Apr 25 2025 @ $1101.53
+   💰 P&L:    +$1286.43 (+11.88%)
+   🎯 Actual: +11.90%
+   💵 Cash:   $111,088.668
+
+[244/424] TSLA - Tue Apr 22 2025
+   Predicted: +22.72% (95% confidence)
+   📊 Entry:  Wed Apr 23 2025 @ $254.86
+   📊 Exit:   Wed Apr 30 2025 @ $282.16
+   💰 P&L:    +$1171.90 (+10.69%)
+   🎯 Actual: +10.71%
+   💵 Cash:   $112,260.568
+
+[247/424] TMUS - Wed Apr 23 2025
+   Predicted: -4.78% (94% confidence)
+   📊 Entry:  Thu Apr 24 2025 @ $259.75
+   📊 Exit:   Thu May 01 2025 @ $247.00
+   💰 P&L:    $-244.25 (-4.95%)
+   🎯 Actual: -4.91%
+   💵 Cash:   $112,016.318
+
+[248/424] PEP - Wed Apr 23 2025
+   Predicted: -4.70% (93% confidence)
+   📊 Entry:  Thu Apr 24 2025 @ $141.45
+   📊 Exit:   Thu May 01 2025 @ $133.55
+   💰 P&L:    $-270.60 (-5.63%)
+   🎯 Actual: -5.59%
+   💵 Cash:   $111,745.718
+
+[251/424] WFC - Mon Apr 28 2025
+   Predicted: +6.37% (95% confidence)
+   📊 Entry:  Tue Apr 29 2025 @ $68.95
+   📊 Exit:   Tue May 06 2025 @ $73.48
+   💰 P&L:    +$441.94 (+6.54%)
+   🎯 Actual: +6.57%
+   💵 Cash:   $112,187.659
+
+[253/424] MSFT - Tue Apr 29 2025
+   Predicted: +9.97% (95% confidence)
+   📊 Entry:  Wed Apr 30 2025 @ $390.30
+   📊 Exit:   Wed May 07 2025 @ $433.35
+   💰 P&L:    +$1160.35 (+11.01%)
+   🎯 Actual: +11.03%
+   💵 Cash:   $113,348.009
+
+[254/424] QCOM - Tue Apr 29 2025
+   Predicted: -4.75% (94% confidence)
+   📊 Entry:  Wed Apr 30 2025 @ $145.20
+   📊 Exit:   Wed May 07 2025 @ $144.30
+   💰 P&L:    $-32.60 (-0.66%)
+   🎯 Actual: -0.62%
+   💵 Cash:   $113,315.409
+
+[256/424] BAC - Tue Apr 29 2025
+   Predicted: +2.13% (81% confidence)
+   📊 Entry:  Wed Apr 30 2025 @ $39.36
+   📊 Exit:   Wed May 07 2025 @ $40.93
+   💰 P&L:    +$74.93 (+3.89%)
+   🎯 Actual: +3.99%
+   💵 Cash:   $113,390.339
+
+[257/424] LLY - Wed Apr 30 2025
+   Predicted: -13.60% (95% confidence)
+   📊 Entry:  Thu May 01 2025 @ $844.00
+   📊 Exit:   Thu May 08 2025 @ $751.45
+   💰 P&L:    $-1205.15 (-10.98%)
+   🎯 Actual: -10.97%
+   💵 Cash:   $112,185.189
+
+[258/424] MA - Wed Apr 30 2025
+   Predicted: +3.33% (87% confidence)
+   📊 Entry:  Thu May 01 2025 @ $550.00
+   📊 Exit:   Thu May 08 2025 @ $567.12
+   💰 P&L:    +$83.60 (+3.04%)
+   🎯 Actual: +3.11%
+   💵 Cash:   $112,268.789
+
+[261/424] META - Wed Apr 30 2025
+   Predicted: +8.71% (95% confidence)
+   📊 Entry:  Thu May 01 2025 @ $592.08
+   📊 Exit:   Thu May 08 2025 @ $598.01
+   💰 P&L:    +$86.95 (+0.98%)
+   🎯 Actual: +1.00%
+   💵 Cash:   $112,355.739
+
+[262/424] MRK - Thu May 01 2025
+   Predicted: -6.74% (95% confidence)
+   📊 Entry:  Fri May 02 2025 @ $84.19
+   📊 Exit:   Fri May 09 2025 @ $75.97
+   💰 P&L:    $-700.70 (-9.79%)
+   🎯 Actual: -9.76%
+   💵 Cash:   $111,655.039
+
+[263/424] TMO - Thu May 01 2025
+   Predicted: -2.17% (81% confidence)
+   📊 Entry:  Fri May 02 2025 @ $428.47
+   📊 Exit:   Fri May 09 2025 @ $403.13
+   💰 P&L:    $-103.36 (-6.03%)
+   🎯 Actual: -5.91%
+   💵 Cash:   $111,551.679
+
+[265/424] AAPL - Thu May 01 2025
+   Predicted: -7.42% (95% confidence)
+   📊 Entry:  Fri May 02 2025 @ $206.09
+   📊 Exit:   Fri May 09 2025 @ $198.53
+   💰 P&L:    $-289.28 (-3.69%)
+   🎯 Actual: -3.67%
+   💵 Cash:   $111,262.399
+
+[266/424] XOM - Sun May 04 2025
+   Predicted: +5.70% (95% confidence)
+   📊 Entry:  Mon May 05 2025 @ $104.65
+   📊 Exit:   Mon May 12 2025 @ $109.16
+   💰 P&L:    +$255.07 (+4.28%)
+   🎯 Actual: +4.31%
+   💵 Cash:   $111,517.469
+
+[267/424] PFE - Sun May 04 2025
+   Predicted: -3.27% (86% confidence)
+   📊 Entry:  Mon May 05 2025 @ $24.20
+   📊 Exit:   Mon May 12 2025 @ $23.09
+   💰 P&L:    $-146.30 (-4.65%)
+   🎯 Actual: -4.59%
+   💵 Cash:   $111,371.169
+
+[268/424] AMD - Tue May 06 2025
+   Predicted: +14.03% (95% confidence)
+   📊 Entry:  Wed May 07 2025 @ $100.75
+   📊 Exit:   Wed May 14 2025 @ $117.72
+   💰 P&L:    +$1864.70 (+16.83%)
+   🎯 Actual: +16.84%
+   💵 Cash:   $113,235.869
+
+[269/424] DIS - Tue May 06 2025
+   Predicted: +20.84% (95% confidence)
+   📊 Entry:  Wed May 07 2025 @ $102.42
+   📊 Exit:   Wed May 14 2025 @ $112.94
+   💰 P&L:    +$1155.20 (+10.25%)
+   🎯 Actual: +10.27%
+   💵 Cash:   $114,391.07
+
+[270/424] UNH - Tue May 06 2025
+   Predicted: -21.07% (95% confidence)
+   📊 Entry:  Wed May 07 2025 @ $395.35
+   📊 Exit:   Wed May 14 2025 @ $308.01
+   💰 P&L:    $-2447.52 (-22.11%)
+   🎯 Actual: -22.09%
+   💵 Cash:   $111,943.55
+
+[271/424] COP - Wed May 07 2025
+   Predicted: +5.54% (95% confidence)
+   📊 Entry:  Thu May 08 2025 @ $89.36
+   📊 Exit:   Thu May 15 2025 @ $92.96
+   💰 P&L:    +$232.00 (+3.99%)
+   🎯 Actual: +4.03%
+   💵 Cash:   $112,175.55
+
+[272/424] CVX - Wed May 07 2025
+   Predicted: +4.33% (92% confidence)
+   📊 Entry:  Thu May 08 2025 @ $136.69
+   📊 Exit:   Thu May 15 2025 @ $142.26
+   💰 P&L:    +$176.24 (+4.03%)
+   🎯 Actual: +4.07%
+   💵 Cash:   $112,351.79
+
+[273/424] ABBV - Thu May 08 2025
+   Predicted: -2.10% (81% confidence)
+   📊 Entry:  Fri May 09 2025 @ $185.75
+   📊 Exit:   Fri May 16 2025 @ $184.02
+   💰 P&L:    $-19.30 (-1.04%)
+   🎯 Actual: -0.93%
+   💵 Cash:   $112,332.49
+
+[274/424] MCD - Sun May 11 2025
+   Predicted: +2.98% (85% confidence)
+   📊 Entry:  Mon May 12 2025 @ $312.01
+   📊 Exit:   Mon May 19 2025 @ $321.23
+   💰 P&L:    +$80.98 (+2.88%)
+   🎯 Actual: +2.96%
+   💵 Cash:   $112,413.47
+
+[277/424] NVDA - Tue May 27 2025
+   Predicted: +4.22% (91% confidence)
+   📊 Entry:  Wed May 28 2025 @ $136.03
+   📊 Exit:   Wed Jun 04 2025 @ $141.92
+   💰 P&L:    +$180.59 (+4.28%)
+   🎯 Actual: +4.33%
+   💵 Cash:   $112,594.06
+
+[278/424] CRM - Wed May 28 2025
+   Predicted: -4.66% (93% confidence)
+   📊 Entry:  Thu May 29 2025 @ $263.59
+   📊 Exit:   Thu Jun 05 2025 @ $267.14
+   💰 P&L:    +$61.90 (+1.30%)
+   🎯 Actual: +1.35%
+   💵 Cash:   $112,655.96
+
+[279/424] COST - Wed Jun 04 2025
+   Predicted: -5.22% (95% confidence)
+   📊 Entry:  Thu Jun 05 2025 @ $1050.00
+   📊 Exit:   Thu Jun 12 2025 @ $1002.71
+   💰 P&L:    $-238.45 (-4.54%)
+   🎯 Actual: -4.50%
+   💵 Cash:   $112,417.51
+
+[280/424] WMT - Thu Jun 05 2025
+   Predicted: -3.20% (86% confidence)
+   📊 Entry:  Fri Jun 06 2025 @ $98.37
+   📊 Exit:   Fri Jun 13 2025 @ $94.44
+   💰 P&L:    $-123.83 (-4.06%)
+   🎯 Actual: -4.00%
+   💵 Cash:   $112,293.68
+
+[282/424] ORCL - Tue Jun 17 2025
+   Predicted: +3.41% (87% confidence)
+   📊 Entry:  Wed Jun 18 2025 @ $211.09
+   📊 Exit:   Wed Jun 25 2025 @ $210.72
+   💰 P&L:    $-7.55 (-0.24%)
+   🎯 Actual: -0.18%
+   💵 Cash:   $112,286.13
+
+[283/424] ADBE - Tue Jun 24 2025
+   Predicted: +2.55% (83% confidence)
+   📊 Entry:  Wed Jun 25 2025 @ $383.60
+   📊 Exit:   Wed Jul 02 2025 @ $378.47
+   💰 P&L:    $-32.78 (-1.42%)
+   🎯 Actual: -1.34%
+   💵 Cash:   $112,253.35
+
+[284/424] ADBE - Tue Jun 24 2025
+   Predicted: +2.55% (83% confidence)
+   📊 Entry:  Wed Jun 25 2025 @ $383.60
+   📊 Exit:   Wed Jul 02 2025 @ $378.47
+   💰 P&L:    $-32.78 (-1.42%)
+   🎯 Actual: -1.34%
+   💵 Cash:   $112,220.57
+
+[285/424] NKE - Wed Jul 16 2025
+   Predicted: +6.45% (95% confidence)
+   📊 Entry:  Thu Jul 17 2025 @ $72.12
+   📊 Exit:   Thu Jul 24 2025 @ $75.42
+   💰 P&L:    +$311.50 (+4.55%)
+   🎯 Actual: +4.58%
+   💵 Cash:   $112,532.07
+
+[286/424] SNA - Wed Jul 16 2025
+   Predicted: +5.49% (95% confidence)
+   📊 Entry:  Thu Jul 17 2025 @ $329.85
+   📊 Exit:   Thu Jul 24 2025 @ $330.33
+   💰 P&L:    +$6.16 (+0.11%)
+   🎯 Actual: +0.15%
+   💵 Cash:   $112,538.229
+
+[287/424] PEP - Wed Jul 16 2025
+   Predicted: +7.62% (95% confidence)
+   📊 Entry:  Thu Jul 17 2025 @ $141.70
+   📊 Exit:   Thu Jul 24 2025 @ $144.51
+   💰 P&L:    +$158.17 (+1.96%)
+   🎯 Actual: +1.98%
+   💵 Cash:   $112,696.399
+
+[288/424] NFLX - Thu Jul 17 2025
+   Predicted: -7.33% (95% confidence)
+   📊 Entry:  Fri Jul 18 2025 @ $1241.96
+   📊 Exit:   Fri Jul 25 2025 @ $1180.49
+   💰 P&L:    $-370.82 (-4.98%)
+   🎯 Actual: -4.95%
+   💵 Cash:   $112,325.579
+
+[289/424] NFLX - Thu Jul 17 2025
+   Predicted: -7.33% (95% confidence)
+   📊 Entry:  Fri Jul 18 2025 @ $1241.96
+   📊 Exit:   Fri Jul 25 2025 @ $1180.49
+   💰 P&L:    $-370.82 (-4.98%)
+   🎯 Actual: -4.95%
+   💵 Cash:   $111,954.76
+
+[291/424] NOC - Mon Jul 21 2025
+   Predicted: +10.35% (95% confidence)
+   📊 Entry:  Tue Jul 22 2025 @ $536.01
+   📊 Exit:   Tue Jul 29 2025 @ $573.22
+   💰 P&L:    +$742.20 (+6.92%)
+   🎯 Actual: +6.94%
+   💵 Cash:   $112,696.959
+
+[292/424] EFX - Mon Jul 21 2025
+   Predicted: -7.20% (95% confidence)
+   📊 Entry:  Tue Jul 22 2025 @ $244.76
+   📊 Exit:   Tue Jul 29 2025 @ $247.21
+   💰 P&L:    +$73.95 (+0.97%)
+   🎯 Actual: +1.00%
+   💵 Cash:   $112,770.909
+
+[293/424] ISRG - Tue Jul 22 2025
+   Predicted: -2.77% (84% confidence)
+   📊 Entry:  Wed Jul 23 2025 @ $522.50
+   📊 Exit:   Wed Jul 30 2025 @ $500.51
+   💰 P&L:    $-111.95 (-4.29%)
+   🎯 Actual: -4.21%
+   💵 Cash:   $112,658.959
+
+[294/424] TMUS - Tue Jul 22 2025
+   Predicted: +2.57% (83% confidence)
+   📊 Entry:  Wed Jul 23 2025 @ $233.17
+   📊 Exit:   Wed Jul 30 2025 @ $241.58
+   💰 P&L:    +$82.10 (+3.52%)
+   🎯 Actual: +3.61%
+   💵 Cash:   $112,741.059
+
+[297/424] TSLA - Wed Jul 23 2025
+   Predicted: -4.07% (90% confidence)
+   📊 Entry:  Thu Jul 24 2025 @ $310.00
+   📊 Exit:   Thu Jul 31 2025 @ $308.27
+   💰 P&L:    $-24.49 (-0.61%)
+   🎯 Actual: -0.56%
+   💵 Cash:   $112,716.569
+
+[299/424] ALLE - Wed Jul 23 2025
+   Predicted: +6.78% (95% confidence)
+   📊 Entry:  Thu Jul 24 2025 @ $157.87
+   📊 Exit:   Thu Jul 31 2025 @ $165.92
+   💰 P&L:    +$360.25 (+5.07%)
+   🎯 Actual: +5.10%
+   💵 Cash:   $113,076.819
+
+[300/424] NOW - Wed Jul 23 2025
+   Predicted: +2.20% (81% confidence)
+   📊 Entry:  Thu Jul 24 2025 @ $1034.66
+   📊 Exit:   Thu Jul 31 2025 @ $943.12
+   💰 P&L:    $-93.54 (-9.04%)
+   🎯 Actual: -8.85%
+   💵 Cash:   $112,983.279
+
+[301/424] RNR - Wed Jul 23 2025
+   Predicted: +3.04% (85% confidence)
+   📊 Entry:  Thu Jul 24 2025 @ $237.10
+   📊 Exit:   Thu Jul 31 2025 @ $243.74
+   💰 P&L:    +$77.68 (+2.73%)
+   🎯 Actual: +2.80%
+   💵 Cash:   $113,060.959
+
+[302/424] HLX - Wed Jul 23 2025
+   Predicted: -10.20% (95% confidence)
+   📊 Entry:  Thu Jul 24 2025 @ $5.75
+   📊 Exit:   Thu Jul 31 2025 @ $5.93
+   💰 P&L:    +$340.90 (+3.11%)
+   🎯 Actual: +3.13%
+   💵 Cash:   $113,401.859
+
+[303/424] GOOG - Wed Jul 23 2025
+   Predicted: +3.10% (85% confidence)
+   📊 Entry:  Thu Jul 24 2025 @ $198.11
+   📊 Exit:   Thu Jul 31 2025 @ $192.86
+   💰 P&L:    $-80.75 (-2.72%)
+   🎯 Actual: -2.65%
+   💵 Cash:   $113,321.109
+
+[304/424] IBM - Wed Jul 23 2025
+   Predicted: -7.71% (95% confidence)
+   📊 Entry:  Thu Jul 24 2025 @ $261.25
+   📊 Exit:   Thu Jul 31 2025 @ $253.15
+   💰 P&L:    $-253.10 (-3.13%)
+   🎯 Actual: -3.10%
+   💵 Cash:   $113,068.009
+
+[306/424] TSLA - Wed Jul 23 2025
+   Predicted: -4.07% (90% confidence)
+   📊 Entry:  Thu Jul 24 2025 @ $310.00
+   📊 Exit:   Thu Jul 31 2025 @ $308.27
+   💰 P&L:    $-24.49 (-0.61%)
+   🎯 Actual: -0.56%
+   💵 Cash:   $113,043.519
+
+[309/424] MAT - Mon Jul 28 2025
+   Predicted: -3.68% (88% confidence)
+   📊 Entry:  Tue Jul 29 2025 @ $17.66
+   📊 Exit:   Tue Aug 05 2025 @ $16.99
+   💰 P&L:    $-141.36 (-3.85%)
+   🎯 Actual: -3.79%
+   💵 Cash:   $112,902.159
+
+[310/424] MDLZ - Mon Jul 28 2025
+   Predicted: -8.70% (95% confidence)
+   📊 Entry:  Tue Jul 29 2025 @ $69.58
+   📊 Exit:   Tue Aug 05 2025 @ $62.30
+   💰 P&L:    $-977.52 (-10.48%)
+   🎯 Actual: -10.46%
+   💵 Cash:   $111,924.638
+
+[311/424] TXN - Mon Jul 28 2025
+   Predicted: -3.45% (87% confidence)
+   📊 Entry:  Tue Jul 29 2025 @ $189.71
+   📊 Exit:   Tue Aug 05 2025 @ $185.40
+   💰 P&L:    $-75.27 (-2.33%)
+   🎯 Actual: -2.27%
+   💵 Cash:   $111,849.368
+
+[312/424] QCOM - Tue Jul 29 2025
+   Predicted: -9.48% (95% confidence)
+   📊 Entry:  Wed Jul 30 2025 @ $163.00
+   📊 Exit:   Wed Aug 06 2025 @ $145.84
+   💰 P&L:    $-1048.76 (-10.55%)
+   🎯 Actual: -10.53%
+   💵 Cash:   $110,800.608
+
+[313/424] FICO - Tue Jul 29 2025
+   Predicted: -10.76% (95% confidence)
+   📊 Entry:  Wed Jul 30 2025 @ $1507.83
+   📊 Exit:   Wed Aug 06 2025 @ $1393.61
+   💰 P&L:    $-801.54 (-7.59%)
+   🎯 Actual: -7.58%
+   💵 Cash:   $109,999.068
+
+[314/424] V - Tue Jul 29 2025
+   Predicted: -3.95% (90% confidence)
+   📊 Entry:  Wed Jul 30 2025 @ $351.70
+   📊 Exit:   Wed Aug 06 2025 @ $339.74
+   💰 P&L:    $-133.56 (-3.45%)
+   🎯 Actual: -3.40%
+   💵 Cash:   $109,865.508
+
+[315/424] ABT - Tue Jul 29 2025
+   Predicted: +2.09% (80% confidence)
+   📊 Entry:  Wed Jul 30 2025 @ $127.97
+   📊 Exit:   Wed Aug 06 2025 @ $130.93
+   💰 P&L:    +$39.44 (+2.20%)
+   🎯 Actual: +2.31%
+   💵 Cash:   $109,904.948
+
+[316/424] MSFT - Tue Jul 29 2025
+   Predicted: +2.96% (85% confidence)
+   📊 Entry:  Wed Jul 30 2025 @ $515.17
+   📊 Exit:   Wed Aug 06 2025 @ $524.94
+   💰 P&L:    +$46.85 (+1.82%)
+   🎯 Actual: +1.90%
+   💵 Cash:   $109,951.798
+
+[317/424] ABT - Tue Jul 29 2025
+   Predicted: +2.09% (80% confidence)
+   📊 Entry:  Wed Jul 30 2025 @ $127.97
+   📊 Exit:   Wed Aug 06 2025 @ $130.93
+   💰 P&L:    +$39.44 (+2.20%)
+   🎯 Actual: +2.31%
+   💵 Cash:   $109,991.238
+
+[318/424] MSFT - Tue Jul 29 2025
+   Predicted: +2.96% (85% confidence)
+   📊 Entry:  Wed Jul 30 2025 @ $515.17
+   📊 Exit:   Wed Aug 06 2025 @ $524.94
+   💰 P&L:    +$46.85 (+1.82%)
+   🎯 Actual: +1.90%
+   💵 Cash:   $110,038.088
+
+[319/424] RSG - Tue Jul 29 2025
+   Predicted: -5.66% (95% confidence)
+   📊 Entry:  Wed Jul 30 2025 @ $238.84
+   📊 Exit:   Wed Aug 06 2025 @ $235.52
+   💰 P&L:    $-81.68 (-1.42%)
+   🎯 Actual: -1.39%
+   💵 Cash:   $109,956.408
+
+[321/424] QCOM - Tue Jul 29 2025
+   Predicted: -9.48% (95% confidence)
+   📊 Entry:  Wed Jul 30 2025 @ $163.00
+   📊 Exit:   Wed Aug 06 2025 @ $145.84
+   💰 P&L:    $-1031.60 (-10.55%)
+   🎯 Actual: -10.53%
+   💵 Cash:   $108,924.808
+
+[322/424] ESS - Tue Jul 29 2025
+   Predicted: -11.46% (95% confidence)
+   📊 Entry:  Wed Jul 30 2025 @ $284.86
+   📊 Exit:   Wed Aug 06 2025 @ $254.52
+   💰 P&L:    $-1154.92 (-10.67%)
+   🎯 Actual: -10.65%
+   💵 Cash:   $107,769.888
+
+[323/424] PRU - Wed Jul 30 2025
+   Predicted: +2.26% (81% confidence)
+   📊 Entry:  Thu Jul 31 2025 @ $102.56
+   📊 Exit:   Thu Aug 07 2025 @ $100.68
+   💰 P&L:    $-37.72 (-1.94%)
+   🎯 Actual: -1.83%
+   💵 Cash:   $107,732.168
+
+[325/424] META - Wed Jul 30 2025
+   Predicted: +11.04% (95% confidence)
+   📊 Entry:  Thu Jul 31 2025 @ $775.20
+   📊 Exit:   Thu Aug 07 2025 @ $761.83
+   💰 P&L:    $-175.81 (-1.74%)
+   🎯 Actual: -1.72%
+   💵 Cash:   $107,556.358
+
+[326/424] BAC - Wed Jul 30 2025
+   Predicted: -5.30% (95% confidence)
+   📊 Entry:  Thu Jul 31 2025 @ $47.76
+   📊 Exit:   Thu Aug 07 2025 @ $44.92
+   💰 P&L:    $-322.92 (-5.98%)
+   🎯 Actual: -5.95%
+   💵 Cash:   $107,233.438
+
+[327/424] BLDR - Wed Jul 30 2025
+   Predicted: +3.67% (88% confidence)
+   📊 Entry:  Thu Jul 31 2025 @ $121.94
+   📊 Exit:   Thu Aug 07 2025 @ $131.26
+   💰 P&L:    +$258.96 (+7.58%)
+   🎯 Actual: +7.64%
+   💵 Cash:   $107,492.398
+
+[329/424] MAA - Wed Jul 30 2025
+   Predicted: -5.50% (95% confidence)
+   📊 Entry:  Thu Jul 31 2025 @ $146.33
+   📊 Exit:   Thu Aug 07 2025 @ $142.15
+   💰 P&L:    $-160.84 (-2.89%)
+   🎯 Actual: -2.86%
+   💵 Cash:   $107,331.558
+
+[330/424] IR - Wed Jul 30 2025
+   Predicted: -10.82% (95% confidence)
+   📊 Entry:  Thu Jul 31 2025 @ $85.37
+   📊 Exit:   Thu Aug 07 2025 @ $76.28
+   💰 P&L:    $-1138.25 (-10.67%)
+   🎯 Actual: -10.65%
+   💵 Cash:   $106,193.307
+
+[331/424] META - Wed Jul 30 2025
+   Predicted: +11.04% (95% confidence)
+   📊 Entry:  Thu Jul 31 2025 @ $775.20
+   📊 Exit:   Thu Aug 07 2025 @ $761.83
+   💰 P&L:    $-175.81 (-1.74%)
+   🎯 Actual: -1.72%
+   💵 Cash:   $106,017.497
+
+[333/424] PTC - Wed Jul 30 2025
+   Predicted: +6.52% (95% confidence)
+   📊 Entry:  Thu Jul 31 2025 @ $212.50
+   📊 Exit:   Thu Aug 07 2025 @ $206.15
+   💰 P&L:    $-192.50 (-3.02%)
+   🎯 Actual: -2.99%
+   💵 Cash:   $105,824.997
+
+[334/424] AAPL - Thu Jul 31 2025
+   Predicted: +6.00% (95% confidence)
+   📊 Entry:  Fri Aug 01 2025 @ $210.87
+   📊 Exit:   Fri Aug 08 2025 @ $229.35
+   💰 P&L:    +$515.44 (+8.73%)
+   🎯 Actual: +8.76%
+   💵 Cash:   $106,340.438
+
+[336/424] AMZN - Thu Jul 31 2025
+   Predicted: -4.69% (93% confidence)
+   📊 Entry:  Fri Aug 01 2025 @ $217.21
+   📊 Exit:   Fri Aug 08 2025 @ $222.69
+   💰 P&L:    +$113.08 (+2.48%)
+   🎯 Actual: +2.52%
+   💵 Cash:   $106,453.518
+
+[338/424] LYB - Thu Jul 31 2025
+   Predicted: -13.40% (95% confidence)
+   📊 Entry:  Fri Aug 01 2025 @ $57.55
+   📊 Exit:   Fri Aug 08 2025 @ $49.06
+   💰 P&L:    $-1564.16 (-14.77%)
+   🎯 Actual: -14.75%
+   💵 Cash:   $104,889.358
+
+[341/424] SYK - Thu Jul 31 2025
+   Predicted: -4.17% (91% confidence)
+   📊 Entry:  Fri Aug 01 2025 @ $372.32
+   📊 Exit:   Fri Aug 08 2025 @ $377.58
+   💰 P&L:    +$50.60 (+1.36%)
+   🎯 Actual: +1.41%
+   💵 Cash:   $104,939.958
+
+[342/424] AAPL - Thu Jul 31 2025
+   Predicted: +6.00% (95% confidence)
+   📊 Entry:  Fri Aug 01 2025 @ $210.87
+   📊 Exit:   Fri Aug 08 2025 @ $229.35
+   💰 P&L:    +$515.44 (+8.73%)
+   🎯 Actual: +8.76%
+   💵 Cash:   $105,455.398
+
+[343/424] TMO - Thu Jul 31 2025
+   Predicted: -2.77% (84% confidence)
+   📊 Entry:  Fri Aug 01 2025 @ $461.03
+   📊 Exit:   Fri Aug 08 2025 @ $460.72
+   💰 P&L:    $-3.55 (-0.15%)
+   🎯 Actual: -0.07%
+   💵 Cash:   $105,451.848
+
+[344/424] GWW - Thu Jul 31 2025
+   Predicted: -9.33% (95% confidence)
+   📊 Entry:  Fri Aug 01 2025 @ $936.18
+   📊 Exit:   Fri Aug 08 2025 @ $950.13
+   💰 P&L:    +$123.55 (+1.47%)
+   🎯 Actual: +1.49%
+   💵 Cash:   $105,575.398
+
+[345/424] AMZN - Thu Jul 31 2025
+   Predicted: -4.69% (93% confidence)
+   📊 Entry:  Fri Aug 01 2025 @ $217.21
+   📊 Exit:   Fri Aug 08 2025 @ $222.69
+   💰 P&L:    +$113.08 (+2.48%)
+   🎯 Actual: +2.52%
+   💵 Cash:   $105,688.478
+
+[346/424] TMO - Thu Jul 31 2025
+   Predicted: -2.77% (84% confidence)
+   📊 Entry:  Fri Aug 01 2025 @ $461.03
+   📊 Exit:   Fri Aug 08 2025 @ $460.72
+   💰 P&L:    $-3.55 (-0.15%)
+   🎯 Actual: -0.07%
+   💵 Cash:   $105,684.928
+
+[347/424] WAT - Sun Aug 03 2025
+   Predicted: -2.21% (81% confidence)
+   📊 Entry:  Mon Aug 04 2025 @ $279.80
+   📊 Exit:   Mon Aug 11 2025 @ $279.29
+   💰 P&L:    $-5.06 (-0.30%)
+   🎯 Actual: -0.18%
+   💵 Cash:   $105,679.868
+
+[350/424] HCA - Sun Aug 03 2025
+   Predicted: +5.43% (95% confidence)
+   📊 Entry:  Mon Aug 04 2025 @ $356.73
+   📊 Exit:   Mon Aug 11 2025 @ $382.91
+   💰 P&L:    +$390.70 (+7.30%)
+   🎯 Actual: +7.34%
+   💵 Cash:   $106,070.568
+
+[351/424] PG - Sun Aug 03 2025
+   Predicted: +2.80% (84% confidence)
+   📊 Entry:  Mon Aug 04 2025 @ $150.25
+   📊 Exit:   Mon Aug 11 2025 @ $154.98
+   💰 P&L:    +$73.68 (+3.06%)
+   🎯 Actual: +3.15%
+   💵 Cash:   $106,144.248
+
+[352/424] PG - Sun Aug 03 2025
+   Predicted: +2.80% (84% confidence)
+   📊 Entry:  Mon Aug 04 2025 @ $150.25
+   📊 Exit:   Mon Aug 11 2025 @ $154.98
+   💰 P&L:    +$73.68 (+3.06%)
+   🎯 Actual: +3.15%
+   💵 Cash:   $106,217.928
+
+[355/424] WMB - Sun Aug 03 2025
+   Predicted: -3.65% (88% confidence)
+   📊 Entry:  Mon Aug 04 2025 @ $60.59
+   📊 Exit:   Mon Aug 11 2025 @ $58.06
+   💰 P&L:    $-143.68 (-4.23%)
+   🎯 Actual: -4.18%
+   💵 Cash:   $106,074.248
+
+[358/424] LDOS - Mon Aug 04 2025
+   Predicted: +10.06% (95% confidence)
+   📊 Entry:  Tue Aug 05 2025 @ $168.01
+   📊 Exit:   Tue Aug 12 2025 @ $178.02
+   💰 P&L:    +$598.60 (+5.94%)
+   🎯 Actual: +5.96%
+   💵 Cash:   $106,672.849
+
+[359/424] PFE - Mon Aug 04 2025
+   Predicted: +4.46% (92% confidence)
+   📊 Entry:  Tue Aug 05 2025 @ $24.27
+   📊 Exit:   Tue Aug 12 2025 @ $24.65
+   💰 P&L:    +$66.78 (+1.52%)
+   🎯 Actual: +1.57%
+   💵 Cash:   $106,739.628
+
+[363/424] PFE - Mon Aug 04 2025
+   Predicted: +4.46% (92% confidence)
+   📊 Entry:  Tue Aug 05 2025 @ $24.27
+   📊 Exit:   Tue Aug 12 2025 @ $24.65
+   💰 P&L:    +$66.78 (+1.52%)
+   🎯 Actual: +1.57%
+   💵 Cash:   $106,806.408
+
+[364/424] ETN - Mon Aug 04 2025
+   Predicted: -6.41% (95% confidence)
+   📊 Entry:  Tue Aug 05 2025 @ $360.94
+   📊 Exit:   Tue Aug 12 2025 @ $363.30
+   💰 P&L:    +$40.48 (+0.62%)
+   🎯 Actual: +0.65%
+   💵 Cash:   $106,846.888
+
+[366/424] VRTX - Mon Aug 04 2025
+   Predicted: -20.71% (95% confidence)
+   📊 Entry:  Tue Aug 05 2025 @ $408.22
+   📊 Exit:   Tue Aug 12 2025 @ $387.77
+   💰 P&L:    $-533.70 (-5.03%)
+   🎯 Actual: -5.01%
+   💵 Cash:   $106,313.188
+
+[371/424] DIS - Tue Aug 05 2025
+   Predicted: -3.89% (89% confidence)
+   📊 Entry:  Wed Aug 06 2025 @ $115.78
+   📊 Exit:   Wed Aug 13 2025 @ $116.64
+   💰 P&L:    +$24.66 (+0.69%)
+   🎯 Actual: +0.74%
+   💵 Cash:   $106,337.848
+
+[374/424] AMGN - Tue Aug 05 2025
+   Predicted: -5.03% (95% confidence)
+   📊 Entry:  Wed Aug 06 2025 @ $295.51
+   📊 Exit:   Wed Aug 13 2025 @ $289.33
+   💰 P&L:    $-107.06 (-2.13%)
+   🎯 Actual: -2.09%
+   💵 Cash:   $106,230.787
+
+[378/424] BLK - Tue Aug 05 2025
+   Predicted: +4.50% (93% confidence)
+   📊 Entry:  Wed Aug 06 2025 @ $1114.02
+   📊 Exit:   Wed Aug 13 2025 @ $1160.03
+   💰 P&L:    +$136.03 (+4.07%)
+   🎯 Actual: +4.13%
+   💵 Cash:   $106,366.817
+
+[379/424] CAT - Tue Aug 05 2025
+   Predicted: -4.96% (95% confidence)
+   📊 Entry:  Wed Aug 06 2025 @ $433.34
+   📊 Exit:   Wed Aug 13 2025 @ $413.70
+   💰 P&L:    $-218.04 (-4.57%)
+   🎯 Actual: -4.53%
+   💵 Cash:   $106,148.778
+
+[380/424] DIS - Tue Aug 05 2025
+   Predicted: -3.89% (89% confidence)
+   📊 Entry:  Wed Aug 06 2025 @ $115.78
+   📊 Exit:   Wed Aug 13 2025 @ $116.64
+   💰 P&L:    +$24.66 (+0.69%)
+   🎯 Actual: +0.74%
+   💵 Cash:   $106,173.438
+
+[381/424] CVX - Wed Aug 06 2025
+   Predicted: +2.02% (80% confidence)
+   📊 Entry:  Thu Aug 07 2025 @ $153.79
+   📊 Exit:   Thu Aug 14 2025 @ $155.16
+   💰 P&L:    +$13.07 (+0.77%)
+   🎯 Actual: +0.89%
+   💵 Cash:   $106,186.508
+
+[382/424] LLY - Wed Aug 06 2025
+   Predicted: -11.51% (95% confidence)
+   📊 Entry:  Thu Aug 07 2025 @ $675.66
+   📊 Exit:   Thu Aug 14 2025 @ $684.43
+   💰 P&L:    +$129.55 (+1.28%)
+   🎯 Actual: +1.30%
+   💵 Cash:   $106,316.058
+
+[383/424] CVX - Wed Aug 06 2025
+   Predicted: +2.02% (80% confidence)
+   📊 Entry:  Thu Aug 07 2025 @ $153.79
+   📊 Exit:   Thu Aug 14 2025 @ $155.16
+   💰 P&L:    +$13.07 (+0.77%)
+   🎯 Actual: +0.89%
+   💵 Cash:   $106,329.128
+
+[384/424] COP - Wed Aug 06 2025
+   Predicted: +2.97% (85% confidence)
+   📊 Entry:  Thu Aug 07 2025 @ $92.04
+   📊 Exit:   Thu Aug 14 2025 @ $95.65
+   💰 P&L:    +$102.69 (+3.85%)
+   🎯 Actual: +3.92%
+   💵 Cash:   $106,431.818
+
+[385/424] TRGP - Wed Aug 06 2025
+   Predicted: +2.26% (81% confidence)
+   📊 Entry:  Thu Aug 07 2025 @ $166.34
+   📊 Exit:   Thu Aug 14 2025 @ $165.51
+   💰 P&L:    $-11.13 (-0.61%)
+   🎯 Actual: -0.50%
+   💵 Cash:   $106,420.688
+
+[386/424] COP - Wed Aug 06 2025
+   Predicted: +2.97% (85% confidence)
+   📊 Entry:  Thu Aug 07 2025 @ $92.04
+   📊 Exit:   Thu Aug 14 2025 @ $95.65
+   💰 P&L:    +$102.69 (+3.85%)
+   🎯 Actual: +3.92%
+   💵 Cash:   $106,523.378
+
+[387/424] KLAC - Thu Aug 07 2025
+   Predicted: +4.75% (94% confidence)
+   📊 Entry:  Fri Aug 08 2025 @ $913.00
+   📊 Exit:   Fri Aug 15 2025 @ $874.94
+   💰 P&L:    $-192.30 (-4.21%)
+   🎯 Actual: -4.17%
+   💵 Cash:   $106,331.078
+
+[388/424] EXPE - Thu Aug 07 2025
+   Predicted: +10.44% (95% confidence)
+   📊 Entry:  Fri Aug 08 2025 @ $211.60
+   📊 Exit:   Fri Aug 15 2025 @ $207.44
+   💰 P&L:    $-205.84 (-1.99%)
+   🎯 Actual: -1.97%
+   💵 Cash:   $106,125.238
+
+[391/424] LRCX - Sun Aug 10 2025
+   Predicted: -3.06% (85% confidence)
+   📊 Entry:  Mon Aug 11 2025 @ $103.90
+   📊 Exit:   Mon Aug 18 2025 @ $98.88
+   💰 P&L:    $-132.52 (-4.91%)
+   🎯 Actual: -4.83%
+   💵 Cash:   $105,992.718
+
+[392/424] UNH - Sun Aug 10 2025
+   Predicted: +22.24% (95% confidence)
+   📊 Entry:  Mon Aug 11 2025 @ $253.87
+   📊 Exit:   Mon Aug 18 2025 @ $308.49
+   💰 P&L:    +$2237.42 (+21.50%)
+   🎯 Actual: +21.51%
+   💵 Cash:   $108,230.138
+
+[394/424] PH - Thu Aug 21 2025
+   Predicted: +4.61% (93% confidence)
+   📊 Entry:  Fri Aug 22 2025 @ $738.12
+   📊 Exit:   Fri Aug 29 2025 @ $759.35
+   💰 P&L:    +$125.38 (+2.83%)
+   🎯 Actual: +2.88%
+   💵 Cash:   $108,355.518
+
+[396/424] NVDA - Tue Aug 26 2025
+   Predicted: -6.05% (95% confidence)
+   📊 Entry:  Wed Aug 27 2025 @ $181.98
+   📊 Exit:   Wed Sep 03 2025 @ $170.62
+   💰 P&L:    $-388.24 (-6.27%)
+   🎯 Actual: -6.24%
+   💵 Cash:   $107,967.277
+
+[398/424] NVDA - Tue Aug 26 2025
+   Predicted: -6.05% (95% confidence)
+   📊 Entry:  Wed Aug 27 2025 @ $181.98
+   📊 Exit:   Wed Sep 03 2025 @ $170.62
+   💰 P&L:    $-388.24 (-6.27%)
+   🎯 Actual: -6.24%
+   💵 Cash:   $107,579.037
+
+[400/424] TJX - Thu Aug 28 2025
+   Predicted: +2.84% (84% confidence)
+   📊 Entry:  Fri Aug 29 2025 @ $137.27
+   📊 Exit:   Fri Sep 05 2025 @ $139.26
+   💰 P&L:    +$33.82 (+1.37%)
+   🎯 Actual: +1.45%
+   💵 Cash:   $107,612.857
+
+[401/424] A - Thu Aug 28 2025
+   Predicted: +2.82% (84% confidence)
+   📊 Entry:  Fri Aug 29 2025 @ $125.00
+   📊 Exit:   Fri Sep 05 2025 @ $128.75
+   💰 P&L:    +$73.00 (+2.92%)
+   🎯 Actual: +3.00%
+   💵 Cash:   $107,685.857
+
+[403/424] WMT - Thu Aug 28 2025
+   Predicted: +5.02% (95% confidence)
+   📊 Entry:  Fri Aug 29 2025 @ $96.10
+   📊 Exit:   Fri Sep 05 2025 @ $100.51
+   💰 P&L:    +$231.73 (+4.55%)
+   🎯 Actual: +4.59%
+   💵 Cash:   $107,917.587
+
+[407/424] CRM - Wed Sep 03 2025
+   Predicted: -5.41% (95% confidence)
+   📊 Entry:  Thu Sep 04 2025 @ $240.06
+   📊 Exit:   Thu Sep 11 2025 @ $246.28
+   💰 P&L:    +$141.06 (+2.55%)
+   🎯 Actual: +2.59%
+   💵 Cash:   $108,058.648
+
+[408/424] CRM - Wed Sep 03 2025
+   Predicted: -5.41% (95% confidence)
+   📊 Entry:  Thu Sep 04 2025 @ $240.06
+   📊 Exit:   Thu Sep 11 2025 @ $246.28
+   💰 P&L:    +$141.06 (+2.55%)
+   🎯 Actual: +2.59%
+   💵 Cash:   $108,199.708
+
+[409/424] ORCL - Tue Sep 09 2025
+   Predicted: +26.97% (95% confidence)
+   📊 Entry:  Wed Sep 10 2025 @ $319.19
+   📊 Exit:   Wed Sep 17 2025 @ $301.41
+   💰 P&L:    $-588.74 (-5.59%)
+   🎯 Actual: -5.57%
+   💵 Cash:   $107,610.968
+
+[410/424] AVGO - Tue Sep 09 2025
+   Predicted: +6.93% (95% confidence)
+   📊 Entry:  Wed Sep 10 2025 @ $351.52
+   📊 Exit:   Wed Sep 17 2025 @ $346.17
+   💰 P&L:    $-109.00 (-1.55%)
+   🎯 Actual: -1.52%
+   💵 Cash:   $107,501.968
+
+[411/424] AVGO - Tue Sep 09 2025
+   Predicted: +6.93% (95% confidence)
+   📊 Entry:  Wed Sep 10 2025 @ $351.52
+   📊 Exit:   Wed Sep 17 2025 @ $346.17
+   💰 P&L:    $-109.00 (-1.55%)
+   🎯 Actual: -1.52%
+   💵 Cash:   $107,392.969
+
+[412/424] ORCL - Tue Sep 09 2025
+   Predicted: +26.97% (95% confidence)
+   📊 Entry:  Wed Sep 10 2025 @ $319.19
+   📊 Exit:   Wed Sep 17 2025 @ $301.41
+   💰 P&L:    $-588.74 (-5.59%)
+   🎯 Actual: -5.57%
+   💵 Cash:   $106,804.229
+
+[413/424] ADBE - Tue Sep 23 2025
+   Predicted: -2.50% (82% confidence)
+   📊 Entry:  Wed Sep 24 2025 @ $355.60
+   📊 Exit:   Wed Oct 01 2025 @ $343.72
+   💰 P&L:    $-73.28 (-3.43%)
+   🎯 Actual: -3.34%
+   💵 Cash:   $106,730.949
+
+[414/424] ADBE - Tue Sep 23 2025
+   Predicted: -2.50% (82% confidence)
+   📊 Entry:  Wed Sep 24 2025 @ $355.60
+   📊 Exit:   Wed Oct 01 2025 @ $343.72
+   💰 P&L:    $-73.28 (-3.43%)
+   🎯 Actual: -3.34%
+   💵 Cash:   $106,657.669
+
+[418/424] MU - Thu Oct 02 2025
+   Predicted: +4.67% (93% confidence)
+   📊 Entry:  Fri Oct 03 2025 @ $185.21
+   📊 Exit:   Fri Oct 10 2025 @ $181.60
+   💰 P&L:    $-92.25 (-1.99%)
+   🎯 Actual: -1.95%
+   💵 Cash:   $106,565.419
+
+[419/424] COST - Tue Oct 07 2025
+   Predicted: +3.47% (87% confidence)
+   📊 Entry:  Wed Oct 08 2025 @ $912.54
+   📊 Exit:   Wed Oct 15 2025 @ $954.99
+   💰 P&L:    +$125.35 (+4.58%)
+   🎯 Actual: +4.65%
+   💵 Cash:   $106,690.769
+
+[420/424] COST - Tue Oct 07 2025
+   Predicted: +3.47% (87% confidence)
+   📊 Entry:  Wed Oct 08 2025 @ $912.54
+   📊 Exit:   Wed Oct 15 2025 @ $954.99
+   💰 P&L:    +$125.35 (+4.58%)
+   🎯 Actual: +4.65%
+   💵 Cash:   $106,816.119
+
+[421/424] CTAS - Tue Oct 07 2025
+   Predicted: -5.49% (95% confidence)
+   📊 Entry:  Wed Oct 08 2025 @ $199.39
+   📊 Exit:   Wed Oct 15 2025 @ $187.45
+   💰 P&L:    $-324.38 (-6.03%)
+   🎯 Actual: -5.99%
+   💵 Cash:   $106,491.739
+
+[422/424] PEP - Wed Oct 08 2025
+   Predicted: +8.87% (95% confidence)
+   📊 Entry:  Thu Oct 09 2025 @ $140.46
+   📊 Exit:   Thu Oct 16 2025 @ $152.67
+   💰 P&L:    +$767.23 (+8.67%)
+   🎯 Actual: +8.69%
+   💵 Cash:   $107,258.968
+
+[423/424] PEP - Wed Oct 08 2025
+   Predicted: +8.87% (95% confidence)
+   📊 Entry:  Thu Oct 09 2025 @ $140.46
+   📊 Exit:   Thu Oct 16 2025 @ $152.67
+   💰 P&L:    +$779.44 (+8.67%)
+   🎯 Actual: +8.69%
+   💵 Cash:   $108,038.407
+
+[424/424] ACN - Thu Oct 09 2025
+   Predicted: -4.89% (94% confidence)
+  ⚠️  Could not fetch close price for ACN on Fri Oct 17 2025: Data doesn't exist for startDate = 1760673600, endDate = 1761177600
+   ⏭️  Skipped: No exit price available
+
+
+═══════════════════════════════════════════════════════
+              BACKTEST RESULTS
+═══════════════════════════════════════════════════════
+
+📊 PORTFOLIO PERFORMANCE
+───────────────────────────────────────────────────────
+Starting Value:    $100,000
+Ending Value:      $108,038.407
+Total Return:      +8.04%
+Total P&L:         +$8038.41
+
+📈 TRADING STATISTICS
+───────────────────────────────────────────────────────
+Total Trades:      265
+Winning Trades:    143 (54.0%)
+Losing Trades:     122
+Average Win:       +4.50%
+Average Loss:      -4.56%
+Profit Factor:     1.21x
+
+🎯 MODEL ACCURACY
+───────────────────────────────────────────────────────
+Directional Accuracy: 81.5%
+Correct Predictions:  216/265
+
+🏆 BEST TRADE
+───────────────────────────────────────────────────────
+UNH - Sun Aug 10 2025
+Entry: $253.87 → Exit: $308.49
+P&L: +$2237.42 (+21.50%)
+Predicted: 22.24% | Actual: 21.51%
+
+💔 WORST TRADE
+───────────────────────────────────────────────────────
+UNH - Tue May 06 2025
+Entry: $395.35 → Exit: $308.01
+P&L: $-2447.52 (-22.11%)
+Predicted: -21.07% | Actual: -22.09%
+
+═══════════════════════════════════════════════════════
+
+💾 Results saved to: backtest-results.json
+

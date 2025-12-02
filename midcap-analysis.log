@@ -1,0 +1,2088 @@
+🚀 Analyzing Mid-Cap Company Additions
+
+════════════════════════════════════════════════════════════════════════════════
+
+📋 Loaded 169 companies from new selection
+
+📊 Analysis Status:
+  Total companies in selection: 169
+  Need analysis: 169
+  Already analyzed: 0
+
+🔄 Will analyze 169 new companies
+
+════════════════════════════════════════════════════════════════════════════════
+
+📦 Processing batch 1/34
+────────────────────────────────────────────────────────────────────────────────
+
+[1/169] Processing A (AGILENT TECHNOLOGIES, INC.)...
+  Market Cap: $39B
+  📄 Filing: 8-K from 2025-07-15
+     Accession: 0001193125-25-159100
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.00 (neutral)
+
+[2/169] Processing ORCL (ORACLE CORP)...
+  Market Cap: $835B
+  📄 Filing: 10-Q from 2025-09-10
+     Accession: 0001193125-25-200095
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.45 (cautiously optimistic)
+
+[3/169] Processing TMO (THERMO FISHER SCIENTIFIC INC.)...
+  Market Cap: $198B
+  📄 Filing: 10-Q from 2025-08-01
+     Accession: 0000097745-25-000101
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral - insufficient narrative content)
+
+[4/169] Processing ABBV (AbbVie Inc.)...
+  Market Cap: $407B
+  📄 Filing: 10-Q from 2025-08-04
+     Accession: 0001551152-25-000040
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral-technical)
+
+[5/169] Processing ABT (ABBOTT LABORATORIES)...
+  Market Cap: $231B
+  📄 Filing: 8-K from 2025-05-01
+     Accession: 0001104659-25-043508
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 2/34
+────────────────────────────────────────────────────────────────────────────────
+
+[6/169] Processing AMAT (APPLIED MATERIALS INC /DE)...
+  Market Cap: $167B
+  📄 Filing: 8-K from 2025-09-19
+     Accession: 0001193125-25-209109
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 5.50/10
+     Sentiment: 0.00 (neutral)
+
+[7/169] Processing AVGO (Broadcom Inc.)...
+  Market Cap: $1533B
+  📄 Filing: 8-K from 2025-09-10
+     Accession: 0001193125-25-200108
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[8/169] Processing CAT (CATERPILLAR INC)...
+  Market Cap: $230B
+  📄 Filing: 10-Q from 2025-08-06
+     Accession: 0000018230-25-000040
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.00 (neutral)
+
+[9/169] Processing CVX (CHEVRON CORP)...
+  Market Cap: $300B
+  📄 Filing: 10-Q from 2025-08-07
+     Accession: 0000093410-25-000062
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.00 (neutral-technical)
+
+[10/169] Processing GE (GENERAL ELECTRIC CO)...
+  Market Cap: $309B
+  📄 Filing: 8-K from 2025-07-24
+     Accession: 0000930413-25-002225
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 4.50/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 3/34
+────────────────────────────────────────────────────────────────────────────────
+
+[11/169] Processing IBM (INTERNATIONAL BUSINESS MACHINES CORP)...
+  Market Cap: $259B
+  📄 Filing: 8-K from 2025-07-23
+     Accession: 0000051143-25-000048
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[12/169] Processing LIN (LINDE PLC)...
+  Market Cap: $213B
+  📄 Filing: 8-K from 2025-08-01
+     Accession: 0001654954-25-008771
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[13/169] Processing QCOM (QUALCOMM INC/DE)...
+  Market Cap: $166B
+  📄 Filing: 10-Q from 2025-07-30
+     Accession: 0000804328-25-000045
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.80/10
+     Sentiment: 0.15 (neutral-administrative)
+
+[14/169] Processing SPGI (S&P Global Inc.)...
+  Market Cap: $148B
+  📄 Filing: 8-K from 2025-05-12
+     Accession: 0000064040-25-000135
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral/non-applicable)
+
+[15/169] Processing NOW (ServiceNow, Inc.)...
+  Market Cap: $184B
+  📄 Filing: 8-K from 2025-07-23
+     Accession: 0001373715-25-000274
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 4/34
+────────────────────────────────────────────────────────────────────────────────
+
+[16/169] Processing ADBE (ADOBE INC.)...
+  Market Cap: $141B
+  📄 Filing: 8-K from 2025-06-12
+     Accession: 0000796343-25-000064
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.50/10
+     Sentiment: 0.82 (highly optimistic)
+
+[17/169] Processing SO (SOUTHERN CO)...
+  Market Cap: $108B
+  📄 Filing: 10-Q from 2025-07-31
+     Accession: 0000092122-25-000076
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: -0.35 (cautious and risk-focused)
+
+[18/169] Processing TMUS (T-Mobile US, Inc.)...
+  Market Cap: $257B
+  📄 Filing: 8-K from 2025-09-04
+     Accession: 0001193125-25-195398
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[19/169] Processing ADP (AUTOMATIC DATA PROCESSING INC)...
+  Market Cap: $116B
+  📄 Filing: 8-K from 2025-07-30
+     Accession: 0000008670-25-000026
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[20/169] Processing AMT (AMERICAN TOWER CORP /MA/)...
+  Market Cap: $87B
+  📄 Filing: 8-K from 2025-09-16
+     Accession: 0001193125-25-205004
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 5/34
+────────────────────────────────────────────────────────────────────────────────
+
+[21/169] Processing BSX (BOSTON SCIENTIFIC CORP)...
+  Market Cap: $141B
+  📄 Filing: 8-K from 2025-07-23
+     Accession: 0000885725-25-000039
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[22/169] Processing CME (CME GROUP INC.)...
+  Market Cap: $98B
+  📄 Filing: 8-K from 2025-07-25
+     Accession: 0001156375-25-000184
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[23/169] Processing MCK (MCKESSON CORP)...
+  Market Cap: $95B
+  📄 Filing: 8-K from 2025-09-23
+     Accession: 0000927653-25-000125
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[24/169] Processing ADI (ANALOG DEVICES INC)...
+  Market Cap: $111B
+  📄 Filing: 8-K from 2025-09-19
+     Accession: 0001193125-25-208208
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[25/169] Processing VRSK (Verisk Analytics, Inc.)...
+  Market Cap: $34B
+  📄 Filing: 8-K from 2025-07-30
+     Accession: 0001437749-25-023861
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 6/34
+────────────────────────────────────────────────────────────────────────────────
+
+[26/169] Processing NEM (NEWMONT Corp /DE/)...
+  Market Cap: $94B
+  📄 Filing: 8-K from 2025-07-24
+     Accession: 0001164727-25-000033
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[27/169] Processing DOW (DOW INC.)...
+  Market Cap: $15B
+  📄 Filing: 8-K from 2025-09-02
+     Accession: 0001193125-25-193293
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.50/10
+     Sentiment: 0.00 (neutral)
+
+[28/169] Processing PH (PARKER HANNIFIN CORP)...
+  Market Cap: $91B
+  📄 Filing: 10-K from 2025-08-22
+     Accession: 0000076334-25-000035
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 4.50/10
+     Sentiment: 0.35 (cautiously positive)
+
+[29/169] Processing EFX (EQUIFAX INC)...
+  Market Cap: $28B
+  📄 Filing: 8-K from 2025-07-22
+     Accession: 0000033185-25-000049
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.00/10
+     Sentiment: 0.00 (neutral)
+
+[30/169] Processing PTC (PTC INC.)...
+  Market Cap: $24B
+  📄 Filing: 8-K from 2025-07-30
+     Accession: 0000950170-25-100205
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 7/34
+────────────────────────────────────────────────────────────────────────────────
+
+[31/169] Processing ROK (ROCKWELL AUTOMATION, INC)...
+  Market Cap: $38B
+  📄 Filing: 10-Q from 2025-08-06
+     Accession: 0001024478-25-000083
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.80/10
+     Sentiment: 0.15 (cautiously neutral with measured optimism)
+
+[32/169] Processing WELL (WELLTOWER INC.)...
+  Market Cap: $111B
+  📄 Filing: 8-K from 2025-08-04
+     Accession: 0001193125-25-172601
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 5.50/10
+     Sentiment: 0.00 (neutral)
+
+[33/169] Processing AON (Aon plc)...
+  Market Cap: $78B
+  📄 Filing: 8-K from 2025-09-03
+     Accession: 0001193125-25-194474
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.50/10
+     Sentiment: 0.00 (neutral)
+
+[34/169] Processing BAC (BANK OF AMERICA CORP /DE/)...
+  Market Cap: $360B
+  📄 Filing: 8-K from 2025-09-12
+     Accession: 0000070858-25-000350
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[35/169] Processing DIS (Walt Disney Co)...
+  Market Cap: $196B
+  📄 Filing: 10-Q from 2025-08-06
+     Accession: 0001744489-25-000136
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.00 (neutral-technical)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 8/34
+────────────────────────────────────────────────────────────────────────────────
+
+[36/169] Processing HD (HOME DEPOT, INC.)...
+  Market Cap: $374B
+  📄 Filing: 8-K from 2025-09-10
+     Accession: 0001104659-25-089060
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 4.50/10
+     Sentiment: 0.00 (neutral)
+
+[37/169] Processing KIM (KIMCO REALTY CORP)...
+  Market Cap: $14B
+  📄 Filing: 8-K from 2025-07-31
+     Accession: 0000950170-25-100547
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[38/169] Processing LDOS (Leidos Holdings, Inc.)...
+  Market Cap: $24B
+  📄 Filing: 8-K from 2025-08-05
+     Accession: 0001336920-25-000031
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+Error extracting financial metrics: InternalServerError: 500 {"type":"error","error":{"type":"api_error","message":"Overloaded"},"request_id":null}
+    at Function.generate (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/core/error.ts:91:14)
+    at Anthropic.makeStatusError (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/client.ts:422:28)
+    at Anthropic.makeRequest (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/client.ts:657:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async ClaudeClient.extractFinancialMetrics (/Users/johnmckinley/sec-filing-analyzer/lib/claude-client.ts:420:24)
+    at async Promise.all (index 2)
+    at async ClaudeClient.analyzeFullFiling (/Users/johnmckinley/sec-filing-analyzer/lib/claude-client.ts:585:74)
+    at async main (/Users/johnmckinley/sec-filing-analyzer/scripts/analyze-midcap-additions.ts:104:26) {
+  status: 500,
+  headers: Headers {
+    date: 'Tue, 14 Oct 2025 14:35:19 GMT',
+    'content-type': 'application/json',
+    'content-length': '86',
+    connection: 'keep-alive',
+    'cf-ray': '98e7cca28b5c8ce6-EWR',
+    'x-should-retry': 'false',
+    'request-id': 'req_011CU7Frk9n2eR1KubeuG7yj',
+    'strict-transport-security': 'max-age=31536000; includeSubDomains; preload',
+    'anthropic-organization-id': 'cacf41b3-6df1-457e-8ca9-1e097b300fa0',
+    'x-envoy-upstream-service-time': '34124',
+    via: '1.1 google',
+    'cf-cache-status': 'DYNAMIC',
+    'x-robots-tag': 'none',
+    server: 'cloudflare'
+  },
+  requestID: 'req_011CU7Frk9n2eR1KubeuG7yj',
+  error: {
+    type: 'error',
+    error: { type: 'api_error', message: 'Overloaded' },
+    request_id: null
+  }
+}
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[39/169] Processing MO (ALTRIA GROUP, INC.)...
+  Market Cap: $112B
+  📄 Filing: 8-K from 2025-10-09
+     Accession: 0000764180-25-000124
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+Error extracting financial metrics: InternalServerError: 500 {"type":"error","error":{"type":"api_error","message":"Overloaded"},"request_id":null}
+    at Function.generate (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/core/error.ts:91:14)
+    at Anthropic.makeStatusError (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/client.ts:422:28)
+    at Anthropic.makeRequest (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/client.ts:657:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async ClaudeClient.extractFinancialMetrics (/Users/johnmckinley/sec-filing-analyzer/lib/claude-client.ts:420:24)
+    at async Promise.all (index 2)
+    at async ClaudeClient.analyzeFullFiling (/Users/johnmckinley/sec-filing-analyzer/lib/claude-client.ts:585:74)
+    at async main (/Users/johnmckinley/sec-filing-analyzer/scripts/analyze-midcap-additions.ts:104:26) {
+  status: 500,
+  headers: Headers {
+    date: 'Tue, 14 Oct 2025 14:35:35 GMT',
+    'content-type': 'application/json',
+    'content-length': '86',
+    connection: 'keep-alive',
+    'cf-ray': '98e7cdae2fc142c7-EWR',
+    'x-should-retry': 'false',
+    'request-id': 'req_011CU7FuuCaYeSsXmv81bt4P',
+    'strict-transport-security': 'max-age=31536000; includeSubDomains; preload',
+    'anthropic-organization-id': 'cacf41b3-6df1-457e-8ca9-1e097b300fa0',
+    'x-envoy-upstream-service-time': '7161',
+    via: '1.1 google',
+    'cf-cache-status': 'DYNAMIC',
+    'x-robots-tag': 'none',
+    server: 'cloudflare'
+  },
+  requestID: 'req_011CU7FuuCaYeSsXmv81bt4P',
+  error: {
+    type: 'error',
+    error: { type: 'api_error', message: 'Overloaded' },
+    request_id: null
+  }
+}
+Error analyzing risk factors: InternalServerError: 500 {"type":"error","error":{"type":"api_error","message":"Overloaded"},"request_id":null}
+    at Function.generate (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/core/error.ts:91:14)
+    at Anthropic.makeStatusError (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/client.ts:422:28)
+    at Anthropic.makeRequest (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/client.ts:657:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async ClaudeClient.analyzeRiskFactors (/Users/johnmckinley/sec-filing-analyzer/lib/claude-client.ts:257:24)
+    at async Promise.all (index 0)
+    at async ClaudeClient.analyzeFullFiling (/Users/johnmckinley/sec-filing-analyzer/lib/claude-client.ts:585:74)
+    at async main (/Users/johnmckinley/sec-filing-analyzer/scripts/analyze-midcap-additions.ts:104:26) {
+  status: 500,
+  headers: Headers {
+    date: 'Tue, 14 Oct 2025 14:35:48 GMT',
+    'content-type': 'application/json',
+    'content-length': '86',
+    connection: 'keep-alive',
+    'cf-ray': '98e7cdad9e947a9c-EWR',
+    'x-should-retry': 'false',
+    'request-id': 'req_011CU7FutmXpRBruHDPF8KrG',
+    'strict-transport-security': 'max-age=31536000; includeSubDomains; preload',
+    'anthropic-organization-id': 'cacf41b3-6df1-457e-8ca9-1e097b300fa0',
+    'x-envoy-upstream-service-time': '20055',
+    via: '1.1 google',
+    'cf-cache-status': 'DYNAMIC',
+    'x-robots-tag': 'none',
+    server: 'cloudflare'
+  },
+  requestID: 'req_011CU7FutmXpRBruHDPF8KrG',
+  error: {
+    type: 'error',
+    error: { type: 'api_error', message: 'Overloaded' },
+    request_id: null
+  }
+}
+  ✅ Analysis complete!
+     Risk Score: 5.00/10
+     Sentiment: 0.00 (neutral)
+
+[40/169] Processing XOM (EXXON MOBIL CORP)...
+  Market Cap: $472B
+  📄 Filing: 8-K from 2025-08-01
+     Accession: 0000034088-25-000040
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 9/34
+────────────────────────────────────────────────────────────────────────────────
+
+[41/169] Processing AIG (AMERICAN INTERNATIONAL GROUP, INC.)...
+  Market Cap: $45B
+  📄 Filing: 8-K from 2025-08-18
+     Accession: 0000005272-25-000098
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[42/169] Processing AJG (Arthur J. Gallagher & Co.)...
+  Market Cap: $77B
+  📄 Filing: 8-K from 2025-08-18
+     Accession: 0000354190-25-000019
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+Error extracting financial metrics: InternalServerError: 500 {"type":"error","error":{"type":"api_error","message":"Overloaded"},"request_id":null}
+    at Function.generate (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/core/error.ts:91:14)
+    at Anthropic.makeStatusError (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/client.ts:422:28)
+    at Anthropic.makeRequest (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/client.ts:657:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async ClaudeClient.extractFinancialMetrics (/Users/johnmckinley/sec-filing-analyzer/lib/claude-client.ts:420:24)
+    at async Promise.all (index 2)
+    at async ClaudeClient.analyzeFullFiling (/Users/johnmckinley/sec-filing-analyzer/lib/claude-client.ts:585:74)
+    at async main (/Users/johnmckinley/sec-filing-analyzer/scripts/analyze-midcap-additions.ts:104:26) {
+  status: 500,
+  headers: Headers {
+    date: 'Tue, 14 Oct 2025 14:39:06 GMT',
+    'content-type': 'application/json',
+    'content-length': '86',
+    connection: 'keep-alive',
+    'cf-ray': '98e7d2973da0f569-EWR',
+    'x-should-retry': 'false',
+    'request-id': 'req_011CU7GAjA18wMdVvj2ZjvX6',
+    'strict-transport-security': 'max-age=31536000; includeSubDomains; preload',
+    'anthropic-organization-id': 'cacf41b3-6df1-457e-8ca9-1e097b300fa0',
+    'x-envoy-upstream-service-time': '16553',
+    via: '1.1 google',
+    'cf-cache-status': 'DYNAMIC',
+    'x-robots-tag': 'none',
+    server: 'cloudflare'
+  },
+  requestID: 'req_011CU7GAjA18wMdVvj2ZjvX6',
+  error: {
+    type: 'error',
+    error: { type: 'api_error', message: 'Overloaded' },
+    request_id: null
+  }
+}
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.00 (neutral)
+
+[43/169] Processing ALLE (Allegion plc)...
+  Market Cap: $15B
+  📄 Filing: 10-Q from 2025-07-24
+     Accession: 0001579241-25-000030
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.45 (neutral to moderately positive)
+
+[44/169] Processing AMD (ADVANCED MICRO DEVICES INC)...
+  Market Cap: $349B
+  📄 Filing: 8-K from 2025-08-25
+     Accession: 0000002488-25-000147
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+Error analyzing risk factors: InternalServerError: 500 {"type":"error","error":{"type":"api_error","message":"Overloaded"},"request_id":null}
+    at Function.generate (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/core/error.ts:91:14)
+    at Anthropic.makeStatusError (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/client.ts:422:28)
+    at Anthropic.makeRequest (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/client.ts:657:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async ClaudeClient.analyzeRiskFactors (/Users/johnmckinley/sec-filing-analyzer/lib/claude-client.ts:257:24)
+    at async Promise.all (index 0)
+    at async ClaudeClient.analyzeFullFiling (/Users/johnmckinley/sec-filing-analyzer/lib/claude-client.ts:585:74)
+    at async main (/Users/johnmckinley/sec-filing-analyzer/scripts/analyze-midcap-additions.ts:104:26) {
+  status: 500,
+  headers: Headers {
+    date: 'Tue, 14 Oct 2025 14:42:59 GMT',
+    'content-type': 'application/json',
+    'content-length': '86',
+    connection: 'keep-alive',
+    'cf-ray': '98e7d82a1f91cef2-EWR',
+    'x-should-retry': 'false',
+    'request-id': 'req_011CU7GTZLNwGg9wAUvQvcdK',
+    'strict-transport-security': 'max-age=31536000; includeSubDomains; preload',
+    'anthropic-organization-id': 'cacf41b3-6df1-457e-8ca9-1e097b300fa0',
+    'x-envoy-upstream-service-time': '21278',
+    via: '1.1 google',
+    'cf-cache-status': 'DYNAMIC',
+    'x-robots-tag': 'none',
+    server: 'cloudflare'
+  },
+  requestID: 'req_011CU7GTZLNwGg9wAUvQvcdK',
+  error: {
+    type: 'error',
+    error: { type: 'api_error', message: 'Overloaded' },
+    request_id: null
+  }
+}
+  ✅ Analysis complete!
+     Risk Score: 5.00/10
+     Sentiment: 0.00 (neutral)
+
+[45/169] Processing AMGN (AMGEN INC)...
+  Market Cap: $156B
+  📄 Filing: 8-K from 2025-08-05
+     Accession: 0000318154-25-000054
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+Error analyzing risk factors: InternalServerError: 500 {"type":"error","error":{"type":"api_error","message":"Overloaded"},"request_id":null}
+    at Function.generate (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/core/error.ts:91:14)
+    at Anthropic.makeStatusError (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/client.ts:422:28)
+    at Anthropic.makeRequest (/Users/johnmckinley/sec-filing-analyzer/node_modules/@anthropic-ai/sdk/src/client.ts:657:24)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async ClaudeClient.analyzeRiskFactors (/Users/johnmckinley/sec-filing-analyzer/lib/claude-client.ts:257:24)
+    at async Promise.all (index 0)
+    at async ClaudeClient.analyzeFullFiling (/Users/johnmckinley/sec-filing-analyzer/lib/claude-client.ts:585:74)
+    at async main (/Users/johnmckinley/sec-filing-analyzer/scripts/analyze-midcap-additions.ts:104:26) {
+  status: 500,
+  headers: Headers {
+    date: 'Tue, 14 Oct 2025 14:43:21 GMT',
+    'content-type': 'application/json',
+    'content-length': '86',
+    connection: 'keep-alive',
+    'cf-ray': '98e7d8e628114234-EWR',
+    'x-should-retry': 'false',
+    'request-id': 'req_011CU7GVmpGfVsv44u2uhaxt',
+    'strict-transport-security': 'max-age=31536000; includeSubDomains; preload',
+    'anthropic-organization-id': 'cacf41b3-6df1-457e-8ca9-1e097b300fa0',
+    'x-envoy-upstream-service-time': '13291',
+    via: '1.1 google',
+    'cf-cache-status': 'DYNAMIC',
+    'x-robots-tag': 'none',
+    server: 'cloudflare'
+  },
+  requestID: 'req_011CU7GVmpGfVsv44u2uhaxt',
+  error: {
+    type: 'error',
+    error: { type: 'api_error', message: 'Overloaded' },
+    request_id: null
+  }
+}
+  ✅ Analysis complete!
+     Risk Score: 5.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 10/34
+────────────────────────────────────────────────────────────────────────────────
+
+[46/169] Processing ARE (ALEXANDRIA REAL ESTATE EQUITIES, INC.)...
+  Market Cap: $13B
+  📄 Filing: 10-Q from 2025-07-21
+     Accession: 0001035443-25-000179
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.80/10
+     Sentiment: 0.00 (neutral/technical)
+
+[47/169] Processing AMZN (AMAZON COM INC)...
+  Market Cap: $2308B
+  📄 Filing: 8-K from 2025-07-31
+     Accession: 0001018724-25-000084
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[48/169] Processing APH (AMPHENOL CORP /DE/)...
+  Market Cap: $149B
+  📄 Filing: 8-K from 2025-08-04
+     Accession: 0001104659-25-073344
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[49/169] Processing WTRG (Essential Utilities, Inc.)...
+  Market Cap: $11B
+  📄 Filing: 8-K from 2025-08-07
+     Accession: 0001552781-25-000248
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 5.50/10
+     Sentiment: 0.00 (neutral)
+
+[50/169] Processing AXP (AMERICAN EXPRESS CO)...
+  Market Cap: $220B
+  📄 Filing: 8-K from 2025-09-15
+     Accession: 0000004962-25-000172
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 11/34
+────────────────────────────────────────────────────────────────────────────────
+
+[51/169] Processing CCL (CARNIVAL CORP)...
+  Market Cap: $36B
+  📄 Filing: 8-K from 2025-09-30
+     Accession: 0000950142-25-002569
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[52/169] Processing AAPL (Apple Inc.)...
+  Market Cap: $3640B
+  📄 Filing: 8-K from 2025-07-25
+     Accession: 0001140361-25-027340
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[53/169] Processing WDC (WESTERN DIGITAL CORP)...
+  Market Cap: $40B
+  📄 Filing: 8-K from 2025-07-30
+     Accession: 0000106040-25-000030
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[54/169] Processing COF (CAPITAL ONE FINANCIAL CORP)...
+  Market Cap: $129B
+  📄 Filing: 8-K from 2025-09-15
+     Accession: 0000927628-25-000258
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[55/169] Processing BKNG (Booking Holdings Inc.)...
+  Market Cap: $167B
+  📄 Filing: 8-K from 2025-07-29
+     Accession: 0001075531-25-000035
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 12/34
+────────────────────────────────────────────────────────────────────────────────
+
+[56/169] Processing BLDR (Builders FirstSource, Inc.)...
+  Market Cap: $14B
+  📄 Filing: 8-K from 2025-07-31
+     Accession: 0000950170-25-100548
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[57/169] Processing BLK (BlackRock, Inc.)...
+  Market Cap: $175B
+  📄 Filing: 8-K from 2025-07-15
+     Accession: 0000950170-25-095711
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[58/169] Processing BMY (BRISTOL MYERS SQUIBB CO)...
+  Market Cap: $89B
+  📄 Filing: 8-K from 2025-07-31
+     Accession: 0000014272-25-000129
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[59/169] Processing EA (ELECTRONIC ARTS INC.)...
+  Market Cap: $50B
+  📄 Filing: 8-K from 2025-08-15
+     Accession: 0000712515-25-000034
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 5.50/10
+     Sentiment: 0.00 (neutral)
+
+[60/169] Processing BRO (BROWN & BROWN, INC.)...
+  Market Cap: $32B
+  📄 Filing: 8-K from 2025-08-15
+     Accession: 0000950170-25-109448
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.50/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 13/34
+────────────────────────────────────────────────────────────────────────────────
+
+[61/169] Processing C (CITIGROUP INC)...
+  Market Cap: $173B
+  📄 Filing: 8-K from 2025-09-11
+     Accession: 0001193125-25-201328
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[62/169] Processing CARR (CARRIER GLOBAL Corp)...
+  Market Cap: $48B
+  📄 Filing: 8-K from 2025-07-29
+     Accession: 0001783180-25-000058
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral/technical)
+
+[63/169] Processing CB (Chubb Ltd)...
+  Market Cap: $113B
+  📄 Filing: 8-K from 2025-08-06
+     Accession: 0001104659-25-074535
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 4.50/10
+     Sentiment: 0.00 (neutral)
+
+[64/169] Processing CDNS (CADENCE DESIGN SYSTEMS INC)...
+  Market Cap: $89B
+  📄 Filing: 10-Q from 2025-07-30
+     Accession: 0000813672-25-000113
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.00 (neutral/technical)
+
+[65/169] Processing ACN (Accenture plc)...
+  Market Cap: $149B
+  📄 Filing: 8-K from 2025-09-25
+     Accession: 0001467373-25-000213
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 14/34
+────────────────────────────────────────────────────────────────────────────────
+
+[66/169] Processing AEE (AMEREN CORP)...
+  Market Cap: $28B
+  📄 Filing: 8-K from 2025-09-26
+     Accession: 0001104659-25-093779
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 4.50/10
+     Sentiment: 0.00 (neutral)
+
+[67/169] Processing GL (GLOBE LIFE INC.)...
+  Market Cap: $11B
+  📄 Filing: 8-K from 2025-07-29
+     Accession: 0000320335-25-000042
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.50/10
+     Sentiment: 0.00 (neutral)
+
+[68/169] Processing CEG (Constellation Energy Corp)...
+  Market Cap: $115B
+  📄 Filing: 8-K from 2025-09-29
+     Accession: 0001868275-25-000078
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[69/169] Processing CI (Cigna Group)...
+  Market Cap: $80B
+  📄 Filing: 8-K from 2025-09-02
+     Accession: 0001140361-25-033536
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 4.00/10
+     Sentiment: 0.00 (neutral)
+
+[70/169] Processing COP (CONOCOPHILLIPS)...
+  Market Cap: $109B
+  📄 Filing: 10-Q from 2025-08-07
+     Accession: 0001163165-25-000042
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 4.50/10
+     Sentiment: -0.15 (cautious and defensive)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 15/34
+────────────────────────────────────────────────────────────────────────────────
+
+[71/169] Processing COST (COSTCO WHOLESALE CORP /NEW)...
+  Market Cap: $412B
+  📄 Filing: 8-K from 2025-08-07
+     Accession: 0000909832-25-000064
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 5.50/10
+     Sentiment: 0.00 (neutral)
+
+[72/169] Processing CPRT (COPART INC)...
+  Market Cap: $42B
+  📄 Filing: 8-K from 2025-09-04
+     Accession: 0000900075-25-000017
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[73/169] Processing CRM (Salesforce, Inc.)...
+  Market Cap: $230B
+  📄 Filing: 8-K from 2025-09-03
+     Accession: 0001108524-25-000083
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.00/10
+     Sentiment: 0.00 (neutral)
+
+[74/169] Processing CSCO (CISCO SYSTEMS, INC.)...
+  Market Cap: $269B
+  📄 Filing: 8-K from 2025-08-25
+     Accession: 0000858877-25-000103
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[75/169] Processing CTAS (CINTAS CORP)...
+  Market Cap: $76B
+  📄 Filing: 8-K from 2025-09-24
+     Accession: 0000723254-25-000029
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 16/34
+────────────────────────────────────────────────────────────────────────────────
+
+[76/169] Processing CTRA (Coterra Energy Inc.)...
+  Market Cap: $17B
+  📄 Filing: 10-Q from 2025-08-05
+     Accession: 0000858470-25-000165
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.15 (neutral to factual)
+
+[77/169] Processing MU (MICRON TECHNOLOGY INC)...
+  Market Cap: $204B
+  📄 Filing: 8-K from 2025-09-23
+     Accession: 0000723125-25-000024
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.00/10
+     Sentiment: 0.00 (neutral)
+
+[78/169] Processing CVS (CVS HEALTH Corp)...
+  Market Cap: $99B
+  📄 Filing: 8-K from 2025-08-15
+     Accession: 0001193125-25-181862
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[79/169] Processing MMC (MARSH & MCLENNAN COMPANIES, INC.)...
+  Market Cap: $102B
+  📄 Filing: 8-K from 2025-07-17
+     Accession: 0000062709-25-000067
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[80/169] Processing RCL (ROYAL CARIBBEAN CRUISES LTD)...
+  Market Cap: $83B
+  📄 Filing: 8-K from 2025-09-23
+     Accession: 0001104659-25-092590
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 5.50/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 17/34
+────────────────────────────────────────────────────────────────────────────────
+
+[81/169] Processing DE (DEERE & CO)...
+  Market Cap: $121B
+  📄 Filing: 8-K from 2025-10-09
+     Accession: 0001104659-25-098401
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.15 (neutral-formal)
+
+[82/169] Processing DHR (DANAHER CORP /DE/)...
+  Market Cap: $145B
+  📄 Filing: 8-K from 2025-07-31
+     Accession: 0000313616-25-000172
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[83/169] Processing DUK (Duke Energy CORP)...
+  Market Cap: $99B
+  📄 Filing: 8-K from 2025-09-12
+     Accession: 0001410578-25-002261
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[84/169] Processing ECL (ECOLAB INC.)...
+  Market Cap: $77B
+  📄 Filing: 8-K from 2025-08-27
+     Accession: 0001104659-25-084059
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 5.50/10
+     Sentiment: 0.00 (neutral)
+
+[85/169] Processing ELV (Elevance Health, Inc.)...
+  Market Cap: $80B
+  📄 Filing: 8-K from 2025-09-15
+     Accession: 0001193125-25-203542
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 5.50/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 18/34
+────────────────────────────────────────────────────────────────────────────────
+
+[86/169] Processing EQIX (EQUINIX INC)...
+  Market Cap: $78B
+  📄 Filing: 8-K from 2025-07-30
+     Accession: 0001101239-25-000028
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[87/169] Processing ESS (ESSEX PROPERTY TRUST, INC.)...
+  Market Cap: $18B
+  📄 Filing: 8-K from 2025-07-29
+     Accession: 0001140361-25-027843
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[88/169] Processing ETN (Eaton Corp plc)...
+  Market Cap: $144B
+  📄 Filing: 10-Q from 2025-08-05
+     Accession: 0001551182-25-000028
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.80/10
+     Sentiment: 0.00 (neutral/technical)
+
+[89/169] Processing EXPE (Expedia Group, Inc.)...
+  Market Cap: $26B
+  📄 Filing: 8-K from 2025-08-07
+     Accession: 0001324424-25-000039
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[90/169] Processing FICO (FAIR ISAAC CORP)...
+  Market Cap: $40B
+  📄 Filing: 10-Q from 2025-07-30
+     Accession: 0000814547-25-000022
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.80/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 19/34
+────────────────────────────────────────────────────────────────────────────────
+
+[91/169] Processing GD (GENERAL DYNAMICS CORP)...
+  Market Cap: $90B
+  📄 Filing: 10-Q from 2025-07-23
+     Accession: 0000040533-25-000035
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ❌ Error: 
+Invalid `prisma.filing.update()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/analyze-midcap-additions.ts:110:29
+
+  107 const sentimentScore = analysis.sentiment?.sentimentScore ?? 0.0;
+  108 
+  109 // Update filing
+→ 110 await prisma.filing.update(
+Timed out fetching a new connection from the connection pool. More info: http://pris.ly/d/connection-pool (Current connection pool timeout: 10, connection limit: 17)
+
+[92/169] Processing GILD (GILEAD SCIENCES, INC.)...
+  Market Cap: $145B
+  📄 Filing: 8-K from 2025-08-14
+     Accession: 0000882095-25-000035
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[93/169] Processing GOOGL (Alphabet Inc.)...
+  Market Cap: $2866B
+  📄 Filing: 8-K from 2025-09-03
+     Accession: 0001652044-25-000067
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 9.50/10
+     Sentiment: 0.00 (neutral)
+
+[94/169] Processing GPC (GENUINE PARTS CO)...
+  Market Cap: $18B
+  📄 Filing: 8-K from 2025-08-12
+     Accession: 0000040987-25-000149
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[95/169] Processing GS (GOLDMAN SACHS GROUP INC)...
+  Market Cap: $231B
+  📄 Filing: 8-K from 2025-07-16
+     Accession: 0001193125-25-159560
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 20/34
+────────────────────────────────────────────────────────────────────────────────
+
+[96/169] Processing GWW (W.W. GRAINGER, INC.)...
+  Market Cap: $45B
+  📄 Filing: 8-K from 2025-08-01
+     Accession: 0000277135-25-000126
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[97/169] Processing HCA (HCA Healthcare, Inc.)...
+  Market Cap: $97B
+  📄 Filing: 10-Q from 2025-08-04
+     Accession: 0000950170-25-102056
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 4.50/10
+     Sentiment: 0.55 (neutral to positive)
+
+[98/169] Processing HON (HONEYWELL INTERNATIONAL INC)...
+  Market Cap: $128B
+  📄 Filing: 8-K from 2025-10-01
+     Accession: 0000773840-25-000090
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.00 (neutral)
+
+[99/169] Processing HPE (Hewlett Packard Enterprise Co)...
+  Market Cap: $32B
+  📄 Filing: 8-K from 2025-09-15
+     Accession: 0001140361-25-035006
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[100/169] Processing HWM (Howmet Aerospace Inc.)...
+  Market Cap: $74B
+  📄 Filing: 8-K from 2025-08-20
+     Accession: 0001104659-25-080959
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 21/34
+────────────────────────────────────────────────────────────────────────────────
+
+[101/169] Processing ICE (Intercontinental Exchange, Inc.)...
+  Market Cap: $90B
+  📄 Filing: 8-K from 2025-10-07
+     Accession: 0000947871-25-000890
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[102/169] Processing IFF (INTERNATIONAL FLAVORS & FRAGRANCES INC)...
+  Market Cap: $15B
+  📄 Filing: 8-K from 2025-08-05
+     Accession: 0000051253-25-000040
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.50/10
+     Sentiment: 0.00 (neutral)
+
+[103/169] Processing INTU (INTUIT INC.)...
+  Market Cap: $179B
+  📄 Filing: 8-K from 2025-08-21
+     Accession: 0000896878-25-000031
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[104/169] Processing IR (Ingersoll Rand Inc.)...
+  Market Cap: $30B
+  📄 Filing: 8-K from 2025-07-31
+     Accession: 0001628280-25-037035
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[105/169] Processing ISRG (INTUITIVE SURGICAL INC)...
+  Market Cap: $154B
+  📄 Filing: 8-K from 2025-07-22
+     Accession: 0001035267-25-000183
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 22/34
+────────────────────────────────────────────────────────────────────────────────
+
+[106/169] Processing JNJ (JOHNSON & JOHNSON)...
+  Market Cap: $459B
+  📄 Filing: 10-Q from 2025-07-24
+     Accession: 0000200406-25-000178
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.80/10
+     Sentiment: 0.00 (neutral-technical)
+
+[107/169] Processing JPM (JPMORGAN CHASE & CO)...
+  Market Cap: $827B
+  📄 Filing: 10-Q from 2025-08-05
+     Accession: 0000019617-25-000615
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral/technical)
+
+[108/169] Processing KEYS (Keysight Technologies, Inc.)...
+  Market Cap: $27B
+  📄 Filing: 8-K from 2025-08-19
+     Accession: 0001601046-25-000088
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[109/169] Processing KLAC (KLA CORP)...
+  Market Cap: $129B
+  📄 Filing: 10-K from 2025-08-08
+     Accession: 0000319201-25-000024
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.80/10
+     Sentiment: 0.00 (indeterminate)
+
+[110/169] Processing KO (COCA COLA CO)...
+  Market Cap: $289B
+  📄 Filing: 8-K from 2025-07-22
+     Accession: 0000021344-25-000054
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 23/34
+────────────────────────────────────────────────────────────────────────────────
+
+[111/169] Processing LOW (LOWES COMPANIES INC)...
+  Market Cap: $130B
+  📄 Filing: 8-K from 2025-10-09
+     Accession: 0000060667-25-000199
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.00 (neutral)
+
+[112/169] Processing LRCX (LAM RESEARCH CORP)...
+  Market Cap: $166B
+  📄 Filing: 10-K from 2025-08-11
+     Accession: 0000707549-25-000075
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 5.00/10
+     Sentiment: 0.15 (cautious and hedged)
+
+[113/169] Processing LYB (LyondellBasell Industries N.V.)...
+  Market Cap: $14B
+  📄 Filing: 10-Q from 2025-08-01
+     Accession: 0001489393-25-000041
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.00 (neutral-technical)
+
+[114/169] Processing MAA (MID AMERICA APARTMENT COMMUNITIES INC.)...
+  Market Cap: $16B
+  📄 Filing: 10-Q from 2025-07-31
+     Accession: 0000950170-25-100919
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.50/10
+     Sentiment: 0.00 (neutral administrative)
+
+[115/169] Processing MCD (MCDONALDS CORP)...
+  Market Cap: $212B
+  📄 Filing: 10-Q from 2025-08-06
+     Accession: 0000063908-25-000039
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.50/10
+     Sentiment: 0.45 (neutral to moderately positive)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 24/34
+────────────────────────────────────────────────────────────────────────────────
+
+[116/169] Processing MDLZ (Mondelez International, Inc.)...
+  Market Cap: $80B
+  📄 Filing: 8-K from 2025-07-29
+     Accession: 0001103982-25-000187
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[117/169] Processing META (Meta Platforms, Inc.)...
+  Market Cap: $1772B
+  📄 Filing: 8-K from 2025-07-30
+     Accession: 0001628280-25-036719
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[118/169] Processing MMM (3M CO)...
+  Market Cap: $79B
+  📄 Filing: 8-K from 2025-08-15
+     Accession: 0000066740-25-000068
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[119/169] Processing MRK (Merck & Co., Inc.)...
+  Market Cap: $215B
+  📄 Filing: 10-Q from 2025-08-05
+     Accession: 0000310158-25-000014
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.00/10
+     Sentiment: -0.35 (neutral to negative)
+
+[120/169] Processing MS (MORGAN STANLEY)...
+  Market Cap: $242B
+  📄 Filing: 8-K from 2025-09-23
+     Accession: 0000950103-25-012045
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 25/34
+────────────────────────────────────────────────────────────────────────────────
+
+[121/169] Processing MSFT (MICROSOFT CORP)...
+  Market Cap: $3798B
+  📄 Filing: 8-K from 2025-07-30
+     Accession: 0000950170-25-100226
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[122/169] Processing MSI (Motorola Solutions, Inc.)...
+  Market Cap: $76B
+  📄 Filing: 8-K from 2025-08-07
+     Accession: 0000068505-25-000038
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[123/169] Processing NEE (NEXTERA ENERGY INC)...
+  Market Cap: $172B
+  📄 Filing: 8-K from 2025-08-01
+     Accession: 0000753308-25-000043
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.50/10
+     Sentiment: 0.00 (neutral)
+
+[124/169] Processing NKE (NIKE, Inc.)...
+  Market Cap: $96B
+  📄 Filing: 8-K from 2025-09-30
+     Accession: 0000320187-25-000091
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[125/169] Processing NOC (NORTHROP GRUMMAN CORP /DE/)...
+  Market Cap: $89B
+  📄 Filing: 10-Q from 2025-07-22
+     Accession: 0001133421-25-000049
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 8.50/10
+     Sentiment: 0.00 (indeterminate)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 26/34
+────────────────────────────────────────────────────────────────────────────────
+
+[126/169] Processing NRG (NRG ENERGY, INC.)...
+  Market Cap: $31B
+  📄 Filing: 8-K from 2025-10-01
+     Accession: 0001104659-25-095650
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[127/169] Processing NVDA (NVIDIA CORP)...
+  Market Cap: $4457B
+  📄 Filing: 8-K from 2025-08-27
+     Accession: 0001045810-25-000207
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[128/169] Processing OKE (ONEOK INC /NEW/)...
+  Market Cap: $44B
+  📄 Filing: 8-K from 2025-08-08
+     Accession: 0001193125-25-175816
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[129/169] Processing ORLY (O REILLY AUTOMOTIVE INC)...
+  Market Cap: $87B
+  📄 Filing: 10-Q from 2025-08-08
+     Accession: 0000898173-25-000049
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.50/10
+     Sentiment: 0.00 (neutral)
+
+[130/169] Processing OXY (OCCIDENTAL PETROLEUM CORP /DE/)...
+  Market Cap: $41B
+  📄 Filing: 8-K from 2025-10-03
+     Accession: 0001140361-25-037234
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 0.00/10
+     Sentiment: -0.45 (highly cautious and defensive)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 27/34
+────────────────────────────────────────────────────────────────────────────────
+
+[131/169] Processing PEP (PEPSICO INC)...
+  Market Cap: $205B
+  📄 Filing: 10-Q from 2025-10-09
+     Accession: 0000077476-25-000053
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.80/10
+     Sentiment: 0.00 (neutral/technical)
+
+[132/169] Processing PFE (PFIZER INC)...
+  Market Cap: $141B
+  📄 Filing: 8-K from 2025-08-05
+     Accession: 0000078003-25-000136
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[133/169] Processing PG (PROCTER & GAMBLE Co)...
+  Market Cap: $350B
+  📄 Filing: 10-K from 2025-08-04
+     Accession: 0000080424-25-000076
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.80/10
+     Sentiment: 0.72 (confident and strategic)
+
+[134/169] Processing PGR (PROGRESSIVE CORP/OH/)...
+  Market Cap: $141B
+  📄 Filing: 8-K from 2025-08-20
+     Accession: 0000080661-25-000056
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[135/169] Processing PKG (PACKAGING CORP OF AMERICA)...
+  Market Cap: $19B
+  📄 Filing: 8-K from 2025-08-15
+     Accession: 0001193125-25-181330
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 28/34
+────────────────────────────────────────────────────────────────────────────────
+
+[136/169] Processing PLD (Prologis, Inc.)...
+  Market Cap: $103B
+  📄 Filing: 8-K from 2025-09-22
+     Accession: 0001104659-25-091816
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 5.50/10
+     Sentiment: 0.00 (neutral)
+
+[137/169] Processing PM (Philip Morris International Inc.)...
+  Market Cap: $250B
+  📄 Filing: 8-K from 2025-09-02
+     Accession: 0001413329-25-000154
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[138/169] Processing PRU (PRUDENTIAL FINANCIAL INC)...
+  Market Cap: $35B
+  📄 Filing: 10-Q from 2025-07-31
+     Accession: 0001137774-25-000108
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.00 (neutral administrative)
+
+[139/169] Processing REG (REGENCY CENTERS CORP)...
+  Market Cap: $13B
+  📄 Filing: 8-K from 2025-08-06
+     Accession: 0000950170-25-103559
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[140/169] Processing RNR (RENAISSANCERE HOLDINGS LTD)...
+  Market Cap: $12B
+  📄 Filing: 8-K from 2025-07-23
+     Accession: 0000913144-25-000079
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 29/34
+────────────────────────────────────────────────────────────────────────────────
+
+[141/169] Processing RTX (RTX Corp)...
+  Market Cap: $211B
+  📄 Filing: 8-K from 2025-07-22
+     Accession: 0000101829-25-000030
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+[142/169] Processing SBUX (STARBUCKS CORP)...
+  Market Cap: $89B
+  📄 Filing: 8-K from 2025-09-25
+     Accession: 0000829224-25-000067
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 8.50/10
+     Sentiment: 0.00 (neutral)
+
+[143/169] Processing SCHW (SCHWAB CHARLES CORP)...
+  Market Cap: $167B
+  📄 Filing: 8-K from 2025-07-18
+     Accession: 0000316709-25-000033
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[144/169] Processing SF (STIFEL FINANCIAL CORP)...
+  Market Cap: $11B
+  📄 Filing: 8-K from 2025-08-28
+     Accession: 0001193125-25-191243
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[145/169] Processing SHW (SHERWIN WILLIAMS CO)...
+  Market Cap: $83B
+  📄 Filing: 8-K from 2025-10-01
+     Accession: 0000089800-25-000120
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 30/34
+────────────────────────────────────────────────────────────────────────────────
+
+[146/169] Processing SJM (J M SMUCKER Co)...
+  Market Cap: $11B
+  📄 Filing: 10-Q from 2025-08-27
+     Accession: 0000091419-25-000071
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 8.50/10
+     Sentiment: 0.00 (neutral-administrative)
+
+[147/169] Processing SLB (SCHLUMBERGER LIMITED/NV)...
+  Market Cap: $47B
+  📄 Filing: 8-K from 2025-10-07
+     Accession: 0001193125-25-233662
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.50/10
+     Sentiment: 0.00 (neutral)
+
+[148/169] Processing SNA (Snap-on Inc)...
+  Market Cap: $17B
+  📄 Filing: 8-K from 2025-07-17
+     Accession: 0000091440-25-000061
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[149/169] Processing SNPS (SYNOPSYS INC)...
+  Market Cap: $82B
+  📄 Filing: 8-K from 2025-09-09
+     Accession: 0001193125-25-199178
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[150/169] Processing SYF (Synchrony Financial)...
+  Market Cap: $25B
+  📄 Filing: 8-K from 2025-09-10
+     Accession: 0001601712-25-000251
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.00/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 31/34
+────────────────────────────────────────────────────────────────────────────────
+
+[151/169] Processing SYK (STRYKER CORP)...
+  Market Cap: $139B
+  📄 Filing: 8-K from 2025-07-31
+     Accession: 0000310764-25-000103
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[152/169] Processing T (AT&T INC.)...
+  Market Cap: $185B
+  📄 Filing: 8-K from 2025-09-16
+     Accession: 0001193125-25-205072
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[153/169] Processing TDY (TELEDYNE TECHNOLOGIES INC)...
+  Market Cap: $27B
+  📄 Filing: 8-K from 2025-07-23
+     Accession: 0001094285-25-000120
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.00/10
+     Sentiment: 0.00 (neutral)
+
+[154/169] Processing TRGP (Targa Resources Corp.)...
+  Market Cap: $33B
+  📄 Filing: 8-K from 2025-08-07
+     Accession: 0001193125-25-174913
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.00/10
+     Sentiment: 0.00 (neutral)
+
+[155/169] Processing TSLA (Tesla, Inc.)...
+  Market Cap: $1375B
+  📄 Filing: 8-K from 2025-08-04
+     Accession: 0001104659-25-073263
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.00/10
+     Sentiment: -0.15 (neutral-defensive)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 32/34
+────────────────────────────────────────────────────────────────────────────────
+
+[156/169] Processing TT (Trane Technologies plc)...
+  Market Cap: $92B
+  📄 Filing: 8-K from 2025-07-30
+     Accession: 0001466258-25-000149
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[157/169] Processing TXN (TEXAS INSTRUMENTS INC)...
+  Market Cap: $156B
+  📄 Filing: 10-Q from 2025-07-29
+     Accession: 0000097476-25-000036
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 5.00/10
+     Sentiment: 0.00 (neutral-technical)
+
+[158/169] Processing ULTA (Ulta Beauty, Inc.)...
+  Market Cap: $25B
+  📄 Filing: 8-K from 2025-08-28
+     Accession: 0001558370-25-011803
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[159/169] Processing UNH (UNITEDHEALTH GROUP INC)...
+  Market Cap: $321B
+  📄 Filing: 8-K from 2025-08-20
+     Accession: 0000731766-25-000239
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.00 (neutral)
+
+[160/169] Processing UNP (UNION PACIFIC CORP)...
+  Market Cap: $134B
+  📄 Filing: 8-K from 2025-07-29
+     Accession: 0001193125-25-168150
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 8.50/10
+     Sentiment: -0.45 (highly cautious and defensive)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 33/34
+────────────────────────────────────────────────────────────────────────────────
+
+[161/169] Processing VRTX (VERTEX PHARMACEUTICALS INC / MA)...
+  Market Cap: $105B
+  📄 Filing: 10-Q from 2025-08-05
+     Accession: 0000875320-25-000216
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.45 (neutral to moderately positive)
+
+[162/169] Processing VZ (VERIZON COMMUNICATIONS INC)...
+  Market Cap: $168B
+  📄 Filing: 8-K from 2025-08-25
+     Accession: 0001193125-25-187702
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[163/169] Processing WAT (WATERS CORP /DE/)...
+  Market Cap: $20B
+  📄 Filing: 10-Q from 2025-08-04
+     Accession: 0001193125-25-172087
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 3.50/10
+     Sentiment: 0.00 (neutral)
+
+[164/169] Processing WFC (WELLS FARGO & COMPANY/MN)...
+  Market Cap: $249B
+  📄 Filing: 8-K from 2025-08-28
+     Accession: 0001193125-25-191344
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[165/169] Processing WM (WASTE MANAGEMENT INC)...
+  Market Cap: $88B
+  📄 Filing: 8-K from 2025-08-27
+     Accession: 0001104659-25-084026
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 5.50/10
+     Sentiment: 0.00 (neutral)
+
+⏳ Waiting 10 seconds before next batch...
+
+📦 Processing batch 34/34
+────────────────────────────────────────────────────────────────────────────────
+
+[166/169] Processing WMB (WILLIAMS COMPANIES, INC.)...
+  Market Cap: $76B
+  📄 Filing: 10-Q from 2025-08-04
+     Accession: 0000107263-25-000123
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 7.50/10
+     Sentiment: 0.00 (neutral/indeterminate)
+
+[167/169] Processing WRB (BERKLEY W R CORP)...
+  Market Cap: $29B
+  📄 Filing: 8-K from 2025-07-21
+     Accession: 0000011544-25-000021
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 2.00/10
+     Sentiment: 0.00 (neutral)
+
+[168/169] Processing MCO (MOODYS CORP /DE/)...
+  Market Cap: $87B
+  📄 Filing: 8-K from 2025-08-21
+     Accession: 0001193125-25-185346
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 6.50/10
+     Sentiment: 0.00 (neutral)
+
+[169/169] Processing TJX (TJX COMPANIES INC /DE/)...
+  Market Cap: $156B
+  📄 Filing: 8-K from 2025-08-20
+     Accession: 0000109198-25-000051
+  🌐 Fetching filing content from SEC...
+  🤖 Running Claude AI analysis...
+  ✅ Analysis complete!
+     Risk Score: 1.00/10
+     Sentiment: 0.00 (neutral)
+
+════════════════════════════════════════════════════════════════════════════════
+📊 ANALYSIS SUMMARY
+════════════════════════════════════════════════════════════════════════════════
+✅ Newly Analyzed:      168
+❌ Failed:              1
+
+📈 Total analyzed filings in database: 360
+
+✅ Next step: Run stock price backfill
+   npx tsx scripts/backfill-stock-prices.ts
+

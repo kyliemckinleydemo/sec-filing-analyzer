@@ -1,0 +1,117 @@
+🚀 EXPORTING ML DATASET WITH CONCERN LEVEL
+
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Found 352 filings with returns, AI analysis, AND concern level
+
+✅ Processed 352 complete samples with concernLevel
+
+📈 Dataset Breakdown:
+   Filing types: 78 10-K, 274 10-Q
+   Market caps: 97 mega, 130 large, 91 mid, 34 small
+
+⚠️  Concern Level Distribution:
+   Average: 5.35/10
+   Range: 1.0 - 10.0
+   LOW (0-3): 19 samples (5.4%)
+   MODERATE (3-5): 41 samples (11.6%)
+   ELEVATED (5-7): 242 samples (68.8%)
+   HIGH (7-9): 37 samples (10.5%)
+   CRITICAL (9-10): 13 samples (3.7%)
+
+📊 Feature Completeness:
+   Technical indicators: 131/352 (37.2%)
+   Macro indicators: 146/352 (41.5%)
+   PE ratio: 350/352 (99.4%)
+   Analyst consensus: 352/352 (100.0%)
+   Analyst activity: 352/352 (100.0%)
+   Analyst target: 0/352 (0.0%)
+
+✅ Exported to data/ml_dataset_with_concern.csv
+✅ Exported metadata to data/ml_dataset_with_concern_metadata.json
+
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+═
+
+📋 NEXT STEPS:
+   1. Train new champion model: python3 scripts/train_champion_model.py
+   2. Run champion-challenger test: npx tsx scripts/champion-challenger-final.ts
+

@@ -1,0 +1,1756 @@
+🚀 Backfilling Mega-Cap Earnings Reports
+
+════════════════════════════════════════════════════════════════════════════════
+
+Target companies: 50 mega-caps
+Timeframe: 2 years (back to 2023-10-16)
+Filing types: 10-K, 10-Q only
+
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Found 43/50 companies in database
+
+⚠️  Missing companies (need to add): GOOG, INTC, CMCSA, TSM, ASML, SAP, NVO
+
+
+[1/43] ORACLE CORP (ORCL)
+────────────────────────────────────────────────────────────────────────────────
+  Fetching filings for ORCL (CIK: 0001341439)...
+    ✅ Found 8 earnings reports
+  📋 Need to analyze 8 new filings
+
+    Analyzing 10-Q from 2025-09-10...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp26i005xl58kpi7vczay",
+          filingType: "10-Q",
+          filingDate: new Date("2025-09-10T00:00:00.000Z"),
+          accessionNumber: "000119312525200095",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001341439&accession_number=0001193125-25-200095",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2025-06-18...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp26i005xl58kpi7vczay",
+          filingType: "10-K",
+          filingDate: new Date("2025-06-18T00:00:00.000Z"),
+          accessionNumber: "000095017025087926",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001341439&accession_number=0000950170-25-087926",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2025-03-11...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp26i005xl58kpi7vczay",
+          filingType: "10-Q",
+          filingDate: new Date("2025-03-11T00:00:00.000Z"),
+          accessionNumber: "000095017025037143",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001341439&accession_number=0000950170-25-037143",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-12-10...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp26i005xl58kpi7vczay",
+          filingType: "10-Q",
+          filingDate: new Date("2024-12-10T00:00:00.000Z"),
+          accessionNumber: "000095017024134973",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001341439&accession_number=0000950170-24-134973",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-09-10...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp26i005xl58kpi7vczay",
+          filingType: "10-Q",
+          filingDate: new Date("2024-09-10T00:00:00.000Z"),
+          accessionNumber: "000095017024104905",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001341439&accession_number=0000950170-24-104905",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2024-06-20...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp26i005xl58kpi7vczay",
+          filingType: "10-K",
+          filingDate: new Date("2024-06-20T00:00:00.000Z"),
+          accessionNumber: "000095017024075605",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001341439&accession_number=0000950170-24-075605",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-03-12...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp26i005xl58kpi7vczay",
+          filingType: "10-Q",
+          filingDate: new Date("2024-03-12T00:00:00.000Z"),
+          accessionNumber: "000095017024029904",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001341439&accession_number=0000950170-24-029904",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2023-12-12...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp26i005xl58kpi7vczay",
+          filingType: "10-Q",
+          filingDate: new Date("2023-12-12T00:00:00.000Z"),
+          accessionNumber: "000095017023069682",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001341439&accession_number=0000950170-23-069682",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+[2/43] THERMO FISHER SCIENTIFIC INC. (TMO)
+────────────────────────────────────────────────────────────────────────────────
+  Fetching filings for TMO (CIK: 0000097745)...
+    ✅ Found 8 earnings reports
+  📋 Need to analyze 8 new filings
+
+    Analyzing 10-Q from 2025-08-01...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp2hs006ml58kgjaqusf5",
+          filingType: "10-Q",
+          filingDate: new Date("2025-08-01T00:00:00.000Z"),
+          accessionNumber: "000009774525000101",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000097745&accession_number=0000097745-25-000101",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2025-05-02...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp2hs006ml58kgjaqusf5",
+          filingType: "10-Q",
+          filingDate: new Date("2025-05-02T00:00:00.000Z"),
+          accessionNumber: "000009774525000041",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000097745&accession_number=0000097745-25-000041",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2025-02-20...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp2hs006ml58kgjaqusf5",
+          filingType: "10-K",
+          filingDate: new Date("2025-02-20T00:00:00.000Z"),
+          accessionNumber: "000009774525000010",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000097745&accession_number=0000097745-25-000010",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-11-01...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp2hs006ml58kgjaqusf5",
+          filingType: "10-Q",
+          filingDate: new Date("2024-11-01T00:00:00.000Z"),
+          accessionNumber: "000009774524000046",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000097745&accession_number=0000097745-24-000046",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-08-02...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp2hs006ml58kgjaqusf5",
+          filingType: "10-Q",
+          filingDate: new Date("2024-08-02T00:00:00.000Z"),
+          accessionNumber: "000009774524000040",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000097745&accession_number=0000097745-24-000040",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-05-03...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp2hs006ml58kgjaqusf5",
+          filingType: "10-Q",
+          filingDate: new Date("2024-05-03T00:00:00.000Z"),
+          accessionNumber: "000009774524000023",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000097745&accession_number=0000097745-24-000023",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2024-02-22...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp2hs006ml58kgjaqusf5",
+          filingType: "10-K",
+          filingDate: new Date("2024-02-22T00:00:00.000Z"),
+          accessionNumber: "000009774524000007",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000097745&accession_number=0000097745-24-000007",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2023-11-03...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp2hs006ml58kgjaqusf5",
+          filingType: "10-Q",
+          filingDate: new Date("2023-11-03T00:00:00.000Z"),
+          accessionNumber: "000009774523000069",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000097745&accession_number=0000097745-23-000069",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+[3/43] AbbVie Inc. (ABBV)
+────────────────────────────────────────────────────────────────────────────────
+  Fetching filings for ABBV (CIK: 0001551152)...
+    ✅ Found 8 earnings reports
+  📋 Need to analyze 8 new filings
+
+    Analyzing 10-Q from 2025-08-04...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp1o30058l58kjz7yta0g",
+          filingType: "10-Q",
+          filingDate: new Date("2025-08-04T00:00:00.000Z"),
+          accessionNumber: "000155115225000040",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001551152&accession_number=0001551152-25-000040",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2025-05-09...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp1o30058l58kjz7yta0g",
+          filingType: "10-Q",
+          filingDate: new Date("2025-05-09T00:00:00.000Z"),
+          accessionNumber: "000155115225000029",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001551152&accession_number=0001551152-25-000029",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2025-02-14...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp1o30058l58kjz7yta0g",
+          filingType: "10-K",
+          filingDate: new Date("2025-02-14T00:00:00.000Z"),
+          accessionNumber: "000155115225000020",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001551152&accession_number=0001551152-25-000020",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-11-04...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp1o30058l58kjz7yta0g",
+          filingType: "10-Q",
+          filingDate: new Date("2024-11-04T00:00:00.000Z"),
+          accessionNumber: "000155115224000040",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001551152&accession_number=0001551152-24-000040",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-08-07...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp1o30058l58kjz7yta0g",
+          filingType: "10-Q",
+          filingDate: new Date("2024-08-07T00:00:00.000Z"),
+          accessionNumber: "000155115224000031",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001551152&accession_number=0001551152-24-000031",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-05-03...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp1o30058l58kjz7yta0g",
+          filingType: "10-Q",
+          filingDate: new Date("2024-05-03T00:00:00.000Z"),
+          accessionNumber: "000155115224000020",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001551152&accession_number=0001551152-24-000020",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2024-02-20...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp1o30058l58kjz7yta0g",
+          filingType: "10-K",
+          filingDate: new Date("2024-02-20T00:00:00.000Z"),
+          accessionNumber: "000155115224000011",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001551152&accession_number=0001551152-24-000011",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2023-11-06...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp1o30058l58kjz7yta0g",
+          filingType: "10-Q",
+          filingDate: new Date("2023-11-06T00:00:00.000Z"),
+          accessionNumber: "000155115223000045",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001551152&accession_number=0001551152-23-000045",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+[4/43] ABBOTT LABORATORIES (ABT)
+────────────────────────────────────────────────────────────────────────────────
+  Fetching filings for ABT (CIK: 0000001800)...
+    ✅ Found 8 earnings reports
+  📋 Need to analyze 8 new filings
+
+    Analyzing 10-Q from 2025-07-30...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp35c007jl58khj5iavpa",
+          filingType: "10-Q",
+          filingDate: new Date("2025-07-30T00:00:00.000Z"),
+          accessionNumber: "000162828025036720",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000001800&accession_number=0001628280-25-036720",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2025-04-30...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp35c007jl58khj5iavpa",
+          filingType: "10-Q",
+          filingDate: new Date("2025-04-30T00:00:00.000Z"),
+          accessionNumber: "000162828025021090",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000001800&accession_number=0001628280-25-021090",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2025-02-21...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp35c007jl58khj5iavpa",
+          filingType: "10-K",
+          filingDate: new Date("2025-02-21T00:00:00.000Z"),
+          accessionNumber: "000162828025007110",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000001800&accession_number=0001628280-25-007110",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-10-31...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp35c007jl58khj5iavpa",
+          filingType: "10-Q",
+          filingDate: new Date("2024-10-31T00:00:00.000Z"),
+          accessionNumber: "000162828024044602",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000001800&accession_number=0001628280-24-044602",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-07-31...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp35c007jl58khj5iavpa",
+          filingType: "10-Q",
+          filingDate: new Date("2024-07-31T00:00:00.000Z"),
+          accessionNumber: "000162828024033740",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000001800&accession_number=0001628280-24-033740",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-05-02...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp35c007jl58khj5iavpa",
+          filingType: "10-Q",
+          filingDate: new Date("2024-05-02T00:00:00.000Z"),
+          accessionNumber: "000162828024020011",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000001800&accession_number=0001628280-24-020011",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2024-02-16...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp35c007jl58khj5iavpa",
+          filingType: "10-K",
+          filingDate: new Date("2024-02-16T00:00:00.000Z"),
+          accessionNumber: "000162828024005348",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000001800&accession_number=0001628280-24-005348",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2023-11-01...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp35c007jl58khj5iavpa",
+          filingType: "10-Q",
+          filingDate: new Date("2023-11-01T00:00:00.000Z"),
+          accessionNumber: "000162828023035957",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000001800&accession_number=0001628280-23-035957",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+[5/43] Broadcom Inc. (AVGO)
+────────────────────────────────────────────────────────────────────────────────
+  Fetching filings for AVGO (CIK: 0001730168)...
+    ✅ Found 8 earnings reports
+  📋 Need to analyze 8 new filings
+
+    Analyzing 10-Q from 2025-09-10...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiohnam001hme8lanxck65j",
+          filingType: "10-Q",
+          filingDate: new Date("2025-09-10T00:00:00.000Z"),
+          accessionNumber: "000173016825000098",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001730168&accession_number=0001730168-25-000098",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2025-06-11...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiohnam001hme8lanxck65j",
+          filingType: "10-Q",
+          filingDate: new Date("2025-06-11T00:00:00.000Z"),
+          accessionNumber: "000173016825000064",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001730168&accession_number=0001730168-25-000064",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2025-03-12...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiohnam001hme8lanxck65j",
+          filingType: "10-Q",
+          filingDate: new Date("2025-03-12T00:00:00.000Z"),
+          accessionNumber: "000173016825000021",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001730168&accession_number=0001730168-25-000021",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2024-12-20...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiohnam001hme8lanxck65j",
+          filingType: "10-K",
+          filingDate: new Date("2024-12-20T00:00:00.000Z"),
+          accessionNumber: "000173016824000139",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001730168&accession_number=0001730168-24-000139",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-09-11...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiohnam001hme8lanxck65j",
+          filingType: "10-Q",
+          filingDate: new Date("2024-09-11T00:00:00.000Z"),
+          accessionNumber: "000173016824000099",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001730168&accession_number=0001730168-24-000099",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-06-13...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiohnam001hme8lanxck65j",
+          filingType: "10-Q",
+          filingDate: new Date("2024-06-13T00:00:00.000Z"),
+          accessionNumber: "000173016824000080",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001730168&accession_number=0001730168-24-000080",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-03-14...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiohnam001hme8lanxck65j",
+          filingType: "10-Q",
+          filingDate: new Date("2024-03-14T00:00:00.000Z"),
+          accessionNumber: "000173016824000023",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001730168&accession_number=0001730168-24-000023",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2023-12-14...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiohnam001hme8lanxck65j",
+          filingType: "10-K",
+          filingDate: new Date("2023-12-14T00:00:00.000Z"),
+          accessionNumber: "000173016823000096",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001730168&accession_number=0001730168-23-000096",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+[6/43] CHEVRON CORP (CVX)
+────────────────────────────────────────────────────────────────────────────────
+  Fetching filings for CVX (CIK: 0000093410)...
+    ✅ Found 8 earnings reports
+  📋 Need to analyze 8 new filings
+
+    Analyzing 10-Q from 2025-08-07...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp11p004hl58kndiws3gp",
+          filingType: "10-Q",
+          filingDate: new Date("2025-08-07T00:00:00.000Z"),
+          accessionNumber: "000009341025000062",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000093410&accession_number=0000093410-25-000062",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2025-05-08...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp11p004hl58kndiws3gp",
+          filingType: "10-Q",
+          filingDate: new Date("2025-05-08T00:00:00.000Z"),
+          accessionNumber: "000009341025000019",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000093410&accession_number=0000093410-25-000019",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2025-02-21...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp11p004hl58kndiws3gp",
+          filingType: "10-K",
+          filingDate: new Date("2025-02-21T00:00:00.000Z"),
+          accessionNumber: "000009341025000009",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000093410&accession_number=0000093410-25-000009",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-11-07...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp11p004hl58kndiws3gp",
+          filingType: "10-Q",
+          filingDate: new Date("2024-11-07T00:00:00.000Z"),
+          accessionNumber: "000009341024000059",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000093410&accession_number=0000093410-24-000059",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-08-07...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp11p004hl58kndiws3gp",
+          filingType: "10-Q",
+          filingDate: new Date("2024-08-07T00:00:00.000Z"),
+          accessionNumber: "000009341024000040",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000093410&accession_number=0000093410-24-000040",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-05-02...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp11p004hl58kndiws3gp",
+          filingType: "10-Q",
+          filingDate: new Date("2024-05-02T00:00:00.000Z"),
+          accessionNumber: "000009341024000021",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000093410&accession_number=0000093410-24-000021",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2024-02-26...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp11p004hl58kndiws3gp",
+          filingType: "10-K",
+          filingDate: new Date("2024-02-26T00:00:00.000Z"),
+          accessionNumber: "000009341024000013",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000093410&accession_number=0000093410-24-000013",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2023-11-02...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp11p004hl58kndiws3gp",
+          filingType: "10-Q",
+          filingDate: new Date("2023-11-02T00:00:00.000Z"),
+          accessionNumber: "000009341023000088",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000093410&accession_number=0000093410-23-000088",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+[7/43] Mastercard Inc (MA)
+────────────────────────────────────────────────────────────────────────────────
+  Fetching filings for MA (CIK: 0001141391)...
+    ✅ Found 8 earnings reports
+  📋 Need to analyze 8 new filings
+
+    Analyzing 10-Q from 2025-07-31...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp09k003al58ktq47lff5",
+          filingType: "10-Q",
+          filingDate: new Date("2025-07-31T00:00:00.000Z"),
+          accessionNumber: "000114139125000172",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001141391&accession_number=0001141391-25-000172",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2025-05-01...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp09k003al58ktq47lff5",
+          filingType: "10-Q",
+          filingDate: new Date("2025-05-01T00:00:00.000Z"),
+          accessionNumber: "000114139125000090",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001141391&accession_number=0001141391-25-000090",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2025-02-12...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp09k003al58ktq47lff5",
+          filingType: "10-K",
+          filingDate: new Date("2025-02-12T00:00:00.000Z"),
+          accessionNumber: "000114139125000011",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001141391&accession_number=0001141391-25-000011",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-10-31...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp09k003al58ktq47lff5",
+          filingType: "10-Q",
+          filingDate: new Date("2024-10-31T00:00:00.000Z"),
+          accessionNumber: "000114139124000202",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001141391&accession_number=0001141391-24-000202",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-07-31...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp09k003al58ktq47lff5",
+          filingType: "10-Q",
+          filingDate: new Date("2024-07-31T00:00:00.000Z"),
+          accessionNumber: "000114139124000161",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001141391&accession_number=0001141391-24-000161",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-05-01...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp09k003al58ktq47lff5",
+          filingType: "10-Q",
+          filingDate: new Date("2024-05-01T00:00:00.000Z"),
+          accessionNumber: "000114139124000087",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001141391&accession_number=0001141391-24-000087",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2024-02-13...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp09k003al58ktq47lff5",
+          filingType: "10-K",
+          filingDate: new Date("2024-02-13T00:00:00.000Z"),
+          accessionNumber: "000114139124000022",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001141391&accession_number=0001141391-24-000022",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2023-10-26...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp09k003al58ktq47lff5",
+          filingType: "10-Q",
+          filingDate: new Date("2023-10-26T00:00:00.000Z"),
+          accessionNumber: "000114139123000157",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001141391&accession_number=0001141391-23-000157",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+[8/43] NETFLIX INC (NFLX)
+────────────────────────────────────────────────────────────────────────────────
+  Fetching filings for NFLX (CIK: 0001065280)...
+    ✅ Found 8 earnings reports
+  📋 Need to analyze 8 new filings
+
+    Analyzing 10-Q from 2025-07-18...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp4920098l58k18xd2i44",
+          filingType: "10-Q",
+          filingDate: new Date("2025-07-18T00:00:00.000Z"),
+          accessionNumber: "000106528025000323",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001065280&accession_number=0001065280-25-000323",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2025-04-18...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp4920098l58k18xd2i44",
+          filingType: "10-Q",
+          filingDate: new Date("2025-04-18T00:00:00.000Z"),
+          accessionNumber: "000106528025000176",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001065280&accession_number=0001065280-25-000176",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2025-01-27...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp4920098l58k18xd2i44",
+          filingType: "10-K",
+          filingDate: new Date("2025-01-27T00:00:00.000Z"),
+          accessionNumber: "000106528025000044",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001065280&accession_number=0001065280-25-000044",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-10-18...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp4920098l58k18xd2i44",
+          filingType: "10-Q",
+          filingDate: new Date("2024-10-18T00:00:00.000Z"),
+          accessionNumber: "000106528024000287",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001065280&accession_number=0001065280-24-000287",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-07-19...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp4920098l58k18xd2i44",
+          filingType: "10-Q",
+          filingDate: new Date("2024-07-19T00:00:00.000Z"),
+          accessionNumber: "000106528024000200",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001065280&accession_number=0001065280-24-000200",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-04-22...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp4920098l58k18xd2i44",
+          filingType: "10-Q",
+          filingDate: new Date("2024-04-22T00:00:00.000Z"),
+          accessionNumber: "000106528024000128",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001065280&accession_number=0001065280-24-000128",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2024-01-26...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp4920098l58k18xd2i44",
+          filingType: "10-K",
+          filingDate: new Date("2024-01-26T00:00:00.000Z"),
+          accessionNumber: "000106528024000030",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001065280&accession_number=0001065280-24-000030",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2023-10-20...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp4920098l58k18xd2i44",
+          filingType: "10-Q",
+          filingDate: new Date("2023-10-20T00:00:00.000Z"),
+          accessionNumber: "000106528023000273",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001065280&accession_number=0001065280-23-000273",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+[9/43] QUALCOMM INC/DE (QCOM)
+────────────────────────────────────────────────────────────────────────────────
+  Fetching filings for QCOM (CIK: 0000804328)...
+    ✅ Found 8 earnings reports
+  📋 Need to analyze 8 new filings
+
+    Analyzing 10-Q from 2025-07-30...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp55500abl58kuc2xbhaw",
+          filingType: "10-Q",
+          filingDate: new Date("2025-07-30T00:00:00.000Z"),
+          accessionNumber: "000080432825000045",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000804328&accession_number=0000804328-25-000045",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2025-04-30...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp55500abl58kuc2xbhaw",
+          filingType: "10-Q",
+          filingDate: new Date("2025-04-30T00:00:00.000Z"),
+          accessionNumber: "000080432825000031",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000804328&accession_number=0000804328-25-000031",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2025-02-05...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp55500abl58kuc2xbhaw",
+          filingType: "10-Q",
+          filingDate: new Date("2025-02-05T00:00:00.000Z"),
+          accessionNumber: "000080432825000011",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000804328&accession_number=0000804328-25-000011",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2024-11-06...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp55500abl58kuc2xbhaw",
+          filingType: "10-K",
+          filingDate: new Date("2024-11-06T00:00:00.000Z"),
+          accessionNumber: "000080432824000075",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000804328&accession_number=0000804328-24-000075",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-07-31...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp55500abl58kuc2xbhaw",
+          filingType: "10-Q",
+          filingDate: new Date("2024-07-31T00:00:00.000Z"),
+          accessionNumber: "000080432824000056",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000804328&accession_number=0000804328-24-000056",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-05-01...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp55500abl58kuc2xbhaw",
+          filingType: "10-Q",
+          filingDate: new Date("2024-05-01T00:00:00.000Z"),
+          accessionNumber: "000080432824000039",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000804328&accession_number=0000804328-24-000039",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-01-31...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp55500abl58kuc2xbhaw",
+          filingType: "10-Q",
+          filingDate: new Date("2024-01-31T00:00:00.000Z"),
+          accessionNumber: "000080432824000017",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000804328&accession_number=0000804328-24-000017",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2023-11-01...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqp55500abl58kuc2xbhaw",
+          filingType: "10-K",
+          filingDate: new Date("2023-11-01T00:00:00.000Z"),
+          accessionNumber: "000080432823000055",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0000804328&accession_number=0000804328-23-000055",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+[10/43] BERKSHIRE HATHAWAY INC (BRK.B)
+────────────────────────────────────────────────────────────────────────────────
+  Fetching filings for BRK.B (CIK: 0001067983)...
+    ✅ Found 8 earnings reports
+  📋 Need to analyze 8 new filings
+
+    Analyzing 10-Q from 2025-08-04...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqoyka001hl58kmi8p8rrx",
+          filingType: "10-Q",
+          filingDate: new Date("2025-08-04T00:00:00.000Z"),
+          accessionNumber: "000095017025101578",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001067983&accession_number=0000950170-25-101578",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2025-05-05...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqoyka001hl58kmi8p8rrx",
+          filingType: "10-Q",
+          filingDate: new Date("2025-05-05T00:00:00.000Z"),
+          accessionNumber: "000095017025063112",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001067983&accession_number=0000950170-25-063112",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2025-02-24...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqoyka001hl58kmi8p8rrx",
+          filingType: "10-K",
+          filingDate: new Date("2025-02-24T00:00:00.000Z"),
+          accessionNumber: "000095017025025210",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001067983&accession_number=0000950170-25-025210",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-11-04...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqoyka001hl58kmi8p8rrx",
+          filingType: "10-Q",
+          filingDate: new Date("2024-11-04T00:00:00.000Z"),
+          accessionNumber: "000095017024120241",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001067983&accession_number=0000950170-24-120241",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-08-05...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqoyka001hl58kmi8p8rrx",
+          filingType: "10-Q",
+          filingDate: new Date("2024-08-05T00:00:00.000Z"),
+          accessionNumber: "000095017024090305",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001067983&accession_number=0000950170-24-090305",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2024-05-06...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqoyka001hl58kmi8p8rrx",
+          filingType: "10-Q",
+          filingDate: new Date("2024-05-06T00:00:00.000Z"),
+          accessionNumber: "000095017024053185",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001067983&accession_number=0000950170-24-053185",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-K from 2024-02-26...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqoyka001hl58kmi8p8rrx",
+          filingType: "10-K",
+          filingDate: new Date("2024-02-26T00:00:00.000Z"),
+          accessionNumber: "000095017024019719",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001067983&accession_number=0000950170-24-019719",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+    Analyzing 10-Q from 2023-11-06...
+    ❌ Error creating filing: 
+Invalid `prisma.filing.create()` invocation in
+/Users/johnmckinley/sec-filing-analyzer/scripts/backfill-megacap-earnings.ts:194:50
+
+  191 console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
+  192 
+  193 // Create filing record
+→ 194 const filingRecord = await prisma.filing.create({
+        data: {
+          companyId: "cmgiqoyka001hl58kmi8p8rrx",
+          filingType: "10-Q",
+          filingDate: new Date("2023-11-06T00:00:00.000Z"),
+          accessionNumber: "000095017023058993",
+          url: "https://www.sec.gov/cgi-bin/viewer?action=view&cik=0001067983&accession_number=0000950170-23-058993",
+      +   cik: String
+        }
+      })
+
+Argument `cik` is missing.
+
+⏳ Pausing 30 seconds between batches...

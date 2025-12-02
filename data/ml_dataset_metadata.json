@@ -1,0 +1,26 @@
+{
+  "exportDate": "2025-10-17T00:56:03.996Z",
+  "totalSamples": 424,
+  "dateRange": {
+    "earliest": "2023-10-18T00:00:00.000Z",
+    "latest": "2025-10-10T00:00:00.000Z"
+  },
+  "breakdown": {
+    "filingTypes": {
+      "10-K": 95,
+      "10-Q": 329
+    },
+    "marketCaps": {
+      "mega": 126,
+      "large": 165,
+      "mid": 99,
+      "small": 34
+    }
+  },
+  "featureCompleteness": {
+    "technical": 139,
+    "macro": 163,
+    "peRatio": 422,
+    "analystTarget": 0
+  }
+}

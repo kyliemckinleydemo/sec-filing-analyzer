@@ -44,6 +44,13 @@ export interface PredictionFeatures {
   dollar30dChange?: number; // % change (negative = weakening)
   gdpProxyTrend?: 'weak' | 'neutral' | 'strong'; // GDP sentiment
   equityFlowBias?: 'bullish' | 'neutral' | 'bearish'; // Overall macro bias
+
+  // Analyst Activity (NEW - sentiment and momentum from coverage)
+  analystNetUpgrades?: number; // upgrades - downgrades in 30d before filing
+  analystMajorUpgrades?: number; // Major firm upgrades
+  analystMajorDowngrades?: number; // Major firm downgrades
+  analystConsensus?: number; // 0-100 scale (100 = Strong Buy consensus)
+  analystUpsidePotential?: number; // % upside to target price
 }
 
 export interface Prediction {
@@ -389,7 +396,75 @@ class PredictionEngine {
     }
     prediction += macroImpact;
 
-    // Factor 11: Company-Specific Historical Patterns
+    // Factor 11: Analyst Activity & Sentiment (NEW)
+    // Research: Analyst upgrades/downgrades predict short-term momentum
+    // - Upgrades in 30d before filing → positive momentum (+0.5% to +1.5%)
+    // - Downgrades → negative momentum (-0.5% to -1.5%)
+    // - Major firm activity carries 2x weight
+    // - Consensus (Strong Buy) → bullish sentiment
+    // - High upside potential → market undervalued
+    let analystImpact = 0;
+
+    // Net upgrades/downgrades impact
+    if (features.analystNetUpgrades !== undefined && features.analystNetUpgrades !== 0) {
+      // Base impact: 0.3% per net upgrade/downgrade
+      let upgradeImpact = features.analystNetUpgrades * 0.3;
+
+      // Major firm activity carries more weight
+      if (features.analystMajorUpgrades && features.analystMajorUpgrades > 0) {
+        upgradeImpact += features.analystMajorUpgrades * 0.5; // +0.5% per major upgrade
+        reasoningParts.push(`${features.analystMajorUpgrades} major firm upgrade${features.analystMajorUpgrades > 1 ? 's' : ''} (+${(features.analystMajorUpgrades * 0.5).toFixed(1)}%)`);
+      }
+
+      if (features.analystMajorDowngrades && features.analystMajorDowngrades > 0) {
+        upgradeImpact -= features.analystMajorDowngrades * 0.5; // -0.5% per major downgrade
+        reasoningParts.push(`${features.analystMajorDowngrades} major firm downgrade${features.analystMajorDowngrades > 1 ? 's' : ''} (${(features.analystMajorDowngrades * -0.5).toFixed(1)}%)`);
+      }
+
+      // Cap analyst activity impact at ±2%
+      upgradeImpact = Math.max(-2.0, Math.min(2.0, upgradeImpact));
+      analystImpact += upgradeImpact;
+
+      if (features.analystNetUpgrades > 0) {
+        reasoningParts.push(`Analyst momentum: +${features.analystNetUpgrades} net upgrades (${upgradeImpact > 0 ? '+' : ''}${upgradeImpact.toFixed(2)}%)`);
+      } else if (features.analystNetUpgrades < 0) {
+        reasoningParts.push(`Analyst momentum: ${features.analystNetUpgrades} net downgrades (${upgradeImpact.toFixed(2)}%)`);
+      }
+    }
+
+    // Analyst consensus impact (Strong Buy consensus is bullish)
+    if (features.analystConsensus !== undefined) {
+      // Scale: 0-100, where 100 = unanimous Strong Buy
+      // Impact: 0.5% to 1.0% for very strong consensus (>80)
+      if (features.analystConsensus > 80) {
+        const consensusImpact = 0.8;
+        analystImpact += consensusImpact;
+        reasoningParts.push(`Strong analyst consensus (${features.analystConsensus}/100) (+${consensusImpact.toFixed(1)}%)`);
+      } else if (features.analystConsensus < 40) {
+        // Weak consensus (more sells) is bearish
+        const consensusImpact = -0.5;
+        analystImpact += consensusImpact;
+        reasoningParts.push(`Weak analyst consensus (${features.analystConsensus}/100) (${consensusImpact.toFixed(1)}%)`);
+      }
+    }
+
+    // Upside potential impact (market undervaluation)
+    if (features.analystUpsidePotential !== undefined && Math.abs(features.analystUpsidePotential) > 10) {
+      // Large upside (>10%) suggests market undervaluation → bullish
+      // Large downside (<-10%) suggests overvaluation → bearish
+      const upsideImpact = features.analystUpsidePotential > 0
+        ? Math.min(1.0, features.analystUpsidePotential * 0.05) // Cap at +1%
+        : Math.max(-1.0, features.analystUpsidePotential * 0.05); // Cap at -1%
+
+      analystImpact += upsideImpact;
+      reasoningParts.push(`Analyst target: ${features.analystUpsidePotential.toFixed(1)}% upside (${upsideImpact > 0 ? '+' : ''}${upsideImpact.toFixed(2)}%)`);
+    }
+
+    if (analystImpact !== 0) {
+      prediction += analystImpact;
+    }
+
+    // Factor 12: Company-Specific Historical Patterns
     // Weight ticker-specific patterns more than generic ones
     const historical = features.avgHistoricalReturn || 0;
     if (historical !== 0) {
@@ -409,6 +484,7 @@ class PredictionEngine {
     if (features.riskScoreDelta !== undefined) confidence += 0.10;
     if (features.sentimentScore !== undefined) confidence += 0.10;
     if (features.ticker && features.avgHistoricalReturn !== undefined) confidence += 0.15; // Company-specific
+    if (features.analystNetUpgrades !== undefined || features.analystConsensus !== undefined) confidence += 0.10; // Analyst coverage
 
     confidence = Math.min(confidence, 0.95); // Cap at 95%
 

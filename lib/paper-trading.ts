@@ -166,11 +166,38 @@ export class PaperTradingEngine {
         }
       }
 
+      // If we can't get a price (market closed), create a PENDING trade
       if (!entryPrice) {
+        console.log(`[Paper Trading] Market closed - creating PENDING trade for ${signal.ticker}`);
+
+        const pendingTrade = await prisma.paperTrade.create({
+          data: {
+            portfolioId: this.portfolioId,
+            ticker: signal.ticker,
+            filingId: signal.filingId,
+            direction: signal.direction,
+            predictedReturn: signal.predictedReturn,
+            confidence: signal.confidence,
+            status: 'PENDING',
+            // Entry fields will be filled when trade is executed at market open
+            entryDate: null,
+            entryPrice: null,
+            shares: null,
+            entryValue: null,
+            notes: 'Queued for execution at next market open'
+          }
+        });
+
         return {
-          success: false,
-          reason: 'Could not fetch entry price - market may be closed or ticker invalid',
-          details: { ticker: signal.ticker, attemptedDate: nextTradingDay.toDateString() }
+          success: true,
+          tradeId: pendingTrade.id,
+          reason: 'Trade queued - will execute at next market open',
+          details: {
+            ticker: signal.ticker,
+            status: 'PENDING',
+            predictedReturn: signal.predictedReturn,
+            confidence: signal.confidence
+          }
         };
       }
 
@@ -253,6 +280,11 @@ export class PaperTradingEngine {
 
       if (!trade || trade.status !== 'OPEN') {
         return { success: false, reason: 'Trade not found or already closed' };
+      }
+
+      // Ensure trade has been executed (not pending)
+      if (!trade.entryPrice || !trade.shares || !trade.entryValue) {
+        return { success: false, reason: 'Cannot close pending trade - not yet executed' };
       }
 
       // Get current price
@@ -370,6 +402,135 @@ export class PaperTradingEngine {
   }
 
   /**
+   * Execute all PENDING trades at market open
+   * Should be called during morning cron job (after market opens at 9:30am ET)
+   */
+  async executePendingTrades(): Promise<number> {
+    const pendingTrades = await prisma.paperTrade.findMany({
+      where: {
+        portfolioId: this.portfolioId,
+        status: 'PENDING'
+      }
+    });
+
+    if (pendingTrades.length === 0) {
+      console.log(`[Paper Trading] No pending trades to execute`);
+      return 0;
+    }
+
+    console.log(`[Paper Trading] Found ${pendingTrades.length} pending trades to execute at market open`);
+
+    const portfolio = await prisma.paperPortfolio.findUnique({
+      where: { id: this.portfolioId }
+    });
+
+    if (!portfolio) {
+      console.error(`[Paper Trading] Portfolio not found`);
+      return 0;
+    }
+
+    let executed = 0;
+    for (const trade of pendingTrades) {
+      try {
+        // Get current opening price
+        let entryPrice: number | null = null;
+
+        try {
+          // Try to get the opening price from today
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const endOfDay = new Date(today);
+          endOfDay.setHours(23, 59, 59, 999);
+
+          const quote = await yahooFinance.quote(trade.ticker);
+          entryPrice = quote.regularMarketPrice || quote.regularMarketOpen || null;
+
+          if (!entryPrice) {
+            // Fallback: try chart data for today
+            const chartData = await yahooFinance.chart(trade.ticker, {
+              period1: today,
+              period2: endOfDay,
+              interval: '1d'
+            });
+
+            if (chartData.quotes && chartData.quotes.length > 0) {
+              entryPrice = chartData.quotes[0].open || chartData.quotes[0].close || null;
+            }
+          }
+        } catch (error) {
+          console.error(`[Paper Trading] Error fetching opening price for ${trade.ticker}:`, error);
+        }
+
+        // If we still can't get a price, skip this trade (market might not be open yet)
+        if (!entryPrice) {
+          console.log(`[Paper Trading] Skipping ${trade.ticker} - no price available yet (market may not be open)`);
+          continue;
+        }
+
+        // Calculate position size using the same logic as executeTrade
+        const kellySize = (trade.confidence * Math.abs(trade.predictedReturn)) / 100;
+        const positionSize = Math.min(kellySize, portfolio.maxPositionSize);
+        const positionValue = portfolio.totalValue * positionSize;
+
+        // Check if we have enough cash
+        if (positionValue > portfolio.currentCash) {
+          console.log(`[Paper Trading] Insufficient cash for ${trade.ticker} - cancelling trade`);
+          await prisma.paperTrade.update({
+            where: { id: trade.id },
+            data: {
+              status: 'CANCELLED',
+              notes: `Cancelled - insufficient cash (needed $${positionValue.toFixed(2)}, had $${portfolio.currentCash.toFixed(2)})`
+            }
+          });
+          continue;
+        }
+
+        // Calculate shares
+        const shares = Math.floor(positionValue / entryPrice);
+        const actualPositionValue = shares * entryPrice;
+        const commission = 1.00;
+
+        // Update the pending trade to OPEN
+        await prisma.paperTrade.update({
+          where: { id: trade.id },
+          data: {
+            status: 'OPEN',
+            entryDate: new Date(),
+            entryPrice: entryPrice,
+            shares: shares,
+            entryValue: actualPositionValue,
+            entryCommission: commission,
+            notes: `Executed at market open: ${shares} shares @ $${entryPrice.toFixed(2)} (was PENDING, now OPEN)`
+          }
+        });
+
+        // Update portfolio cash
+        await prisma.paperPortfolio.update({
+          where: { id: this.portfolioId },
+          data: {
+            currentCash: portfolio.currentCash - actualPositionValue - commission,
+            totalTrades: portfolio.totalTrades + 1
+          }
+        });
+
+        // Update our local portfolio reference
+        portfolio.currentCash -= actualPositionValue + commission;
+        portfolio.totalTrades += 1;
+
+        console.log(`[Paper Trading] ✅ Executed PENDING trade: ${shares} shares of ${trade.ticker} @ $${entryPrice.toFixed(2)} (${trade.direction})`);
+        executed++;
+
+      } catch (error: any) {
+        console.error(`[Paper Trading] Error executing pending trade for ${trade.ticker}:`, error);
+        // Don't cancel the trade on error - leave it PENDING for next attempt
+      }
+    }
+
+    console.log(`[Paper Trading] Executed ${executed}/${pendingTrades.length} pending trades`);
+    return executed;
+  }
+
+  /**
    * Update portfolio metrics
    */
   async updatePortfolioMetrics(): Promise<void> {
@@ -387,6 +548,11 @@ export class PaperTradingEngine {
     // Calculate current value of open positions
     let openPositionsValue = 0;
     for (const trade of portfolio.trades) {
+      // Skip pending trades that haven't been executed yet
+      if (!trade.shares || !trade.entryValue) {
+        continue;
+      }
+
       try {
         const quote = await yahooFinance.quote(trade.ticker);
         const currentPrice = quote.regularMarketPrice;
@@ -466,6 +632,18 @@ export class PaperTradingEngine {
     // Get open positions with current prices
     const openPositions = await Promise.all(
       portfolio.trades.map(async (trade) => {
+        // Skip if trade hasn't been executed yet (shouldn't happen for OPEN status, but be safe)
+        if (!trade.entryPrice || !trade.shares || !trade.entryValue || !trade.entryDate) {
+          return {
+            ...trade,
+            currentPrice: null,
+            currentValue: null,
+            unrealizedPnL: null,
+            unrealizedPnLPct: null,
+            daysHeld: 0
+          };
+        }
+
         try {
           const quote = await yahooFinance.quote(trade.ticker);
           const currentPrice = quote.regularMarketPrice || trade.entryPrice;

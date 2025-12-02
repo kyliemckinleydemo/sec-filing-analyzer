@@ -1,0 +1,55 @@
+================================================================================
+   ML ANALYSIS: 7-DAY VS 30-DAY RETURNS
+================================================================================
+📊 Loading data...
+   Loaded 424 samples
+
+================================================================================
+   COMPARING PREDICTION TARGETS
+================================================================================
+
+📊 7-Day Absolute Return:
+   Samples: 424
+   Features: 12
+   Mean target: 0.55%, Std: 6.39%
+   ✅ ElasticNet: 49.4% (±10.1), MAE=4.665
+
+📊 30-Day Absolute Return:
+   Samples: 412
+   Features: 12
+   Mean target: 2.53%, Std: 9.09%
+   ✅ ElasticNet: 58.2% (±6.6), MAE=6.697
+
+📊 7-Day Alpha (vs SPX):
+   Samples: 424
+   Features: 12
+   Mean target: -0.18%, Std: 6.19%
+   ✅ ElasticNet: 55.1% (±6.6), MAE=4.554
+
+📊 30-Day Alpha (vs SPX):
+   Samples: 412
+   Features: 12
+   Mean target: -0.08%, Std: 8.79%
+   ✅ ElasticNet: 52.1% (±7.2), MAE=6.521
+
+================================================================================
+   SUMMARY: WHICH TARGET PERFORMS BEST?
+================================================================================
+
+Target                         Samples    Direction %     MAE       
+--------------------------------------------------------------------------------
+30-Day Absolute Return         412          58.2% ±6.6     6.697
+7-Day Alpha (vs SPX)           424          55.1% ±6.6     4.554
+30-Day Alpha (vs SPX)          412          52.1% ±7.2     6.521
+7-Day Absolute Return          424          49.4% ±10.1     4.665
+
+🏆 BEST TARGET: 30-Day Absolute Return
+   Direction Accuracy: 58.2% (±6.6%)
+   MAE: 6.697
+   Samples: 412
+
+   📈 Improvement vs 7-day baseline: -5.6 percentage points
+
+   📋 Need 6.8 more points to reach 65%
+
+================================================================================

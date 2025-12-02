@@ -1,0 +1,56 @@
+🚀 Backfilling Macro Indicators
+
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Found 66 unique filing dates
+
+════════════════════════════════════════════════════════════════════════════════
+
+✅ Already have: 0 dates
+📅 Need to fetch: 66 dates
+
+════════════════════════════════════════════════════════════════════════════════
+
+📈 Fetching S&P 500 (^GSPC) from 2025-04-01 to 2025-10-10
+
+[Deprecated] historical() relies on an API that Yahoo have removed.  We'll map this request to chart() for convenience, but, please consider using chart() directly instead; for more info see https://github.com/gadicc/node-yahoo-finance2/issues/795.  This will only be shown once, but you can suppress this message in future with `yahooFinance.suppressNotices(['ripHistorical'])`.
+✅ Fetched 133 S&P 500 data points
+
+📈 Fetching VIX (^VIX)...
+
+✅ Fetched 133 VIX data points
+
+⏳ Processed 50 dates...
+
+════════════════════════════════════════════════════════════════════════════════
+📊 SUMMARY
+════════════════════════════════════════════════════════════════════════════════
+✅ Dates processed:       65
+❌ Errors:                0
+
+📊 Sample Macro Indicators:
+
+  2025-10-09:
+    SPX Close: 6735.11
+    SPX 7d Return: 0.70%
+    SPX 30d Return: 3.91%
+    VIX Close: 16.43
+    VIX MA30: 15.90
+
+  2025-10-08:
+    SPX Close: 6753.72
+    SPX 7d Return: 1.39%
+    SPX 30d Return: 4.45%
+    VIX Close: 16.30
+    VIX MA30: 15.85
+
+  2025-10-07:
+    SPX Close: 6714.59
+    SPX 7d Return: 1.07%
+    SPX 30d Return: 4.27%
+    VIX Close: 17.24
+    VIX MA30: 15.79
+
+✅ Next: Run mega-cap optimization
+   npx tsx scripts/mega-cap-optimization.ts
+

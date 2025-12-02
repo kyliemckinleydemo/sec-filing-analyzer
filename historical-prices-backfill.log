@@ -1,0 +1,2251 @@
+🚀 Backfilling Historical Stock Prices
+
+════════════════════════════════════════════════════════════════════════════════
+
+📊 Found 360 filings to backfill historical prices
+
+════════════════════════════════════════════════════════════════════════════════
+
+[1/360] ABT - Filing 2025-05-01
+  📅 Fetching prices: 2025-01-31 to 2025-05-01
+  📊 Already have 0 prices in this range
+[Deprecated] historical() relies on an API that Yahoo have removed.  We'll map this request to chart() for convenience, but, please consider using chart() directly instead; for more info see https://github.com/gadicc/node-yahoo-finance2/issues/795.  This will only be shown once, but you can suppress this message in future with `yahooFinance.suppressNotices(['ripHistorical'])`.
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[2/360] SPGI - Filing 2025-05-12
+  📅 Fetching prices: 2025-02-11 to 2025-05-12
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[3/360] ADBE - Filing 2025-06-12
+  📅 Fetching prices: 2025-03-14 to 2025-06-12
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[4/360] ADBE - Filing 2025-06-25
+  📅 Fetching prices: 2025-03-27 to 2025-06-25
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[5/360] A - Filing 2025-07-15
+  📅 Fetching prices: 2025-04-16 to 2025-07-15
+  📊 Already have 0 prices in this range
+  📈 Fetched 60 historical prices from Yahoo
+  ✅ Added/updated 60 prices
+
+[6/360] BLK - Filing 2025-07-15
+  📅 Fetching prices: 2025-04-16 to 2025-07-15
+  📊 Already have 0 prices in this range
+  📈 Fetched 60 historical prices from Yahoo
+  ✅ Added/updated 60 prices
+
+[7/360] GS - Filing 2025-07-16
+  📅 Fetching prices: 2025-04-17 to 2025-07-16
+  📊 Already have 0 prices in this range
+  📈 Fetched 60 historical prices from Yahoo
+  ✅ Added/updated 60 prices
+
+[8/360] SNA - Filing 2025-07-17
+  📅 Fetching prices: 2025-04-18 to 2025-07-17
+  📊 Already have 0 prices in this range
+  📈 Fetched 60 historical prices from Yahoo
+  ✅ Added/updated 60 prices
+
+[9/360] ABT - Filing 2025-07-17
+  📅 Fetching prices: 2025-04-18 to 2025-07-17
+  📊 Already have 18 prices in this range
+  📈 Fetched 60 historical prices from Yahoo
+  ✅ Added/updated 60 prices
+
+[10/360] SNA - Filing 2025-07-17
+  📅 Fetching prices: 2025-04-18 to 2025-07-17
+  📊 Already have 60 prices in this range
+  📈 Fetched 60 historical prices from Yahoo
+  ✅ Added/updated 60 prices
+
+⏳ Processed 10 filings, pausing 5 seconds...
+
+[11/360] MMC - Filing 2025-07-17
+  📅 Fetching prices: 2025-04-18 to 2025-07-17
+  📊 Already have 0 prices in this range
+  📈 Fetched 60 historical prices from Yahoo
+  ✅ Added/updated 60 prices
+
+[12/360] SCHW - Filing 2025-07-18
+  📅 Fetching prices: 2025-04-19 to 2025-07-18
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[13/360] NFLX - Filing 2025-07-18
+  📅 Fetching prices: 2025-04-19 to 2025-07-18
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[14/360] ARE - Filing 2025-07-21
+  📅 Fetching prices: 2025-04-22 to 2025-07-21
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[15/360] ARE - Filing 2025-07-21
+  📅 Fetching prices: 2025-04-22 to 2025-07-21
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[16/360] WRB - Filing 2025-07-21
+  📅 Fetching prices: 2025-04-22 to 2025-07-21
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[17/360] KO - Filing 2025-07-22
+  📅 Fetching prices: 2025-04-23 to 2025-07-22
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[18/360] RTX - Filing 2025-07-22
+  📅 Fetching prices: 2025-04-23 to 2025-07-22
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[19/360] ISRG - Filing 2025-07-22
+  📅 Fetching prices: 2025-04-23 to 2025-07-22
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[20/360] EFX - Filing 2025-07-22
+  📅 Fetching prices: 2025-04-23 to 2025-07-22
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 20 filings, pausing 5 seconds...
+
+[21/360] EFX - Filing 2025-07-22
+  📅 Fetching prices: 2025-04-23 to 2025-07-22
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[22/360] NOC - Filing 2025-07-22
+  📅 Fetching prices: 2025-04-23 to 2025-07-22
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[23/360] BSX - Filing 2025-07-23
+  📅 Fetching prices: 2025-04-24 to 2025-07-23
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[24/360] RNR - Filing 2025-07-23
+  📅 Fetching prices: 2025-04-24 to 2025-07-23
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[25/360] GD - Filing 2025-07-23
+  📅 Fetching prices: 2025-04-24 to 2025-07-23
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[26/360] TDY - Filing 2025-07-23
+  📅 Fetching prices: 2025-04-24 to 2025-07-23
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[27/360] NOW - Filing 2025-07-23
+  📅 Fetching prices: 2025-04-24 to 2025-07-23
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[28/360] IBM - Filing 2025-07-23
+  📅 Fetching prices: 2025-04-24 to 2025-07-23
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[29/360] ISRG - Filing 2025-07-23
+  📅 Fetching prices: 2025-04-24 to 2025-07-23
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[30/360] JNJ - Filing 2025-07-24
+  📅 Fetching prices: 2025-04-25 to 2025-07-24
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 30 filings, pausing 5 seconds...
+
+[31/360] IBM - Filing 2025-07-24
+  📅 Fetching prices: 2025-04-25 to 2025-07-24
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[32/360] RNR - Filing 2025-07-24
+  📅 Fetching prices: 2025-04-25 to 2025-07-24
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[33/360] ALLE - Filing 2025-07-24
+  📅 Fetching prices: 2025-04-25 to 2025-07-24
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[34/360] NEM - Filing 2025-07-24
+  📅 Fetching prices: 2025-04-25 to 2025-07-24
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[35/360] ALLE - Filing 2025-07-24
+  📅 Fetching prices: 2025-04-25 to 2025-07-24
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[36/360] NOW - Filing 2025-07-24
+  📅 Fetching prices: 2025-04-25 to 2025-07-24
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[37/360] KO - Filing 2025-07-24
+  📅 Fetching prices: 2025-04-25 to 2025-07-24
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[38/360] IBM - Filing 2025-07-24
+  📅 Fetching prices: 2025-04-25 to 2025-07-24
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[39/360] HLX - Filing 2025-07-24
+  📅 Fetching prices: 2025-04-25 to 2025-07-24
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[40/360] TSLA - Filing 2025-07-24
+  📅 Fetching prices: 2025-04-25 to 2025-07-24
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 40 filings, pausing 5 seconds...
+
+[41/360] GE - Filing 2025-07-24
+  📅 Fetching prices: 2025-04-25 to 2025-07-24
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[42/360] CME - Filing 2025-07-25
+  📅 Fetching prices: 2025-04-26 to 2025-07-25
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[43/360] AAPL - Filing 2025-07-25
+  📅 Fetching prices: 2025-04-26 to 2025-07-25
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[44/360] TDY - Filing 2025-07-28
+  📅 Fetching prices: 2025-04-29 to 2025-07-28
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[45/360] MAT - Filing 2025-07-29
+  📅 Fetching prices: 2025-04-30 to 2025-07-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[46/360] MDLZ - Filing 2025-07-29
+  📅 Fetching prices: 2025-04-30 to 2025-07-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[47/360] MDLZ - Filing 2025-07-29
+  📅 Fetching prices: 2025-04-30 to 2025-07-29
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[48/360] GE - Filing 2025-07-29
+  📅 Fetching prices: 2025-04-30 to 2025-07-29
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[49/360] GL - Filing 2025-07-29
+  📅 Fetching prices: 2025-04-30 to 2025-07-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[50/360] BKNG - Filing 2025-07-29
+  📅 Fetching prices: 2025-04-30 to 2025-07-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 50 filings, pausing 5 seconds...
+
+[51/360] CARR - Filing 2025-07-29
+  📅 Fetching prices: 2025-04-30 to 2025-07-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[52/360] TXN - Filing 2025-07-29
+  📅 Fetching prices: 2025-04-30 to 2025-07-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[53/360] UNP - Filing 2025-07-29
+  📅 Fetching prices: 2025-04-30 to 2025-07-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[54/360] ESS - Filing 2025-07-29
+  📅 Fetching prices: 2025-04-30 to 2025-07-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[55/360] WDC - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[56/360] VRSK - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[57/360] MSFT - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[58/360] MSFT - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[59/360] TT - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[60/360] ABT - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 60 filings, pausing 5 seconds...
+
+[61/360] META - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[62/360] FICO - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[63/360] EQIX - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[64/360] CDNS - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[65/360] RSG - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[66/360] PTC - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[67/360] ADP - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[68/360] ESS - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[69/360] QCOM - Filing 2025-07-30
+  📅 Fetching prices: 2025-05-01 to 2025-07-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[70/360] SO - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 70 filings, pausing 5 seconds...
+
+[71/360] IR - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[72/360] AAPL - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[73/360] MGPI - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[74/360] BMY - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[75/360] DHR - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[76/360] MAA - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[77/360] PRU - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[78/360] SYK - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[79/360] IR - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[80/360] SPGI - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 16 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 80 filings, pausing 5 seconds...
+
+[81/360] KIM - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[82/360] BLDR - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[83/360] META - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[84/360] BLDR - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[85/360] MA - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[86/360] PTC - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[87/360] AMZN - Filing 2025-07-31
+  📅 Fetching prices: 2025-05-02 to 2025-07-31
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[88/360] NEE - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[89/360] SPGI - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[90/360] SYK - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 90 filings, pausing 5 seconds...
+
+[91/360] CL - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[92/360] XOM - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[93/360] GWW - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[94/360] AMZN - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[95/360] AAPL - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[96/360] TMO - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[97/360] KIM - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[98/360] BSX - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[99/360] LIN - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[100/360] LYB - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 100 filings, pausing 5 seconds...
+
+[101/360] GS - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 59 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[102/360] GWW - Filing 2025-08-01
+  📅 Fetching prices: 2025-05-03 to 2025-08-01
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[103/360] WAT - Filing 2025-08-04
+  📅 Fetching prices: 2025-05-06 to 2025-08-04
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[104/360] WRB - Filing 2025-08-04
+  📅 Fetching prices: 2025-05-06 to 2025-08-04
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[105/360] HCA - Filing 2025-08-04
+  📅 Fetching prices: 2025-05-06 to 2025-08-04
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[106/360] WMB - Filing 2025-08-04
+  📅 Fetching prices: 2025-05-06 to 2025-08-04
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[107/360] TSLA - Filing 2025-08-04
+  📅 Fetching prices: 2025-05-06 to 2025-08-04
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[108/360] CAKE - Filing 2025-08-04
+  📅 Fetching prices: 2025-05-06 to 2025-08-04
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[109/360] XOM - Filing 2025-08-04
+  📅 Fetching prices: 2025-05-06 to 2025-08-04
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[110/360] PG - Filing 2025-08-04
+  📅 Fetching prices: 2025-05-06 to 2025-08-04
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 110 filings, pausing 5 seconds...
+
+[111/360] APH - Filing 2025-08-04
+  📅 Fetching prices: 2025-05-06 to 2025-08-04
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[112/360] ABBV - Filing 2025-08-04
+  📅 Fetching prices: 2025-05-06 to 2025-08-04
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[113/360] WELL - Filing 2025-08-04
+  📅 Fetching prices: 2025-05-06 to 2025-08-04
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[114/360] WAT - Filing 2025-08-04
+  📅 Fetching prices: 2025-05-06 to 2025-08-04
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[115/360] PFE - Filing 2025-08-05
+  📅 Fetching prices: 2025-05-07 to 2025-08-05
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[116/360] MRK - Filing 2025-08-05
+  📅 Fetching prices: 2025-05-07 to 2025-08-05
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[117/360] AMGN - Filing 2025-08-05
+  📅 Fetching prices: 2025-05-07 to 2025-08-05
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[118/360] GNRC - Filing 2025-08-05
+  📅 Fetching prices: 2025-05-07 to 2025-08-05
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[119/360] LDOS - Filing 2025-08-05
+  📅 Fetching prices: 2025-05-07 to 2025-08-05
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[120/360] LDOS - Filing 2025-08-05
+  📅 Fetching prices: 2025-05-07 to 2025-08-05
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 120 filings, pausing 5 seconds...
+
+[121/360] VRTX - Filing 2025-08-05
+  📅 Fetching prices: 2025-05-07 to 2025-08-05
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[122/360] JPM - Filing 2025-08-05
+  📅 Fetching prices: 2025-05-07 to 2025-08-05
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[123/360] PFE - Filing 2025-08-05
+  📅 Fetching prices: 2025-05-07 to 2025-08-05
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[124/360] IFF - Filing 2025-08-05
+  📅 Fetching prices: 2025-05-07 to 2025-08-05
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[125/360] CTRA - Filing 2025-08-05
+  📅 Fetching prices: 2025-05-07 to 2025-08-05
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[126/360] ETN - Filing 2025-08-05
+  📅 Fetching prices: 2025-05-07 to 2025-08-05
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[127/360] ADP - Filing 2025-08-06
+  📅 Fetching prices: 2025-05-08 to 2025-08-06
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[128/360] BLK - Filing 2025-08-06
+  📅 Fetching prices: 2025-05-08 to 2025-08-06
+  📊 Already have 55 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[129/360] CAT - Filing 2025-08-06
+  📅 Fetching prices: 2025-05-08 to 2025-08-06
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[130/360] CB - Filing 2025-08-06
+  📅 Fetching prices: 2025-05-08 to 2025-08-06
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 130 filings, pausing 5 seconds...
+
+[131/360] GL - Filing 2025-08-06
+  📅 Fetching prices: 2025-05-08 to 2025-08-06
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[132/360] AMGN - Filing 2025-08-06
+  📅 Fetching prices: 2025-05-08 to 2025-08-06
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[133/360] REG - Filing 2025-08-06
+  📅 Fetching prices: 2025-05-08 to 2025-08-06
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[134/360] DIS - Filing 2025-08-06
+  📅 Fetching prices: 2025-05-08 to 2025-08-06
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[135/360] MCD - Filing 2025-08-06
+  📅 Fetching prices: 2025-05-08 to 2025-08-06
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[136/360] ROK - Filing 2025-08-06
+  📅 Fetching prices: 2025-05-08 to 2025-08-06
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[137/360] IFF - Filing 2025-08-07
+  📅 Fetching prices: 2025-05-09 to 2025-08-07
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[138/360] TRGP - Filing 2025-08-07
+  📅 Fetching prices: 2025-05-09 to 2025-08-07
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[139/360] URI - Filing 2025-08-07
+  📅 Fetching prices: 2025-05-09 to 2025-08-07
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[140/360] TRGP - Filing 2025-08-07
+  📅 Fetching prices: 2025-05-09 to 2025-08-07
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 140 filings, pausing 5 seconds...
+
+[141/360] LIN - Filing 2025-08-07
+  📅 Fetching prices: 2025-05-09 to 2025-08-07
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[142/360] CVX - Filing 2025-08-07
+  📅 Fetching prices: 2025-05-09 to 2025-08-07
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[143/360] WTRG - Filing 2025-08-07
+  📅 Fetching prices: 2025-05-09 to 2025-08-07
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[144/360] COP - Filing 2025-08-07
+  📅 Fetching prices: 2025-05-09 to 2025-08-07
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[145/360] COST - Filing 2025-08-07
+  📅 Fetching prices: 2025-05-09 to 2025-08-07
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[146/360] MSI - Filing 2025-08-07
+  📅 Fetching prices: 2025-05-09 to 2025-08-07
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[147/360] EXPE - Filing 2025-08-07
+  📅 Fetching prices: 2025-05-09 to 2025-08-07
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[148/360] EXPE - Filing 2025-08-08
+  📅 Fetching prices: 2025-05-10 to 2025-08-08
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[149/360] SCHW - Filing 2025-08-08
+  📅 Fetching prices: 2025-05-10 to 2025-08-08
+  📊 Already have 56 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[150/360] OKE - Filing 2025-08-08
+  📅 Fetching prices: 2025-05-10 to 2025-08-08
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 150 filings, pausing 5 seconds...
+
+[151/360] ORLY - Filing 2025-08-08
+  📅 Fetching prices: 2025-05-10 to 2025-08-08
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[152/360] KLAC - Filing 2025-08-08
+  📅 Fetching prices: 2025-05-10 to 2025-08-08
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[153/360] LRCX - Filing 2025-08-11
+  📅 Fetching prices: 2025-05-13 to 2025-08-11
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[154/360] GPC - Filing 2025-08-12
+  📅 Fetching prices: 2025-05-14 to 2025-08-12
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[155/360] CVX - Filing 2025-08-13
+  📅 Fetching prices: 2025-05-15 to 2025-08-13
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[156/360] OKE - Filing 2025-08-13
+  📅 Fetching prices: 2025-05-15 to 2025-08-13
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[157/360] WDC - Filing 2025-08-14
+  📅 Fetching prices: 2025-05-16 to 2025-08-14
+  📊 Already have 60 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[158/360] GILD - Filing 2025-08-14
+  📅 Fetching prices: 2025-05-16 to 2025-08-14
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[159/360] EQIX - Filing 2025-08-14
+  📅 Fetching prices: 2025-05-16 to 2025-08-14
+  📊 Already have 60 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[160/360] PG - Filing 2025-08-14
+  📅 Fetching prices: 2025-05-16 to 2025-08-14
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 160 filings, pausing 5 seconds...
+
+[161/360] EA - Filing 2025-08-15
+  📅 Fetching prices: 2025-05-17 to 2025-08-15
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[162/360] BRO - Filing 2025-08-15
+  📅 Fetching prices: 2025-05-17 to 2025-08-15
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[163/360] MMM - Filing 2025-08-15
+  📅 Fetching prices: 2025-05-17 to 2025-08-15
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[164/360] PKG - Filing 2025-08-15
+  📅 Fetching prices: 2025-05-17 to 2025-08-15
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[165/360] CVS - Filing 2025-08-15
+  📅 Fetching prices: 2025-05-17 to 2025-08-15
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[166/360] AJG - Filing 2025-08-18
+  📅 Fetching prices: 2025-05-20 to 2025-08-18
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[167/360] AIG - Filing 2025-08-18
+  📅 Fetching prices: 2025-05-20 to 2025-08-18
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[168/360] KEYS - Filing 2025-08-19
+  📅 Fetching prices: 2025-05-21 to 2025-08-19
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[169/360] MAR - Filing 2025-08-20
+  📅 Fetching prices: 2025-05-22 to 2025-08-20
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[170/360] TJX - Filing 2025-08-20
+  📅 Fetching prices: 2025-05-22 to 2025-08-20
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 170 filings, pausing 5 seconds...
+
+[171/360] UNH - Filing 2025-08-20
+  📅 Fetching prices: 2025-05-22 to 2025-08-20
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[172/360] HWM - Filing 2025-08-20
+  📅 Fetching prices: 2025-05-22 to 2025-08-20
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[173/360] NEE - Filing 2025-08-20
+  📅 Fetching prices: 2025-05-22 to 2025-08-20
+  📊 Already have 58 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[174/360] LLY - Filing 2025-08-20
+  📅 Fetching prices: 2025-05-22 to 2025-08-20
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[175/360] PGR - Filing 2025-08-20
+  📅 Fetching prices: 2025-05-22 to 2025-08-20
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[176/360] MCO - Filing 2025-08-21
+  📅 Fetching prices: 2025-05-23 to 2025-08-21
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[177/360] INTU - Filing 2025-08-21
+  📅 Fetching prices: 2025-05-23 to 2025-08-21
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[178/360] VRSK - Filing 2025-08-21
+  📅 Fetching prices: 2025-05-23 to 2025-08-21
+  📊 Already have 55 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[179/360] FTNT - Filing 2025-08-22
+  📅 Fetching prices: 2025-05-24 to 2025-08-22
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[180/360] BRO - Filing 2025-08-22
+  📅 Fetching prices: 2025-05-24 to 2025-08-22
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 180 filings, pausing 5 seconds...
+
+[181/360] PH - Filing 2025-08-22
+  📅 Fetching prices: 2025-05-24 to 2025-08-22
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[182/360] APH - Filing 2025-08-25
+  📅 Fetching prices: 2025-05-27 to 2025-08-25
+  📊 Already have 57 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[183/360] AMD - Filing 2025-08-25
+  📅 Fetching prices: 2025-05-27 to 2025-08-25
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[184/360] CSCO - Filing 2025-08-25
+  📅 Fetching prices: 2025-05-27 to 2025-08-25
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[185/360] VZ - Filing 2025-08-25
+  📅 Fetching prices: 2025-05-27 to 2025-08-25
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[186/360] QCOM - Filing 2025-08-25
+  📅 Fetching prices: 2025-05-27 to 2025-08-25
+  📊 Already have 54 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[187/360] NVDA - Filing 2025-08-27
+  📅 Fetching prices: 2025-05-29 to 2025-08-27
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[188/360] SJM - Filing 2025-08-27
+  📅 Fetching prices: 2025-05-29 to 2025-08-27
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[189/360] A - Filing 2025-08-27
+  📅 Fetching prices: 2025-05-29 to 2025-08-27
+  📊 Already have 41 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[190/360] MCD - Filing 2025-08-27
+  📅 Fetching prices: 2025-05-29 to 2025-08-27
+  📊 Already have 57 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+⏳ Processed 190 filings, pausing 5 seconds...
+
+[191/360] ECL - Filing 2025-08-27
+  📅 Fetching prices: 2025-05-29 to 2025-08-27
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[192/360] NVDA - Filing 2025-08-27
+  📅 Fetching prices: 2025-05-29 to 2025-08-27
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[193/360] UMBF - Filing 2025-08-27
+  📅 Fetching prices: 2025-05-29 to 2025-08-27
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[194/360] SJM - Filing 2025-08-27
+  📅 Fetching prices: 2025-05-29 to 2025-08-27
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[195/360] WM - Filing 2025-08-27
+  📅 Fetching prices: 2025-05-29 to 2025-08-27
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[196/360] WTRG - Filing 2025-08-27
+  📅 Fetching prices: 2025-05-29 to 2025-08-27
+  📊 Already have 58 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[197/360] SF - Filing 2025-08-28
+  📅 Fetching prices: 2025-05-30 to 2025-08-28
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[198/360] ULTA - Filing 2025-08-28
+  📅 Fetching prices: 2025-05-30 to 2025-08-28
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[199/360] ULTA - Filing 2025-08-28
+  📅 Fetching prices: 2025-05-30 to 2025-08-28
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[200/360] FICO - Filing 2025-08-28
+  📅 Fetching prices: 2025-05-30 to 2025-08-28
+  📊 Already have 51 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+⏳ Processed 200 filings, pausing 5 seconds...
+
+[201/360] CAT - Filing 2025-08-28
+  📅 Fetching prices: 2025-05-30 to 2025-08-28
+  📊 Already have 56 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[202/360] WFC - Filing 2025-08-28
+  📅 Fetching prices: 2025-05-30 to 2025-08-28
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[203/360] KEYS - Filing 2025-08-29
+  📅 Fetching prices: 2025-05-31 to 2025-08-29
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[204/360] A - Filing 2025-08-29
+  📅 Fetching prices: 2025-05-31 to 2025-08-29
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[205/360] TJX - Filing 2025-08-29
+  📅 Fetching prices: 2025-05-31 to 2025-08-29
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[206/360] PH - Filing 2025-09-02
+  📅 Fetching prices: 2025-06-04 to 2025-09-02
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[207/360] TMO - Filing 2025-09-02
+  📅 Fetching prices: 2025-06-04 to 2025-09-02
+  📊 Already have 50 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[208/360] PKG - Filing 2025-09-02
+  📅 Fetching prices: 2025-06-04 to 2025-09-02
+  📊 Already have 60 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[209/360] DOW - Filing 2025-09-02
+  📅 Fetching prices: 2025-06-04 to 2025-09-02
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[210/360] NOC - Filing 2025-09-02
+  📅 Fetching prices: 2025-06-04 to 2025-09-02
+  📊 Already have 42 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 210 filings, pausing 5 seconds...
+
+[211/360] CI - Filing 2025-09-02
+  📅 Fetching prices: 2025-06-04 to 2025-09-02
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[212/360] QCOM - Filing 2025-09-02
+  📅 Fetching prices: 2025-06-04 to 2025-09-02
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[213/360] PM - Filing 2025-09-02
+  📅 Fetching prices: 2025-06-04 to 2025-09-02
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[214/360] AON - Filing 2025-09-03
+  📅 Fetching prices: 2025-06-05 to 2025-09-03
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[215/360] CRM - Filing 2025-09-03
+  📅 Fetching prices: 2025-06-05 to 2025-09-03
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[216/360] CSCO - Filing 2025-09-03
+  📅 Fetching prices: 2025-06-05 to 2025-09-03
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[217/360] CAT - Filing 2025-09-03
+  📅 Fetching prices: 2025-06-05 to 2025-09-03
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[218/360] INTU - Filing 2025-09-03
+  📅 Fetching prices: 2025-06-05 to 2025-09-03
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[219/360] GOOGL - Filing 2025-09-03
+  📅 Fetching prices: 2025-06-05 to 2025-09-03
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[220/360] CI - Filing 2025-09-04
+  📅 Fetching prices: 2025-06-06 to 2025-09-04
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 220 filings, pausing 5 seconds...
+
+[221/360] BSX - Filing 2025-09-04
+  📅 Fetching prices: 2025-06-06 to 2025-09-04
+  📊 Already have 48 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[222/360] MAA - Filing 2025-09-04
+  📅 Fetching prices: 2025-06-06 to 2025-09-04
+  📊 Already have 47 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[223/360] TMUS - Filing 2025-09-04
+  📅 Fetching prices: 2025-06-06 to 2025-09-04
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[224/360] CRM - Filing 2025-09-04
+  📅 Fetching prices: 2025-06-06 to 2025-09-04
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[225/360] CDNS - Filing 2025-09-04
+  📅 Fetching prices: 2025-06-06 to 2025-09-04
+  📊 Already have 46 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[226/360] CARR - Filing 2025-09-04
+  📅 Fetching prices: 2025-06-06 to 2025-09-04
+  📊 Already have 45 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[227/360] CPRT - Filing 2025-09-04
+  📅 Fetching prices: 2025-06-06 to 2025-09-04
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[228/360] GPC - Filing 2025-09-04
+  📅 Fetching prices: 2025-06-06 to 2025-09-04
+  📊 Already have 55 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[229/360] TSLA - Filing 2025-09-05
+  📅 Fetching prices: 2025-06-07 to 2025-09-05
+  📊 Already have 48 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[230/360] GOOGL - Filing 2025-09-05
+  📅 Fetching prices: 2025-06-07 to 2025-09-05
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 230 filings, pausing 5 seconds...
+
+[231/360] UNH - Filing 2025-09-08
+  📅 Fetching prices: 2025-06-10 to 2025-09-08
+  📊 Already have 58 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[232/360] DOW - Filing 2025-09-08
+  📅 Fetching prices: 2025-06-10 to 2025-09-08
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[233/360] REG - Filing 2025-09-08
+  📅 Fetching prices: 2025-06-10 to 2025-09-08
+  📊 Already have 49 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[234/360] JNJ - Filing 2025-09-09
+  📅 Fetching prices: 2025-06-11 to 2025-09-09
+  📊 Already have 39 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[235/360] SNPS - Filing 2025-09-09
+  📅 Fetching prices: 2025-06-11 to 2025-09-09
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[236/360] MRK - Filing 2025-09-09
+  📅 Fetching prices: 2025-06-11 to 2025-09-09
+  📊 Already have 47 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[237/360] UNP - Filing 2025-09-10
+  📅 Fetching prices: 2025-06-12 to 2025-09-10
+  📊 Already have 41 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[238/360] ORCL - Filing 2025-09-10
+  📅 Fetching prices: 2025-06-12 to 2025-09-10
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[239/360] SYF - Filing 2025-09-10
+  📅 Fetching prices: 2025-06-12 to 2025-09-10
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[240/360] HD - Filing 2025-09-10
+  📅 Fetching prices: 2025-06-12 to 2025-09-10
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 240 filings, pausing 5 seconds...
+
+[241/360] AVGO - Filing 2025-09-10
+  📅 Fetching prices: 2025-06-12 to 2025-09-10
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[242/360] AVGO - Filing 2025-09-10
+  📅 Fetching prices: 2025-06-12 to 2025-09-10
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[243/360] DHR - Filing 2025-09-10
+  📅 Fetching prices: 2025-06-12 to 2025-09-10
+  📊 Already have 43 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[244/360] LYB - Filing 2025-09-11
+  📅 Fetching prices: 2025-06-13 to 2025-09-11
+  📊 Already have 43 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[245/360] C - Filing 2025-09-11
+  📅 Fetching prices: 2025-06-13 to 2025-09-11
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[246/360] ABBV - Filing 2025-09-11
+  📅 Fetching prices: 2025-06-13 to 2025-09-11
+  📊 Already have 44 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[247/360] ADBE - Filing 2025-09-11
+  📅 Fetching prices: 2025-06-13 to 2025-09-11
+  📊 Already have 16 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[248/360] CME - Filing 2025-09-11
+  📅 Fetching prices: 2025-06-13 to 2025-09-11
+  📊 Already have 38 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[249/360] LRCX - Filing 2025-09-11
+  📅 Fetching prices: 2025-06-13 to 2025-09-11
+  📊 Already have 49 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[250/360] JPM - Filing 2025-09-12
+  📅 Fetching prices: 2025-06-14 to 2025-09-12
+  📊 Already have 44 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 250 filings, pausing 5 seconds...
+
+[251/360] DUK - Filing 2025-09-12
+  📅 Fetching prices: 2025-06-14 to 2025-09-12
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[252/360] BAC - Filing 2025-09-12
+  📅 Fetching prices: 2025-06-14 to 2025-09-12
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[253/360] ELV - Filing 2025-09-15
+  📅 Fetching prices: 2025-06-17 to 2025-09-15
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[254/360] WFC - Filing 2025-09-15
+  📅 Fetching prices: 2025-06-17 to 2025-09-15
+  📊 Already have 59 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[255/360] COF - Filing 2025-09-15
+  📅 Fetching prices: 2025-06-17 to 2025-09-15
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[256/360] AXP - Filing 2025-09-15
+  📅 Fetching prices: 2025-06-17 to 2025-09-15
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[257/360] HD - Filing 2025-09-15
+  📅 Fetching prices: 2025-06-17 to 2025-09-15
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[258/360] HPE - Filing 2025-09-15
+  📅 Fetching prices: 2025-06-17 to 2025-09-15
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[259/360] SO - Filing 2025-09-15
+  📅 Fetching prices: 2025-06-17 to 2025-09-15
+  📊 Already have 40 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[260/360] BAC - Filing 2025-09-15
+  📅 Fetching prices: 2025-06-17 to 2025-09-15
+  📊 Already have 61 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+⏳ Processed 260 filings, pausing 5 seconds...
+
+[261/360] AMT - Filing 2025-09-16
+  📅 Fetching prices: 2025-06-18 to 2025-09-16
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[262/360] T - Filing 2025-09-16
+  📅 Fetching prices: 2025-06-18 to 2025-09-16
+  📊 Already have 0 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[263/360] PGR - Filing 2025-09-17
+  📅 Fetching prices: 2025-06-19 to 2025-09-17
+  📊 Already have 51 prices in this range
+  📈 Fetched 61 historical prices from Yahoo
+  ✅ Added/updated 61 prices
+
+[264/360] AJG - Filing 2025-09-18
+  📅 Fetching prices: 2025-06-20 to 2025-09-18
+  📊 Already have 50 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[265/360] AMT - Filing 2025-09-18
+  📅 Fetching prices: 2025-06-20 to 2025-09-18
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[266/360] TXN - Filing 2025-09-18
+  📅 Fetching prices: 2025-06-20 to 2025-09-18
+  📊 Already have 36 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[267/360] INDB - Filing 2025-09-18
+  📅 Fetching prices: 2025-06-20 to 2025-09-18
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[268/360] BKNG - Filing 2025-09-19
+  📅 Fetching prices: 2025-06-21 to 2025-09-19
+  📊 Already have 35 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[269/360] AMAT - Filing 2025-09-19
+  📅 Fetching prices: 2025-06-21 to 2025-09-19
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[270/360] ADI - Filing 2025-09-19
+  📅 Fetching prices: 2025-06-21 to 2025-09-19
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+⏳ Processed 270 filings, pausing 5 seconds...
+
+[271/360] PM - Filing 2025-09-19
+  📅 Fetching prices: 2025-06-21 to 2025-09-19
+  📊 Already have 59 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[272/360] WMT - Filing 2025-09-22
+  📅 Fetching prices: 2025-06-24 to 2025-09-22
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[273/360] CVS - Filing 2025-09-22
+  📅 Fetching prices: 2025-06-24 to 2025-09-22
+  📊 Already have 47 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[274/360] CNX - Filing 2025-09-22
+  📅 Fetching prices: 2025-06-24 to 2025-09-22
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[275/360] PLD - Filing 2025-09-22
+  📅 Fetching prices: 2025-06-24 to 2025-09-22
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[276/360] HPE - Filing 2025-09-22
+  📅 Fetching prices: 2025-06-24 to 2025-09-22
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[277/360] TMUS - Filing 2025-09-22
+  📅 Fetching prices: 2025-06-24 to 2025-09-22
+  📊 Already have 60 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[278/360] CTRA - Filing 2025-09-22
+  📅 Fetching prices: 2025-06-24 to 2025-09-22
+  📊 Already have 39 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[279/360] ORCL - Filing 2025-09-22
+  📅 Fetching prices: 2025-06-24 to 2025-09-22
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[280/360] RCL - Filing 2025-09-23
+  📅 Fetching prices: 2025-06-25 to 2025-09-23
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+⏳ Processed 280 filings, pausing 5 seconds...
+
+[281/360] BK - Filing 2025-09-23
+  📅 Fetching prices: 2025-06-25 to 2025-09-23
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[282/360] MU - Filing 2025-09-23
+  📅 Fetching prices: 2025-06-25 to 2025-09-23
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[283/360] MS - Filing 2025-09-23
+  📅 Fetching prices: 2025-06-25 to 2025-09-23
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[284/360] MCK - Filing 2025-09-23
+  📅 Fetching prices: 2025-06-25 to 2025-09-23
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[285/360] TMUS - Filing 2025-09-24
+  📅 Fetching prices: 2025-06-26 to 2025-09-24
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[286/360] RTX - Filing 2025-09-24
+  📅 Fetching prices: 2025-06-26 to 2025-09-24
+  📊 Already have 27 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[287/360] JCI - Filing 2025-09-24
+  📅 Fetching prices: 2025-06-26 to 2025-09-24
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[288/360] CTAS - Filing 2025-09-24
+  📅 Fetching prices: 2025-06-26 to 2025-09-24
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[289/360] AMT - Filing 2025-09-24
+  📅 Fetching prices: 2025-06-26 to 2025-09-24
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[290/360] ADBE - Filing 2025-09-24
+  📅 Fetching prices: 2025-06-26 to 2025-09-24
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+⏳ Processed 290 filings, pausing 5 seconds...
+
+[291/360] C - Filing 2025-09-24
+  📅 Fetching prices: 2025-06-26 to 2025-09-24
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[292/360] T - Filing 2025-09-24
+  📅 Fetching prices: 2025-06-26 to 2025-09-24
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[293/360] CVX - Filing 2025-09-25
+  📅 Fetching prices: 2025-06-27 to 2025-09-25
+  📊 Already have 42 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[294/360] COST - Filing 2025-09-25
+  📅 Fetching prices: 2025-06-27 to 2025-09-25
+  📊 Already have 38 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[295/360] SF - Filing 2025-09-25
+  📅 Fetching prices: 2025-06-27 to 2025-09-25
+  📊 Already have 52 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[296/360] ACN - Filing 2025-09-25
+  📅 Fetching prices: 2025-06-27 to 2025-09-25
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[297/360] SBUX - Filing 2025-09-25
+  📅 Fetching prices: 2025-06-27 to 2025-09-25
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[298/360] AMAT - Filing 2025-09-26
+  📅 Fetching prices: 2025-06-28 to 2025-09-26
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[299/360] CPRT - Filing 2025-09-26
+  📅 Fetching prices: 2025-06-28 to 2025-09-26
+  📊 Already have 56 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[300/360] AEE - Filing 2025-09-26
+  📅 Fetching prices: 2025-06-28 to 2025-09-26
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+⏳ Processed 300 filings, pausing 5 seconds...
+
+[301/360] ORCL - Filing 2025-09-26
+  📅 Fetching prices: 2025-06-28 to 2025-09-26
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[302/360] NOW - Filing 2025-09-26
+  📅 Fetching prices: 2025-06-28 to 2025-09-26
+  📊 Already have 27 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[303/360] LCII - Filing 2025-09-29
+  📅 Fetching prices: 2025-07-01 to 2025-09-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[304/360] V - Filing 2025-09-29
+  📅 Fetching prices: 2025-07-01 to 2025-09-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[305/360] SYF - Filing 2025-09-29
+  📅 Fetching prices: 2025-07-01 to 2025-09-29
+  📊 Already have 59 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[306/360] NSC - Filing 2025-09-29
+  📅 Fetching prices: 2025-07-01 to 2025-09-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[307/360] EA - Filing 2025-09-29
+  📅 Fetching prices: 2025-07-01 to 2025-09-29
+  📊 Already have 42 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[308/360] NEM - Filing 2025-09-29
+  📅 Fetching prices: 2025-07-01 to 2025-09-29
+  📊 Already have 26 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[309/360] AXP - Filing 2025-09-29
+  📅 Fetching prices: 2025-07-01 to 2025-09-29
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[310/360] AVGO - Filing 2025-09-29
+  📅 Fetching prices: 2025-07-01 to 2025-09-29
+  📊 Already have 59 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+⏳ Processed 310 filings, pausing 5 seconds...
+
+[311/360] CEG - Filing 2025-09-29
+  📅 Fetching prices: 2025-07-01 to 2025-09-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[312/360] ETN - Filing 2025-09-29
+  📅 Fetching prices: 2025-07-01 to 2025-09-29
+  📊 Already have 34 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[313/360] LIN - Filing 2025-09-29
+  📅 Fetching prices: 2025-07-01 to 2025-09-29
+  📊 Already have 36 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[314/360] CSX - Filing 2025-09-29
+  📅 Fetching prices: 2025-07-01 to 2025-09-29
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[315/360] MS - Filing 2025-09-30
+  📅 Fetching prices: 2025-07-02 to 2025-09-30
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[316/360] NKE - Filing 2025-09-30
+  📅 Fetching prices: 2025-07-02 to 2025-09-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[317/360] CCL - Filing 2025-09-30
+  📅 Fetching prices: 2025-07-02 to 2025-09-30
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[318/360] CCL - Filing 2025-09-30
+  📅 Fetching prices: 2025-07-02 to 2025-09-30
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[319/360] MSFT - Filing 2025-09-30
+  📅 Fetching prices: 2025-07-02 to 2025-09-30
+  📊 Already have 29 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[320/360] PRU - Filing 2025-09-30
+  📅 Fetching prices: 2025-07-02 to 2025-09-30
+  📊 Already have 30 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+⏳ Processed 320 filings, pausing 5 seconds...
+
+[321/360] GE - Filing 2025-10-01
+  📅 Fetching prices: 2025-07-03 to 2025-10-01
+  📊 Already have 27 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[322/360] NRG - Filing 2025-10-01
+  📅 Fetching prices: 2025-07-03 to 2025-10-01
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[323/360] HON - Filing 2025-10-01
+  📅 Fetching prices: 2025-07-03 to 2025-10-01
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[324/360] SHW - Filing 2025-10-01
+  📅 Fetching prices: 2025-07-03 to 2025-10-01
+  📊 Already have 0 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[325/360] WMB - Filing 2025-10-01
+  📅 Fetching prices: 2025-07-03 to 2025-10-01
+  📊 Already have 31 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[326/360] DIS - Filing 2025-10-01
+  📅 Fetching prices: 2025-07-03 to 2025-10-01
+  📊 Already have 33 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[327/360] RCL - Filing 2025-10-01
+  📅 Fetching prices: 2025-07-03 to 2025-10-01
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[328/360] NKE - Filing 2025-10-01
+  📅 Fetching prices: 2025-07-03 to 2025-10-01
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[329/360] ORLY - Filing 2025-10-01
+  📅 Fetching prices: 2025-07-03 to 2025-10-01
+  📊 Already have 35 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[330/360] TSLA - Filing 2025-10-02
+  📅 Fetching prices: 2025-07-04 to 2025-10-02
+  📊 Already have 53 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+⏳ Processed 330 filings, pausing 5 seconds...
+
+[331/360] AMAT - Filing 2025-10-02
+  📅 Fetching prices: 2025-07-04 to 2025-10-02
+  📊 Already have 62 prices in this range
+  📈 Fetched 62 historical prices from Yahoo
+  ✅ Added/updated 62 prices
+
+[332/360] OXY - Filing 2025-10-03
+  📅 Fetching prices: 2025-07-05 to 2025-10-03
+  📊 Already have 0 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[333/360] AIG - Filing 2025-10-03
+  📅 Fetching prices: 2025-07-05 to 2025-10-03
+  📊 Already have 40 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[334/360] MU - Filing 2025-10-03
+  📅 Fetching prices: 2025-07-05 to 2025-10-03
+  📊 Already have 63 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[335/360] OXY - Filing 2025-10-03
+  📅 Fetching prices: 2025-07-05 to 2025-10-03
+  📊 Already have 63 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[336/360] ABBV - Filing 2025-10-03
+  📅 Fetching prices: 2025-07-05 to 2025-10-03
+  📊 Already have 57 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[337/360] AEE - Filing 2025-10-03
+  📅 Fetching prices: 2025-07-05 to 2025-10-03
+  📊 Already have 63 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[338/360] ROK - Filing 2025-10-03
+  📅 Fetching prices: 2025-07-05 to 2025-10-03
+  📊 Already have 32 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[339/360] GILD - Filing 2025-10-06
+  📅 Fetching prices: 2025-07-08 to 2025-10-06
+  📊 Already have 37 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[340/360] AMD - Filing 2025-10-06
+  📅 Fetching prices: 2025-07-08 to 2025-10-06
+  📊 Already have 43 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+⏳ Processed 340 filings, pausing 5 seconds...
+
+[341/360] VZ - Filing 2025-10-06
+  📅 Fetching prices: 2025-07-08 to 2025-10-06
+  📊 Already have 43 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[342/360] XOM - Filing 2025-10-06
+  📅 Fetching prices: 2025-07-08 to 2025-10-06
+  📊 Already have 29 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[343/360] VST - Filing 2025-10-06
+  📅 Fetching prices: 2025-07-08 to 2025-10-06
+  📊 Already have 0 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[344/360] ICE - Filing 2025-10-07
+  📅 Fetching prices: 2025-07-09 to 2025-10-07
+  📊 Already have 0 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[345/360] SLB - Filing 2025-10-07
+  📅 Fetching prices: 2025-07-09 to 2025-10-07
+  📊 Already have 0 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[346/360] TMO - Filing 2025-10-07
+  📅 Fetching prices: 2025-07-09 to 2025-10-07
+  📊 Already have 48 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[347/360] VOYA - Filing 2025-10-07
+  📅 Fetching prices: 2025-07-09 to 2025-10-07
+  📊 Already have 0 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[348/360] NRG - Filing 2025-10-08
+  📅 Fetching prices: 2025-07-10 to 2025-10-08
+  📊 Already have 63 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[349/360] AZO - Filing 2025-10-08
+  📅 Fetching prices: 2025-07-10 to 2025-10-08
+  📊 Already have 0 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[350/360] CTAS - Filing 2025-10-08
+  📅 Fetching prices: 2025-07-10 to 2025-10-08
+  📊 Already have 63 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+⏳ Processed 350 filings, pausing 5 seconds...
+
+[351/360] GLW - Filing 2025-10-08
+  📅 Fetching prices: 2025-07-10 to 2025-10-08
+  📊 Already have 0 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[352/360] COST - Filing 2025-10-08
+  📅 Fetching prices: 2025-07-10 to 2025-10-08
+  📊 Already have 63 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[353/360] LOW - Filing 2025-10-09
+  📅 Fetching prices: 2025-07-11 to 2025-10-09
+  📊 Already have 0 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[354/360] PEP - Filing 2025-10-09
+  📅 Fetching prices: 2025-07-11 to 2025-10-09
+  📊 Already have 0 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[355/360] DE - Filing 2025-10-09
+  📅 Fetching prices: 2025-07-11 to 2025-10-09
+  📊 Already have 0 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[356/360] PEP - Filing 2025-10-09
+  📅 Fetching prices: 2025-07-11 to 2025-10-09
+  📊 Already have 63 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[357/360] MO - Filing 2025-10-09
+  📅 Fetching prices: 2025-07-11 to 2025-10-09
+  📊 Already have 0 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[358/360] ZTS - Filing 2025-10-09
+  📅 Fetching prices: 2025-07-11 to 2025-10-09
+  📊 Already have 0 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[359/360] ACN - Filing 2025-10-10
+  📅 Fetching prices: 2025-07-12 to 2025-10-10
+  📊 Already have 62 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+[360/360] SLB - Filing 2025-10-10
+  📅 Fetching prices: 2025-07-12 to 2025-10-10
+  📊 Already have 63 prices in this range
+  📈 Fetched 63 historical prices from Yahoo
+  ✅ Added/updated 63 prices
+
+⏳ Processed 360 filings, pausing 5 seconds...
+
+════════════════════════════════════════════════════════════════════════════════
+📊 SUMMARY
+════════════════════════════════════════════════════════════════════════════════
+✅ Filings processed:     360
+❌ Errors:                0
+📈 Total prices added:    22106
+
+✅ Next: Re-run momentum indicator backfill
+   npx tsx scripts/backfill-momentum-indicators.ts
+

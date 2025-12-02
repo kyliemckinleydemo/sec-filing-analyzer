@@ -1,0 +1,29 @@
+📈 Starting stock price backfill...
+
+Found 7 filings to process
+
+[1/7] Processing COST - 10-K on 2025-10-08...
+[Deprecated] historical() relies on an API that Yahoo have removed.  We'll map this request to chart() for convenience, but, please consider using chart() directly instead; for more info see https://github.com/gadicc/node-yahoo-finance2/issues/795.  This will only be shown once, but you can suppress this message in future with `yahooFinance.suppressNotices(['ripHistorical'])`.
+  ✅ Return: +1.66% (4 price points)
+[2/7] Processing TSLA - 8-K on 2025-10-02...
+  ✅ Return: -0.11% (8 price points)
+[3/7] Processing ADBE - 8-K on 2025-09-11...
+  ✅ Return: +4.82% (10 price points)
+[4/7] Processing XOM - 10-Q on 2025-08-04...
+  ✅ Return: +0.21% (10 price points)
+[5/7] Processing AAPL - 10-Q on 2025-08-01...
+  ✅ Return: +13.47% (10 price points)
+[6/7] Processing MSFT - 10-K on 2025-07-30...
+  ✅ Return: +1.71% (10 price points)
+[7/7] Processing TSLA - 10-Q on 2025-07-24...
+  ✅ Return: +0.97% (10 price points)
+
+============================================================
+Stock Price Backfill Complete
+============================================================
+Processed: 7
+Success: 7
+Skipped: 0
+Errors: 0
+============================================================
+

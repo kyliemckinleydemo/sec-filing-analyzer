@@ -224,6 +224,28 @@ export async function GET(
       // Continue without macro data
     }
 
+    // Extract analyst activity data from analysisData
+    let analystNetUpgrades = undefined;
+    let analystMajorUpgrades = undefined;
+    let analystMajorDowngrades = undefined;
+    let analystConsensus = undefined;
+    let analystUpsidePotential = undefined;
+
+    if (filing.analysisData) {
+      try {
+        const analysis = JSON.parse(filing.analysisData);
+        if (analysis.analyst) {
+          analystNetUpgrades = analysis.analyst.activity?.netUpgrades;
+          analystMajorUpgrades = analysis.analyst.activity?.majorUpgrades;
+          analystMajorDowngrades = analysis.analyst.activity?.majorDowngrades;
+          analystConsensus = analysis.analyst.consensusScore;
+          analystUpsidePotential = analysis.analyst.upsidePotential;
+        }
+      } catch (e) {
+        console.error('Error parsing analyst data:', e);
+      }
+    }
+
     // Generate prediction with research-backed enhanced features
     const features = {
       riskScoreDelta: riskScoreDelta, // Use calculated delta, not absolute score
@@ -252,6 +274,12 @@ export async function GET(
       dollar30dChange: dollar30dChange,
       gdpProxyTrend: gdpProxyTrend as any,
       equityFlowBias: equityFlowBias as any,
+      // NEW: Analyst activity & sentiment
+      analystNetUpgrades: analystNetUpgrades,
+      analystMajorUpgrades: analystMajorUpgrades,
+      analystMajorDowngrades: analystMajorDowngrades,
+      analystConsensus: analystConsensus,
+      analystUpsidePotential: analystUpsidePotential,
       // Company-specific patterns
       ticker: filing.company.ticker || undefined,
       avgHistoricalReturn: await predictionEngine.getHistoricalPattern(
