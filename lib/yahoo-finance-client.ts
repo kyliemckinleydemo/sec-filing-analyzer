@@ -182,15 +182,17 @@ class YahooFinanceClient {
         return null;
       }
 
-      // Fetch beta from quoteSummary (not available in basic quote)
+      // Fetch additional data from quoteSummary (not available in basic quote)
       let beta: number | undefined = undefined;
+      let targetMeanPrice: number | undefined = undefined;
       try {
         const summary = await yahooFinance.quoteSummary(ticker, {
-          modules: ['summaryDetail']
+          modules: ['summaryDetail', 'financialData']
         });
         beta = (summary.summaryDetail as any)?.beta;
+        targetMeanPrice = (summary.financialData as any)?.targetMeanPrice;
       } catch (error: any) {
-        console.log(`[Yahoo Finance] Could not fetch beta for ${ticker}: ${error.message}`);
+        console.log(`[Yahoo Finance] Could not fetch quoteSummary for ${ticker}: ${error.message}`);
       }
 
       // Validate earnings date is reasonable (between 1970 and 2100)
@@ -214,7 +216,7 @@ class YahooFinanceClient {
         fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
         peRatio: quote.trailingPE,
         forwardPE: quote.forwardPE,
-        analystTargetPrice: (quote as any).targetMeanPrice,
+        analystTargetPrice: targetMeanPrice,
         earningsDate: validEarningsDate,
 
         // Analyst ratings
