@@ -103,7 +103,7 @@ export default function LatestFilingsPage() {
         </Button>
         <h1 className="text-4xl font-bold mb-2">Latest SEC Filings</h1>
         <p className="text-slate-600 mb-6">
-          Recent filings with financial data from 430 tracked companies. Click "Analyze" to get AI-powered predictions.
+          Recent filings with financial data from 640+ tracked companies. Click "Analyze" to get AI-powered predictions.
         </p>
 
         {/* Filters */}
