@@ -157,7 +157,26 @@ class SECClient {
       const upperTicker = ticker.toUpperCase();
       console.log(`[SEC Client] Looking up ticker: ${upperTicker}`);
 
-      // FIRST: Check local static cache for common companies (S&P 500)
+      // FIRST: Check our database (fastest and most reliable)
+      try {
+        const { prisma } = await import('@/lib/prisma');
+        const company = await prisma.company.findUnique({
+          where: { ticker: upperTicker },
+          select: { cik: true, name: true }
+        });
+
+        if (company) {
+          console.log(`[SEC Client] ✅ Found in database (CIK: ${company.cik})`);
+          return {
+            cik: company.cik,
+            name: company.name,
+          };
+        }
+      } catch (dbError) {
+        console.log(`[SEC Client] Database lookup failed, falling back to cache/API`);
+      }
+
+      // SECOND: Check local static cache for common companies (S&P 500)
       // This avoids hitting SEC API for 90% of requests
       try {
         const localCache = require('@/config/top-500-companies.json');

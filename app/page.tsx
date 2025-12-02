@@ -50,7 +50,7 @@ export default function Home() {
           </p>
           <div className="inline-block bg-green-50 border border-green-200 rounded-lg px-4 py-2 mt-4">
             <p className="text-sm text-green-700">
-              <strong>v3.0:</strong> Concern Level Scoring • XBRL Financial Data • Natural Language Chat • 430+ companies tracked
+              <strong>v3.0:</strong> Concern Level Scoring • XBRL Financial Data • Natural Language Chat • 640+ companies tracked
             </p>
           </div>
 
@@ -164,7 +164,7 @@ export default function Home() {
               <ul className="space-y-2 text-sm text-slate-600">
                 <li>• Bar charts: predicted vs actual returns</li>
                 <li>• Line charts: performance over time</li>
-                <li>• Real-time filing feed (430+ companies tracked)</li>
+                <li>• Real-time filing feed (640+ companies tracked)</li>
                 <li>• Color-coded accuracy indicators</li>
               </ul>
             </CardContent>
