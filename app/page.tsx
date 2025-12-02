@@ -18,27 +18,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Navigation */}
-      <nav className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-blue-600">SEC Analyzer</h2>
-          <div className="flex gap-4">
-            <Button variant="ghost" onClick={() => router.push('/')}>
-              Home
-            </Button>
-            <Button variant="ghost" onClick={() => router.push('/query')}>
-              Query
-            </Button>
-            <Button variant="ghost" onClick={() => router.push('/latest-filings')}>
-              Latest Filings
-            </Button>
-            <Button variant="ghost" onClick={() => router.push('/faq')}>
-              FAQ
-            </Button>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center space-y-6">

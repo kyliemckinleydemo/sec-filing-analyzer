@@ -83,29 +83,6 @@ export default function QueryPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
-      {/* Navigation */}
-      <nav className="container mx-auto px-4 py-4 border-b bg-white/50 backdrop-blur-sm">
-        <div className="flex justify-between items-center">
-          <h2
-            className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => router.push('/')}
-          >
-            SEC Analyzer
-          </h2>
-          <div className="flex gap-4">
-            <Button variant="ghost" onClick={() => router.push('/')}>
-              Home
-            </Button>
-            <Button variant="ghost" onClick={() => router.push('/latest-filings')}>
-              Latest Filings
-            </Button>
-            <Button variant="default" onClick={() => router.push('/query')}>
-              Query
-            </Button>
-          </div>
-        </div>
-      </nav>
-
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-12">
         <div className="text-center space-y-4 mb-8">

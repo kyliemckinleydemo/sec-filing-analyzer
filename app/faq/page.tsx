@@ -130,29 +130,6 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      {/* Navigation */}
-      <nav className="container mx-auto px-4 py-4">
-        <div className="flex justify-between items-center">
-          <h2
-            className="text-2xl font-bold text-blue-600 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={() => router.push('/')}
-          >
-            SEC Analyzer
-          </h2>
-          <div className="flex gap-4">
-            <Button variant="ghost" onClick={() => router.push('/')}>
-              Home
-            </Button>
-            <Button variant="ghost" onClick={() => router.push('/latest-filings')}>
-              Latest Filings
-            </Button>
-            <Button variant="default" onClick={() => router.push('/faq')}>
-              FAQ
-            </Button>
-          </div>
-        </div>
-      </nav>
-
       {/* Header */}
       <div className="container mx-auto px-4 py-8">
         <Button
