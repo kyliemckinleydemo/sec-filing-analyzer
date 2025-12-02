@@ -27,7 +27,7 @@ vercel env add RESEND_API_KEY
 
 # Set alert email address
 vercel env add ALERT_EMAIL
-# Enter your email address
+# Enter: john@greatfallsventures.com
 # Select: Production, Preview, Development
 ```
 
@@ -36,7 +36,7 @@ Or add via Vercel Dashboard:
 2. Select your project → Settings → Environment Variables
 3. Add:
    - `RESEND_API_KEY` = your Resend API key
-   - `ALERT_EMAIL` = your email address
+   - `ALERT_EMAIL` = john@greatfallsventures.com
 
 ### Step 3: Redeploy
 
