@@ -44,6 +44,10 @@ export class FilingParser {
 
     // Convert common HTML entities
     text = text.replace(/&nbsp;/g, ' ');
+    text = text.replace(/&#160;/g, ' ');  // Numeric code for non-breaking space
+    text = text.replace(/&#8217;/g, "'"); // Right single quotation mark
+    text = text.replace(/&#8220;/g, '"'); // Left double quotation mark
+    text = text.replace(/&#8221;/g, '"'); // Right double quotation mark
     text = text.replace(/&amp;/g, '&');
     text = text.replace(/&lt;/g, '<');
     text = text.replace(/&gt;/g, '>');
@@ -238,15 +242,45 @@ export class FilingParser {
     startPatterns: RegExp[],
     endPatterns: RegExp[]
   ): string | null {
-    // Find start position
+    // Find start position - skip TOC by finding matches with substantial content
     let startPos = -1;
     let startMatch = null;
 
     for (const pattern of startPatterns) {
-      const match = text.match(pattern);
-      if (match && match.index !== undefined) {
-        startPos = match.index;
-        startMatch = match;
+      // Find ALL matches, not just the first one
+      let searchPos = 0;
+      const globalPattern = new RegExp(pattern.source, pattern.flags.includes('g') ? pattern.flags : pattern.flags + 'g');
+
+      while (true) {
+        const match = text.slice(searchPos).match(pattern);
+        if (!match || match.index === undefined) break;
+
+        const matchPos = searchPos + match.index;
+
+        // Check if this match has substantial content after it (not just a page number)
+        const afterText = text.slice(matchPos + match[0].length, matchPos + match[0].length + 500);
+
+        // TOC entries have page numbers within ~200 chars, followed by next Item
+        const isTOC = afterText.match(/^\s*[^\n]*\n\s*\d{1,3}\s*\n\s*(Item|ITEM|Part|PART)/);
+
+        // Real sections have narrative text (sentences with periods, common words)
+        const hasRealContent = afterText.length > 200 &&
+                              !isTOC &&
+                              (afterText.includes('Company') ||
+                               afterText.includes('following') ||
+                               afterText.includes('financial') ||
+                               afterText.match(/\.\s+[A-Z]/)); // Sentences with capitals after periods
+
+        if (hasRealContent) {
+          startPos = matchPos;
+          startMatch = match;
+          break;
+        }
+
+        searchPos = matchPos + match[0].length;
+      }
+
+      if (startPos !== -1) {
         break;
       }
     }
