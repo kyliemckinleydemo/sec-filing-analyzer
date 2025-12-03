@@ -225,9 +225,12 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
             const text = await txtResponse.text();
             console.log(`✅ Fetched filing text: ${text.length} characters`);
             filingFetchResult = { success: true, text, error: '' };
-          } else if (txtResponse.status === 403 || txtResponse.status === 429) {
-            console.log(`⚠️ SEC Archives rate limited (${txtResponse.status}), proceeding with XBRL data only`);
+          } else if (txtResponse.status === 429) {
+            console.log(`⚠️ SEC rate limited (429 Too Many Requests), proceeding with XBRL data only`);
             filingFetchResult = { success: false, text: '', error: 'rate_limited' };
+          } else if (txtResponse.status === 403) {
+            console.log(`⚠️ SEC access forbidden (403), likely User-Agent or IP restriction, proceeding with XBRL data only`);
+            filingFetchResult = { success: false, text: '', error: 'forbidden' };
           } else {
             console.log(`Filing URL returned ${txtResponse.status}, will use structured data only`);
             filingFetchResult = { success: false, text: '', error: `HTTP ${txtResponse.status}` };
@@ -344,20 +347,26 @@ ${priorFiling ? `Prior Filing Date: ${priorFiling.filingDate.toISOString().split
         // to avoid Claude flagging normal period-over-period data as "conflicts"
       } else if (structuredContext.length > 50) {
         // We have structured financial data but no text sections
-        console.log('⚠️ Using structured XBRL data only (SEC rate limiting prevented full text access)');
-        currentRisks = `${companyContext}\n\n[SEC Rate Limiting - Using Structured XBRL Financial Data]${structuredContext}
+        const reason = filingFetchResult.error === 'rate_limited' ? 'SEC rate limiting (429)' :
+                      filingFetchResult.error === 'forbidden' ? 'SEC access restriction (403)' :
+                      filingFetchResult.error === 'timeout' ? 'filing fetch timeout' :
+                      filingFetchResult.error.startsWith('HTTP') ? `${filingFetchResult.error}` :
+                      'filing text not available';
 
-Note: SEC is currently rate limiting requests from this IP address. Full text Risk Factors are not available.
-Based on the financial data above, provide a risk assessment for ${filing.company.name} focusing on:
+        console.log(`⚠️ Using structured XBRL data only (${reason})`);
+        currentRisks = `${companyContext}\n\n[Filing Text Unavailable - Using Structured XBRL Financial Data]${structuredContext}
+
+Note: Full text Risk Factors are not available (${reason}). Analysis is based on structured financial data.
+Provide a risk assessment for ${filing.company.name} focusing on:
 1. Financial performance trends (revenue, profitability)
 2. Quarter-over-quarter or year-over-year changes
 3. Industry-typical risks for a company of this size and sector
 4. Any notable patterns in the financial metrics`;
 
-        currentMDA = `${companyContext}\n\n[SEC Rate Limiting - Using Structured XBRL Financial Data]${structuredContext}
+        currentMDA = `${companyContext}\n\n[Filing Text Unavailable - Using Structured XBRL Financial Data]${structuredContext}
 
-Note: SEC is currently rate limiting requests. Full MD&A text is not available.
-Based on the financial metrics above, provide management commentary analysis:
+Note: Full MD&A text is not available (${reason}). Analysis is based on structured financial metrics.
+Provide management commentary analysis:
 1. Assess financial performance (revenue trends, profitability, margins)
 2. Identify quarter-over-quarter or YoY changes
 3. Comment on business momentum and trajectory
