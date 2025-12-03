@@ -285,6 +285,7 @@ export async function GET(
     const features = {
       riskScoreDelta: riskScoreDelta, // Use calculated delta, not absolute score
       sentimentScore: filing.sentimentScore || 0,
+      concernLevel: filing.concernLevel || undefined, // Multi-factor concern assessment
       riskCountNew: 2, // Mock - would parse from analysisData
       filingType: filing.filingType as '10-K' | '10-Q' | '8-K',
       eventType,

@@ -1,0 +1,2938 @@
+=== Backfilling Analyst Activity for All Companies ===
+
+Found 643 companies to process
+
+[1/643] Processing A...
+[Yahoo Finance] Fetching analyst activity for A
+Please consider completing the survey at https://bit.ly/yahoo-finance-api-feedback if you haven't already; for more info see https://github.com/gadicc/node-yahoo-finance2/issues/764#issuecomment-2056623851.  This will only be shown once, but you can suppress this message in future with `yahooFinance.suppressNotices(['yahooSurvey'])`.
+Fetching crumb and cookies from https://finance.yahoo.com/quote/AAPL...
+We expected a redirect to guce.yahoo.com, but got https://finance.yahoo.com/quote/AAPL/
+We'll try to continue anyway - you can safely ignore this if the request succeeds
+Success. Cookie expires on Thu Dec 03 2026 23:17:56 GMT-0500 (Eastern Standard Time)
+fetch https://query1.finance.yahoo.com/v1/test/getcrumb
+New crumb: HiL6OL2Uld1
+[Yahoo Finance] Found 341 analyst actions for A
+  ✅ Inserted 341 new activities (0 duplicates skipped)
+[2/643] Processing AAL...
+[Yahoo Finance] Fetching analyst activity for AAL
+[Yahoo Finance] Found 356 analyst actions for AAL
+  ✅ Inserted 356 new activities (0 duplicates skipped)
+[3/643] Processing AAP...
+[Yahoo Finance] Fetching analyst activity for AAP
+[Yahoo Finance] Found 420 analyst actions for AAP
+  ✅ Inserted 420 new activities (0 duplicates skipped)
+[4/643] Processing AAPL...
+[Yahoo Finance] Fetching analyst activity for AAPL
+[Yahoo Finance] Found 968 analyst actions for AAPL
+  ✅ Inserted 968 new activities (0 duplicates skipped)
+[5/643] Processing ABBV...
+[Yahoo Finance] Fetching analyst activity for ABBV
+[Yahoo Finance] Found 363 analyst actions for ABBV
+  ✅ Inserted 363 new activities (0 duplicates skipped)
+[6/643] Processing ABCB...
+[Yahoo Finance] Fetching analyst activity for ABCB
+[Yahoo Finance] Found 75 analyst actions for ABCB
+  ✅ Inserted 75 new activities (0 duplicates skipped)
+[7/643] Processing ABM...
+[Yahoo Finance] Fetching analyst activity for ABM
+[Yahoo Finance] Found 68 analyst actions for ABM
+  ✅ Inserted 68 new activities (0 duplicates skipped)
+[8/643] Processing ABT...
+[Yahoo Finance] Fetching analyst activity for ABT
+[Yahoo Finance] Found 383 analyst actions for ABT
+  ✅ Inserted 383 new activities (0 duplicates skipped)
+[9/643] Processing ACGL...
+[Yahoo Finance] Fetching analyst activity for ACGL
+[Yahoo Finance] Found 254 analyst actions for ACGL
+  ✅ Inserted 254 new activities (0 duplicates skipped)
+[10/643] Processing ACI...
+[Yahoo Finance] Fetching analyst activity for ACI
+[Yahoo Finance] Found 132 analyst actions for ACI
+  ✅ Inserted 132 new activities (0 duplicates skipped)
+[11/643] Processing ACN...
+[Yahoo Finance] Fetching analyst activity for ACN
+[Yahoo Finance] Found 539 analyst actions for ACN
+  ✅ Inserted 539 new activities (0 duplicates skipped)
+[12/643] Processing ADBE...
+[Yahoo Finance] Fetching analyst activity for ADBE
+[Yahoo Finance] Found 647 analyst actions for ADBE
+  ✅ Inserted 647 new activities (0 duplicates skipped)
+[13/643] Processing ADI...
+[Yahoo Finance] Fetching analyst activity for ADI
+[Yahoo Finance] Found 429 analyst actions for ADI
+  ✅ Inserted 429 new activities (0 duplicates skipped)
+[14/643] Processing ADM...
+[Yahoo Finance] Fetching analyst activity for ADM
+[Yahoo Finance] Found 206 analyst actions for ADM
+  ✅ Inserted 206 new activities (0 duplicates skipped)
+[15/643] Processing ADP...
+[Yahoo Finance] Fetching analyst activity for ADP
+[Yahoo Finance] Found 203 analyst actions for ADP
+  ✅ Inserted 203 new activities (0 duplicates skipped)
+[16/643] Processing ADSK...
+[Yahoo Finance] Fetching analyst activity for ADSK
+[Yahoo Finance] Found 520 analyst actions for ADSK
+  ✅ Inserted 520 new activities (0 duplicates skipped)
+[17/643] Processing AEE...
+[Yahoo Finance] Fetching analyst activity for AEE
+[Yahoo Finance] Found 243 analyst actions for AEE
+  ✅ Inserted 243 new activities (0 duplicates skipped)
+[18/643] Processing AEP...
+[Yahoo Finance] Fetching analyst activity for AEP
+[Yahoo Finance] Found 383 analyst actions for AEP
+  ✅ Inserted 383 new activities (0 duplicates skipped)
+[19/643] Processing AES...
+[Yahoo Finance] Fetching analyst activity for AES
+[Yahoo Finance] Found 163 analyst actions for AES
+  ✅ Inserted 163 new activities (0 duplicates skipped)
+[20/643] Processing AFG...
+[Yahoo Finance] Fetching analyst activity for AFG
+[Yahoo Finance] Found 50 analyst actions for AFG
+  ✅ Inserted 50 new activities (0 duplicates skipped)
+[21/643] Processing AFL...
+[Yahoo Finance] Fetching analyst activity for AFL
+[Yahoo Finance] Found 271 analyst actions for AFL
+  ✅ Inserted 271 new activities (0 duplicates skipped)
+[22/643] Processing AIG...
+[Yahoo Finance] Fetching analyst activity for AIG
+[Yahoo Finance] Found 308 analyst actions for AIG
+  ✅ Inserted 308 new activities (0 duplicates skipped)
+[23/643] Processing AIV...
+[Yahoo Finance] Fetching analyst activity for AIV
+[Yahoo Finance] Found 4 analyst actions for AIV
+  ✅ Inserted 4 new activities (0 duplicates skipped)
+[24/643] Processing AIZ...
+[Yahoo Finance] Fetching analyst activity for AIZ
+[Yahoo Finance] Found 107 analyst actions for AIZ
+  ✅ Inserted 107 new activities (0 duplicates skipped)
+[25/643] Processing AJG...
+[Yahoo Finance] Fetching analyst activity for AJG
+[Yahoo Finance] Found 261 analyst actions for AJG
+  ✅ Inserted 261 new activities (0 duplicates skipped)
+[26/643] Processing AKAM...
+[Yahoo Finance] Fetching analyst activity for AKAM
+[Yahoo Finance] Found 366 analyst actions for AKAM
+  ✅ Inserted 366 new activities (0 duplicates skipped)
+[27/643] Processing ALB...
+[Yahoo Finance] Fetching analyst activity for ALB
+[Yahoo Finance] Found 429 analyst actions for ALB
+  ✅ Inserted 429 new activities (0 duplicates skipped)
+[28/643] Processing ALE...
+[Yahoo Finance] Fetching analyst activity for ALE
+[Yahoo Finance] Found 63 analyst actions for ALE
+  ✅ Inserted 63 new activities (0 duplicates skipped)
+[29/643] Processing ALGN...
+[Yahoo Finance] Fetching analyst activity for ALGN
+[Yahoo Finance] Found 268 analyst actions for ALGN
+  ✅ Inserted 268 new activities (0 duplicates skipped)
+[30/643] Processing ALK...
+[Yahoo Finance] Fetching analyst activity for ALK
+[Yahoo Finance] Found 279 analyst actions for ALK
+  ✅ Inserted 279 new activities (0 duplicates skipped)
+[31/643] Processing ALL...
+[Yahoo Finance] Fetching analyst activity for ALL
+[Yahoo Finance] Found 406 analyst actions for ALL
+  ✅ Inserted 406 new activities (0 duplicates skipped)
+[32/643] Processing ALLE...
+[Yahoo Finance] Fetching analyst activity for ALLE
+[Yahoo Finance] Found 188 analyst actions for ALLE
+  ✅ Inserted 188 new activities (0 duplicates skipped)
+[33/643] Processing AMAT...
+[Yahoo Finance] Fetching analyst activity for AMAT
+[Yahoo Finance] Found 564 analyst actions for AMAT
+  ✅ Inserted 564 new activities (0 duplicates skipped)
+[34/643] Processing AMCR...
+[Yahoo Finance] Fetching analyst activity for AMCR
+[Yahoo Finance] Found 39 analyst actions for AMCR
+  ✅ Inserted 39 new activities (0 duplicates skipped)
+[35/643] Processing AMD...
+[Yahoo Finance] Fetching analyst activity for AMD
+[Yahoo Finance] Found 656 analyst actions for AMD
+  ✅ Inserted 656 new activities (0 duplicates skipped)
+[36/643] Processing AMG...
+[Yahoo Finance] Fetching analyst activity for AMG
+[Yahoo Finance] Found 185 analyst actions for AMG
+  ✅ Inserted 185 new activities (0 duplicates skipped)
+[37/643] Processing AMGN...
+[Yahoo Finance] Fetching analyst activity for AMGN
+[Yahoo Finance] Found 362 analyst actions for AMGN
+  ✅ Inserted 362 new activities (0 duplicates skipped)
+[38/643] Processing AMP...
+[Yahoo Finance] Fetching analyst activity for AMP
+[Yahoo Finance] Found 222 analyst actions for AMP
+  ✅ Inserted 222 new activities (0 duplicates skipped)
+[39/643] Processing AMT...
+[Yahoo Finance] Fetching analyst activity for AMT
+[Yahoo Finance] Found 336 analyst actions for AMT
+  ✅ Inserted 336 new activities (0 duplicates skipped)
+[40/643] Processing AMZN...
+[Yahoo Finance] Fetching analyst activity for AMZN
+[Yahoo Finance] Found 993 analyst actions for AMZN
+  ✅ Inserted 993 new activities (0 duplicates skipped)
+[41/643] Processing ANSS...
+[Yahoo Finance] Fetching analyst activity for ANSS
+[Yahoo Finance] Error fetching analyst activity for ANSS: Quote not found for symbol: ANSS
+  ℹ️  No analyst activity found
+[42/643] Processing AON...
+[Yahoo Finance] Fetching analyst activity for AON
+[Yahoo Finance] Found 237 analyst actions for AON
+  ✅ Inserted 237 new activities (0 duplicates skipped)
+[43/643] Processing AOS...
+[Yahoo Finance] Fetching analyst activity for AOS
+[Yahoo Finance] Found 170 analyst actions for AOS
+  ✅ Inserted 170 new activities (0 duplicates skipped)
+[44/643] Processing APA...
+[Yahoo Finance] Fetching analyst activity for APA
+[Yahoo Finance] Found 235 analyst actions for APA
+  ✅ Inserted 235 new activities (0 duplicates skipped)
+[45/643] Processing APAM...
+[Yahoo Finance] Fetching analyst activity for APAM
+[Yahoo Finance] Found 116 analyst actions for APAM
+  ✅ Inserted 116 new activities (0 duplicates skipped)
+[46/643] Processing APD...
+[Yahoo Finance] Fetching analyst activity for APD
+[Yahoo Finance] Found 345 analyst actions for APD
+  ✅ Inserted 345 new activities (0 duplicates skipped)
+[47/643] Processing APG...
+[Yahoo Finance] Fetching analyst activity for APG
+[Yahoo Finance] Found 74 analyst actions for APG
+  ✅ Inserted 74 new activities (0 duplicates skipped)
+[48/643] Processing APH...
+[Yahoo Finance] Fetching analyst activity for APH
+[Yahoo Finance] Found 191 analyst actions for APH
+  ✅ Inserted 191 new activities (0 duplicates skipped)
+[49/643] Processing APO...
+[Yahoo Finance] Fetching analyst activity for APO
+[Yahoo Finance] Found 131 analyst actions for APO
+  ✅ Inserted 131 new activities (0 duplicates skipped)
+[50/643] Processing APTV...
+[Yahoo Finance] Fetching analyst activity for APTV
+[Yahoo Finance] Found 286 analyst actions for APTV
+  ✅ Inserted 286 new activities (0 duplicates skipped)
+
+--- Progress Report ---
+Processed: 50/643
+Success: 49, Errors: 0
+Total activities inserted: 14835
+
+[51/643] Processing AQN...
+[Yahoo Finance] Fetching analyst activity for AQN
+[Yahoo Finance] Found 77 analyst actions for AQN
+  ✅ Inserted 77 new activities (0 duplicates skipped)
+[52/643] Processing AR...
+[Yahoo Finance] Fetching analyst activity for AR
+[Yahoo Finance] Found 304 analyst actions for AR
+  ✅ Inserted 304 new activities (0 duplicates skipped)
+[53/643] Processing ARE...
+[Yahoo Finance] Fetching analyst activity for ARE
+[Yahoo Finance] Found 172 analyst actions for ARE
+  ✅ Inserted 172 new activities (0 duplicates skipped)
+[54/643] Processing ARES...
+[Yahoo Finance] Fetching analyst activity for ARES
+[Yahoo Finance] Found 195 analyst actions for ARES
+  ✅ Inserted 195 new activities (0 duplicates skipped)
+[55/643] Processing ARTNA...
+[Yahoo Finance] Fetching analyst activity for ARTNA
+[Yahoo Finance] Found 10 analyst actions for ARTNA
+  ✅ Inserted 10 new activities (0 duplicates skipped)
+[56/643] Processing ASML...
+[Yahoo Finance] Fetching analyst activity for ASML
+[Yahoo Finance] Found 133 analyst actions for ASML
+  ✅ Inserted 133 new activities (0 duplicates skipped)
+[57/643] Processing ATO...
+[Yahoo Finance] Fetching analyst activity for ATO
+[Yahoo Finance] Found 183 analyst actions for ATO
+  ✅ Inserted 183 new activities (0 duplicates skipped)
+[58/643] Processing AVA...
+[Yahoo Finance] Fetching analyst activity for AVA
+[Yahoo Finance] Found 42 analyst actions for AVA
+  ✅ Inserted 42 new activities (0 duplicates skipped)
+[59/643] Processing AVB...
+[Yahoo Finance] Fetching analyst activity for AVB
+[Yahoo Finance] Found 349 analyst actions for AVB
+  ✅ Inserted 349 new activities (0 duplicates skipped)
+[60/643] Processing AVGO...
+[Yahoo Finance] Fetching analyst activity for AVGO
+[Yahoo Finance] Found 549 analyst actions for AVGO
+  ✅ Inserted 549 new activities (0 duplicates skipped)
+[61/643] Processing AVY...
+[Yahoo Finance] Fetching analyst activity for AVY
+[Yahoo Finance] Found 207 analyst actions for AVY
+  ✅ Inserted 207 new activities (0 duplicates skipped)
+[62/643] Processing AWK...
+[Yahoo Finance] Fetching analyst activity for AWK
+[Yahoo Finance] Found 161 analyst actions for AWK
+  ✅ Inserted 161 new activities (0 duplicates skipped)
+[63/643] Processing AWR...
+[Yahoo Finance] Fetching analyst activity for AWR
+[Yahoo Finance] Found 54 analyst actions for AWR
+  ✅ Inserted 54 new activities (0 duplicates skipped)
+[64/643] Processing AXON...
+[Yahoo Finance] Fetching analyst activity for AXON
+[Yahoo Finance] Found 151 analyst actions for AXON
+  ✅ Inserted 151 new activities (0 duplicates skipped)
+[65/643] Processing AXP...
+[Yahoo Finance] Fetching analyst activity for AXP
+[Yahoo Finance] Found 504 analyst actions for AXP
+  ✅ Inserted 504 new activities (0 duplicates skipped)
+[66/643] Processing AXS...
+[Yahoo Finance] Fetching analyst activity for AXS
+[Yahoo Finance] Found 166 analyst actions for AXS
+  ✅ Inserted 166 new activities (0 duplicates skipped)
+[67/643] Processing AZO...
+[Yahoo Finance] Fetching analyst activity for AZO
+[Yahoo Finance] Found 385 analyst actions for AZO
+  ✅ Inserted 385 new activities (0 duplicates skipped)
+[68/643] Processing BAC...
+[Yahoo Finance] Fetching analyst activity for BAC
+[Yahoo Finance] Found 374 analyst actions for BAC
+  ✅ Inserted 374 new activities (0 duplicates skipped)
+[69/643] Processing BALL...
+[Yahoo Finance] Fetching analyst activity for BALL
+[Yahoo Finance] Found 239 analyst actions for BALL
+  ✅ Inserted 239 new activities (0 duplicates skipped)
+[70/643] Processing BANC...
+[Yahoo Finance] Fetching analyst activity for BANC
+[Yahoo Finance] Found 117 analyst actions for BANC
+  ✅ Inserted 117 new activities (0 duplicates skipped)
+[71/643] Processing BANF...
+[Yahoo Finance] Fetching analyst activity for BANF
+[Yahoo Finance] Found 13 analyst actions for BANF
+  ✅ Inserted 13 new activities (0 duplicates skipped)
+[72/643] Processing BAX...
+[Yahoo Finance] Fetching analyst activity for BAX
+[Yahoo Finance] Found 248 analyst actions for BAX
+  ✅ Inserted 248 new activities (0 duplicates skipped)
+[73/643] Processing BBWI...
+[Yahoo Finance] Fetching analyst activity for BBWI
+[Yahoo Finance] Found 217 analyst actions for BBWI
+  ✅ Inserted 217 new activities (0 duplicates skipped)
+[74/643] Processing BBY...
+[Yahoo Finance] Fetching analyst activity for BBY
+[Yahoo Finance] Found 429 analyst actions for BBY
+  ✅ Inserted 429 new activities (0 duplicates skipped)
+[75/643] Processing BDX...
+[Yahoo Finance] Fetching analyst activity for BDX
+[Yahoo Finance] Found 196 analyst actions for BDX
+  ✅ Inserted 196 new activities (0 duplicates skipped)
+[76/643] Processing BEN...
+[Yahoo Finance] Fetching analyst activity for BEN
+[Yahoo Finance] Found 308 analyst actions for BEN
+  ✅ Inserted 308 new activities (0 duplicates skipped)
+[77/643] Processing BEP...
+[Yahoo Finance] Fetching analyst activity for BEP
+[Yahoo Finance] Found 96 analyst actions for BEP
+  ✅ Inserted 96 new activities (0 duplicates skipped)
+[78/643] Processing BEPC...
+[Yahoo Finance] Fetching analyst activity for BEPC
+[Yahoo Finance] Found 24 analyst actions for BEPC
+  ✅ Inserted 24 new activities (0 duplicates skipped)
+[79/643] Processing BIIB...
+[Yahoo Finance] Fetching analyst activity for BIIB
+[Yahoo Finance] Found 576 analyst actions for BIIB
+  ✅ Inserted 576 new activities (0 duplicates skipped)
+[80/643] Processing BIO...
+[Yahoo Finance] Fetching analyst activity for BIO
+[Yahoo Finance] Found 73 analyst actions for BIO
+  ✅ Inserted 73 new activities (0 duplicates skipped)
+[81/643] Processing BIP...
+[Yahoo Finance] Fetching analyst activity for BIP
+[Yahoo Finance] Found 86 analyst actions for BIP
+  ✅ Inserted 86 new activities (0 duplicates skipped)
+[82/643] Processing BIPC...
+[Yahoo Finance] Fetching analyst activity for BIPC
+[Yahoo Finance] Found 9 analyst actions for BIPC
+  ✅ Inserted 9 new activities (0 duplicates skipped)
+[83/643] Processing BJRI...
+[Yahoo Finance] Fetching analyst activity for BJRI
+[Yahoo Finance] Found 268 analyst actions for BJRI
+  ✅ Inserted 268 new activities (0 duplicates skipped)
+[84/643] Processing BK...
+[Yahoo Finance] Fetching analyst activity for BK
+[Yahoo Finance] Found 318 analyst actions for BK
+  ✅ Inserted 318 new activities (0 duplicates skipped)
+[85/643] Processing BKH...
+[Yahoo Finance] Fetching analyst activity for BKH
+[Yahoo Finance] Found 88 analyst actions for BKH
+  ✅ Inserted 88 new activities (0 duplicates skipped)
+[86/643] Processing BKNG...
+[Yahoo Finance] Fetching analyst activity for BKNG
+[Yahoo Finance] Found 424 analyst actions for BKNG
+  ✅ Inserted 424 new activities (0 duplicates skipped)
+[87/643] Processing BKR...
+[Yahoo Finance] Fetching analyst activity for BKR
+[Yahoo Finance] Found 242 analyst actions for BKR
+  ✅ Inserted 242 new activities (0 duplicates skipped)
+[88/643] Processing BKU...
+[Yahoo Finance] Fetching analyst activity for BKU
+[Yahoo Finance] Found 175 analyst actions for BKU
+  ✅ Inserted 175 new activities (0 duplicates skipped)
+[89/643] Processing BLDR...
+[Yahoo Finance] Fetching analyst activity for BLDR
+[Yahoo Finance] Found 237 analyst actions for BLDR
+  ✅ Inserted 237 new activities (0 duplicates skipped)
+[90/643] Processing BLK...
+[Yahoo Finance] Fetching analyst activity for BLK
+[Yahoo Finance] Found 372 analyst actions for BLK
+  ✅ Inserted 372 new activities (0 duplicates skipped)
+[91/643] Processing BLMN...
+[Yahoo Finance] Fetching analyst activity for BLMN
+[Yahoo Finance] Found 247 analyst actions for BLMN
+  ✅ Inserted 247 new activities (0 duplicates skipped)
+[92/643] Processing BMY...
+[Yahoo Finance] Fetching analyst activity for BMY
+[Yahoo Finance] Found 266 analyst actions for BMY
+  ✅ Inserted 266 new activities (0 duplicates skipped)
+[93/643] Processing BOH...
+[Yahoo Finance] Fetching analyst activity for BOH
+[Yahoo Finance] Found 68 analyst actions for BOH
+  ✅ Inserted 68 new activities (0 duplicates skipped)
+[94/643] Processing BOOT...
+[Yahoo Finance] Fetching analyst activity for BOOT
+[Yahoo Finance] Found 208 analyst actions for BOOT
+  ✅ Inserted 208 new activities (0 duplicates skipped)
+[95/643] Processing BRC...
+[Yahoo Finance] Fetching analyst activity for BRC
+[Yahoo Finance] Found 31 analyst actions for BRC
+  ✅ Inserted 31 new activities (0 duplicates skipped)
+[96/643] Processing BRK.B...
+[Yahoo Finance] Fetching analyst activity for BRK.B
+[Yahoo Finance] Error fetching analyst activity for BRK.B: No fundamentals data found for symbol: BRK.B
+  ℹ️  No analyst activity found
+[97/643] Processing BRO...
+[Yahoo Finance] Fetching analyst activity for BRO
+[Yahoo Finance] Found 212 analyst actions for BRO
+  ✅ Inserted 212 new activities (0 duplicates skipped)
+[98/643] Processing BROS...
+[Yahoo Finance] Fetching analyst activity for BROS
+{
+  "type": 62,
+  "schema": {
+    "title": "QuoteSummaryEnumGrade",
+    "anyOf": [
+      {
+        "const": "Accumulate",
+        "type": "string"
+      },
+      {
+        "const": "Add",
+        "type": "string"
+      },
+      {
+        "const": "Average",
+        "type": "string"
+      },
+      {
+        "const": "Below Average",
+        "type": "string"
+      },
+      {
+        "const": "Buy",
+        "type": "string"
+      },
+      {
+        "const": "Conviction Buy",
+        "type": "string"
+      },
+      {
+        "const": "",
+        "type": "string"
+      },
+      {
+        "const": "Equal-Weight",
+        "type": "string"
+      },
+      {
+        "const": "Fair Value",
+        "type": "string"
+      },
+      {
+        "const": "Equal-weight",
+        "type": "string"
+      },
+      {
+        "const": "Long-term Buy",
+        "type": "string"
+      },
+      {
+        "const": "Hold",
+        "type": "string"
+      },
+      {
+        "const": "Long-Term Buy",
+        "type": "string"
+      },
+      {
+        "const": "Market Outperform",
+        "type": "string"
+      },
+      {
+        "const": "Market Perform",
+        "type": "string"
+      },
+      {
+        "const": "Mixed",
+        "type": "string"
+      },
+      {
+        "const": "Negative",
+        "type": "string"
+      },
+      {
+        "const": "Neutral",
+        "type": "string"
+      },
+      {
+        "const": "In-Line",
+        "type": "string"
+      },
+      {
+        "const": "Outperform",
+        "type": "string"
+      },
+      {
+        "const": "Overweight",
+        "type": "string"
+      },
+      {
+        "const": "Peer Perform",
+        "type": "string"
+      },
+      {
+        "const": "Perform",
+        "type": "string"
+      },
+      {
+        "const": "Positive",
+        "type": "string"
+      },
+      {
+        "const": "Reduce",
+        "type": "string"
+      },
+      {
+        "const": "Sector Outperform",
+        "type": "string"
+      },
+      {
+        "const": "Sector Perform",
+        "type": "string"
+      },
+      {
+        "const": "Sector Weight",
+        "type": "string"
+      },
+      {
+        "const": "Sell",
+        "type": "string"
+      },
+      {
+        "const": "Strong Buy",
+        "type": "string"
+      },
+      {
+        "const": "Top Pick",
+        "type": "string"
+      },
+      {
+        "const": "Underperform",
+        "type": "string"
+      },
+      {
+        "const": "Underperformer",
+        "type": "string"
+      },
+      {
+        "const": "Underweight",
+        "type": "string"
+      },
+      {
+        "const": "Trim",
+        "type": "string"
+      },
+      {
+        "const": "Above Average",
+        "type": "string"
+      },
+      {
+        "const": "In-line",
+        "type": "string"
+      },
+      {
+        "const": "Outperformer",
+        "type": "string"
+      },
+      {
+        "const": "OVerweight",
+        "type": "string"
+      },
+      {
+        "const": "Cautious",
+        "type": "string"
+      },
+      {
+        "const": "Market Weight",
+        "type": "string"
+      },
+      {
+        "const": "Sector Underperform",
+        "type": "string"
+      },
+      {
+        "const": "Market Underperform",
+        "type": "string"
+      },
+      {
+        "const": "Peer perform",
+        "type": "string"
+      },
+      {
+        "const": "Gradually Accumulate",
+        "type": "string"
+      },
+      {
+        "const": "Action List Buy",
+        "type": "string"
+      },
+      {
+        "const": "Performer",
+        "type": "string"
+      },
+      {
+        "const": "Sector Performer",
+        "type": "string"
+      },
+      {
+        "const": "Speculative Buy",
+        "type": "string"
+      },
+      {
+        "const": "Strong Sell",
+        "type": "string"
+      },
+      {
+        "const": "Speculative Hold",
+        "type": "string"
+      },
+      {
+        "const": "Not Rated",
+        "type": "string"
+      },
+      {
+        "const": "Hold Neutral",
+        "type": "string"
+      },
+      {
+        "const": "Developing",
+        "type": "string"
+      },
+      {
+        "const": "buy",
+        "type": "string"
+      },
+      {
+        "const": "HOld",
+        "type": "string"
+      },
+      {
+        "const": "Trading Sell",
+        "type": "string"
+      },
+      {
+        "const": "Tender",
+        "type": "string"
+      },
+      {
+        "const": "market perform",
+        "type": "string"
+      },
+      {
+        "const": "BUy",
+        "type": "string"
+      }
+    ]
+  },
+  "path": "/upgradeDowngradeHistory/history/52/fromGrade",
+  "value": "Trading Buy",
+  "message": "Expected union value"
+}
+
+    This may happen intermittently and you should catch errors appropriately.
+    However:  1) if this recently started happening on every request for a symbol
+    that used to work, Yahoo may have changed their API.  2) If this happens on
+    every request for a symbol you've never used before, but not for other
+    symbols, you've found an edge-case (OR, we may just be protecting you from
+    "bad" data sometimes stored for e.g. misspelt symbols on Yahoo's side).
+    Please see if anyone has reported this previously:
+    
+      https://github.com/gadicc/node-yahoo-finance2/issues?q=is%3Aissue+QuoteSummaryResult
+    
+    or open a new issue (and mention the symbol):  yahoo-finance2 v2.13.3
+    
+      https://github.com/gadicc/node-yahoo-finance2/issues/new?labels=bug%2C+validation&template=validation.md&title=QuoteSummaryResult
+    
+    For information on how to turn off the above logging or skip these errors,
+    see https://github.com/gadicc/node-yahoo-finance2/tree/devel/docs/validation.md.
+    
+    At the end of the doc, there's also a section on how to
+    [Help Fix Validation Errors](https://github.com/gadicc/node-yahoo-finance2/blob/devel/docs/validation.md#help-fix)
+    in case you'd like to contribute to the project.  Most of the time, these
+    fixes are very quick and easy; it's just hard for our small core team to keep up,
+    so help is always appreciated!
+    
+[Yahoo Finance] Error fetching analyst activity for BROS: Failed Yahoo Schema validation
+  ℹ️  No analyst activity found
+[99/643] Processing BSX...
+[Yahoo Finance] Fetching analyst activity for BSX
+[Yahoo Finance] Found 373 analyst actions for BSX
+  ✅ Inserted 373 new activities (0 duplicates skipped)
+[100/643] Processing BWA...
+[Yahoo Finance] Fetching analyst activity for BWA
+[Yahoo Finance] Found 313 analyst actions for BWA
+  ✅ Inserted 313 new activities (0 duplicates skipped)
+
+--- Progress Report ---
+Processed: 100/643
+Success: 97, Errors: 0
+Total activities inserted: 25324
+
+[101/643] Processing BXP...
+[Yahoo Finance] Fetching analyst activity for BXP
+[Yahoo Finance] Found 308 analyst actions for BXP
+  ✅ Inserted 308 new activities (0 duplicates skipped)
+[102/643] Processing BYD...
+[Yahoo Finance] Fetching analyst activity for BYD
+[Yahoo Finance] Found 239 analyst actions for BYD
+  ✅ Inserted 239 new activities (0 duplicates skipped)
+[103/643] Processing C...
+[Yahoo Finance] Fetching analyst activity for C
+[Yahoo Finance] Found 193 analyst actions for C
+  ✅ Inserted 193 new activities (0 duplicates skipped)
+[104/643] Processing CADE...
+[Yahoo Finance] Fetching analyst activity for CADE
+[Yahoo Finance] Found 85 analyst actions for CADE
+  ✅ Inserted 85 new activities (0 duplicates skipped)
+[105/643] Processing CAG...
+[Yahoo Finance] Fetching analyst activity for CAG
+[Yahoo Finance] Found 211 analyst actions for CAG
+  ✅ Inserted 211 new activities (0 duplicates skipped)
+[106/643] Processing CAH...
+[Yahoo Finance] Fetching analyst activity for CAH
+[Yahoo Finance] Found 225 analyst actions for CAH
+  ✅ Inserted 225 new activities (0 duplicates skipped)
+[107/643] Processing CAKE...
+[Yahoo Finance] Fetching analyst activity for CAKE
+[Yahoo Finance] Found 331 analyst actions for CAKE
+  ✅ Inserted 331 new activities (0 duplicates skipped)
+[108/643] Processing CAL...
+[Yahoo Finance] Fetching analyst activity for CAL
+[Yahoo Finance] Found 38 analyst actions for CAL
+  ✅ Inserted 38 new activities (0 duplicates skipped)
+[109/643] Processing CARR...
+[Yahoo Finance] Fetching analyst activity for CARR
+[Yahoo Finance] Found 201 analyst actions for CARR
+  ✅ Inserted 201 new activities (0 duplicates skipped)
+[110/643] Processing CAT...
+[Yahoo Finance] Fetching analyst activity for CAT
+[Yahoo Finance] Found 355 analyst actions for CAT
+  ✅ Inserted 355 new activities (0 duplicates skipped)
+[111/643] Processing CATY...
+[Yahoo Finance] Fetching analyst activity for CATY
+[Yahoo Finance] Found 61 analyst actions for CATY
+  ✅ Inserted 61 new activities (0 duplicates skipped)
+[112/643] Processing CB...
+[Yahoo Finance] Fetching analyst activity for CB
+[Yahoo Finance] Found 316 analyst actions for CB
+  ✅ Inserted 316 new activities (0 duplicates skipped)
+[113/643] Processing CBOE...
+[Yahoo Finance] Fetching analyst activity for CBOE
+[Yahoo Finance] Found 314 analyst actions for CBOE
+  ✅ Inserted 314 new activities (0 duplicates skipped)
+[114/643] Processing CBRE...
+[Yahoo Finance] Fetching analyst activity for CBRE
+[Yahoo Finance] Found 122 analyst actions for CBRE
+  ✅ Inserted 122 new activities (0 duplicates skipped)
+[115/643] Processing CBRL...
+[Yahoo Finance] Fetching analyst activity for CBRL
+[Yahoo Finance] Found 172 analyst actions for CBRL
+  ✅ Inserted 172 new activities (0 duplicates skipped)
+[116/643] Processing CBSH...
+[Yahoo Finance] Fetching analyst activity for CBSH
+[Yahoo Finance] Found 125 analyst actions for CBSH
+  ✅ Inserted 125 new activities (0 duplicates skipped)
+[117/643] Processing CBU...
+[Yahoo Finance] Fetching analyst activity for CBU
+[Yahoo Finance] Found 32 analyst actions for CBU
+  ✅ Inserted 32 new activities (0 duplicates skipped)
+[118/643] Processing CCI...
+[Yahoo Finance] Fetching analyst activity for CCI
+[Yahoo Finance] Found 294 analyst actions for CCI
+  ✅ Inserted 294 new activities (0 duplicates skipped)
+[119/643] Processing CCL...
+[Yahoo Finance] Fetching analyst activity for CCL
+[Yahoo Finance] Found 391 analyst actions for CCL
+  ✅ Inserted 391 new activities (0 duplicates skipped)
+[120/643] Processing CDNS...
+[Yahoo Finance] Fetching analyst activity for CDNS
+[Yahoo Finance] Found 207 analyst actions for CDNS
+  ✅ Inserted 207 new activities (0 duplicates skipped)
+[121/643] Processing CDW...
+[Yahoo Finance] Fetching analyst activity for CDW
+[Yahoo Finance] Found 135 analyst actions for CDW
+  ✅ Inserted 135 new activities (0 duplicates skipped)
+[122/643] Processing CE...
+[Yahoo Finance] Fetching analyst activity for CE
+[Yahoo Finance] Found 388 analyst actions for CE
+  ✅ Inserted 388 new activities (0 duplicates skipped)
+[123/643] Processing CEG...
+[Yahoo Finance] Fetching analyst activity for CEG
+[Yahoo Finance] Found 148 analyst actions for CEG
+  ✅ Inserted 148 new activities (0 duplicates skipped)
+[124/643] Processing CF...
+[Yahoo Finance] Fetching analyst activity for CF
+[Yahoo Finance] Found 331 analyst actions for CF
+  ✅ Inserted 331 new activities (0 duplicates skipped)
+[125/643] Processing CFG...
+[Yahoo Finance] Fetching analyst activity for CFG
+[Yahoo Finance] Found 251 analyst actions for CFG
+  ✅ Inserted 251 new activities (0 duplicates skipped)
+[126/643] Processing CFR...
+[Yahoo Finance] Fetching analyst activity for CFR
+[Yahoo Finance] Found 218 analyst actions for CFR
+  ✅ Inserted 218 new activities (0 duplicates skipped)
+[127/643] Processing CHEF...
+[Yahoo Finance] Fetching analyst activity for CHEF
+[Yahoo Finance] Found 73 analyst actions for CHEF
+  ✅ Inserted 73 new activities (0 duplicates skipped)
+[128/643] Processing CHRD...
+[Yahoo Finance] Fetching analyst activity for CHRD
+[Yahoo Finance] Found 119 analyst actions for CHRD
+  ✅ Inserted 119 new activities (0 duplicates skipped)
+[129/643] Processing CHRW...
+[Yahoo Finance] Fetching analyst activity for CHRW
+[Yahoo Finance] Found 385 analyst actions for CHRW
+  ✅ Inserted 385 new activities (0 duplicates skipped)
+[130/643] Processing CHTR...
+[Yahoo Finance] Fetching analyst activity for CHTR
+[Yahoo Finance] Found 376 analyst actions for CHTR
+  ✅ Inserted 376 new activities (0 duplicates skipped)
+[131/643] Processing CI...
+[Yahoo Finance] Fetching analyst activity for CI
+[Yahoo Finance] Found 325 analyst actions for CI
+  ✅ Inserted 325 new activities (0 duplicates skipped)
+[132/643] Processing CIEN...
+[Yahoo Finance] Fetching analyst activity for CIEN
+[Yahoo Finance] Found 342 analyst actions for CIEN
+  ✅ Inserted 342 new activities (0 duplicates skipped)
+[133/643] Processing CINF...
+[Yahoo Finance] Fetching analyst activity for CINF
+[Yahoo Finance] Found 70 analyst actions for CINF
+  ✅ Inserted 70 new activities (0 duplicates skipped)
+[134/643] Processing CL...
+[Yahoo Finance] Fetching analyst activity for CL
+[Yahoo Finance] Found 281 analyst actions for CL
+  ✅ Inserted 281 new activities (0 duplicates skipped)
+[135/643] Processing CLX...
+[Yahoo Finance] Fetching analyst activity for CLX
+[Yahoo Finance] Found 305 analyst actions for CLX
+  ✅ Inserted 305 new activities (0 duplicates skipped)
+[136/643] Processing CMA...
+[Yahoo Finance] Fetching analyst activity for CMA
+[Yahoo Finance] Found 486 analyst actions for CMA
+  ✅ Inserted 486 new activities (0 duplicates skipped)
+[137/643] Processing CMCSA...
+[Yahoo Finance] Fetching analyst activity for CMCSA
+[Yahoo Finance] Found 357 analyst actions for CMCSA
+  ✅ Inserted 357 new activities (0 duplicates skipped)
+[138/643] Processing CME...
+[Yahoo Finance] Fetching analyst activity for CME
+[Yahoo Finance] Found 349 analyst actions for CME
+  ✅ Inserted 349 new activities (0 duplicates skipped)
+[139/643] Processing CMG...
+[Yahoo Finance] Fetching analyst activity for CMG
+[Yahoo Finance] Found 860 analyst actions for CMG
+  ✅ Inserted 860 new activities (0 duplicates skipped)
+[140/643] Processing CMI...
+[Yahoo Finance] Fetching analyst activity for CMI
+[Yahoo Finance] Found 342 analyst actions for CMI
+  ✅ Inserted 342 new activities (0 duplicates skipped)
+[141/643] Processing CMS...
+[Yahoo Finance] Fetching analyst activity for CMS
+[Yahoo Finance] Found 255 analyst actions for CMS
+  ✅ Inserted 255 new activities (0 duplicates skipped)
+[142/643] Processing CNP...
+[Yahoo Finance] Fetching analyst activity for CNP
+[Yahoo Finance] Found 238 analyst actions for CNP
+  ✅ Inserted 238 new activities (0 duplicates skipped)
+[143/643] Processing CNX...
+[Yahoo Finance] Fetching analyst activity for CNX
+[Yahoo Finance] Found 202 analyst actions for CNX
+  ✅ Inserted 202 new activities (0 duplicates skipped)
+[144/643] Processing COF...
+[Yahoo Finance] Fetching analyst activity for COF
+[Yahoo Finance] Found 352 analyst actions for COF
+  ✅ Inserted 352 new activities (0 duplicates skipped)
+[145/643] Processing COP...
+[Yahoo Finance] Fetching analyst activity for COP
+[Yahoo Finance] Found 401 analyst actions for COP
+  ✅ Inserted 401 new activities (0 duplicates skipped)
+[146/643] Processing COST...
+[Yahoo Finance] Fetching analyst activity for COST
+[Yahoo Finance] Found 587 analyst actions for COST
+  ✅ Inserted 587 new activities (0 duplicates skipped)
+[147/643] Processing CPB...
+[Yahoo Finance] Fetching analyst activity for CPB
+[Yahoo Finance] Found 250 analyst actions for CPB
+  ✅ Inserted 250 new activities (0 duplicates skipped)
+[148/643] Processing CPK...
+[Yahoo Finance] Fetching analyst activity for CPK
+[Yahoo Finance] Found 61 analyst actions for CPK
+  ✅ Inserted 61 new activities (0 duplicates skipped)
+[149/643] Processing CPRI...
+[Yahoo Finance] Fetching analyst activity for CPRI
+[Yahoo Finance] Found 179 analyst actions for CPRI
+  ✅ Inserted 179 new activities (0 duplicates skipped)
+[150/643] Processing CPRT...
+[Yahoo Finance] Fetching analyst activity for CPRT
+[Yahoo Finance] Found 76 analyst actions for CPRT
+  ✅ Inserted 76 new activities (0 duplicates skipped)
+
+--- Progress Report ---
+Processed: 150/643
+Success: 147, Errors: 0
+Total activities inserted: 38286
+
+[151/643] Processing CPT...
+[Yahoo Finance] Fetching analyst activity for CPT
+[Yahoo Finance] Found 300 analyst actions for CPT
+  ✅ Inserted 300 new activities (0 duplicates skipped)
+[152/643] Processing CRGY...
+[Yahoo Finance] Fetching analyst activity for CRGY
+[Yahoo Finance] Found 64 analyst actions for CRGY
+  ✅ Inserted 64 new activities (0 duplicates skipped)
+[153/643] Processing CRK...
+[Yahoo Finance] Fetching analyst activity for CRK
+[Yahoo Finance] Found 161 analyst actions for CRK
+  ✅ Inserted 161 new activities (0 duplicates skipped)
+[154/643] Processing CRL...
+[Yahoo Finance] Fetching analyst activity for CRL
+[Yahoo Finance] Found 242 analyst actions for CRL
+  ✅ Inserted 242 new activities (0 duplicates skipped)
+[155/643] Processing CRM...
+[Yahoo Finance] Fetching analyst activity for CRM
+[Yahoo Finance] Found 847 analyst actions for CRM
+  ✅ Inserted 847 new activities (0 duplicates skipped)
+[156/643] Processing CSCO...
+[Yahoo Finance] Fetching analyst activity for CSCO
+[Yahoo Finance] Found 477 analyst actions for CSCO
+  ✅ Inserted 477 new activities (0 duplicates skipped)
+[157/643] Processing CSX...
+[Yahoo Finance] Fetching analyst activity for CSX
+[Yahoo Finance] Found 443 analyst actions for CSX
+  ✅ Inserted 443 new activities (0 duplicates skipped)
+[158/643] Processing CTAS...
+[Yahoo Finance] Fetching analyst activity for CTAS
+[Yahoo Finance] Found 224 analyst actions for CTAS
+  ✅ Inserted 224 new activities (0 duplicates skipped)
+[159/643] Processing CTRA...
+[Yahoo Finance] Fetching analyst activity for CTRA
+[Yahoo Finance] Found 360 analyst actions for CTRA
+  ✅ Inserted 360 new activities (0 duplicates skipped)
+[160/643] Processing CTRN...
+[Yahoo Finance] Fetching analyst activity for CTRN
+[Yahoo Finance] Found 40 analyst actions for CTRN
+  ✅ Inserted 40 new activities (0 duplicates skipped)
+[161/643] Processing CTSH...
+[Yahoo Finance] Fetching analyst activity for CTSH
+[Yahoo Finance] Found 340 analyst actions for CTSH
+  ✅ Inserted 340 new activities (0 duplicates skipped)
+[162/643] Processing CTVA...
+[Yahoo Finance] Fetching analyst activity for CTVA
+[Yahoo Finance] Found 216 analyst actions for CTVA
+  ✅ Inserted 216 new activities (0 duplicates skipped)
+[163/643] Processing CVBF...
+[Yahoo Finance] Fetching analyst activity for CVBF
+[Yahoo Finance] Found 53 analyst actions for CVBF
+  ✅ Inserted 53 new activities (0 duplicates skipped)
+[164/643] Processing CVE...
+[Yahoo Finance] Fetching analyst activity for CVE
+[Yahoo Finance] Found 75 analyst actions for CVE
+  ✅ Inserted 75 new activities (0 duplicates skipped)
+[165/643] Processing CVS...
+[Yahoo Finance] Fetching analyst activity for CVS
+[Yahoo Finance] Found 320 analyst actions for CVS
+  ✅ Inserted 320 new activities (0 duplicates skipped)
+[166/643] Processing CVX...
+[Yahoo Finance] Fetching analyst activity for CVX
+[Yahoo Finance] Found 404 analyst actions for CVX
+  ✅ Inserted 404 new activities (0 duplicates skipped)
+[167/643] Processing CWEN...
+[Yahoo Finance] Fetching analyst activity for CWEN
+[Yahoo Finance] Found 55 analyst actions for CWEN
+  ✅ Inserted 55 new activities (0 duplicates skipped)
+[168/643] Processing CWH...
+[Yahoo Finance] Fetching analyst activity for CWH
+[Yahoo Finance] Found 139 analyst actions for CWH
+  ✅ Inserted 139 new activities (0 duplicates skipped)
+[169/643] Processing CWT...
+[Yahoo Finance] Fetching analyst activity for CWT
+[Yahoo Finance] Found 43 analyst actions for CWT
+  ✅ Inserted 43 new activities (0 duplicates skipped)
+[170/643] Processing CXW...
+[Yahoo Finance] Fetching analyst activity for CXW
+[Yahoo Finance] Found 44 analyst actions for CXW
+  ✅ Inserted 44 new activities (0 duplicates skipped)
+[171/643] Processing CZR...
+[Yahoo Finance] Fetching analyst activity for CZR
+[Yahoo Finance] Found 217 analyst actions for CZR
+  ✅ Inserted 217 new activities (0 duplicates skipped)
+[172/643] Processing D...
+[Yahoo Finance] Fetching analyst activity for D
+[Yahoo Finance] Found 260 analyst actions for D
+  ✅ Inserted 260 new activities (0 duplicates skipped)
+[173/643] Processing DAL...
+[Yahoo Finance] Fetching analyst activity for DAL
+[Yahoo Finance] Found 298 analyst actions for DAL
+  ✅ Inserted 298 new activities (0 duplicates skipped)
+[174/643] Processing DBI...
+[Yahoo Finance] Fetching analyst activity for DBI
+[Yahoo Finance] Found 65 analyst actions for DBI
+  ✅ Inserted 65 new activities (0 duplicates skipped)
+[175/643] Processing DD...
+[Yahoo Finance] Fetching analyst activity for DD
+[Yahoo Finance] Found 284 analyst actions for DD
+  ✅ Inserted 284 new activities (0 duplicates skipped)
+[176/643] Processing DE...
+[Yahoo Finance] Fetching analyst activity for DE
+[Yahoo Finance] Found 407 analyst actions for DE
+  ✅ Inserted 407 new activities (0 duplicates skipped)
+[177/643] Processing DENN...
+[Yahoo Finance] Fetching analyst activity for DENN
+[Yahoo Finance] Found 111 analyst actions for DENN
+  ✅ Inserted 111 new activities (0 duplicates skipped)
+[178/643] Processing DGX...
+[Yahoo Finance] Fetching analyst activity for DGX
+[Yahoo Finance] Found 236 analyst actions for DGX
+  ✅ Inserted 236 new activities (0 duplicates skipped)
+[179/643] Processing DHI...
+[Yahoo Finance] Fetching analyst activity for DHI
+[Yahoo Finance] Found 357 analyst actions for DHI
+  ✅ Inserted 357 new activities (0 duplicates skipped)
+[180/643] Processing DHR...
+[Yahoo Finance] Fetching analyst activity for DHR
+[Yahoo Finance] Found 273 analyst actions for DHR
+  ✅ Inserted 273 new activities (0 duplicates skipped)
+[181/643] Processing DIN...
+[Yahoo Finance] Fetching analyst activity for DIN
+[Yahoo Finance] Found 173 analyst actions for DIN
+  ✅ Inserted 173 new activities (0 duplicates skipped)
+[182/643] Processing DIS...
+[Yahoo Finance] Fetching analyst activity for DIS
+[Yahoo Finance] Found 501 analyst actions for DIS
+  ✅ Inserted 501 new activities (0 duplicates skipped)
+[183/643] Processing DLR...
+[Yahoo Finance] Fetching analyst activity for DLR
+[Yahoo Finance] Found 310 analyst actions for DLR
+  ✅ Inserted 310 new activities (0 duplicates skipped)
+[184/643] Processing DOV...
+[Yahoo Finance] Fetching analyst activity for DOV
+[Yahoo Finance] Found 321 analyst actions for DOV
+  ✅ Inserted 321 new activities (0 duplicates skipped)
+[185/643] Processing DOW...
+[Yahoo Finance] Fetching analyst activity for DOW
+[Yahoo Finance] Found 330 analyst actions for DOW
+  ✅ Inserted 330 new activities (0 duplicates skipped)
+[186/643] Processing DPZ...
+[Yahoo Finance] Fetching analyst activity for DPZ
+[Yahoo Finance] Found 590 analyst actions for DPZ
+  ✅ Inserted 590 new activities (0 duplicates skipped)
+[187/643] Processing DRI...
+[Yahoo Finance] Fetching analyst activity for DRI
+[Yahoo Finance] Found 603 analyst actions for DRI
+  ✅ Inserted 603 new activities (0 duplicates skipped)
+[188/643] Processing DTE...
+[Yahoo Finance] Fetching analyst activity for DTE
+[Yahoo Finance] Found 333 analyst actions for DTE
+  ✅ Inserted 333 new activities (0 duplicates skipped)
+[189/643] Processing DUK...
+[Yahoo Finance] Fetching analyst activity for DUK
+[Yahoo Finance] Found 333 analyst actions for DUK
+  ✅ Inserted 333 new activities (0 duplicates skipped)
+[190/643] Processing DVA...
+[Yahoo Finance] Fetching analyst activity for DVA
+[Yahoo Finance] Found 114 analyst actions for DVA
+  ✅ Inserted 114 new activities (0 duplicates skipped)
+[191/643] Processing DVN...
+[Yahoo Finance] Fetching analyst activity for DVN
+[Yahoo Finance] Found 485 analyst actions for DVN
+  ✅ Inserted 485 new activities (0 duplicates skipped)
+[192/643] Processing DXC...
+[Yahoo Finance] Fetching analyst activity for DXC
+[Yahoo Finance] Found 144 analyst actions for DXC
+  ✅ Inserted 144 new activities (0 duplicates skipped)
+[193/643] Processing DXCM...
+[Yahoo Finance] Fetching analyst activity for DXCM
+[Yahoo Finance] Found 315 analyst actions for DXCM
+  ✅ Inserted 315 new activities (0 duplicates skipped)
+[194/643] Processing EA...
+[Yahoo Finance] Fetching analyst activity for EA
+[Yahoo Finance] Found 448 analyst actions for EA
+  ✅ Inserted 448 new activities (0 duplicates skipped)
+[195/643] Processing EAT...
+[Yahoo Finance] Fetching analyst activity for EAT
+[Yahoo Finance] Found 398 analyst actions for EAT
+  ✅ Inserted 398 new activities (0 duplicates skipped)
+[196/643] Processing EBAY...
+[Yahoo Finance] Fetching analyst activity for EBAY
+[Yahoo Finance] Found 535 analyst actions for EBAY
+  ✅ Inserted 535 new activities (0 duplicates skipped)
+[197/643] Processing EBF...
+[Yahoo Finance] Fetching analyst activity for EBF
+[Yahoo Finance] Found 3 analyst actions for EBF
+  ✅ Inserted 3 new activities (0 duplicates skipped)
+[198/643] Processing ECL...
+[Yahoo Finance] Fetching analyst activity for ECL
+[Yahoo Finance] Found 314 analyst actions for ECL
+  ✅ Inserted 314 new activities (0 duplicates skipped)
+[199/643] Processing ED...
+[Yahoo Finance] Fetching analyst activity for ED
+[Yahoo Finance] Found 317 analyst actions for ED
+  ✅ Inserted 317 new activities (0 duplicates skipped)
+[200/643] Processing EFX...
+[Yahoo Finance] Fetching analyst activity for EFX
+[Yahoo Finance] Found 291 analyst actions for EFX
+  ✅ Inserted 291 new activities (0 duplicates skipped)
+
+--- Progress Report ---
+Processed: 200/643
+Success: 197, Errors: 0
+Total activities inserted: 52499
+
+[201/643] Processing EIX...
+[Yahoo Finance] Fetching analyst activity for EIX
+[Yahoo Finance] Found 330 analyst actions for EIX
+  ✅ Inserted 330 new activities (0 duplicates skipped)
+[202/643] Processing ELV...
+[Yahoo Finance] Fetching analyst activity for ELV
+[Yahoo Finance] Found 280 analyst actions for ELV
+  ✅ Inserted 280 new activities (0 duplicates skipped)
+[203/643] Processing EMN...
+[Yahoo Finance] Fetching analyst activity for EMN
+[Yahoo Finance] Found 309 analyst actions for EMN
+  ✅ Inserted 309 new activities (0 duplicates skipped)
+[204/643] Processing EMR...
+[Yahoo Finance] Fetching analyst activity for EMR
+[Yahoo Finance] Found 314 analyst actions for EMR
+  ✅ Inserted 314 new activities (0 duplicates skipped)
+[205/643] Processing ENPH...
+[Yahoo Finance] Fetching analyst activity for ENPH
+[Yahoo Finance] Found 406 analyst actions for ENPH
+  ✅ Inserted 406 new activities (0 duplicates skipped)
+[206/643] Processing EOG...
+[Yahoo Finance] Fetching analyst activity for EOG
+[Yahoo Finance] Found 567 analyst actions for EOG
+  ✅ Inserted 567 new activities (0 duplicates skipped)
+[207/643] Processing EPAM...
+[Yahoo Finance] Fetching analyst activity for EPAM
+[Yahoo Finance] Found 270 analyst actions for EPAM
+  ✅ Inserted 270 new activities (0 duplicates skipped)
+[208/643] Processing EQIX...
+[Yahoo Finance] Fetching analyst activity for EQIX
+[Yahoo Finance] Found 356 analyst actions for EQIX
+  ✅ Inserted 356 new activities (0 duplicates skipped)
+[209/643] Processing EQR...
+[Yahoo Finance] Fetching analyst activity for EQR
+[Yahoo Finance] Found 316 analyst actions for EQR
+  ✅ Inserted 316 new activities (0 duplicates skipped)
+[210/643] Processing ES...
+[Yahoo Finance] Fetching analyst activity for ES
+[Yahoo Finance] Found 250 analyst actions for ES
+  ✅ Inserted 250 new activities (0 duplicates skipped)
+[211/643] Processing ESS...
+[Yahoo Finance] Fetching analyst activity for ESS
+[Yahoo Finance] Found 376 analyst actions for ESS
+  ✅ Inserted 376 new activities (0 duplicates skipped)
+[212/643] Processing ETN...
+[Yahoo Finance] Fetching analyst activity for ETN
+[Yahoo Finance] Found 375 analyst actions for ETN
+  ✅ Inserted 375 new activities (0 duplicates skipped)
+[213/643] Processing ETR...
+[Yahoo Finance] Fetching analyst activity for ETR
+[Yahoo Finance] Found 340 analyst actions for ETR
+  ✅ Inserted 340 new activities (0 duplicates skipped)
+[214/643] Processing EVRG...
+[Yahoo Finance] Fetching analyst activity for EVRG
+[Yahoo Finance] Found 78 analyst actions for EVRG
+  ✅ Inserted 78 new activities (0 duplicates skipped)
+[215/643] Processing EW...
+[Yahoo Finance] Fetching analyst activity for EW
+[Yahoo Finance] Found 461 analyst actions for EW
+  ✅ Inserted 461 new activities (0 duplicates skipped)
+[216/643] Processing EXC...
+[Yahoo Finance] Fetching analyst activity for EXC
+[Yahoo Finance] Found 332 analyst actions for EXC
+  ✅ Inserted 332 new activities (0 duplicates skipped)
+[217/643] Processing EXPD...
+[Yahoo Finance] Fetching analyst activity for EXPD
+[Yahoo Finance] Found 169 analyst actions for EXPD
+  ✅ Inserted 169 new activities (0 duplicates skipped)
+[218/643] Processing EXPE...
+[Yahoo Finance] Fetching analyst activity for EXPE
+[Yahoo Finance] Found 512 analyst actions for EXPE
+  ✅ Inserted 512 new activities (0 duplicates skipped)
+[219/643] Processing EXR...
+[Yahoo Finance] Fetching analyst activity for EXR
+[Yahoo Finance] Found 238 analyst actions for EXR
+  ✅ Inserted 238 new activities (0 duplicates skipped)
+[220/643] Processing F...
+[Yahoo Finance] Fetching analyst activity for F
+[Yahoo Finance] Found 302 analyst actions for F
+  ✅ Inserted 302 new activities (0 duplicates skipped)
+[221/643] Processing FANG...
+[Yahoo Finance] Fetching analyst activity for FANG
+[Yahoo Finance] Found 433 analyst actions for FANG
+  ✅ Inserted 433 new activities (0 duplicates skipped)
+[222/643] Processing FAST...
+[Yahoo Finance] Fetching analyst activity for FAST
+[Yahoo Finance] Found 161 analyst actions for FAST
+  ✅ Inserted 161 new activities (0 duplicates skipped)
+[223/643] Processing FCX...
+[Yahoo Finance] Fetching analyst activity for FCX
+[Yahoo Finance] Found 303 analyst actions for FCX
+  ✅ Inserted 303 new activities (0 duplicates skipped)
+[224/643] Processing FDS...
+[Yahoo Finance] Fetching analyst activity for FDS
+[Yahoo Finance] Found 218 analyst actions for FDS
+  ✅ Inserted 218 new activities (0 duplicates skipped)
+[225/643] Processing FDX...
+[Yahoo Finance] Fetching analyst activity for FDX
+[Yahoo Finance] Found 543 analyst actions for FDX
+  ✅ Inserted 543 new activities (0 duplicates skipped)
+[226/643] Processing FE...
+[Yahoo Finance] Fetching analyst activity for FE
+[Yahoo Finance] Found 286 analyst actions for FE
+  ✅ Inserted 286 new activities (0 duplicates skipped)
+[227/643] Processing FFBC...
+[Yahoo Finance] Fetching analyst activity for FFBC
+[Yahoo Finance] Found 70 analyst actions for FFBC
+  ✅ Inserted 70 new activities (0 duplicates skipped)
+[228/643] Processing FFIN...
+[Yahoo Finance] Fetching analyst activity for FFIN
+[Yahoo Finance] Found 49 analyst actions for FFIN
+  ✅ Inserted 49 new activities (0 duplicates skipped)
+[229/643] Processing FFIV...
+[Yahoo Finance] Fetching analyst activity for FFIV
+[Yahoo Finance] Found 401 analyst actions for FFIV
+  ✅ Inserted 401 new activities (0 duplicates skipped)
+[230/643] Processing FG...
+[Yahoo Finance] Fetching analyst activity for FG
+[Yahoo Finance] Found 16 analyst actions for FG
+  ✅ Inserted 16 new activities (0 duplicates skipped)
+[231/643] Processing FIBK...
+[Yahoo Finance] Fetching analyst activity for FIBK
+[Yahoo Finance] Found 93 analyst actions for FIBK
+  ✅ Inserted 93 new activities (0 duplicates skipped)
+[232/643] Processing FICO...
+[Yahoo Finance] Fetching analyst activity for FICO
+[Yahoo Finance] Found 160 analyst actions for FICO
+  ✅ Inserted 160 new activities (0 duplicates skipped)
+[233/643] Processing FISI...
+[Yahoo Finance] Fetching analyst activity for FISI
+[Yahoo Finance] Found 19 analyst actions for FISI
+  ✅ Inserted 19 new activities (0 duplicates skipped)
+[234/643] Processing FITB...
+[Yahoo Finance] Fetching analyst activity for FITB
+[Yahoo Finance] Found 316 analyst actions for FITB
+  ✅ Inserted 316 new activities (0 duplicates skipped)
+[235/643] Processing FLR...
+[Yahoo Finance] Fetching analyst activity for FLR
+[Yahoo Finance] Found 186 analyst actions for FLR
+  ✅ Inserted 186 new activities (0 duplicates skipped)
+[236/643] Processing FMC...
+[Yahoo Finance] Fetching analyst activity for FMC
+[Yahoo Finance] Found 294 analyst actions for FMC
+  ✅ Inserted 294 new activities (0 duplicates skipped)
+[237/643] Processing FNB...
+[Yahoo Finance] Fetching analyst activity for FNB
+[Yahoo Finance] Found 73 analyst actions for FNB
+  ✅ Inserted 73 new activities (0 duplicates skipped)
+[238/643] Processing FNF...
+[Yahoo Finance] Fetching analyst activity for FNF
+[Yahoo Finance] Found 95 analyst actions for FNF
+  ✅ Inserted 95 new activities (0 duplicates skipped)
+[239/643] Processing FOX...
+[Yahoo Finance] Fetching analyst activity for FOX
+[Yahoo Finance] Found 11 analyst actions for FOX
+  ✅ Inserted 11 new activities (0 duplicates skipped)
+[240/643] Processing FOXA...
+[Yahoo Finance] Fetching analyst activity for FOXA
+[Yahoo Finance] Found 281 analyst actions for FOXA
+  ✅ Inserted 281 new activities (0 duplicates skipped)
+[241/643] Processing FRME...
+[Yahoo Finance] Fetching analyst activity for FRME
+[Yahoo Finance] Found 62 analyst actions for FRME
+  ✅ Inserted 62 new activities (0 duplicates skipped)
+[242/643] Processing FRT...
+[Yahoo Finance] Fetching analyst activity for FRT
+[Yahoo Finance] Found 106 analyst actions for FRT
+  ✅ Inserted 106 new activities (0 duplicates skipped)
+[243/643] Processing FSBW...
+[Yahoo Finance] Fetching analyst activity for FSBW
+[Yahoo Finance] Found 13 analyst actions for FSBW
+  ✅ Inserted 13 new activities (0 duplicates skipped)
+[244/643] Processing FTNT...
+[Yahoo Finance] Fetching analyst activity for FTNT
+[Yahoo Finance] Found 592 analyst actions for FTNT
+  ✅ Inserted 592 new activities (0 duplicates skipped)
+[245/643] Processing FTV...
+[Yahoo Finance] Fetching analyst activity for FTV
+[Yahoo Finance] Found 229 analyst actions for FTV
+  ✅ Inserted 229 new activities (0 duplicates skipped)
+[246/643] Processing FULT...
+[Yahoo Finance] Fetching analyst activity for FULT
+[Yahoo Finance] Found 70 analyst actions for FULT
+  ✅ Inserted 70 new activities (0 duplicates skipped)
+[247/643] Processing FWRD...
+[Yahoo Finance] Fetching analyst activity for FWRD
+[Yahoo Finance] Found 88 analyst actions for FWRD
+  ✅ Inserted 88 new activities (0 duplicates skipped)
+[248/643] Processing GD...
+[Yahoo Finance] Fetching analyst activity for GD
+[Yahoo Finance] Found 251 analyst actions for GD
+  ✅ Inserted 251 new activities (0 duplicates skipped)
+[249/643] Processing GE...
+[Yahoo Finance] Fetching analyst activity for GE
+[Yahoo Finance] Found 149 analyst actions for GE
+  ✅ Inserted 149 new activities (0 duplicates skipped)
+[250/643] Processing GEHC...
+[Yahoo Finance] Fetching analyst activity for GEHC
+[Yahoo Finance] Found 58 analyst actions for GEHC
+  ✅ Inserted 58 new activities (0 duplicates skipped)
+
+--- Progress Report ---
+Processed: 250/643
+Success: 247, Errors: 0
+Total activities inserted: 64706
+
+[251/643] Processing GEO...
+[Yahoo Finance] Fetching analyst activity for GEO
+[Yahoo Finance] Found 44 analyst actions for GEO
+  ✅ Inserted 44 new activities (0 duplicates skipped)
+[252/643] Processing GES...
+[Yahoo Finance] Fetching analyst activity for GES
+[Yahoo Finance] Found 166 analyst actions for GES
+  ✅ Inserted 166 new activities (0 duplicates skipped)
+[253/643] Processing GIII...
+[Yahoo Finance] Fetching analyst activity for GIII
+[Yahoo Finance] Found 170 analyst actions for GIII
+  ✅ Inserted 170 new activities (0 duplicates skipped)
+[254/643] Processing GILD...
+[Yahoo Finance] Fetching analyst activity for GILD
+[Yahoo Finance] Found 396 analyst actions for GILD
+  ✅ Inserted 396 new activities (0 duplicates skipped)
+[255/643] Processing GIS...
+[Yahoo Finance] Fetching analyst activity for GIS
+[Yahoo Finance] Found 284 analyst actions for GIS
+  ✅ Inserted 284 new activities (0 duplicates skipped)
+[256/643] Processing GL...
+[Yahoo Finance] Fetching analyst activity for GL
+[Yahoo Finance] Found 131 analyst actions for GL
+  ✅ Inserted 131 new activities (0 duplicates skipped)
+[257/643] Processing GLW...
+[Yahoo Finance] Fetching analyst activity for GLW
+[Yahoo Finance] Found 234 analyst actions for GLW
+  ✅ Inserted 234 new activities (0 duplicates skipped)
+[258/643] Processing GM...
+[Yahoo Finance] Fetching analyst activity for GM
+[Yahoo Finance] Found 382 analyst actions for GM
+  ✅ Inserted 382 new activities (0 duplicates skipped)
+[259/643] Processing GNRC...
+[Yahoo Finance] Fetching analyst activity for GNRC
+[Yahoo Finance] Found 276 analyst actions for GNRC
+  ✅ Inserted 276 new activities (0 duplicates skipped)
+[260/643] Processing GOOG...
+[Yahoo Finance] Fetching analyst activity for GOOG
+[Yahoo Finance] Found 684 analyst actions for GOOG
+  ✅ Inserted 684 new activities (0 duplicates skipped)
+[261/643] Processing GPC...
+[Yahoo Finance] Fetching analyst activity for GPC
+[Yahoo Finance] Found 130 analyst actions for GPC
+  ✅ Inserted 130 new activities (0 duplicates skipped)
+[262/643] Processing GPN...
+[Yahoo Finance] Fetching analyst activity for GPN
+[Yahoo Finance] Found 459 analyst actions for GPN
+  ✅ Inserted 459 new activities (0 duplicates skipped)
+[263/643] Processing GPOR...
+[Yahoo Finance] Fetching analyst activity for GPOR
+[Yahoo Finance] Found 69 analyst actions for GPOR
+  ✅ Inserted 69 new activities (0 duplicates skipped)
+[264/643] Processing GS...
+[Yahoo Finance] Fetching analyst activity for GS
+[Yahoo Finance] Found 399 analyst actions for GS
+  ✅ Inserted 399 new activities (0 duplicates skipped)
+[265/643] Processing GSHD...
+[Yahoo Finance] Fetching analyst activity for GSHD
+[Yahoo Finance] Found 118 analyst actions for GSHD
+  ✅ Inserted 118 new activities (0 duplicates skipped)
+[266/643] Processing GWW...
+[Yahoo Finance] Fetching analyst activity for GWW
+[Yahoo Finance] Found 247 analyst actions for GWW
+  ✅ Inserted 247 new activities (0 duplicates skipped)
+[267/643] Processing HAS...
+[Yahoo Finance] Fetching analyst activity for HAS
+[Yahoo Finance] Found 245 analyst actions for HAS
+  ✅ Inserted 245 new activities (0 duplicates skipped)
+[268/643] Processing HBAN...
+[Yahoo Finance] Fetching analyst activity for HBAN
+[Yahoo Finance] Found 281 analyst actions for HBAN
+  ✅ Inserted 281 new activities (0 duplicates skipped)
+[269/643] Processing HBI...
+[Yahoo Finance] Fetching analyst activity for HBI
+[Yahoo Finance] Found 173 analyst actions for HBI
+  ✅ Inserted 173 new activities (0 duplicates skipped)
+[270/643] Processing HBT...
+[Yahoo Finance] Fetching analyst activity for HBT
+[Yahoo Finance] Found 32 analyst actions for HBT
+  ✅ Inserted 32 new activities (0 duplicates skipped)
+[271/643] Processing HCA...
+[Yahoo Finance] Fetching analyst activity for HCA
+[Yahoo Finance] Found 377 analyst actions for HCA
+  ✅ Inserted 377 new activities (0 duplicates skipped)
+[272/643] Processing HD...
+[Yahoo Finance] Fetching analyst activity for HD
+[Yahoo Finance] Found 503 analyst actions for HD
+  ✅ Inserted 503 new activities (0 duplicates skipped)
+[273/643] Processing HIG...
+[Yahoo Finance] Fetching analyst activity for HIG
+[Yahoo Finance] Found 211 analyst actions for HIG
+  ✅ Inserted 211 new activities (0 duplicates skipped)
+[274/643] Processing HII...
+[Yahoo Finance] Fetching analyst activity for HII
+[Yahoo Finance] Found 140 analyst actions for HII
+  ✅ Inserted 140 new activities (0 duplicates skipped)
+[275/643] Processing HLNE...
+[Yahoo Finance] Fetching analyst activity for HLNE
+[Yahoo Finance] Found 115 analyst actions for HLNE
+  ✅ Inserted 115 new activities (0 duplicates skipped)
+[276/643] Processing HLT...
+[Yahoo Finance] Fetching analyst activity for HLT
+[Yahoo Finance] Found 304 analyst actions for HLT
+  ✅ Inserted 304 new activities (0 duplicates skipped)
+[277/643] Processing HLX...
+[Yahoo Finance] Fetching analyst activity for HLX
+[Yahoo Finance] Found 60 analyst actions for HLX
+  ✅ Inserted 60 new activities (0 duplicates skipped)
+[278/643] Processing HOLX...
+[Yahoo Finance] Fetching analyst activity for HOLX
+[Yahoo Finance] Found 272 analyst actions for HOLX
+  ✅ Inserted 272 new activities (0 duplicates skipped)
+[279/643] Processing HON...
+[Yahoo Finance] Fetching analyst activity for HON
+[Yahoo Finance] Found 302 analyst actions for HON
+  ✅ Inserted 302 new activities (0 duplicates skipped)
+[280/643] Processing HOPE...
+[Yahoo Finance] Fetching analyst activity for HOPE
+[Yahoo Finance] Found 21 analyst actions for HOPE
+  ✅ Inserted 21 new activities (0 duplicates skipped)
+[281/643] Processing HP...
+[Yahoo Finance] Fetching analyst activity for HP
+[Yahoo Finance] Found 339 analyst actions for HP
+  ✅ Inserted 339 new activities (0 duplicates skipped)
+[282/643] Processing HPE...
+[Yahoo Finance] Fetching analyst activity for HPE
+[Yahoo Finance] Found 249 analyst actions for HPE
+  ✅ Inserted 249 new activities (0 duplicates skipped)
+[283/643] Processing HPQ...
+[Yahoo Finance] Fetching analyst activity for HPQ
+[Yahoo Finance] Found 348 analyst actions for HPQ
+  ✅ Inserted 348 new activities (0 duplicates skipped)
+[284/643] Processing HRB...
+[Yahoo Finance] Fetching analyst activity for HRB
+[Yahoo Finance] Found 93 analyst actions for HRB
+  ✅ Inserted 93 new activities (0 duplicates skipped)
+[285/643] Processing HRL...
+[Yahoo Finance] Fetching analyst activity for HRL
+[Yahoo Finance] Found 117 analyst actions for HRL
+  ✅ Inserted 117 new activities (0 duplicates skipped)
+[286/643] Processing HSIC...
+[Yahoo Finance] Fetching analyst activity for HSIC
+[Yahoo Finance] Found 141 analyst actions for HSIC
+  ✅ Inserted 141 new activities (0 duplicates skipped)
+[287/643] Processing HST...
+[Yahoo Finance] Fetching analyst activity for HST
+[Yahoo Finance] Found 224 analyst actions for HST
+  ✅ Inserted 224 new activities (0 duplicates skipped)
+[288/643] Processing HSY...
+[Yahoo Finance] Fetching analyst activity for HSY
+[Yahoo Finance] Found 315 analyst actions for HSY
+  ✅ Inserted 315 new activities (0 duplicates skipped)
+[289/643] Processing HUBB...
+[Yahoo Finance] Fetching analyst activity for HUBB
+[Yahoo Finance] Found 126 analyst actions for HUBB
+  ✅ Inserted 126 new activities (0 duplicates skipped)
+[290/643] Processing HUM...
+[Yahoo Finance] Fetching analyst activity for HUM
+[Yahoo Finance] Found 375 analyst actions for HUM
+  ✅ Inserted 375 new activities (0 duplicates skipped)
+[291/643] Processing HWM...
+[Yahoo Finance] Fetching analyst activity for HWM
+[Yahoo Finance] Found 138 analyst actions for HWM
+  ✅ Inserted 138 new activities (0 duplicates skipped)
+[292/643] Processing IBM...
+[Yahoo Finance] Fetching analyst activity for IBM
+[Yahoo Finance] Found 292 analyst actions for IBM
+  ✅ Inserted 292 new activities (0 duplicates skipped)
+[293/643] Processing ICE...
+[Yahoo Finance] Fetching analyst activity for ICE
+[Yahoo Finance] Found 315 analyst actions for ICE
+  ✅ Inserted 315 new activities (0 duplicates skipped)
+[294/643] Processing IDA...
+[Yahoo Finance] Fetching analyst activity for IDA
+[Yahoo Finance] Found 71 analyst actions for IDA
+  ✅ Inserted 71 new activities (0 duplicates skipped)
+[295/643] Processing IDXX...
+[Yahoo Finance] Fetching analyst activity for IDXX
+[Yahoo Finance] Found 118 analyst actions for IDXX
+  ✅ Inserted 118 new activities (0 duplicates skipped)
+[296/643] Processing IEX...
+[Yahoo Finance] Fetching analyst activity for IEX
+[Yahoo Finance] Found 167 analyst actions for IEX
+  ✅ Inserted 167 new activities (0 duplicates skipped)
+[297/643] Processing IFF...
+[Yahoo Finance] Fetching analyst activity for IFF
+[Yahoo Finance] Found 163 analyst actions for IFF
+  ✅ Inserted 163 new activities (0 duplicates skipped)
+[298/643] Processing ILMN...
+[Yahoo Finance] Fetching analyst activity for ILMN
+[Yahoo Finance] Found 346 analyst actions for ILMN
+  ✅ Inserted 346 new activities (0 duplicates skipped)
+[299/643] Processing IMKTA...
+[Yahoo Finance] Fetching analyst activity for IMKTA
+[Yahoo Finance] Error fetching analyst activity for IMKTA: No fundamentals data found for symbol: IMKTA
+  ℹ️  No analyst activity found
+[300/643] Processing INCY...
+[Yahoo Finance] Fetching analyst activity for INCY
+[Yahoo Finance] Found 300 analyst actions for INCY
+  ✅ Inserted 300 new activities (0 duplicates skipped)
+
+--- Progress Report ---
+Processed: 300/643
+Success: 296, Errors: 0
+Total activities inserted: 76168
+
+[301/643] Processing INDB...
+[Yahoo Finance] Fetching analyst activity for INDB
+[Yahoo Finance] Found 55 analyst actions for INDB
+  ✅ Inserted 55 new activities (0 duplicates skipped)
+[302/643] Processing INTC...
+[Yahoo Finance] Fetching analyst activity for INTC
+[Yahoo Finance] Found 666 analyst actions for INTC
+  ✅ Inserted 666 new activities (0 duplicates skipped)
+[303/643] Processing INTU...
+[Yahoo Finance] Fetching analyst activity for INTU
+[Yahoo Finance] Found 471 analyst actions for INTU
+  ✅ Inserted 471 new activities (0 duplicates skipped)
+[304/643] Processing INVH...
+[Yahoo Finance] Fetching analyst activity for INVH
+[Yahoo Finance] Found 188 analyst actions for INVH
+  ✅ Inserted 188 new activities (0 duplicates skipped)
+[305/643] Processing IP...
+[Yahoo Finance] Fetching analyst activity for IP
+[Yahoo Finance] Found 240 analyst actions for IP
+  ✅ Inserted 240 new activities (0 duplicates skipped)
+[306/643] Processing IPG...
+[Yahoo Finance] Fetching analyst activity for IPG
+[Yahoo Finance] Found 148 analyst actions for IPG
+  ✅ Inserted 148 new activities (0 duplicates skipped)
+[307/643] Processing IPGP...
+[Yahoo Finance] Fetching analyst activity for IPGP
+[Yahoo Finance] Found 101 analyst actions for IPGP
+  ✅ Inserted 101 new activities (0 duplicates skipped)
+[308/643] Processing IQV...
+[Yahoo Finance] Fetching analyst activity for IQV
+[Yahoo Finance] Found 228 analyst actions for IQV
+  ✅ Inserted 228 new activities (0 duplicates skipped)
+[309/643] Processing IR...
+[Yahoo Finance] Fetching analyst activity for IR
+[Yahoo Finance] Found 145 analyst actions for IR
+  ✅ Inserted 145 new activities (0 duplicates skipped)
+[310/643] Processing IRM...
+[Yahoo Finance] Fetching analyst activity for IRM
+[Yahoo Finance] Found 72 analyst actions for IRM
+  ✅ Inserted 72 new activities (0 duplicates skipped)
+[311/643] Processing ISRG...
+[Yahoo Finance] Fetching analyst activity for ISRG
+[Yahoo Finance] Found 384 analyst actions for ISRG
+  ✅ Inserted 384 new activities (0 duplicates skipped)
+[312/643] Processing IT...
+[Yahoo Finance] Fetching analyst activity for IT
+[Yahoo Finance] Found 169 analyst actions for IT
+  ✅ Inserted 169 new activities (0 duplicates skipped)
+[313/643] Processing ITW...
+[Yahoo Finance] Fetching analyst activity for ITW
+[Yahoo Finance] Found 322 analyst actions for ITW
+  ✅ Inserted 322 new activities (0 duplicates skipped)
+[314/643] Processing IVZ...
+[Yahoo Finance] Fetching analyst activity for IVZ
+[Yahoo Finance] Found 358 analyst actions for IVZ
+  ✅ Inserted 358 new activities (0 duplicates skipped)
+[315/643] Processing J...
+[Yahoo Finance] Fetching analyst activity for J
+[Yahoo Finance] Found 59 analyst actions for J
+  ✅ Inserted 59 new activities (0 duplicates skipped)
+[316/643] Processing JACK...
+[Yahoo Finance] Fetching analyst activity for JACK
+[Yahoo Finance] Found 412 analyst actions for JACK
+  ✅ Inserted 412 new activities (0 duplicates skipped)
+[317/643] Processing JBHT...
+[Yahoo Finance] Fetching analyst activity for JBHT
+[Yahoo Finance] Found 436 analyst actions for JBHT
+  ✅ Inserted 436 new activities (0 duplicates skipped)
+[318/643] Processing JBLU...
+[Yahoo Finance] Fetching analyst activity for JBLU
+[Yahoo Finance] Found 216 analyst actions for JBLU
+  ✅ Inserted 216 new activities (0 duplicates skipped)
+[319/643] Processing JCI...
+[Yahoo Finance] Fetching analyst activity for JCI
+[Yahoo Finance] Found 337 analyst actions for JCI
+  ✅ Inserted 337 new activities (0 duplicates skipped)
+[320/643] Processing JHG...
+[Yahoo Finance] Fetching analyst activity for JHG
+[Yahoo Finance] Found 112 analyst actions for JHG
+  ✅ Inserted 112 new activities (0 duplicates skipped)
+[321/643] Processing JKHY...
+[Yahoo Finance] Fetching analyst activity for JKHY
+[Yahoo Finance] Found 117 analyst actions for JKHY
+  ✅ Inserted 117 new activities (0 duplicates skipped)
+[322/643] Processing JNJ...
+[Yahoo Finance] Fetching analyst activity for JNJ
+[Yahoo Finance] Found 336 analyst actions for JNJ
+  ✅ Inserted 336 new activities (0 duplicates skipped)
+[323/643] Processing JNPR...
+[Yahoo Finance] Fetching analyst activity for JNPR
+[Yahoo Finance] Error fetching analyst activity for JNPR: Quote not found for symbol: JNPR
+  ℹ️  No analyst activity found
+[324/643] Processing JPM...
+[Yahoo Finance] Fetching analyst activity for JPM
+[Yahoo Finance] Found 409 analyst actions for JPM
+  ✅ Inserted 409 new activities (0 duplicates skipped)
+[325/643] Processing JXN...
+[Yahoo Finance] Fetching analyst activity for JXN
+[Yahoo Finance] Found 70 analyst actions for JXN
+  ✅ Inserted 70 new activities (0 duplicates skipped)
+[326/643] Processing K...
+[Yahoo Finance] Fetching analyst activity for K
+[Yahoo Finance] Found 213 analyst actions for K
+  ✅ Inserted 213 new activities (0 duplicates skipped)
+[327/643] Processing KEYS...
+[Yahoo Finance] Fetching analyst activity for KEYS
+[Yahoo Finance] Found 152 analyst actions for KEYS
+  ✅ Inserted 152 new activities (0 duplicates skipped)
+[328/643] Processing KHC...
+[Yahoo Finance] Fetching analyst activity for KHC
+[Yahoo Finance] Found 219 analyst actions for KHC
+  ✅ Inserted 219 new activities (0 duplicates skipped)
+[329/643] Processing KIM...
+[Yahoo Finance] Fetching analyst activity for KIM
+[Yahoo Finance] Found 204 analyst actions for KIM
+  ✅ Inserted 204 new activities (0 duplicates skipped)
+[330/643] Processing KLAC...
+[Yahoo Finance] Fetching analyst activity for KLAC
+[Yahoo Finance] Found 373 analyst actions for KLAC
+  ✅ Inserted 373 new activities (0 duplicates skipped)
+[331/643] Processing KMB...
+[Yahoo Finance] Fetching analyst activity for KMB
+[Yahoo Finance] Found 267 analyst actions for KMB
+  ✅ Inserted 267 new activities (0 duplicates skipped)
+[332/643] Processing KMI...
+[Yahoo Finance] Fetching analyst activity for KMI
+[Yahoo Finance] Found 212 analyst actions for KMI
+  ✅ Inserted 212 new activities (0 duplicates skipped)
+[333/643] Processing KMPR...
+[Yahoo Finance] Fetching analyst activity for KMPR
+[Yahoo Finance] Found 65 analyst actions for KMPR
+  ✅ Inserted 65 new activities (0 duplicates skipped)
+[334/643] Processing KMX...
+[Yahoo Finance] Fetching analyst activity for KMX
+[Yahoo Finance] Found 294 analyst actions for KMX
+  ✅ Inserted 294 new activities (0 duplicates skipped)
+[335/643] Processing KNSL...
+[Yahoo Finance] Fetching analyst activity for KNSL
+[Yahoo Finance] Found 77 analyst actions for KNSL
+  ✅ Inserted 77 new activities (0 duplicates skipped)
+[336/643] Processing KO...
+[Yahoo Finance] Fetching analyst activity for KO
+[Yahoo Finance] Found 264 analyst actions for KO
+  ✅ Inserted 264 new activities (0 duplicates skipped)
+[337/643] Processing KR...
+[Yahoo Finance] Fetching analyst activity for KR
+[Yahoo Finance] Found 327 analyst actions for KR
+  ✅ Inserted 327 new activities (0 duplicates skipped)
+[338/643] Processing KRUS...
+[Yahoo Finance] Fetching analyst activity for KRUS
+[Yahoo Finance] Found 80 analyst actions for KRUS
+  ✅ Inserted 80 new activities (0 duplicates skipped)
+[339/643] Processing KSS...
+[Yahoo Finance] Fetching analyst activity for KSS
+[Yahoo Finance] Found 320 analyst actions for KSS
+  ✅ Inserted 320 new activities (0 duplicates skipped)
+[340/643] Processing KVUE...
+[Yahoo Finance] Fetching analyst activity for KVUE
+[Yahoo Finance] Found 78 analyst actions for KVUE
+  ✅ Inserted 78 new activities (0 duplicates skipped)
+[341/643] Processing LCII...
+[Yahoo Finance] Fetching analyst activity for LCII
+[Yahoo Finance] Found 63 analyst actions for LCII
+  ✅ Inserted 63 new activities (0 duplicates skipped)
+[342/643] Processing LDOS...
+[Yahoo Finance] Fetching analyst activity for LDOS
+[Yahoo Finance] Found 174 analyst actions for LDOS
+  ✅ Inserted 174 new activities (0 duplicates skipped)
+[343/643] Processing LE...
+[Yahoo Finance] Fetching analyst activity for LE
+[Yahoo Finance] Found 46 analyst actions for LE
+  ✅ Inserted 46 new activities (0 duplicates skipped)
+[344/643] Processing LEG...
+[Yahoo Finance] Fetching analyst activity for LEG
+[Yahoo Finance] Found 70 analyst actions for LEG
+  ✅ Inserted 70 new activities (0 duplicates skipped)
+[345/643] Processing LEN...
+[Yahoo Finance] Fetching analyst activity for LEN
+[Yahoo Finance] Found 377 analyst actions for LEN
+  ✅ Inserted 377 new activities (0 duplicates skipped)
+[346/643] Processing LH...
+[Yahoo Finance] Fetching analyst activity for LH
+[Yahoo Finance] Found 241 analyst actions for LH
+  ✅ Inserted 241 new activities (0 duplicates skipped)
+[347/643] Processing LHX...
+[Yahoo Finance] Fetching analyst activity for LHX
+[Yahoo Finance] Found 168 analyst actions for LHX
+  ✅ Inserted 168 new activities (0 duplicates skipped)
+[348/643] Processing LIN...
+[Yahoo Finance] Fetching analyst activity for LIN
+[Yahoo Finance] Found 23 analyst actions for LIN
+  ✅ Inserted 23 new activities (0 duplicates skipped)
+[349/643] Processing LKQ...
+[Yahoo Finance] Fetching analyst activity for LKQ
+[Yahoo Finance] Found 74 analyst actions for LKQ
+  ✅ Inserted 74 new activities (0 duplicates skipped)
+[350/643] Processing LLY...
+[Yahoo Finance] Fetching analyst activity for LLY
+[Yahoo Finance] Found 412 analyst actions for LLY
+  ✅ Inserted 412 new activities (0 duplicates skipped)
+
+--- Progress Report ---
+Processed: 350/643
+Success: 345, Errors: 0
+Total activities inserted: 87012
+
+[351/643] Processing LNT...
+[Yahoo Finance] Fetching analyst activity for LNT
+[Yahoo Finance] Found 159 analyst actions for LNT
+  ✅ Inserted 159 new activities (0 duplicates skipped)
+[352/643] Processing LOCO...
+[Yahoo Finance] Fetching analyst activity for LOCO
+[Yahoo Finance] Found 31 analyst actions for LOCO
+  ✅ Inserted 31 new activities (0 duplicates skipped)
+[353/643] Processing LOW...
+[Yahoo Finance] Fetching analyst activity for LOW
+[Yahoo Finance] Found 525 analyst actions for LOW
+  ✅ Inserted 525 new activities (0 duplicates skipped)
+[354/643] Processing LRCX...
+[Yahoo Finance] Fetching analyst activity for LRCX
+[Yahoo Finance] Found 468 analyst actions for LRCX
+  ✅ Inserted 468 new activities (0 duplicates skipped)
+[355/643] Processing LUMN...
+[Yahoo Finance] Fetching analyst activity for LUMN
+[Yahoo Finance] Found 48 analyst actions for LUMN
+  ✅ Inserted 48 new activities (0 duplicates skipped)
+[356/643] Processing LUV...
+[Yahoo Finance] Fetching analyst activity for LUV
+[Yahoo Finance] Found 354 analyst actions for LUV
+  ✅ Inserted 354 new activities (0 duplicates skipped)
+[357/643] Processing LVS...
+[Yahoo Finance] Fetching analyst activity for LVS
+[Yahoo Finance] Found 325 analyst actions for LVS
+  ✅ Inserted 325 new activities (0 duplicates skipped)
+[358/643] Processing LYB...
+[Yahoo Finance] Fetching analyst activity for LYB
+[Yahoo Finance] Found 358 analyst actions for LYB
+  ✅ Inserted 358 new activities (0 duplicates skipped)
+[359/643] Processing MA...
+[Yahoo Finance] Fetching analyst activity for MA
+[Yahoo Finance] Found 473 analyst actions for MA
+  ✅ Inserted 473 new activities (0 duplicates skipped)
+[360/643] Processing MAA...
+[Yahoo Finance] Fetching analyst activity for MAA
+[Yahoo Finance] Found 249 analyst actions for MAA
+  ✅ Inserted 249 new activities (0 duplicates skipped)
+[361/643] Processing MAR...
+[Yahoo Finance] Fetching analyst activity for MAR
+[Yahoo Finance] Found 319 analyst actions for MAR
+  ✅ Inserted 319 new activities (0 duplicates skipped)
+[362/643] Processing MAS...
+[Yahoo Finance] Fetching analyst activity for MAS
+[Yahoo Finance] Found 265 analyst actions for MAS
+  ✅ Inserted 265 new activities (0 duplicates skipped)
+[363/643] Processing MAT...
+[Yahoo Finance] Fetching analyst activity for MAT
+[Yahoo Finance] Found 179 analyst actions for MAT
+  ✅ Inserted 179 new activities (0 duplicates skipped)
+[364/643] Processing MBUU...
+[Yahoo Finance] Fetching analyst activity for MBUU
+[Yahoo Finance] Found 127 analyst actions for MBUU
+  ✅ Inserted 127 new activities (0 duplicates skipped)
+[365/643] Processing MCD...
+[Yahoo Finance] Fetching analyst activity for MCD
+[Yahoo Finance] Found 619 analyst actions for MCD
+  ✅ Inserted 619 new activities (0 duplicates skipped)
+[366/643] Processing MCHP...
+[Yahoo Finance] Fetching analyst activity for MCHP
+[Yahoo Finance] Found 377 analyst actions for MCHP
+  ✅ Inserted 377 new activities (0 duplicates skipped)
+[367/643] Processing MCK...
+[Yahoo Finance] Fetching analyst activity for MCK
+[Yahoo Finance] Found 241 analyst actions for MCK
+  ✅ Inserted 241 new activities (0 duplicates skipped)
+[368/643] Processing MCO...
+[Yahoo Finance] Fetching analyst activity for MCO
+[Yahoo Finance] Found 324 analyst actions for MCO
+  ✅ Inserted 324 new activities (0 duplicates skipped)
+[369/643] Processing MDLZ...
+[Yahoo Finance] Fetching analyst activity for MDLZ
+[Yahoo Finance] Found 260 analyst actions for MDLZ
+  ✅ Inserted 260 new activities (0 duplicates skipped)
+[370/643] Processing MDU...
+[Yahoo Finance] Fetching analyst activity for MDU
+[Yahoo Finance] Found 38 analyst actions for MDU
+  ✅ Inserted 38 new activities (0 duplicates skipped)
+[371/643] Processing MET...
+[Yahoo Finance] Fetching analyst activity for MET
+[Yahoo Finance] Found 249 analyst actions for MET
+  ✅ Inserted 249 new activities (0 duplicates skipped)
+[372/643] Processing META...
+[Yahoo Finance] Fetching analyst activity for META
+[Yahoo Finance] Found 413 analyst actions for META
+  ✅ Inserted 413 new activities (0 duplicates skipped)
+[373/643] Processing MGM...
+[Yahoo Finance] Fetching analyst activity for MGM
+[Yahoo Finance] Found 303 analyst actions for MGM
+  ✅ Inserted 303 new activities (0 duplicates skipped)
+[374/643] Processing MGPI...
+[Yahoo Finance] Fetching analyst activity for MGPI
+[Yahoo Finance] Found 44 analyst actions for MGPI
+  ✅ Inserted 44 new activities (0 duplicates skipped)
+[375/643] Processing MGY...
+[Yahoo Finance] Fetching analyst activity for MGY
+[Yahoo Finance] Found 134 analyst actions for MGY
+  ✅ Inserted 134 new activities (0 duplicates skipped)
+[376/643] Processing MHK...
+[Yahoo Finance] Fetching analyst activity for MHK
+[Yahoo Finance] Found 250 analyst actions for MHK
+  ✅ Inserted 250 new activities (0 duplicates skipped)
+[377/643] Processing MKC...
+[Yahoo Finance] Fetching analyst activity for MKC
+[Yahoo Finance] Found 151 analyst actions for MKC
+  ✅ Inserted 151 new activities (0 duplicates skipped)
+[378/643] Processing MKTX...
+[Yahoo Finance] Fetching analyst activity for MKTX
+[Yahoo Finance] Found 253 analyst actions for MKTX
+  ✅ Inserted 253 new activities (0 duplicates skipped)
+[379/643] Processing MLM...
+[Yahoo Finance] Fetching analyst activity for MLM
+[Yahoo Finance] Found 213 analyst actions for MLM
+  ✅ Inserted 213 new activities (0 duplicates skipped)
+[380/643] Processing MMC...
+[Yahoo Finance] Fetching analyst activity for MMC
+[Yahoo Finance] Found 230 analyst actions for MMC
+  ✅ Inserted 230 new activities (0 duplicates skipped)
+[381/643] Processing MMM...
+[Yahoo Finance] Fetching analyst activity for MMM
+[Yahoo Finance] Found 405 analyst actions for MMM
+  ✅ Inserted 405 new activities (0 duplicates skipped)
+[382/643] Processing MNST...
+[Yahoo Finance] Fetching analyst activity for MNST
+[Yahoo Finance] Found 336 analyst actions for MNST
+  ✅ Inserted 336 new activities (0 duplicates skipped)
+[383/643] Processing MO...
+[Yahoo Finance] Fetching analyst activity for MO
+[Yahoo Finance] Found 150 analyst actions for MO
+  ✅ Inserted 150 new activities (0 duplicates skipped)
+[384/643] Processing MOH...
+[Yahoo Finance] Fetching analyst activity for MOH
+[Yahoo Finance] Found 279 analyst actions for MOH
+  ✅ Inserted 279 new activities (0 duplicates skipped)
+[385/643] Processing MOS...
+[Yahoo Finance] Fetching analyst activity for MOS
+[Yahoo Finance] Found 364 analyst actions for MOS
+  ✅ Inserted 364 new activities (0 duplicates skipped)
+[386/643] Processing MRK...
+[Yahoo Finance] Fetching analyst activity for MRK
+[Yahoo Finance] Found 322 analyst actions for MRK
+  ✅ Inserted 322 new activities (0 duplicates skipped)
+[387/643] Processing MS...
+[Yahoo Finance] Fetching analyst activity for MS
+[Yahoo Finance] Found 332 analyst actions for MS
+  ✅ Inserted 332 new activities (0 duplicates skipped)
+[388/643] Processing MSCI...
+[Yahoo Finance] Fetching analyst activity for MSCI
+[Yahoo Finance] Found 200 analyst actions for MSCI
+  ✅ Inserted 200 new activities (0 duplicates skipped)
+[389/643] Processing MSEX...
+[Yahoo Finance] Fetching analyst activity for MSEX
+[Yahoo Finance] Found 21 analyst actions for MSEX
+  ✅ Inserted 21 new activities (0 duplicates skipped)
+[390/643] Processing MSFT...
+[Yahoo Finance] Fetching analyst activity for MSFT
+[Yahoo Finance] Found 845 analyst actions for MSFT
+  ✅ Inserted 845 new activities (0 duplicates skipped)
+[391/643] Processing MSI...
+[Yahoo Finance] Fetching analyst activity for MSI
+[Yahoo Finance] Found 184 analyst actions for MSI
+  ✅ Inserted 184 new activities (0 duplicates skipped)
+[392/643] Processing MTB...
+[Yahoo Finance] Fetching analyst activity for MTB
+[Yahoo Finance] Found 324 analyst actions for MTB
+  ✅ Inserted 324 new activities (0 duplicates skipped)
+[393/643] Processing MTCH...
+[Yahoo Finance] Fetching analyst activity for MTCH
+[Yahoo Finance] Found 279 analyst actions for MTCH
+  ✅ Inserted 279 new activities (0 duplicates skipped)
+[394/643] Processing MTD...
+[Yahoo Finance] Fetching analyst activity for MTD
+[Yahoo Finance] Found 144 analyst actions for MTD
+  ✅ Inserted 144 new activities (0 duplicates skipped)
+[395/643] Processing MTDR...
+[Yahoo Finance] Fetching analyst activity for MTDR
+[Yahoo Finance] Found 249 analyst actions for MTDR
+  ✅ Inserted 249 new activities (0 duplicates skipped)
+[396/643] Processing MTZ...
+[Yahoo Finance] Fetching analyst activity for MTZ
+[Yahoo Finance] Found 253 analyst actions for MTZ
+  ✅ Inserted 253 new activities (0 duplicates skipped)
+[397/643] Processing MU...
+[Yahoo Finance] Fetching analyst activity for MU
+[Yahoo Finance] Found 756 analyst actions for MU
+  ✅ Inserted 756 new activities (0 duplicates skipped)
+[398/643] Processing MUR...
+[Yahoo Finance] Fetching analyst activity for MUR
+[Yahoo Finance] Found 277 analyst actions for MUR
+  ✅ Inserted 277 new activities (0 duplicates skipped)
+[399/643] Processing NAVI...
+[Yahoo Finance] Fetching analyst activity for NAVI
+[Yahoo Finance] Found 124 analyst actions for NAVI
+  ✅ Inserted 124 new activities (0 duplicates skipped)
+[400/643] Processing NBR...
+[Yahoo Finance] Fetching analyst activity for NBR
+[Yahoo Finance] Found 230 analyst actions for NBR
+  ✅ Inserted 230 new activities (0 duplicates skipped)
+
+--- Progress Report ---
+Processed: 400/643
+Success: 395, Errors: 0
+Total activities inserted: 101065
+
+[401/643] Processing NBTB...
+[Yahoo Finance] Fetching analyst activity for NBTB
+[Yahoo Finance] Found 35 analyst actions for NBTB
+  ✅ Inserted 35 new activities (0 duplicates skipped)
+[402/643] Processing NCLH...
+[Yahoo Finance] Fetching analyst activity for NCLH
+[Yahoo Finance] Found 298 analyst actions for NCLH
+  ✅ Inserted 298 new activities (0 duplicates skipped)
+[403/643] Processing NDAQ...
+[Yahoo Finance] Fetching analyst activity for NDAQ
+[Yahoo Finance] Found 334 analyst actions for NDAQ
+  ✅ Inserted 334 new activities (0 duplicates skipped)
+[404/643] Processing NDLS...
+[Yahoo Finance] Fetching analyst activity for NDLS
+[Yahoo Finance] Found 84 analyst actions for NDLS
+  ✅ Inserted 84 new activities (0 duplicates skipped)
+[405/643] Processing NDSN...
+[Yahoo Finance] Fetching analyst activity for NDSN
+[Yahoo Finance] Found 90 analyst actions for NDSN
+  ✅ Inserted 90 new activities (0 duplicates skipped)
+[406/643] Processing NEE...
+[Yahoo Finance] Fetching analyst activity for NEE
+[Yahoo Finance] Found 320 analyst actions for NEE
+  ✅ Inserted 320 new activities (0 duplicates skipped)
+[407/643] Processing NEM...
+[Yahoo Finance] Fetching analyst activity for NEM
+[Yahoo Finance] Found 247 analyst actions for NEM
+  ✅ Inserted 247 new activities (0 duplicates skipped)
+[408/643] Processing NEXT...
+[Yahoo Finance] Fetching analyst activity for NEXT
+[Yahoo Finance] Found 22 analyst actions for NEXT
+  ✅ Inserted 22 new activities (0 duplicates skipped)
+[409/643] Processing NFE...
+[Yahoo Finance] Fetching analyst activity for NFE
+[Yahoo Finance] Found 74 analyst actions for NFE
+  ✅ Inserted 74 new activities (0 duplicates skipped)
+[410/643] Processing NFLX...
+[Yahoo Finance] Fetching analyst activity for NFLX
+[Yahoo Finance] Found 951 analyst actions for NFLX
+  ✅ Inserted 951 new activities (0 duplicates skipped)
+[411/643] Processing NGVC...
+[Yahoo Finance] Fetching analyst activity for NGVC
+[Yahoo Finance] Found 33 analyst actions for NGVC
+  ✅ Inserted 33 new activities (0 duplicates skipped)
+[412/643] Processing NI...
+[Yahoo Finance] Fetching analyst activity for NI
+[Yahoo Finance] Found 143 analyst actions for NI
+  ✅ Inserted 143 new activities (0 duplicates skipped)
+[413/643] Processing NJR...
+[Yahoo Finance] Fetching analyst activity for NJR
+[Yahoo Finance] Found 60 analyst actions for NJR
+  ✅ Inserted 60 new activities (0 duplicates skipped)
+[414/643] Processing NKE...
+[Yahoo Finance] Fetching analyst activity for NKE
+[Yahoo Finance] Found 785 analyst actions for NKE
+  ✅ Inserted 785 new activities (0 duplicates skipped)
+[415/643] Processing NOC...
+[Yahoo Finance] Fetching analyst activity for NOC
+[Yahoo Finance] Found 255 analyst actions for NOC
+  ✅ Inserted 255 new activities (0 duplicates skipped)
+[416/643] Processing NOG...
+[Yahoo Finance] Fetching analyst activity for NOG
+[Yahoo Finance] Found 114 analyst actions for NOG
+  ✅ Inserted 114 new activities (0 duplicates skipped)
+[417/643] Processing NOV...
+[Yahoo Finance] Fetching analyst activity for NOV
+[Yahoo Finance] Found 110 analyst actions for NOV
+  ✅ Inserted 110 new activities (0 duplicates skipped)
+[418/643] Processing NOVA...
+[Yahoo Finance] Fetching analyst activity for NOVA
+[Yahoo Finance] Error fetching analyst activity for NOVA: Quote not found for symbol: NOVA
+  ℹ️  No analyst activity found
+[419/643] Processing NOW...
+[Yahoo Finance] Fetching analyst activity for NOW
+[Yahoo Finance] Found 648 analyst actions for NOW
+  ✅ Inserted 648 new activities (0 duplicates skipped)
+[420/643] Processing NPO...
+[Yahoo Finance] Fetching analyst activity for NPO
+[Yahoo Finance] Found 37 analyst actions for NPO
+  ✅ Inserted 37 new activities (0 duplicates skipped)
+[421/643] Processing NRG...
+[Yahoo Finance] Fetching analyst activity for NRG
+[Yahoo Finance] Found 177 analyst actions for NRG
+  ✅ Inserted 177 new activities (0 duplicates skipped)
+[422/643] Processing NSC...
+[Yahoo Finance] Fetching analyst activity for NSC
+[Yahoo Finance] Found 451 analyst actions for NSC
+  ✅ Inserted 451 new activities (0 duplicates skipped)
+[423/643] Processing NTAP...
+[Yahoo Finance] Fetching analyst activity for NTAP
+[Yahoo Finance] Found 496 analyst actions for NTAP
+  ✅ Inserted 496 new activities (0 duplicates skipped)
+[424/643] Processing NTRS...
+[Yahoo Finance] Fetching analyst activity for NTRS
+[Yahoo Finance] Found 327 analyst actions for NTRS
+  ✅ Inserted 327 new activities (0 duplicates skipped)
+[425/643] Processing NVDA...
+[Yahoo Finance] Fetching analyst activity for NVDA
+[Yahoo Finance] Found 976 analyst actions for NVDA
+  ✅ Inserted 976 new activities (0 duplicates skipped)
+[426/643] Processing NVO...
+[Yahoo Finance] Fetching analyst activity for NVO
+[Yahoo Finance] Found 108 analyst actions for NVO
+  ✅ Inserted 108 new activities (0 duplicates skipped)
+[427/643] Processing NVR...
+[Yahoo Finance] Fetching analyst activity for NVR
+[Yahoo Finance] Found 73 analyst actions for NVR
+  ✅ Inserted 73 new activities (0 duplicates skipped)
+[428/643] Processing NWE...
+[Yahoo Finance] Fetching analyst activity for NWE
+[Yahoo Finance] Found 112 analyst actions for NWE
+  ✅ Inserted 112 new activities (0 duplicates skipped)
+[429/643] Processing NWL...
+[Yahoo Finance] Fetching analyst activity for NWL
+[Yahoo Finance] Found 222 analyst actions for NWL
+  ✅ Inserted 222 new activities (0 duplicates skipped)
+[430/643] Processing NWN...
+[Yahoo Finance] Fetching analyst activity for NWN
+[Yahoo Finance] Found 30 analyst actions for NWN
+  ✅ Inserted 30 new activities (0 duplicates skipped)
+[431/643] Processing NWS...
+[Yahoo Finance] Fetching analyst activity for NWS
+[Yahoo Finance] Found 4 analyst actions for NWS
+  ✅ Inserted 4 new activities (0 duplicates skipped)
+[432/643] Processing NXPI...
+[Yahoo Finance] Fetching analyst activity for NXPI
+[Yahoo Finance] Found 379 analyst actions for NXPI
+  ✅ Inserted 379 new activities (0 duplicates skipped)
+[433/643] Processing O...
+[Yahoo Finance] Fetching analyst activity for O
+[Yahoo Finance] Found 182 analyst actions for O
+  ✅ Inserted 182 new activities (0 duplicates skipped)
+[434/643] Processing ODFL...
+[Yahoo Finance] Fetching analyst activity for ODFL
+[Yahoo Finance] Found 358 analyst actions for ODFL
+  ✅ Inserted 358 new activities (0 duplicates skipped)
+[435/643] Processing OGE...
+[Yahoo Finance] Fetching analyst activity for OGE
+[Yahoo Finance] Found 134 analyst actions for OGE
+  ✅ Inserted 134 new activities (0 duplicates skipped)
+[436/643] Processing OGN...
+[Yahoo Finance] Fetching analyst activity for OGN
+[Yahoo Finance] Found 36 analyst actions for OGN
+  ✅ Inserted 36 new activities (0 duplicates skipped)
+[437/643] Processing OGS...
+[Yahoo Finance] Fetching analyst activity for OGS
+[Yahoo Finance] Found 147 analyst actions for OGS
+  ✅ Inserted 147 new activities (0 duplicates skipped)
+[438/643] Processing OKE...
+[Yahoo Finance] Fetching analyst activity for OKE
+[Yahoo Finance] Found 303 analyst actions for OKE
+  ✅ Inserted 303 new activities (0 duplicates skipped)
+[439/643] Processing OMC...
+[Yahoo Finance] Fetching analyst activity for OMC
+[Yahoo Finance] Found 168 analyst actions for OMC
+  ✅ Inserted 168 new activities (0 duplicates skipped)
+[440/643] Processing ONB...
+[Yahoo Finance] Fetching analyst activity for ONB
+[Yahoo Finance] Found 94 analyst actions for ONB
+  ✅ Inserted 94 new activities (0 duplicates skipped)
+[441/643] Processing ORCL...
+[Yahoo Finance] Fetching analyst activity for ORCL
+[Yahoo Finance] Found 569 analyst actions for ORCL
+  ✅ Inserted 569 new activities (0 duplicates skipped)
+[442/643] Processing ORI...
+[Yahoo Finance] Fetching analyst activity for ORI
+[Yahoo Finance] Found 28 analyst actions for ORI
+  ✅ Inserted 28 new activities (0 duplicates skipped)
+[443/643] Processing ORLY...
+[Yahoo Finance] Fetching analyst activity for ORLY
+[Yahoo Finance] Found 322 analyst actions for ORLY
+  ✅ Inserted 322 new activities (0 duplicates skipped)
+[444/643] Processing OTIS...
+[Yahoo Finance] Fetching analyst activity for OTIS
+[Yahoo Finance] Found 101 analyst actions for OTIS
+  ✅ Inserted 101 new activities (0 duplicates skipped)
+[445/643] Processing OVV...
+[Yahoo Finance] Fetching analyst activity for OVV
+[Yahoo Finance] Found 203 analyst actions for OVV
+  ✅ Inserted 203 new activities (0 duplicates skipped)
+[446/643] Processing OXY...
+[Yahoo Finance] Fetching analyst activity for OXY
+[Yahoo Finance] Found 410 analyst actions for OXY
+  ✅ Inserted 410 new activities (0 duplicates skipped)
+[447/643] Processing PARA...
+[Yahoo Finance] Fetching analyst activity for PARA
+[Yahoo Finance] Error fetching analyst activity for PARA: Quote not found for symbol: PARA
+  ℹ️  No analyst activity found
+[448/643] Processing PATK...
+[Yahoo Finance] Fetching analyst activity for PATK
+[Yahoo Finance] Found 98 analyst actions for PATK
+  ✅ Inserted 98 new activities (0 duplicates skipped)
+[449/643] Processing PAYC...
+[Yahoo Finance] Fetching analyst activity for PAYC
+[Yahoo Finance] Found 282 analyst actions for PAYC
+  ✅ Inserted 282 new activities (0 duplicates skipped)
+[450/643] Processing PAYX...
+[Yahoo Finance] Fetching analyst activity for PAYX
+[Yahoo Finance] Found 224 analyst actions for PAYX
+  ✅ Inserted 224 new activities (0 duplicates skipped)
+
+--- Progress Report ---
+Processed: 450/643
+Success: 443, Errors: 0
+Total activities inserted: 112719
+
+[451/643] Processing PB...
+[Yahoo Finance] Fetching analyst activity for PB
+[Yahoo Finance] Found 178 analyst actions for PB
+  ✅ Inserted 178 new activities (0 duplicates skipped)
+[452/643] Processing PCAR...
+[Yahoo Finance] Fetching analyst activity for PCAR
+[Yahoo Finance] Found 345 analyst actions for PCAR
+  ✅ Inserted 345 new activities (0 duplicates skipped)
+[453/643] Processing PCG...
+[Yahoo Finance] Fetching analyst activity for PCG
+[Yahoo Finance] Found 277 analyst actions for PCG
+  ✅ Inserted 277 new activities (0 duplicates skipped)
+[454/643] Processing PEG...
+[Yahoo Finance] Fetching analyst activity for PEG
+[Yahoo Finance] Found 302 analyst actions for PEG
+  ✅ Inserted 302 new activities (0 duplicates skipped)
+[455/643] Processing PENN...
+[Yahoo Finance] Fetching analyst activity for PENN
+[Yahoo Finance] Found 283 analyst actions for PENN
+  ✅ Inserted 283 new activities (0 duplicates skipped)
+[456/643] Processing PEP...
+[Yahoo Finance] Fetching analyst activity for PEP
+[Yahoo Finance] Found 294 analyst actions for PEP
+  ✅ Inserted 294 new activities (0 duplicates skipped)
+[457/643] Processing PFE...
+[Yahoo Finance] Fetching analyst activity for PFE
+[Yahoo Finance] Found 276 analyst actions for PFE
+  ✅ Inserted 276 new activities (0 duplicates skipped)
+[458/643] Processing PFS...
+[Yahoo Finance] Fetching analyst activity for PFS
+[Yahoo Finance] Found 37 analyst actions for PFS
+  ✅ Inserted 37 new activities (0 duplicates skipped)
+[459/643] Processing PG...
+[Yahoo Finance] Fetching analyst activity for PG
+[Yahoo Finance] Found 314 analyst actions for PG
+  ✅ Inserted 314 new activities (0 duplicates skipped)
+[460/643] Processing PGR...
+[Yahoo Finance] Fetching analyst activity for PGR
+[Yahoo Finance] Found 415 analyst actions for PGR
+  ✅ Inserted 415 new activities (0 duplicates skipped)
+[461/643] Processing PH...
+[Yahoo Finance] Fetching analyst activity for PH
+[Yahoo Finance] Found 346 analyst actions for PH
+  ✅ Inserted 346 new activities (0 duplicates skipped)
+[462/643] Processing PKG...
+[Yahoo Finance] Fetching analyst activity for PKG
+[Yahoo Finance] Found 237 analyst actions for PKG
+  ✅ Inserted 237 new activities (0 duplicates skipped)
+[463/643] Processing PLAY...
+[Yahoo Finance] Fetching analyst activity for PLAY
+[Yahoo Finance] Found 159 analyst actions for PLAY
+  ✅ Inserted 159 new activities (0 duplicates skipped)
+[464/643] Processing PLD...
+[Yahoo Finance] Fetching analyst activity for PLD
+[Yahoo Finance] Found 288 analyst actions for PLD
+  ✅ Inserted 288 new activities (0 duplicates skipped)
+[465/643] Processing PM...
+[Yahoo Finance] Fetching analyst activity for PM
+[Yahoo Finance] Found 188 analyst actions for PM
+  ✅ Inserted 188 new activities (0 duplicates skipped)
+[466/643] Processing PNFP...
+[Yahoo Finance] Fetching analyst activity for PNFP
+[Yahoo Finance] Found 158 analyst actions for PNFP
+  ✅ Inserted 158 new activities (0 duplicates skipped)
+[467/643] Processing PNR...
+[Yahoo Finance] Fetching analyst activity for PNR
+[Yahoo Finance] Found 290 analyst actions for PNR
+  ✅ Inserted 290 new activities (0 duplicates skipped)
+[468/643] Processing PNW...
+[Yahoo Finance] Fetching analyst activity for PNW
+[Yahoo Finance] Found 275 analyst actions for PNW
+  ✅ Inserted 275 new activities (0 duplicates skipped)
+[469/643] Processing POOL...
+[Yahoo Finance] Fetching analyst activity for POOL
+[Yahoo Finance] Found 123 analyst actions for POOL
+  ✅ Inserted 123 new activities (0 duplicates skipped)
+[470/643] Processing POR...
+[Yahoo Finance] Fetching analyst activity for POR
+[Yahoo Finance] Found 156 analyst actions for POR
+  ✅ Inserted 156 new activities (0 duplicates skipped)
+[471/643] Processing PPG...
+[Yahoo Finance] Fetching analyst activity for PPG
+[Yahoo Finance] Found 352 analyst actions for PPG
+  ✅ Inserted 352 new activities (0 duplicates skipped)
+[472/643] Processing PPL...
+[Yahoo Finance] Fetching analyst activity for PPL
+[Yahoo Finance] Found 199 analyst actions for PPL
+  ✅ Inserted 199 new activities (0 duplicates skipped)
+[473/643] Processing PR...
+[Yahoo Finance] Fetching analyst activity for PR
+[Yahoo Finance] Found 131 analyst actions for PR
+  ✅ Inserted 131 new activities (0 duplicates skipped)
+[474/643] Processing PRI...
+[Yahoo Finance] Fetching analyst activity for PRI
+[Yahoo Finance] Found 107 analyst actions for PRI
+  ✅ Inserted 107 new activities (0 duplicates skipped)
+[475/643] Processing PRU...
+[Yahoo Finance] Fetching analyst activity for PRU
+[Yahoo Finance] Found 300 analyst actions for PRU
+  ✅ Inserted 300 new activities (0 duplicates skipped)
+[476/643] Processing PSA...
+[Yahoo Finance] Fetching analyst activity for PSA
+[Yahoo Finance] Found 238 analyst actions for PSA
+  ✅ Inserted 238 new activities (0 duplicates skipped)
+[477/643] Processing PSX...
+[Yahoo Finance] Fetching analyst activity for PSX
+[Yahoo Finance] Found 343 analyst actions for PSX
+  ✅ Inserted 343 new activities (0 duplicates skipped)
+[478/643] Processing PTC...
+[Yahoo Finance] Fetching analyst activity for PTC
+[Yahoo Finance] Found 185 analyst actions for PTC
+  ✅ Inserted 185 new activities (0 duplicates skipped)
+[479/643] Processing PVH...
+[Yahoo Finance] Fetching analyst activity for PVH
+[Yahoo Finance] Found 390 analyst actions for PVH
+  ✅ Inserted 390 new activities (0 duplicates skipped)
+[480/643] Processing PWR...
+[Yahoo Finance] Fetching analyst activity for PWR
+[Yahoo Finance] Found 196 analyst actions for PWR
+  ✅ Inserted 196 new activities (0 duplicates skipped)
+[481/643] Processing PYPL...
+[Yahoo Finance] Fetching analyst activity for PYPL
+[Yahoo Finance] Found 587 analyst actions for PYPL
+  ✅ Inserted 587 new activities (0 duplicates skipped)
+[482/643] Processing PZZA...
+[Yahoo Finance] Fetching analyst activity for PZZA
+[Yahoo Finance] Found 239 analyst actions for PZZA
+  ✅ Inserted 239 new activities (0 duplicates skipped)
+[483/643] Processing QCOM...
+[Yahoo Finance] Fetching analyst activity for QCOM
+[Yahoo Finance] Found 495 analyst actions for QCOM
+  ✅ Inserted 495 new activities (0 duplicates skipped)
+[484/643] Processing RCL...
+[Yahoo Finance] Fetching analyst activity for RCL
+[Yahoo Finance] Found 372 analyst actions for RCL
+  ✅ Inserted 372 new activities (0 duplicates skipped)
+[485/643] Processing REG...
+[Yahoo Finance] Fetching analyst activity for REG
+[Yahoo Finance] Found 203 analyst actions for REG
+  ✅ Inserted 203 new activities (0 duplicates skipped)
+[486/643] Processing REGN...
+[Yahoo Finance] Fetching analyst activity for REGN
+[Yahoo Finance] Found 493 analyst actions for REGN
+  ✅ Inserted 493 new activities (0 duplicates skipped)
+[487/643] Processing REI...
+[Yahoo Finance] Fetching analyst activity for REI
+[Yahoo Finance] Found 18 analyst actions for REI
+  ✅ Inserted 18 new activities (0 duplicates skipped)
+[488/643] Processing RF...
+[Yahoo Finance] Fetching analyst activity for RF
+[Yahoo Finance] Found 327 analyst actions for RF
+  ✅ Inserted 327 new activities (0 duplicates skipped)
+[489/643] Processing RGA...
+[Yahoo Finance] Fetching analyst activity for RGA
+[Yahoo Finance] Found 219 analyst actions for RGA
+  ✅ Inserted 219 new activities (0 duplicates skipped)
+[490/643] Processing RHI...
+[Yahoo Finance] Fetching analyst activity for RHI
+[Yahoo Finance] Found 142 analyst actions for RHI
+  ✅ Inserted 142 new activities (0 duplicates skipped)
+[491/643] Processing RJF...
+[Yahoo Finance] Fetching analyst activity for RJF
+[Yahoo Finance] Found 212 analyst actions for RJF
+  ✅ Inserted 212 new activities (0 duplicates skipped)
+[492/643] Processing RL...
+[Yahoo Finance] Fetching analyst activity for RL
+[Yahoo Finance] Found 364 analyst actions for RL
+  ✅ Inserted 364 new activities (0 duplicates skipped)
+[493/643] Processing RLI...
+[Yahoo Finance] Fetching analyst activity for RLI
+[Yahoo Finance] Found 55 analyst actions for RLI
+  ✅ Inserted 55 new activities (0 duplicates skipped)
+[494/643] Processing RMD...
+[Yahoo Finance] Fetching analyst activity for RMD
+[Yahoo Finance] Found 196 analyst actions for RMD
+  ✅ Inserted 196 new activities (0 duplicates skipped)
+[495/643] Processing RNGR...
+[Yahoo Finance] Fetching analyst activity for RNGR
+[Yahoo Finance] Found 29 analyst actions for RNGR
+  ✅ Inserted 29 new activities (0 duplicates skipped)
+[496/643] Processing RNR...
+[Yahoo Finance] Fetching analyst activity for RNR
+[Yahoo Finance] Found 208 analyst actions for RNR
+  ✅ Inserted 208 new activities (0 duplicates skipped)
+[497/643] Processing ROK...
+[Yahoo Finance] Fetching analyst activity for ROK
+[Yahoo Finance] Found 343 analyst actions for ROK
+  ✅ Inserted 343 new activities (0 duplicates skipped)
+[498/643] Processing ROL...
+[Yahoo Finance] Fetching analyst activity for ROL
+[Yahoo Finance] Found 70 analyst actions for ROL
+  ✅ Inserted 70 new activities (0 duplicates skipped)
+[499/643] Processing ROP...
+[Yahoo Finance] Fetching analyst activity for ROP
+[Yahoo Finance] Found 185 analyst actions for ROP
+  ✅ Inserted 185 new activities (0 duplicates skipped)
+[500/643] Processing ROST...
+[Yahoo Finance] Fetching analyst activity for ROST
+[Yahoo Finance] Found 399 analyst actions for ROST
+  ✅ Inserted 399 new activities (0 duplicates skipped)
+
+--- Progress Report ---
+Processed: 500/643
+Success: 493, Errors: 0
+Total activities inserted: 125257
+
+[501/643] Processing RRC...
+[Yahoo Finance] Fetching analyst activity for RRC
+[Yahoo Finance] Found 408 analyst actions for RRC
+  ✅ Inserted 408 new activities (0 duplicates skipped)
+[502/643] Processing RRX...
+[Yahoo Finance] Fetching analyst activity for RRX
+[Yahoo Finance] Found 128 analyst actions for RRX
+  ✅ Inserted 128 new activities (0 duplicates skipped)
+[503/643] Processing RSG...
+[Yahoo Finance] Fetching analyst activity for RSG
+[Yahoo Finance] Found 223 analyst actions for RSG
+  ✅ Inserted 223 new activities (0 duplicates skipped)
+[504/643] Processing RTX...
+[Yahoo Finance] Fetching analyst activity for RTX
+[Yahoo Finance] Found 145 analyst actions for RTX
+  ✅ Inserted 145 new activities (0 duplicates skipped)
+[505/643] Processing RYAN...
+[Yahoo Finance] Fetching analyst activity for RYAN
+[Yahoo Finance] Found 94 analyst actions for RYAN
+  ✅ Inserted 94 new activities (0 duplicates skipped)
+[506/643] Processing SAM...
+[Yahoo Finance] Fetching analyst activity for SAM
+[Yahoo Finance] Found 238 analyst actions for SAM
+  ✅ Inserted 238 new activities (0 duplicates skipped)
+[507/643] Processing SAP...
+[Yahoo Finance] Fetching analyst activity for SAP
+[Yahoo Finance] Found 155 analyst actions for SAP
+  ✅ Inserted 155 new activities (0 duplicates skipped)
+[508/643] Processing SBAC...
+[Yahoo Finance] Fetching analyst activity for SBAC
+[Yahoo Finance] Found 318 analyst actions for SBAC
+  ✅ Inserted 318 new activities (0 duplicates skipped)
+[509/643] Processing SBCF...
+[Yahoo Finance] Fetching analyst activity for SBCF
+[Yahoo Finance] Found 73 analyst actions for SBCF
+  ✅ Inserted 73 new activities (0 duplicates skipped)
+[510/643] Processing SBSI...
+[Yahoo Finance] Fetching analyst activity for SBSI
+[Yahoo Finance] Found 21 analyst actions for SBSI
+  ✅ Inserted 21 new activities (0 duplicates skipped)
+[511/643] Processing SBUX...
+[Yahoo Finance] Fetching analyst activity for SBUX
+[Yahoo Finance] Found 582 analyst actions for SBUX
+  ✅ Inserted 582 new activities (0 duplicates skipped)
+[512/643] Processing SCHW...
+[Yahoo Finance] Fetching analyst activity for SCHW
+[Yahoo Finance] Found 463 analyst actions for SCHW
+  ✅ Inserted 463 new activities (0 duplicates skipped)
+[513/643] Processing SCVL...
+[Yahoo Finance] Fetching analyst activity for SCVL
+[Yahoo Finance] Found 45 analyst actions for SCVL
+  ✅ Inserted 45 new activities (0 duplicates skipped)
+[514/643] Processing SEE...
+[Yahoo Finance] Fetching analyst activity for SEE
+[Yahoo Finance] Found 234 analyst actions for SEE
+  ✅ Inserted 234 new activities (0 duplicates skipped)
+[515/643] Processing SEIC...
+[Yahoo Finance] Fetching analyst activity for SEIC
+[Yahoo Finance] Found 108 analyst actions for SEIC
+  ✅ Inserted 108 new activities (0 duplicates skipped)
+[516/643] Processing SF...
+[Yahoo Finance] Fetching analyst activity for SF
+[Yahoo Finance] Found 116 analyst actions for SF
+  ✅ Inserted 116 new activities (0 duplicates skipped)
+[517/643] Processing SFBS...
+[Yahoo Finance] Fetching analyst activity for SFBS
+[Yahoo Finance] Found 17 analyst actions for SFBS
+  ✅ Inserted 17 new activities (0 duplicates skipped)
+[518/643] Processing SFNC...
+[Yahoo Finance] Fetching analyst activity for SFNC
+[Yahoo Finance] Found 42 analyst actions for SFNC
+  ✅ Inserted 42 new activities (0 duplicates skipped)
+[519/643] Processing SHAK...
+[Yahoo Finance] Fetching analyst activity for SHAK
+[Yahoo Finance] Found 325 analyst actions for SHAK
+  ✅ Inserted 325 new activities (0 duplicates skipped)
+[520/643] Processing SHOO...
+[Yahoo Finance] Fetching analyst activity for SHOO
+[Yahoo Finance] Found 169 analyst actions for SHOO
+  ✅ Inserted 169 new activities (0 duplicates skipped)
+[521/643] Processing SHW...
+[Yahoo Finance] Fetching analyst activity for SHW
+[Yahoo Finance] Found 377 analyst actions for SHW
+  ✅ Inserted 377 new activities (0 duplicates skipped)
+[522/643] Processing SI...
+[Yahoo Finance] Fetching analyst activity for SI
+[Yahoo Finance] Found 7 analyst actions for SI
+  ✅ Inserted 7 new activities (0 duplicates skipped)
+[523/643] Processing SIGI...
+[Yahoo Finance] Fetching analyst activity for SIGI
+[Yahoo Finance] Found 77 analyst actions for SIGI
+  ✅ Inserted 77 new activities (0 duplicates skipped)
+[524/643] Processing SJM...
+[Yahoo Finance] Fetching analyst activity for SJM
+[Yahoo Finance] Found 271 analyst actions for SJM
+  ✅ Inserted 271 new activities (0 duplicates skipped)
+[525/643] Processing SLB...
+[Yahoo Finance] Fetching analyst activity for SLB
+[Yahoo Finance] Found 381 analyst actions for SLB
+  ✅ Inserted 381 new activities (0 duplicates skipped)
+[526/643] Processing SM...
+[Yahoo Finance] Fetching analyst activity for SM
+[Yahoo Finance] Found 291 analyst actions for SM
+  ✅ Inserted 291 new activities (0 duplicates skipped)
+[527/643] Processing SNA...
+[Yahoo Finance] Fetching analyst activity for SNA
+[Yahoo Finance] Found 82 analyst actions for SNA
+  ✅ Inserted 82 new activities (0 duplicates skipped)
+[528/643] Processing SNPS...
+[Yahoo Finance] Fetching analyst activity for SNPS
+[Yahoo Finance] Found 240 analyst actions for SNPS
+  ✅ Inserted 240 new activities (0 duplicates skipped)
+[529/643] Processing SNV...
+[Yahoo Finance] Fetching analyst activity for SNV
+[Yahoo Finance] Found 251 analyst actions for SNV
+  ✅ Inserted 251 new activities (0 duplicates skipped)
+[530/643] Processing SO...
+[Yahoo Finance] Fetching analyst activity for SO
+[Yahoo Finance] Found 305 analyst actions for SO
+  ✅ Inserted 305 new activities (0 duplicates skipped)
+[531/643] Processing SPG...
+[Yahoo Finance] Fetching analyst activity for SPG
+[Yahoo Finance] Found 244 analyst actions for SPG
+  ✅ Inserted 244 new activities (0 duplicates skipped)
+[532/643] Processing SPGI...
+[Yahoo Finance] Fetching analyst activity for SPGI
+[Yahoo Finance] Found 251 analyst actions for SPGI
+  ✅ Inserted 251 new activities (0 duplicates skipped)
+[533/643] Processing SR...
+[Yahoo Finance] Fetching analyst activity for SR
+[Yahoo Finance] Found 173 analyst actions for SR
+  ✅ Inserted 173 new activities (0 duplicates skipped)
+[534/643] Processing SRE...
+[Yahoo Finance] Fetching analyst activity for SRE
+[Yahoo Finance] Found 254 analyst actions for SRE
+  ✅ Inserted 254 new activities (0 duplicates skipped)
+[535/643] Processing SSB...
+[Yahoo Finance] Fetching analyst activity for SSB
+[Yahoo Finance] Found 97 analyst actions for SSB
+  ✅ Inserted 97 new activities (0 duplicates skipped)
+[536/643] Processing STE...
+[Yahoo Finance] Fetching analyst activity for STE
+[Yahoo Finance] Found 91 analyst actions for STE
+  ✅ Inserted 91 new activities (0 duplicates skipped)
+[537/643] Processing STLD...
+[Yahoo Finance] Fetching analyst activity for STLD
+[Yahoo Finance] Found 227 analyst actions for STLD
+  ✅ Inserted 227 new activities (0 duplicates skipped)
+[538/643] Processing STT...
+[Yahoo Finance] Fetching analyst activity for STT
+[Yahoo Finance] Found 387 analyst actions for STT
+  ✅ Inserted 387 new activities (0 duplicates skipped)
+[539/643] Processing STZ...
+[Yahoo Finance] Fetching analyst activity for STZ
+[Yahoo Finance] Found 415 analyst actions for STZ
+  ✅ Inserted 415 new activities (0 duplicates skipped)
+[540/643] Processing SWK...
+[Yahoo Finance] Fetching analyst activity for SWK
+[Yahoo Finance] Found 294 analyst actions for SWK
+  ✅ Inserted 294 new activities (0 duplicates skipped)
+[541/643] Processing SWKS...
+[Yahoo Finance] Fetching analyst activity for SWKS
+[Yahoo Finance] Found 411 analyst actions for SWKS
+  ✅ Inserted 411 new activities (0 duplicates skipped)
+[542/643] Processing SWX...
+[Yahoo Finance] Fetching analyst activity for SWX
+[Yahoo Finance] Found 74 analyst actions for SWX
+  ✅ Inserted 74 new activities (0 duplicates skipped)
+[543/643] Processing SYF...
+[Yahoo Finance] Fetching analyst activity for SYF
+[Yahoo Finance] Found 303 analyst actions for SYF
+  ✅ Inserted 303 new activities (0 duplicates skipped)
+[544/643] Processing SYK...
+[Yahoo Finance] Fetching analyst activity for SYK
+[Yahoo Finance] Found 353 analyst actions for SYK
+  ✅ Inserted 353 new activities (0 duplicates skipped)
+[545/643] Processing SYY...
+[Yahoo Finance] Fetching analyst activity for SYY
+[Yahoo Finance] Found 273 analyst actions for SYY
+  ✅ Inserted 273 new activities (0 duplicates skipped)
+[546/643] Processing T...
+[Yahoo Finance] Fetching analyst activity for T
+[Yahoo Finance] Found 312 analyst actions for T
+  ✅ Inserted 312 new activities (0 duplicates skipped)
+[547/643] Processing TACO...
+[Yahoo Finance] Fetching analyst activity for TACO
+[Yahoo Finance] Error fetching analyst activity for TACO: No fundamentals data found for symbol: TACO
+  ℹ️  No analyst activity found
+[548/643] Processing TAP...
+[Yahoo Finance] Fetching analyst activity for TAP
+[Yahoo Finance] Found 268 analyst actions for TAP
+  ✅ Inserted 268 new activities (0 duplicates skipped)
+[549/643] Processing TCBI...
+[Yahoo Finance] Fetching analyst activity for TCBI
+[Yahoo Finance] Found 243 analyst actions for TCBI
+  ✅ Inserted 243 new activities (0 duplicates skipped)
+[550/643] Processing TDY...
+[Yahoo Finance] Fetching analyst activity for TDY
+[Yahoo Finance] Found 89 analyst actions for TDY
+  ✅ Inserted 89 new activities (0 duplicates skipped)
+
+--- Progress Report ---
+Processed: 550/643
+Success: 542, Errors: 0
+Total activities inserted: 136202
+
+[551/643] Processing TECH...
+[Yahoo Finance] Fetching analyst activity for TECH
+[Yahoo Finance] Found 116 analyst actions for TECH
+  ✅ Inserted 116 new activities (0 duplicates skipped)
+[552/643] Processing TEL...
+[Yahoo Finance] Fetching analyst activity for TEL
+[Yahoo Finance] Found 258 analyst actions for TEL
+  ✅ Inserted 258 new activities (0 duplicates skipped)
+[553/643] Processing TER...
+[Yahoo Finance] Fetching analyst activity for TER
+[Yahoo Finance] Found 329 analyst actions for TER
+  ✅ Inserted 329 new activities (0 duplicates skipped)
+[554/643] Processing TFC...
+[Yahoo Finance] Fetching analyst activity for TFC
+[Yahoo Finance] Found 254 analyst actions for TFC
+  ✅ Inserted 254 new activities (0 duplicates skipped)
+[555/643] Processing TGT...
+[Yahoo Finance] Fetching analyst activity for TGT
+[Yahoo Finance] Found 703 analyst actions for TGT
+  ✅ Inserted 703 new activities (0 duplicates skipped)
+[556/643] Processing THFF...
+[Yahoo Finance] Fetching analyst activity for THFF
+[Yahoo Finance] Found 13 analyst actions for THFF
+  ✅ Inserted 13 new activities (0 duplicates skipped)
+[557/643] Processing THG...
+[Yahoo Finance] Fetching analyst activity for THG
+[Yahoo Finance] Found 85 analyst actions for THG
+  ✅ Inserted 85 new activities (0 duplicates skipped)
+[558/643] Processing THO...
+[Yahoo Finance] Fetching analyst activity for THO
+[Yahoo Finance] Found 165 analyst actions for THO
+  ✅ Inserted 165 new activities (0 duplicates skipped)
+[559/643] Processing THS...
+[Yahoo Finance] Fetching analyst activity for THS
+[Yahoo Finance] Found 136 analyst actions for THS
+  ✅ Inserted 136 new activities (0 duplicates skipped)
+[560/643] Processing TJX...
+[Yahoo Finance] Fetching analyst activity for TJX
+[Yahoo Finance] Found 443 analyst actions for TJX
+  ✅ Inserted 443 new activities (0 duplicates skipped)
+[561/643] Processing TLYS...
+[Yahoo Finance] Fetching analyst activity for TLYS
+[Yahoo Finance] Found 65 analyst actions for TLYS
+  ✅ Inserted 65 new activities (0 duplicates skipped)
+[562/643] Processing TMO...
+[Yahoo Finance] Fetching analyst activity for TMO
+[Yahoo Finance] Found 353 analyst actions for TMO
+  ✅ Inserted 353 new activities (0 duplicates skipped)
+[563/643] Processing TMUS...
+[Yahoo Finance] Fetching analyst activity for TMUS
+[Yahoo Finance] Found 371 analyst actions for TMUS
+  ✅ Inserted 371 new activities (0 duplicates skipped)
+[564/643] Processing TNC...
+[Yahoo Finance] Fetching analyst activity for TNC
+[Yahoo Finance] Found 29 analyst actions for TNC
+  ✅ Inserted 29 new activities (0 duplicates skipped)
+[565/643] Processing TPR...
+[Yahoo Finance] Fetching analyst activity for TPR
+[Yahoo Finance] Found 350 analyst actions for TPR
+  ✅ Inserted 350 new activities (0 duplicates skipped)
+[566/643] Processing TRGP...
+[Yahoo Finance] Fetching analyst activity for TRGP
+[Yahoo Finance] Found 320 analyst actions for TRGP
+  ✅ Inserted 320 new activities (0 duplicates skipped)
+[567/643] Processing TRMK...
+[Yahoo Finance] Fetching analyst activity for TRMK
+[Yahoo Finance] Found 50 analyst actions for TRMK
+  ✅ Inserted 50 new activities (0 duplicates skipped)
+[568/643] Processing TROW...
+[Yahoo Finance] Fetching analyst activity for TROW
+[Yahoo Finance] Found 456 analyst actions for TROW
+  ✅ Inserted 456 new activities (0 duplicates skipped)
+[569/643] Processing TRV...
+[Yahoo Finance] Fetching analyst activity for TRV
+[Yahoo Finance] Found 403 analyst actions for TRV
+  ✅ Inserted 403 new activities (0 duplicates skipped)
+[570/643] Processing TSLA...
+[Yahoo Finance] Fetching analyst activity for TSLA
+[Yahoo Finance] Found 986 analyst actions for TSLA
+  ✅ Inserted 986 new activities (0 duplicates skipped)
+[571/643] Processing TSM...
+[Yahoo Finance] Fetching analyst activity for TSM
+[Yahoo Finance] Found 84 analyst actions for TSM
+  ✅ Inserted 84 new activities (0 duplicates skipped)
+[572/643] Processing TSN...
+[Yahoo Finance] Fetching analyst activity for TSN
+[Yahoo Finance] Found 212 analyst actions for TSN
+  ✅ Inserted 212 new activities (0 duplicates skipped)
+[573/643] Processing TT...
+[Yahoo Finance] Fetching analyst activity for TT
+[Yahoo Finance] Found 301 analyst actions for TT
+  ✅ Inserted 301 new activities (0 duplicates skipped)
+[574/643] Processing TTWO...
+[Yahoo Finance] Fetching analyst activity for TTWO
+[Yahoo Finance] Found 499 analyst actions for TTWO
+  ✅ Inserted 499 new activities (0 duplicates skipped)
+[575/643] Processing TXN...
+[Yahoo Finance] Fetching analyst activity for TXN
+[Yahoo Finance] Found 584 analyst actions for TXN
+  ✅ Inserted 584 new activities (0 duplicates skipped)
+[576/643] Processing TXRH...
+[Yahoo Finance] Fetching analyst activity for TXRH
+[Yahoo Finance] Found 424 analyst actions for TXRH
+  ✅ Inserted 424 new activities (0 duplicates skipped)
+[577/643] Processing TXT...
+[Yahoo Finance] Fetching analyst activity for TXT
+[Yahoo Finance] Found 233 analyst actions for TXT
+  ✅ Inserted 233 new activities (0 duplicates skipped)
+[578/643] Processing TYL...
+[Yahoo Finance] Fetching analyst activity for TYL
+[Yahoo Finance] Found 218 analyst actions for TYL
+  ✅ Inserted 218 new activities (0 duplicates skipped)
+[579/643] Processing UAA...
+[Yahoo Finance] Fetching analyst activity for UAA
+[Yahoo Finance] Found 322 analyst actions for UAA
+  ✅ Inserted 322 new activities (0 duplicates skipped)
+[580/643] Processing UAL...
+[Yahoo Finance] Fetching analyst activity for UAL
+[Yahoo Finance] Found 436 analyst actions for UAL
+  ✅ Inserted 436 new activities (0 duplicates skipped)
+[581/643] Processing UBSI...
+[Yahoo Finance] Fetching analyst activity for UBSI
+[Yahoo Finance] Found 43 analyst actions for UBSI
+  ✅ Inserted 43 new activities (0 duplicates skipped)
+[582/643] Processing UCB...
+[Yahoo Finance] Fetching analyst activity for UCB
+[Yahoo Finance] Found 17 analyst actions for UCB
+  ✅ Inserted 17 new activities (0 duplicates skipped)
+[583/643] Processing UDR...
+[Yahoo Finance] Fetching analyst activity for UDR
+[Yahoo Finance] Found 308 analyst actions for UDR
+  ✅ Inserted 308 new activities (0 duplicates skipped)
+[584/643] Processing UFCS...
+[Yahoo Finance] Fetching analyst activity for UFCS
+[Yahoo Finance] Found 25 analyst actions for UFCS
+  ✅ Inserted 25 new activities (0 duplicates skipped)
+[585/643] Processing UGI...
+[Yahoo Finance] Fetching analyst activity for UGI
+[Yahoo Finance] Found 63 analyst actions for UGI
+  ✅ Inserted 63 new activities (0 duplicates skipped)
+[586/643] Processing ULTA...
+[Yahoo Finance] Fetching analyst activity for ULTA
+[Yahoo Finance] Found 655 analyst actions for ULTA
+  ✅ Inserted 655 new activities (0 duplicates skipped)
+[587/643] Processing UMBF...
+[Yahoo Finance] Fetching analyst activity for UMBF
+[Yahoo Finance] Found 100 analyst actions for UMBF
+  ✅ Inserted 100 new activities (0 duplicates skipped)
+[588/643] Processing UNH...
+[Yahoo Finance] Fetching analyst activity for UNH
+[Yahoo Finance] Found 491 analyst actions for UNH
+  ✅ Inserted 491 new activities (0 duplicates skipped)
+[589/643] Processing UNP...
+[Yahoo Finance] Fetching analyst activity for UNP
+[Yahoo Finance] Found 620 analyst actions for UNP
+  ✅ Inserted 620 new activities (0 duplicates skipped)
+[590/643] Processing UPS...
+[Yahoo Finance] Fetching analyst activity for UPS
+[Yahoo Finance] Found 495 analyst actions for UPS
+  ✅ Inserted 495 new activities (0 duplicates skipped)
+[591/643] Processing URI...
+[Yahoo Finance] Fetching analyst activity for URI
+[Yahoo Finance] Found 345 analyst actions for URI
+  ✅ Inserted 345 new activities (0 duplicates skipped)
+[592/643] Processing USB...
+[Yahoo Finance] Fetching analyst activity for USB
+[Yahoo Finance] Found 447 analyst actions for USB
+  ✅ Inserted 447 new activities (0 duplicates skipped)
+[593/643] Processing UTL...
+[Yahoo Finance] Fetching analyst activity for UTL
+[Yahoo Finance] Found 22 analyst actions for UTL
+  ✅ Inserted 22 new activities (0 duplicates skipped)
+[594/643] Processing V...
+[Yahoo Finance] Fetching analyst activity for V
+[Yahoo Finance] Found 561 analyst actions for V
+  ✅ Inserted 561 new activities (0 duplicates skipped)
+[595/643] Processing VFC...
+[Yahoo Finance] Fetching analyst activity for VFC
+[Yahoo Finance] Found 482 analyst actions for VFC
+  ✅ Inserted 482 new activities (0 duplicates skipped)
+[596/643] Processing VICI...
+[Yahoo Finance] Fetching analyst activity for VICI
+[Yahoo Finance] Found 124 analyst actions for VICI
+  ✅ Inserted 124 new activities (0 duplicates skipped)
+[597/643] Processing VLGEA...
+[Yahoo Finance] Fetching analyst activity for VLGEA
+[Yahoo Finance] Error fetching analyst activity for VLGEA: No fundamentals data found for symbol: VLGEA
+  ℹ️  No analyst activity found
+[598/643] Processing VLO...
+[Yahoo Finance] Fetching analyst activity for VLO
+[Yahoo Finance] Found 444 analyst actions for VLO
+  ✅ Inserted 444 new activities (0 duplicates skipped)
+[599/643] Processing VLTO...
+[Yahoo Finance] Fetching analyst activity for VLTO
+[Yahoo Finance] Found 53 analyst actions for VLTO
+  ✅ Inserted 53 new activities (0 duplicates skipped)
+[600/643] Processing VMC...
+[Yahoo Finance] Fetching analyst activity for VMC
+[Yahoo Finance] Found 251 analyst actions for VMC
+  ✅ Inserted 251 new activities (0 duplicates skipped)
+
+--- Progress Report ---
+Processed: 600/643
+Success: 591, Errors: 0
+Total activities inserted: 150946
+
+[601/643] Processing VOYA...
+[Yahoo Finance] Fetching analyst activity for VOYA
+[Yahoo Finance] Found 241 analyst actions for VOYA
+  ✅ Inserted 241 new activities (0 duplicates skipped)
+[602/643] Processing VRSK...
+[Yahoo Finance] Fetching analyst activity for VRSK
+[Yahoo Finance] Found 256 analyst actions for VRSK
+  ✅ Inserted 256 new activities (0 duplicates skipped)
+[603/643] Processing VRSN...
+[Yahoo Finance] Fetching analyst activity for VRSN
+[Yahoo Finance] Found 59 analyst actions for VRSN
+  ✅ Inserted 59 new activities (0 duplicates skipped)
+[604/643] Processing VRTX...
+[Yahoo Finance] Fetching analyst activity for VRTX
+[Yahoo Finance] Found 511 analyst actions for VRTX
+  ✅ Inserted 511 new activities (0 duplicates skipped)
+[605/643] Processing VST...
+[Yahoo Finance] Fetching analyst activity for VST
+[Yahoo Finance] Found 119 analyst actions for VST
+  ✅ Inserted 119 new activities (0 duplicates skipped)
+[606/643] Processing VTR...
+[Yahoo Finance] Fetching analyst activity for VTR
+[Yahoo Finance] Found 281 analyst actions for VTR
+  ✅ Inserted 281 new activities (0 duplicates skipped)
+[607/643] Processing VTRS...
+[Yahoo Finance] Fetching analyst activity for VTRS
+[Yahoo Finance] Found 40 analyst actions for VTRS
+  ✅ Inserted 40 new activities (0 duplicates skipped)
+[608/643] Processing VZ...
+[Yahoo Finance] Fetching analyst activity for VZ
+[Yahoo Finance] Found 277 analyst actions for VZ
+  ✅ Inserted 277 new activities (0 duplicates skipped)
+[609/643] Processing WAB...
+[Yahoo Finance] Fetching analyst activity for WAB
+[Yahoo Finance] Found 156 analyst actions for WAB
+  ✅ Inserted 156 new activities (0 duplicates skipped)
+[610/643] Processing WABC...
+[Yahoo Finance] Fetching analyst activity for WABC
+[Yahoo Finance] Found 28 analyst actions for WABC
+  ✅ Inserted 28 new activities (0 duplicates skipped)
+[611/643] Processing WAFD...
+[Yahoo Finance] Fetching analyst activity for WAFD
+[Yahoo Finance] Found 56 analyst actions for WAFD
+  ✅ Inserted 56 new activities (0 duplicates skipped)
+[612/643] Processing WASH...
+[Yahoo Finance] Fetching analyst activity for WASH
+[Yahoo Finance] Found 32 analyst actions for WASH
+  ✅ Inserted 32 new activities (0 duplicates skipped)
+[613/643] Processing WAT...
+[Yahoo Finance] Fetching analyst activity for WAT
+[Yahoo Finance] Found 233 analyst actions for WAT
+  ✅ Inserted 233 new activities (0 duplicates skipped)
+[614/643] Processing WBD...
+[Yahoo Finance] Fetching analyst activity for WBD
+[Yahoo Finance] Found 178 analyst actions for WBD
+  ✅ Inserted 178 new activities (0 duplicates skipped)
+[615/643] Processing WDC...
+[Yahoo Finance] Fetching analyst activity for WDC
+[Yahoo Finance] Found 519 analyst actions for WDC
+  ✅ Inserted 519 new activities (0 duplicates skipped)
+[616/643] Processing WEC...
+[Yahoo Finance] Fetching analyst activity for WEC
+[Yahoo Finance] Found 228 analyst actions for WEC
+  ✅ Inserted 228 new activities (0 duplicates skipped)
+[617/643] Processing WELL...
+[Yahoo Finance] Fetching analyst activity for WELL
+[Yahoo Finance] Found 269 analyst actions for WELL
+  ✅ Inserted 269 new activities (0 duplicates skipped)
+[618/643] Processing WEN...
+[Yahoo Finance] Fetching analyst activity for WEN
+[Yahoo Finance] Found 363 analyst actions for WEN
+  ✅ Inserted 363 new activities (0 duplicates skipped)
+[619/643] Processing WEST...
+[Yahoo Finance] Fetching analyst activity for WEST
+[Yahoo Finance] Found 32 analyst actions for WEST
+  ✅ Inserted 32 new activities (0 duplicates skipped)
+[620/643] Processing WFC...
+[Yahoo Finance] Fetching analyst activity for WFC
+[Yahoo Finance] Found 503 analyst actions for WFC
+  ✅ Inserted 503 new activities (0 duplicates skipped)
+[621/643] Processing WGO...
+[Yahoo Finance] Fetching analyst activity for WGO
+[Yahoo Finance] Found 126 analyst actions for WGO
+  ✅ Inserted 126 new activities (0 duplicates skipped)
+[622/643] Processing WHR...
+[Yahoo Finance] Fetching analyst activity for WHR
+[Yahoo Finance] Found 133 analyst actions for WHR
+  ✅ Inserted 133 new activities (0 duplicates skipped)
+[623/643] Processing WING...
+[Yahoo Finance] Fetching analyst activity for WING
+[Yahoo Finance] Found 314 analyst actions for WING
+  ✅ Inserted 314 new activities (0 duplicates skipped)
+[624/643] Processing WM...
+[Yahoo Finance] Fetching analyst activity for WM
+[Yahoo Finance] Found 323 analyst actions for WM
+  ✅ Inserted 323 new activities (0 duplicates skipped)
+[625/643] Processing WMB...
+[Yahoo Finance] Fetching analyst activity for WMB
+[Yahoo Finance] Found 252 analyst actions for WMB
+  ✅ Inserted 252 new activities (0 duplicates skipped)
+[626/643] Processing WMT...
+[Yahoo Finance] Fetching analyst activity for WMT
+[Yahoo Finance] Found 682 analyst actions for WMT
+  ✅ Inserted 682 new activities (0 duplicates skipped)
+[627/643] Processing WNC...
+[Yahoo Finance] Fetching analyst activity for WNC
+[Yahoo Finance] Found 67 analyst actions for WNC
+  ✅ Inserted 67 new activities (0 duplicates skipped)
+[628/643] Processing WRB...
+[Yahoo Finance] Fetching analyst activity for WRB
+[Yahoo Finance] Found 167 analyst actions for WRB
+  ✅ Inserted 167 new activities (0 duplicates skipped)
+[629/643] Processing WRLD...
+[Yahoo Finance] Fetching analyst activity for WRLD
+[Yahoo Finance] Found 34 analyst actions for WRLD
+  ✅ Inserted 34 new activities (0 duplicates skipped)
+[630/643] Processing WSFS...
+[Yahoo Finance] Fetching analyst activity for WSFS
+[Yahoo Finance] Found 51 analyst actions for WSFS
+  ✅ Inserted 51 new activities (0 duplicates skipped)
+[631/643] Processing WTFC...
+[Yahoo Finance] Fetching analyst activity for WTFC
+[Yahoo Finance] Found 169 analyst actions for WTFC
+  ✅ Inserted 169 new activities (0 duplicates skipped)
+[632/643] Processing WTRG...
+[Yahoo Finance] Fetching analyst activity for WTRG
+[Yahoo Finance] Found 50 analyst actions for WTRG
+  ✅ Inserted 50 new activities (0 duplicates skipped)
+[633/643] Processing WU...
+[Yahoo Finance] Fetching analyst activity for WU
+[Yahoo Finance] Found 197 analyst actions for WU
+  ✅ Inserted 197 new activities (0 duplicates skipped)
+[634/643] Processing WY...
+[Yahoo Finance] Fetching analyst activity for WY
+[Yahoo Finance] Found 155 analyst actions for WY
+  ✅ Inserted 155 new activities (0 duplicates skipped)
+[635/643] Processing WYNN...
+[Yahoo Finance] Fetching analyst activity for WYNN
+[Yahoo Finance] Found 364 analyst actions for WYNN
+  ✅ Inserted 364 new activities (0 duplicates skipped)
+[636/643] Processing XEL...
+[Yahoo Finance] Fetching analyst activity for XEL
+[Yahoo Finance] Found 262 analyst actions for XEL
+  ✅ Inserted 262 new activities (0 duplicates skipped)
+[637/643] Processing XOM...
+[Yahoo Finance] Fetching analyst activity for XOM
+[Yahoo Finance] Found 360 analyst actions for XOM
+  ✅ Inserted 360 new activities (0 duplicates skipped)
+[638/643] Processing XRAY...
+[Yahoo Finance] Fetching analyst activity for XRAY
+[Yahoo Finance] Found 189 analyst actions for XRAY
+  ✅ Inserted 189 new activities (0 duplicates skipped)
+[639/643] Processing YORW...
+[Yahoo Finance] Fetching analyst activity for YORW
+[Yahoo Finance] Found 7 analyst actions for YORW
+  ✅ Inserted 7 new activities (0 duplicates skipped)
+[640/643] Processing YUM...
+[Yahoo Finance] Fetching analyst activity for YUM
+[Yahoo Finance] Found 452 analyst actions for YUM
+  ✅ Inserted 452 new activities (0 duplicates skipped)
+[641/643] Processing ZBRA...
+[Yahoo Finance] Fetching analyst activity for ZBRA
+[Yahoo Finance] Found 185 analyst actions for ZBRA
+  ✅ Inserted 185 new activities (0 duplicates skipped)
+[642/643] Processing ZION...
+[Yahoo Finance] Fetching analyst activity for ZION
+[Yahoo Finance] Found 388 analyst actions for ZION
+  ✅ Inserted 388 new activities (0 duplicates skipped)
+[643/643] Processing ZTS...
+[Yahoo Finance] Fetching analyst activity for ZTS
+[Yahoo Finance] Found 206 analyst actions for ZTS
+  ✅ Inserted 206 new activities (0 duplicates skipped)
+
+=== Backfill Complete ===
+Total companies processed: 643
+Successful: 634
+Errors: 0
+Total analyst activities inserted: 160460
+
+✅ Backfill script completed successfully

@@ -570,7 +570,14 @@ export default function FilingPage() {
         {data.prediction && !data.mlPrediction && (
           <Card className="mb-6 border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50">
             <CardHeader>
-              <CardTitle className="text-2xl">📈 7-Day Price Prediction (Legacy Model)</CardTitle>
+              <CardTitle className="text-2xl">
+                📈 7-Day Price Prediction
+                {data.prediction.modelVersion && (
+                  <span className="text-sm ml-2 text-blue-600">
+                    ({data.prediction.modelVersion})
+                  </span>
+                )}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-3 gap-6">
@@ -821,6 +828,51 @@ export default function FilingPage() {
                         </div>
                         <p className="text-xs text-slate-600 mt-1">
                           Historical avg: {data.prediction.features.avgHistoricalReturn.toFixed(1)}% (40% weight)
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Concern Level Assessment */}
+                    {typeof data.prediction.features.concernLevel === 'number' && Math.abs(data.prediction.features.concernLevel - 5.0) > 0.5 && (
+                      <div className="bg-orange-50 p-3 rounded border border-orange-200">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-slate-700">⚠️ Concern Level</span>
+                          <span className={`font-bold ${
+                            data.prediction.features.concernLevel < 3 ? 'text-green-600' :
+                            data.prediction.features.concernLevel < 5 ? 'text-blue-600' :
+                            data.prediction.features.concernLevel < 7 ? 'text-yellow-600' :
+                            data.prediction.features.concernLevel < 9 ? 'text-orange-600' : 'text-red-600'
+                          }`}>
+                            {(-(data.prediction.features.concernLevel - 5.0) * 0.6).toFixed(1)}% impact
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-600 mt-1">
+                          {data.prediction.features.concernLevel.toFixed(1)}/10 {
+                            data.prediction.features.concernLevel < 3 ? '(LOW)' :
+                            data.prediction.features.concernLevel < 5 ? '(MODERATE)' :
+                            data.prediction.features.concernLevel < 7 ? '(ELEVATED)' :
+                            data.prediction.features.concernLevel < 9 ? '(HIGH)' : '(CRITICAL)'
+                          } (0.6x weight)
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Analyst Activity */}
+                    {typeof data.prediction.features.analystNetUpgrades === 'number' && data.prediction.features.analystNetUpgrades !== 0 && (
+                      <div className="bg-teal-50 p-3 rounded border border-teal-200">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-slate-700">📊 Analyst Momentum</span>
+                          <span className={`font-bold ${
+                            data.prediction.features.analystNetUpgrades > 0 ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {(data.prediction.features.analystNetUpgrades * 0.3).toFixed(1)}% impact
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-600 mt-1">
+                          {data.prediction.features.analystNetUpgrades > 0 ? '+' : ''}{data.prediction.features.analystNetUpgrades} net upgrades in 30d
+                          {data.prediction.features.analystMajorUpgrades > 0 && (
+                            <span className="text-teal-700"> • {data.prediction.features.analystMajorUpgrades} major firm{data.prediction.features.analystMajorUpgrades > 1 ? 's' : ''}</span>
+                          )}
                         </p>
                       </div>
                     )}
