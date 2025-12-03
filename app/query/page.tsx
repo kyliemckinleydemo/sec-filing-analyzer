@@ -461,7 +461,7 @@ export default function QueryPage() {
                               )}
                               {(company.revenueGrowth !== undefined || company.latestRevenueYoY !== undefined) && (
                                 <span className="text-slate-600">
-                                  Revenue Growth{getSortIndicator('latestRevenueYoY')}: <strong>{((company.revenueGrowth || company.latestRevenueYoY) * 100).toFixed(1)}%</strong>
+                                  Revenue Growth{getSortIndicator('latestRevenueYoY')}: <strong>{(company.revenueGrowth || company.latestRevenueYoY).toFixed(1)}%</strong>
                                 </span>
                               )}
                               {company.latestNetIncome !== undefined && (
