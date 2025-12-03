@@ -411,7 +411,9 @@ export default function QueryPage() {
             ) : results.companies && results.companies.length > 0 ? (
               <Card>
                 <CardHeader>
-                  <CardTitle>Found {results.companies.length} Compan{results.companies.length !== 1 ? 'ies' : 'y'}</CardTitle>
+                  <CardTitle>
+                    Found {results.totalCount || results.companies.length} Compan{(results.totalCount || results.companies.length) !== 1 ? 'ies' : 'y'}
+                  </CardTitle>
                   <CardDescription>{results.message || 'Companies matching your query'}</CardDescription>
                 </CardHeader>
                 <CardContent>
