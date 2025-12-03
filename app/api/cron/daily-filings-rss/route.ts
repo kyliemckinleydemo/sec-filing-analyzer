@@ -194,6 +194,11 @@ export async function GET(request: Request) {
                 fiftyTwoWeekLow: financials.fiftyTwoWeekLow,
                 analystTargetPrice: financials.analystTargetPrice,
                 earningsDate: financials.earningsDate,
+                // Yahoo returns dividendYield as percentage (3.5 = 3.5%), convert to decimal (0.035)
+                dividendYield: financials.dividendYield ? financials.dividendYield / 100 : null,
+                beta: financials.beta,
+                volume: financials.volume ? BigInt(financials.volume) : null,
+                averageVolume: financials.averageVolume ? BigInt(financials.averageVolume) : null,
                 yahooFinanceData: JSON.stringify(financials.additionalData),
                 yahooLastUpdated: new Date()
               }
@@ -217,7 +222,8 @@ export async function GET(request: Request) {
                 epsEstimateNextQ: financials.epsEstimateNextQ,
                 epsEstimateCurrentY: financials.epsEstimateCurrentY,
                 epsEstimateNextY: financials.epsEstimateNextY,
-                dividendYield: financials.dividendYield,
+                // Yahoo returns dividendYield as percentage (3.5 = 3.5%), convert to decimal (0.035)
+                dividendYield: financials.dividendYield ? financials.dividendYield / 100 : null,
                 beta: financials.beta,
                 volume: financials.volume,
                 averageVolume: financials.averageVolume,
