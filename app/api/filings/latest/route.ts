@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-
-// Load our tracked companies
-const TRACKED_COMPANIES = require('@/config/top-500-companies.json');
+import { prisma } from '@/lib/prisma';
 
 interface SECFiling {
   accessionNumber: string;
@@ -73,84 +71,64 @@ export async function GET(request: Request) {
     const ticker = searchParams.get('ticker')?.toUpperCase();
     const filingType = searchParams.get('filingType');
 
-    const SEC_HEADERS = {
-      'User-Agent': 'SEC Filing Analyzer research@example.com',
+    // Build where clause
+    const where: any = {
+      // Only include filings from last 90 days
+      filingDate: {
+        gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+      },
+      // Only include financial filings (10-K, 10-Q, 8-K)
+      filingType: {
+        in: ['10-K', '10-Q', '8-K']
+      }
     };
 
-    // Get list of companies to fetch
-    const companiesToFetch = ticker
-      ? TRACKED_COMPANIES.tickers.filter((t: string) => t === ticker)
-      : TRACKED_COMPANIES.tickers.slice(0, 50); // Fetch first 50 companies for performance
-
-    const allFilings: any[] = [];
-
-    // Fetch recent filings for each company
-    for (const companyTicker of companiesToFetch) {
-      const cik = TRACKED_COMPANIES.cikMap[companyTicker];
-      if (!cik) continue;
-
-      try {
-        // Fetch company filings from SEC
-        const response = await fetch(
-          `https://data.sec.gov/submissions/CIK${cik.padStart(10, '0')}.json`,
-          { headers: SEC_HEADERS }
-        );
-
-        if (!response.ok) continue;
-
-        const data: SECCompanyFilings = await response.json();
-        const recent = data.filings.recent;
-
-        // Process recent filings
-        for (let i = 0; i < Math.min(5, recent.accessionNumber.length); i++) {
-          const form = recent.form[i];
-
-          // Only include financial filings (10-K, 10-Q, 8-K)
-          if (!['10-K', '10-Q', '8-K'].includes(form)) continue;
-
-          // Filter by filing type if specified
-          if (filingType && filingType !== 'all' && form !== filingType) continue;
-
-          // Only include filings with XBRL data (means they have financials)
-          if (recent.isXBRL[i] === 0 && recent.isInlineXBRL[i] === 0) continue;
-
-          const accessionNumber = recent.accessionNumber[i];
-          const filingDate = recent.filingDate[i];
-
-          // Only include filings from last 90 days
-          const daysSinceFiling = Math.floor(
-            (Date.now() - new Date(filingDate).getTime()) / (1000 * 60 * 60 * 24)
-          );
-          if (daysSinceFiling > 90) continue;
-
-          allFilings.push({
-            accessionNumber,
-            ticker: companyTicker,
-            companyName: data.name,
-            cik: data.cik,
-            filingType: form,
-            filingDate,
-            reportDate: recent.reportDate[i],
-            primaryDocument: recent.primaryDocument[i],
-            hasXBRL: recent.isXBRL[i] === 1 || recent.isInlineXBRL[i] === 1,
-            filingUrl: `https://www.sec.gov/Archives/edgar/data/${data.cik}/${accessionNumber.replace(/-/g, '')}/${recent.primaryDocument[i]}`,
-            edgarUrl: `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${data.cik}&type=${form}&dateb=&owner=exclude&count=10`,
-          });
-        }
-
-        // Rate limit: 10 requests per second max
-        await new Promise(resolve => setTimeout(resolve, 100));
-      } catch (error) {
-        console.error(`Error fetching filings for ${companyTicker}:`, error);
-        continue;
-      }
+    // Filter by ticker if specified
+    if (ticker) {
+      where.company = {
+        ticker: ticker
+      };
     }
 
-    // Sort by filing date (newest first)
-    allFilings.sort((a, b) => new Date(b.filingDate).getTime() - new Date(a.filingDate).getTime());
+    // Filter by filing type if specified
+    if (filingType && filingType !== 'all') {
+      where.filingType = filingType;
+    }
 
-    // Return limited results
-    return NextResponse.json(allFilings.slice(0, limit));
+    // Fetch filings from database
+    const filings = await prisma.filing.findMany({
+      where,
+      include: {
+        company: {
+          select: {
+            ticker: true,
+            name: true,
+            cik: true
+          }
+        }
+      },
+      orderBy: {
+        filingDate: 'desc'
+      },
+      take: limit
+    });
+
+    // Format response
+    const formattedFilings = filings.map(filing => ({
+      accessionNumber: filing.accessionNumber,
+      ticker: filing.company.ticker,
+      companyName: filing.company.name,
+      cik: filing.cik,
+      filingType: filing.filingType,
+      filingDate: filing.filingDate.toISOString().split('T')[0],
+      reportDate: filing.reportDate?.toISOString().split('T')[0] || null,
+      primaryDocument: filing.filingUrl.split('/').pop(),
+      hasXBRL: true, // Our cron only fetches XBRL filings
+      filingUrl: filing.filingUrl,
+      edgarUrl: `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${filing.cik}&type=${filing.filingType}&dateb=&owner=exclude&count=10`,
+    }));
+
+    return NextResponse.json(formattedFilings);
   } catch (error) {
     console.error('Error fetching latest filings:', error);
     return NextResponse.json(
