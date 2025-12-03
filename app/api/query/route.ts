@@ -691,7 +691,7 @@ export async function POST(request: Request) {
       // "Find undervalued stocks" or "Show companies trading below target"
       {
         pattern: /(?:show|find|list)\s+(?:undervalued|companies?\s+trading\s+below\s+(?:analyst\s+)?target)/i,
-        handler: async () => {
+        handler: async (matches, query, skip = 0, pageSize = 50) => {
           // Fetch all companies with both price and target price
           const allCompanies = await prisma.company.findMany({
             where: {
@@ -708,19 +708,33 @@ export async function POST(request: Request) {
             }
           });
 
-          // Filter to companies trading below analyst target
-          const undervaluedCompanies = allCompanies
+          // Filter to companies trading below analyst target and calculate upside
+          const allUndervalued = allCompanies
             .filter(c => c.currentPrice! < c.analystTargetPrice!)
             .map(c => ({
               ...c,
-              upside: ((c.analystTargetPrice! - c.currentPrice!) / c.currentPrice! * 100).toFixed(1)
+              upside: ((c.analystTargetPrice! - c.currentPrice!) / c.currentPrice! * 100).toFixed(1),
+              upsideValue: ((c.analystTargetPrice! - c.currentPrice!) / c.currentPrice! * 100) // For sorting
             }))
-            .sort((a, b) => parseFloat(b.upside) - parseFloat(a.upside)) // Sort by highest upside
-            .slice(0, 50);
+            .sort((a, b) => {
+              // Primary sort: highest upside first
+              const upsideDiff = b.upsideValue - a.upsideValue;
+              if (Math.abs(upsideDiff) > 0.01) return upsideDiff;
+
+              // Secondary sort: market cap descending
+              return (b.marketCap || 0) - (a.marketCap || 0);
+            });
+
+          const totalCount = allUndervalued.length;
+          const paginatedCompanies = allUndervalued.slice(skip, skip + pageSize);
 
           return {
-            companies: undervaluedCompanies,
-            message: `Companies trading below analyst target price`
+            companies: paginatedCompanies,
+            totalCount,
+            pageSize,
+            currentPage: Math.floor(skip / pageSize) + 1,
+            totalPages: Math.ceil(totalCount / pageSize),
+            message: `Companies trading below analyst target price (${totalCount} total)`
           };
         }
       },
