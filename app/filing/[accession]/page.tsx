@@ -704,9 +704,9 @@ export default function FilingPage() {
                                    data.prediction.features.marketCap < 200 ? 1.2 : 1.3)
                                 : 1.0;
                               const combined = peMultiplier * mcMultiplier;
-                              const base = data.prediction.features.epsSurprise === 'beat' ? 1.3 : -2.9;
+                              const base = data.prediction.features.epsSurprise === 'beat' ? 1.0 : -1.0;
                               const magnitude = Math.abs(data.prediction.features.epsSurpriseMagnitude || 0);
-                              const largeSurpriseBonus = magnitude > 5 ? (data.prediction.features.epsSurprise === 'beat' ? 1.0 : -2.0) * combined : 0;
+                              const largeSurpriseBonus = magnitude > 5 ? (data.prediction.features.epsSurprise === 'beat' ? 0.8 : -0.7) * combined : 0;
                               const impact = base * combined + largeSurpriseBonus;
                               return `${impact > 0 ? '+' : ''}${impact.toFixed(1)}% impact`;
                             })()}
@@ -752,11 +752,11 @@ export default function FilingPage() {
                             data.prediction.features.sentimentScore > 0 ? 'text-green-600' :
                             data.prediction.features.sentimentScore < 0 ? 'text-red-600' : 'text-slate-600'
                           }`}>
-                            {(data.prediction.features.sentimentScore * 4).toFixed(1)}% impact
+                            {(data.prediction.features.sentimentScore * 5).toFixed(1)}% impact
                           </span>
                         </div>
                         <p className="text-xs text-slate-600 mt-1">
-                          Score: {data.prediction.features.sentimentScore.toFixed(2)} (4x weight)
+                          Score: {data.prediction.features.sentimentScore.toFixed(2)} (5x weight)
                         </p>
                       </div>
                     )}
@@ -769,11 +769,11 @@ export default function FilingPage() {
                             data.prediction.features.riskScoreDelta < 0 ? 'text-green-600' :
                             data.prediction.features.riskScoreDelta > 0 ? 'text-red-600' : 'text-slate-600'
                           }`}>
-                            {(-data.prediction.features.riskScoreDelta * 0.5).toFixed(1)}% impact
+                            {(-data.prediction.features.riskScoreDelta * 0.8).toFixed(1)}% impact
                           </span>
                         </div>
                         <p className="text-xs text-slate-600 mt-1">
-                          Delta: {data.prediction.features.riskScoreDelta.toFixed(1)} (0.5x weight)
+                          Delta: {data.prediction.features.riskScoreDelta.toFixed(1)} (0.8x weight)
                         </p>
                       </div>
                     )}

@@ -1,0 +1,32 @@
+🔄 Starting Concern Score Backfill
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 Found 1 filings with analysis data
+
+⏭️  EFX 10-Q (2025-10-21) - Already has concern score
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Backfill Complete!
+
+📊 Summary:
+   Total filings: 1
+   Processed: 0
+   Skipped (already had concern): 1
+   Failed: 0
+   Total time: 0.0 minutes
+
+🔍 Verifying backfilled data...
+
+✅ 360 filings now have concern scores
+📈 Ready for ML model training!
+
+📊 Concern Level Distribution:
+   LOW (0-2): 18 (5.0%)
+   MODERATE (3-4): 37 (10.3%)
+   ELEVATED (5-6): 202 (56.1%)
+   HIGH (7-8): 90 (25.0%)
+   CRITICAL (9-10): 13 (3.6%)
+
+✨ Backfill complete! You can now train the new ML model.
+
