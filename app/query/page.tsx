@@ -127,7 +127,7 @@ export default function QueryPage() {
                 <Button
                   size="lg"
                   className="h-14 px-8 text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                  onClick={handleQuery}
+                  onClick={() => handleQuery()}
                   disabled={!query.trim() || loading}
                 >
                   {loading ? (
