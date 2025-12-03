@@ -20,6 +20,8 @@ interface QueryResult {
   pageSize?: number;
   currentPage?: number;
   totalPages?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
 }
 
 export default function QueryPage() {
@@ -28,6 +30,15 @@ export default function QueryPage() {
   const [results, setResults] = useState<QueryResult | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
+
+  // Helper function to get sort indicator for a field
+  const getSortIndicator = (fieldName: string) => {
+    if (!results?.sortBy) return '';
+    if (results.sortBy === fieldName) {
+      return results.sortOrder === 'desc' ? ' ↓' : ' ↑';
+    }
+    return '';
+  };
 
   const exampleQueries = [
     {
@@ -426,21 +437,61 @@ export default function QueryPage() {
                               <span className="font-bold text-lg text-blue-600">{company.ticker}</span>
                               <span className="text-sm text-slate-700">{company.name}</span>
                             </div>
-                            <div className="flex gap-4 text-sm">
+                            <div className="flex gap-4 text-sm flex-wrap">
                               {company.currentPrice && (
-                                <span className="text-slate-600">Price: <strong>${company.currentPrice.toFixed(2)}</strong></span>
+                                <span className="text-slate-600">Price{getSortIndicator('currentPrice')}: <strong>${company.currentPrice.toFixed(2)}</strong></span>
                               )}
                               {company.peRatio && (
-                                <span className="text-slate-600">P/E: <strong>{company.peRatio.toFixed(2)}</strong></span>
+                                <span className="text-slate-600">P/E{getSortIndicator('peRatio')}: <strong>{company.peRatio.toFixed(2)}</strong></span>
                               )}
                               {company.marketCap && (
                                 <span className="text-slate-600">
-                                  Market Cap: <strong>${(company.marketCap / 1e9).toFixed(2)}B</strong>
+                                  Market Cap{getSortIndicator('marketCap')}: <strong>${(company.marketCap / 1e9).toFixed(2)}B</strong>
+                                </span>
+                              )}
+                              {company.dividendYield !== undefined && (
+                                <span className="text-slate-600">
+                                  Dividend Yield{getSortIndicator('dividendYield')}: <strong>{(company.dividendYield * 100).toFixed(2)}%</strong>
+                                </span>
+                              )}
+                              {company.beta !== undefined && (
+                                <span className="text-slate-600">
+                                  Beta{getSortIndicator('beta')}: <strong>{company.beta.toFixed(2)}</strong>
+                                </span>
+                              )}
+                              {(company.revenueGrowth !== undefined || company.latestRevenueYoY !== undefined) && (
+                                <span className="text-slate-600">
+                                  Revenue Growth{getSortIndicator('latestRevenueYoY')}: <strong>{((company.revenueGrowth || company.latestRevenueYoY) * 100).toFixed(1)}%</strong>
+                                </span>
+                              )}
+                              {company.latestNetIncome !== undefined && (
+                                <span className="text-slate-600">
+                                  Net Income{getSortIndicator('latestNetIncome')}: <strong>${(company.latestNetIncome / 1e9).toFixed(2)}B</strong>
+                                </span>
+                              )}
+                              {company.latestOperatingMargin !== undefined && (
+                                <span className="text-slate-600">
+                                  Operating Margin{getSortIndicator('latestOperatingMargin')}: <strong>{company.latestOperatingMargin.toFixed(1)}%</strong>
+                                </span>
+                              )}
+                              {company.fiftyTwoWeekHigh !== undefined && (
+                                <span className="text-slate-600">
+                                  52W High: <strong>${company.fiftyTwoWeekHigh.toFixed(2)}</strong>
+                                </span>
+                              )}
+                              {company.upside !== undefined && (
+                                <span className="text-green-600">
+                                  Upside{getSortIndicator('upsideValue')}: <strong>{company.upside}%</strong>
+                                </span>
+                              )}
+                              {company.analystTargetPrice !== undefined && (
+                                <span className="text-slate-600">
+                                  Target{getSortIndicator('analystTargetPrice')}: <strong>${company.analystTargetPrice.toFixed(2)}</strong>
                                 </span>
                               )}
                               {company.previousTarget !== undefined && company.latestTarget !== undefined && (
                                 <span className={company.change > 0 ? 'text-green-600' : 'text-red-600'}>
-                                  Target: <strong>${company.previousTarget.toFixed(2)}</strong> → <strong>${company.latestTarget.toFixed(2)}</strong>
+                                  Target{getSortIndicator('changePercent')}: <strong>${company.previousTarget.toFixed(2)}</strong> → <strong>${company.latestTarget.toFixed(2)}</strong>
                                   <span className="ml-1">({company.change > 0 ? '+' : ''}{company.changePercent.toFixed(1)}%)</span>
                                 </span>
                               )}

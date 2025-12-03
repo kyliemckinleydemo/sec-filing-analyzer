@@ -542,6 +542,8 @@ export async function POST(request: Request) {
             pageSize,
             currentPage: Math.floor(skip / pageSize) + 1,
             totalPages: Math.ceil(totalCount / pageSize),
+            sortBy: 'dividendYield',
+            sortOrder: 'desc',
             message: `Companies with dividend yield > ${matches[1]}% (${totalCount} total)`
           };
         }
@@ -584,6 +586,8 @@ export async function POST(request: Request) {
             pageSize,
             currentPage: Math.floor(skip / pageSize) + 1,
             totalPages: Math.ceil(totalCount / pageSize),
+            sortBy: 'beta',
+            sortOrder: 'asc',
             message: `Companies with beta < ${maxBeta} (${totalCount} total)`
           };
         }
@@ -627,6 +631,8 @@ export async function POST(request: Request) {
             pageSize,
             currentPage: Math.floor(skip / pageSize) + 1,
             totalPages: Math.ceil(totalCount / pageSize),
+            sortBy: 'latestRevenueYoY',
+            sortOrder: 'desc',
             message: `Companies with revenue growth > ${minGrowth}% (${totalCount} total)`
           };
         }
@@ -659,6 +665,8 @@ export async function POST(request: Request) {
 
           return {
             companies,
+            sortBy: 'latestNetIncome',
+            sortOrder: 'desc',
             message: `Companies with net income > $${value}${unit.toUpperCase()}`
           };
         }
@@ -688,6 +696,8 @@ export async function POST(request: Request) {
 
           return {
             companies,
+            sortBy: 'latestOperatingMargin',
+            sortOrder: 'desc',
             message: `Companies with operating margin > ${minMargin}%`
           };
         }
@@ -739,6 +749,8 @@ export async function POST(request: Request) {
             pageSize,
             currentPage: Math.floor(skip / pageSize) + 1,
             totalPages: Math.ceil(totalCount / pageSize),
+            sortBy: 'upsideValue',
+            sortOrder: 'desc',
             message: `Companies trading below analyst target price (${totalCount} total)`
           };
         }
@@ -766,6 +778,8 @@ export async function POST(request: Request) {
 
           return {
             companies,
+            sortBy: 'beta',
+            sortOrder: 'desc',
             message: `High beta stocks (beta > 1.3)`
           };
         }
@@ -800,6 +814,8 @@ export async function POST(request: Request) {
 
           return {
             companies: nearHigh,
+            sortBy: 'currentPrice',
+            sortOrder: 'desc',
             message: `Companies within 5% of 52-week high`
           };
         }
