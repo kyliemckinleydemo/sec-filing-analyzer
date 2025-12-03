@@ -245,6 +245,30 @@ export async function GET(request: Request) {
 
     console.log(`[Cron RSS] Yahoo Finance updates: ${yahooFinanceUpdates} success, ${yahooFinanceErrors} errors`);
 
+    // Flush prediction cache to ensure all predictions use latest model
+    console.log('[Cron RSS] Flushing prediction cache...');
+    let cacheFlushCount = 0;
+    try {
+      const clearResult = await prisma.filing.updateMany({
+        where: {
+          predicted7dReturn: { not: null }
+        },
+        data: {
+          predicted7dReturn: null,
+          predictionConfidence: null
+        }
+      });
+      cacheFlushCount = clearResult.count;
+
+      // Also delete prediction records
+      await prisma.prediction.deleteMany({});
+
+      console.log(`[Cron RSS] Cache flushed: ${cacheFlushCount} predictions cleared`);
+    } catch (flushError: any) {
+      console.error(`[Cron RSS] Warning: Cache flush failed: ${flushError.message}`);
+      // Don't fail the whole job if cache flush fails
+    }
+
     // Mark job run as successful
     await prisma.cronJobRun.update({
       where: { id: jobRun.id },
