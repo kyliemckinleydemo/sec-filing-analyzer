@@ -16,12 +16,17 @@ interface QueryResult {
   after?: any;
   message?: string;
   error?: string;
+  totalCount?: number;
+  pageSize?: number;
+  currentPage?: number;
+  totalPages?: number;
 }
 
 export default function QueryPage() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<QueryResult | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
 
   const exampleQueries = [
@@ -57,7 +62,7 @@ export default function QueryPage() {
     }
   ];
 
-  const handleQuery = async () => {
+  const handleQuery = async (page: number = 1) => {
     if (!query.trim()) return;
 
     setLoading(true);
@@ -65,16 +70,21 @@ export default function QueryPage() {
       const response = await fetch('/api/query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, page }),
       });
 
       const data = await response.json();
       setResults(data);
+      setCurrentPage(page);
     } catch (error) {
       setResults({ error: 'Failed to process query' });
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    handleQuery(newPage);
   };
 
   const useExample = (exampleQuery: string) => {
@@ -443,6 +453,48 @@ export default function QueryPage() {
                       </div>
                     ))}
                   </div>
+
+                  {/* Pagination Controls */}
+                  {results.totalPages && results.totalPages > 1 && (
+                    <div className="mt-6 flex items-center justify-between border-t pt-4">
+                      <div className="text-sm text-slate-600">
+                        Showing page {results.currentPage} of {results.totalPages} ({results.totalCount} total companies)
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          disabled={currentPage === 1 || loading}
+                        >
+                          Previous
+                        </Button>
+                        {Array.from({ length: Math.min(5, results.totalPages) }, (_, i) => {
+                          const pageNum = currentPage <= 3 ? i + 1 : currentPage - 2 + i;
+                          if (pageNum > results.totalPages!) return null;
+                          return (
+                            <Button
+                              key={pageNum}
+                              variant={pageNum === currentPage ? "default" : "outline"}
+                              size="sm"
+                              onClick={() => handlePageChange(pageNum)}
+                              disabled={loading}
+                            >
+                              {pageNum}
+                            </Button>
+                          );
+                        })}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          disabled={currentPage === results.totalPages || loading}
+                        >
+                          Next
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ) : results.filings && results.filings.length > 0 ? (

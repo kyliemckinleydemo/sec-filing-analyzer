@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 
 interface QueryPattern {
   pattern: RegExp;
-  handler: (matches: RegExpMatchArray, query: string) => Promise<any>;
+  handler: (matches: RegExpMatchArray, query: string, skip?: number, pageSize?: number) => Promise<any>;
 }
 
 /**
@@ -42,7 +42,7 @@ function serializeBigInt(obj: any): any {
 
 export async function POST(request: Request) {
   try {
-    const { query } = await request.json();
+    const { query, page = 1 } = await request.json();
 
     if (!query || typeof query !== 'string') {
       return NextResponse.json(
@@ -52,6 +52,8 @@ export async function POST(request: Request) {
     }
 
     const normalizedQuery = query.toLowerCase().trim();
+    const pageSize = 50;
+    const skip = (page - 1) * pageSize;
 
     // Query patterns (most specific first)
     const patterns: QueryPattern[] = [
@@ -501,28 +503,41 @@ export async function POST(request: Request) {
       // "Show companies with dividend yield > X%"
       {
         pattern: /(?:show|find|list)\s+companies?\s+with\s+dividend\s+yield\s+(?:>|greater than|above|over)\s+(\d+(?:\.\d+)?)/i,
-        handler: async (matches) => {
+        handler: async (matches, query, skip = 0, pageSize = 50) => {
           const minYield = parseFloat(matches[1]) / 100; // Convert to decimal
 
-          const companies = await prisma.company.findMany({
-            where: {
-              dividendYield: { gte: minYield }
-            },
-            select: {
-              ticker: true,
-              name: true,
-              currentPrice: true,
-              dividendYield: true,
-              marketCap: true,
-              peRatio: true
-            },
-            orderBy: { dividendYield: 'desc' },
-            take: 50
-          });
+          const where = {
+            dividendYield: { gte: minYield }
+          };
+
+          const [companies, totalCount] = await Promise.all([
+            prisma.company.findMany({
+              where,
+              select: {
+                ticker: true,
+                name: true,
+                currentPrice: true,
+                dividendYield: true,
+                marketCap: true,
+                peRatio: true
+              },
+              orderBy: [
+                { dividendYield: 'desc' },
+                { marketCap: 'desc' }  // Secondary sort by market cap
+              ],
+              skip,
+              take: pageSize
+            }),
+            prisma.company.count({ where })
+          ]);
 
           return {
             companies,
-            message: `Companies with dividend yield > ${matches[1]}%`
+            totalCount,
+            pageSize,
+            currentPage: Math.floor(skip / pageSize) + 1,
+            totalPages: Math.ceil(totalCount / pageSize),
+            message: `Companies with dividend yield > ${matches[1]}% (${totalCount} total)`
           };
         }
       },
@@ -530,28 +545,41 @@ export async function POST(request: Request) {
       // "Find low beta stocks" or "Show companies with beta < X"
       {
         pattern: /(?:show|find|list)\s+(?:companies?\s+with\s+)?(?:low\s+beta|beta\s+(?:<|less than|under|below)\s+(\d+(?:\.\d+)?))/i,
-        handler: async (matches) => {
+        handler: async (matches, query, skip = 0, pageSize = 50) => {
           const maxBeta = matches[1] ? parseFloat(matches[1]) : 0.9; // Default to 0.9 for "low beta"
 
-          const companies = await prisma.company.findMany({
-            where: {
-              beta: { lte: maxBeta, gte: 0 }
-            },
-            select: {
-              ticker: true,
-              name: true,
-              currentPrice: true,
-              beta: true,
-              marketCap: true,
-              peRatio: true
-            },
-            orderBy: { beta: 'asc' },
-            take: 50
-          });
+          const where = {
+            beta: { lte: maxBeta, gte: 0 }
+          };
+
+          const [companies, totalCount] = await Promise.all([
+            prisma.company.findMany({
+              where,
+              select: {
+                ticker: true,
+                name: true,
+                currentPrice: true,
+                beta: true,
+                marketCap: true,
+                peRatio: true
+              },
+              orderBy: [
+                { beta: 'asc' },
+                { marketCap: 'desc' }  // Secondary sort by market cap
+              ],
+              skip,
+              take: pageSize
+            }),
+            prisma.company.count({ where })
+          ]);
 
           return {
             companies,
-            message: `Companies with beta < ${maxBeta}`
+            totalCount,
+            pageSize,
+            currentPage: Math.floor(skip / pageSize) + 1,
+            totalPages: Math.ceil(totalCount / pageSize),
+            message: `Companies with beta < ${maxBeta} (${totalCount} total)`
           };
         }
       },
@@ -559,29 +587,42 @@ export async function POST(request: Request) {
       // "Show companies with revenue growth > X%"
       {
         pattern: /(?:show|find|list)\s+companies?\s+with\s+revenue\s+growth\s+(?:>|greater than|above|over)\s+(\d+(?:\.\d+)?)/i,
-        handler: async (matches) => {
+        handler: async (matches, query, skip = 0, pageSize = 50) => {
           const minGrowth = parseFloat(matches[1]);
 
-          const companies = await prisma.company.findMany({
-            where: {
-              latestRevenueYoY: { gte: minGrowth }
-            },
-            select: {
-              ticker: true,
-              name: true,
-              latestRevenue: true,
-              latestRevenueYoY: true,
-              latestQuarter: true,
-              marketCap: true,
-              peRatio: true
-            },
-            orderBy: { latestRevenueYoY: 'desc' },
-            take: 50
-          });
+          const where = {
+            latestRevenueYoY: { gte: minGrowth }
+          };
+
+          const [companies, totalCount] = await Promise.all([
+            prisma.company.findMany({
+              where,
+              select: {
+                ticker: true,
+                name: true,
+                latestRevenue: true,
+                latestRevenueYoY: true,
+                latestQuarter: true,
+                marketCap: true,
+                peRatio: true
+              },
+              orderBy: [
+                { latestRevenueYoY: 'desc' },
+                { marketCap: 'desc' }  // Secondary sort by market cap
+              ],
+              skip,
+              take: pageSize
+            }),
+            prisma.company.count({ where })
+          ]);
 
           return {
             companies,
-            message: `Companies with revenue growth > ${minGrowth}%`
+            totalCount,
+            pageSize,
+            currentPage: Math.floor(skip / pageSize) + 1,
+            totalPages: Math.ceil(totalCount / pageSize),
+            message: `Companies with revenue growth > ${minGrowth}% (${totalCount} total)`
           };
         }
       },
@@ -771,7 +812,7 @@ export async function POST(request: Request) {
     for (const { pattern, handler } of patterns) {
       const matches = normalizedQuery.match(pattern);
       if (matches) {
-        const result = await handler(matches, normalizedQuery);
+        const result = await handler(matches, normalizedQuery, skip, pageSize);
         return NextResponse.json(serializeBigInt(result));
       }
     }
