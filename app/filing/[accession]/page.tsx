@@ -103,6 +103,7 @@ interface FilingAnalysisData {
     features?: {
       riskScoreDelta?: number;
       sentimentScore?: number;
+      concernLevel?: number;
       filingType?: string;
       guidanceChange?: string;
       epsSurprise?: string;
@@ -113,6 +114,9 @@ interface FilingAnalysisData {
       marketCap?: number;
       ticker?: string;
       avgHistoricalReturn?: number;
+      analystNetUpgrades?: number;
+      analystMajorUpgrades?: number;
+      analystMajorDowngrades?: number;
     };
   };
   accuracy?: {
