@@ -60,6 +60,15 @@ export interface CompanyFinancials {
   additionalData?: any;
 }
 
+export interface AnalystAction {
+  date: Date;
+  firm: string;
+  actionType: string; // 'upgrade', 'downgrade', 'initiate', 'reiterate'
+  fromGrade: string | null;
+  toGrade: string | null;
+  action: string | null;
+}
+
 class YahooFinanceClient {
   private baseUrl = 'https://query1.finance.yahoo.com/v8/finance';
 
@@ -281,6 +290,106 @@ class YahooFinanceClient {
     const endPrice = sortedPrices[startIndex + 7].close;
 
     return ((endPrice - startPrice) / startPrice) * 100;
+  }
+
+  /**
+   * Get analyst upgrade/downgrade history
+   * Returns recent analyst rating changes for a given ticker
+   */
+  async getAnalystActivity(ticker: string): Promise<AnalystAction[]> {
+    try {
+      console.log(`[Yahoo Finance] Fetching analyst activity for ${ticker}`);
+
+      const yahooFinance = (await import('yahoo-finance2')).default;
+
+      // Fetch upgrade/downgrade history using quoteSummary
+      const summary = await yahooFinance.quoteSummary(ticker, {
+        modules: ['upgradeDowngradeHistory']
+      });
+
+      const history = (summary as any).upgradeDowngradeHistory?.history || [];
+
+      if (!history || history.length === 0) {
+        console.log(`[Yahoo Finance] No analyst activity found for ${ticker}`);
+        return [];
+      }
+
+      // Parse and normalize the analyst actions
+      const actions: AnalystAction[] = history.map((item: any) => {
+        // Determine action type from rating changes
+        let actionType = 'reiterate';
+        if (item.fromGrade && item.toGrade) {
+          const fromGrade = this.normalizeRating(item.fromGrade);
+          const toGrade = this.normalizeRating(item.toGrade);
+
+          if (toGrade > fromGrade) {
+            actionType = 'upgrade';
+          } else if (toGrade < fromGrade) {
+            actionType = 'downgrade';
+          }
+        } else if (item.toGrade && !item.fromGrade) {
+          actionType = 'initiate';
+        }
+
+        // Handle date - yahoo-finance2 might already convert to Date object
+        let date: Date;
+        if (item.epochGradeDate instanceof Date) {
+          date = item.epochGradeDate;
+        } else if (typeof item.epochGradeDate === 'number') {
+          // Assume seconds if number
+          date = new Date(item.epochGradeDate * 1000);
+        } else {
+          // Fallback to current date
+          date = new Date();
+        }
+
+        return {
+          date,
+          firm: item.firm || 'Unknown',
+          actionType,
+          fromGrade: item.fromGrade || null,
+          toGrade: item.toGrade || null,
+          action: item.action || null,
+        };
+      });
+
+      console.log(`[Yahoo Finance] Found ${actions.length} analyst actions for ${ticker}`);
+      return actions;
+
+    } catch (error: any) {
+      console.error(`[Yahoo Finance] Error fetching analyst activity for ${ticker}:`, error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Normalize analyst ratings to a numerical scale for comparison
+   * Higher number = more bullish
+   */
+  private normalizeRating(rating: string): number {
+    const normalized = rating.toLowerCase();
+
+    // Strong Buy / Buy variations
+    if (normalized.includes('strong buy') || normalized.includes('outperform') || normalized.includes('overweight')) {
+      return 5;
+    }
+    if (normalized.includes('buy') || normalized.includes('positive')) {
+      return 4;
+    }
+    // Hold / Neutral variations
+    if (normalized.includes('hold') || normalized.includes('neutral') || normalized.includes('equal')) {
+      return 3;
+    }
+    // Sell variations
+    if (normalized.includes('underperform') || normalized.includes('underweight')) {
+      return 2;
+    }
+    if (normalized.includes('sell') || normalized.includes('reduce')) {
+      return 1;
+    }
+
+    // Default to neutral if can't parse
+    return 3;
   }
 
   private getRangeSeconds(range: string): number {

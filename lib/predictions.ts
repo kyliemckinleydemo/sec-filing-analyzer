@@ -8,6 +8,7 @@ export interface PredictionFeatures {
   riskScoreDelta: number;
   sentimentScore: number;
   riskCountNew: number;
+  concernLevel?: number; // 0-10 multi-factor concern assessment (synthesizes risk + sentiment + financials)
 
   // From Filing Meta
   filingType: '10-K' | '10-Q' | '8-K';
@@ -102,6 +103,26 @@ class PredictionEngine {
     if (Math.abs(sentiment) > 0.2) {
       reasoningParts.push(
         `${sentiment > 0 ? 'Positive' : 'Negative'} management sentiment (${sentimentImpact > 0 ? '+' : ''}${sentimentImpact.toFixed(2)}% impact)`
+      );
+    }
+
+    // Factor 2b: Concern Level Assessment (NEW - Claude AI multi-factor risk scoring)
+    // Synthesizes risk factors, sentiment, financial metrics, legal issues into 0-10 scale
+    // This replaces legacy hardcoded risk/sentiment with actual filing analysis
+    // 0-2 (LOW/bullish), 3-4 (MODERATE/stable), 5-6 (ELEVATED/cautious), 7-8 (HIGH/bearish), 9-10 (CRITICAL)
+    const concernLevel = features.concernLevel ?? 5.0; // Default to neutral if not available
+    const concernImpact = -(concernLevel - 5.0) * 0.6; // Center at 5, invert (lower concern = positive)
+    prediction += concernImpact;
+
+    // Show concern assessment if it deviates meaningfully from neutral
+    if (Math.abs(concernLevel - 5.0) > 0.5) {
+      const concernLabel =
+        concernLevel < 3 ? 'LOW' :
+        concernLevel < 5 ? 'MODERATE' :
+        concernLevel < 7 ? 'ELEVATED' :
+        concernLevel < 9 ? 'HIGH' : 'CRITICAL';
+      reasoningParts.push(
+        `Concern level: ${concernLevel.toFixed(1)}/10 (${concernLabel}) (${concernImpact > 0 ? '+' : ''}${concernImpact.toFixed(2)}% impact)`
       );
     }
 
@@ -483,6 +504,7 @@ class PredictionEngine {
     if (features.guidanceChange && features.guidanceChange !== 'maintained') confidence += 0.20;
     if (features.riskScoreDelta !== undefined) confidence += 0.10;
     if (features.sentimentScore !== undefined) confidence += 0.10;
+    if (features.concernLevel !== undefined && features.concernLevel !== 5.0) confidence += 0.10; // Concern assessment available
     if (features.ticker && features.avgHistoricalReturn !== undefined) confidence += 0.15; // Company-specific
     if (features.analystNetUpgrades !== undefined || features.analystConsensus !== undefined) confidence += 0.10; // Analyst coverage
 

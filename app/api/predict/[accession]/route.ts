@@ -224,26 +224,61 @@ export async function GET(
       // Continue without macro data
     }
 
-    // Extract analyst activity data from analysisData
+    // Query analyst activity from AnalystActivity table (30 days before filing)
     let analystNetUpgrades = undefined;
     let analystMajorUpgrades = undefined;
     let analystMajorDowngrades = undefined;
     let analystConsensus = undefined;
     let analystUpsidePotential = undefined;
 
-    if (filing.analysisData) {
-      try {
-        const analysis = JSON.parse(filing.analysisData);
-        if (analysis.analyst) {
-          analystNetUpgrades = analysis.analyst.activity?.netUpgrades;
-          analystMajorUpgrades = analysis.analyst.activity?.majorUpgrades;
-          analystMajorDowngrades = analysis.analyst.activity?.majorDowngrades;
-          analystConsensus = analysis.analyst.consensusScore;
-          analystUpsidePotential = analysis.analyst.upsidePotential;
+    try {
+      const thirtyDaysAgo = new Date(filing.filingDate);
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const analystActivities = await prisma.analystActivity.findMany({
+        where: {
+          companyId: filing.companyId,
+          activityDate: {
+            gte: thirtyDaysAgo,
+            lt: filing.filingDate
+          }
+        },
+        select: {
+          actionType: true,
+          firm: true,
         }
-      } catch (e) {
-        console.error('Error parsing analyst data:', e);
+      });
+
+      if (analystActivities.length > 0) {
+        const majorFirms = ['Goldman Sachs', 'Morgan Stanley', 'JP Morgan', 'Bank of America', 'Citi', 'Wells Fargo', 'Barclays', 'UBS'];
+
+        const upgrades = analystActivities.filter(a => a.actionType === 'upgrade').length;
+        const downgrades = analystActivities.filter(a => a.actionType === 'downgrade').length;
+
+        analystNetUpgrades = upgrades - downgrades;
+        analystMajorUpgrades = analystActivities.filter(a =>
+          a.actionType === 'upgrade' && majorFirms.some(firm => a.firm.includes(firm))
+        ).length;
+        analystMajorDowngrades = analystActivities.filter(a =>
+          a.actionType === 'downgrade' && majorFirms.some(firm => a.firm.includes(firm))
+        ).length;
+
+        console.log(`[Analyst Activity] ${filing.company.ticker}: ${upgrades} upgrades, ${downgrades} downgrades in 30d before filing`);
       }
+
+      // Get analyst consensus and upside from Yahoo Finance data (current snapshot)
+      if (filing.company.analystTargetPrice && filing.company.currentPrice) {
+        analystUpsidePotential = ((filing.company.analystTargetPrice - filing.company.currentPrice) / filing.company.currentPrice) * 100;
+      }
+
+      // Calculate consensus score from analyst rating counts if available
+      if (filing.company.analystRating) {
+        // Convert 1-5 scale (1=Strong Buy, 5=Sell) to 0-100 (100=Strong Buy)
+        analystConsensus = (5 - filing.company.analystRating) * 25;
+      }
+    } catch (analystError) {
+      console.error('Error fetching analyst activity:', analystError);
+      // Continue without analyst data
     }
 
     // Generate prediction with research-backed enhanced features

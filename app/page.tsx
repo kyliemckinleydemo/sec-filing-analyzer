@@ -21,7 +21,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center space-y-6">
-          <h1 className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+          <h1 className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 pb-2">
             AI-Powered SEC Filing Intelligence
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
@@ -122,9 +122,9 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-slate-600">
+                <li>• Find undervalued stocks based on financial metrics</li>
                 <li>• Query analyst upgrades/downgrades & street sentiment</li>
                 <li>• Query financial metrics & performance trends</li>
-                <li>• Compare ML predictions vs actual returns</li>
                 <li>• Analyze risk levels across companies</li>
                 <li>• Filter by ticker or search across all 640+ companies</li>
               </ul>

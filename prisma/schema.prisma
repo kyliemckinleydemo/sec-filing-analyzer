@@ -52,6 +52,7 @@ model Company {
 
   filings   Filing[]
   snapshots CompanySnapshot[]
+  analystActivities AnalystActivity[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -387,4 +388,37 @@ model PortfolioSnapshot {
 
   @@unique([portfolioId, date])
   @@index([portfolioId, date])
+}
+
+// Analyst activity tracking (upgrades, downgrades, rating changes)
+model AnalystActivity {
+  id              String   @id @default(cuid())
+  companyId       String
+  company         Company  @relation(fields: [companyId], references: [id])
+
+  activityDate    DateTime // Date of the analyst action
+  firm            String   // Analyst firm name (e.g., "Goldman Sachs", "Morgan Stanley")
+
+  actionType      String   // "upgrade", "downgrade", "initiate", "reiterate", "target_raised", "target_lowered"
+
+  // Rating changes
+  previousRating  String?  // Previous rating (e.g., "Hold", "Neutral")
+  newRating       String?  // New rating (e.g., "Buy", "Outperform")
+
+  // Target price changes
+  previousTarget  Float?   // Previous target price
+  newTarget       Float?   // New target price
+
+  // Additional context
+  analystName     String?  // Individual analyst name if available
+  note            String?  // Any additional notes or context
+
+  source          String   @default("yahoo") // Data source: "yahoo", "manual", "other"
+
+  createdAt       DateTime @default(now())
+
+  @@index([companyId, activityDate])
+  @@index([activityDate])
+  @@index([actionType])
+  @@index([companyId, activityDate, actionType])
 }
