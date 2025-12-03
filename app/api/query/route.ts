@@ -25,6 +25,11 @@ function serializeBigInt(obj: any): any {
     return Number(obj);
   }
 
+  // Handle Date objects by converting to ISO string
+  if (obj instanceof Date) {
+    return obj.toISOString();
+  }
+
   if (Array.isArray(obj)) {
     return obj.map(serializeBigInt);
   }
