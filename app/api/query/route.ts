@@ -16,6 +16,27 @@ interface QueryPattern {
 }
 
 /**
+ * Standard company fields to include for hover tooltips
+ */
+const COMPANY_SELECT_FIELDS = {
+  ticker: true,
+  name: true,
+  currentPrice: true,
+  marketCap: true,
+  peRatio: true,
+  dividendYield: true,
+  beta: true,
+  latestRevenue: true,
+  latestRevenueYoY: true,
+  latestNetIncome: true,
+  latestNetIncomeYoY: true,
+  latestGrossMargin: true,
+  latestOperatingMargin: true,
+  latestQuarter: true,
+  analystTargetPrice: true
+};
+
+/**
  * Serialize BigInt values to strings for JSON compatibility
  */
 function serializeBigInt(obj: any): any {
@@ -275,13 +296,7 @@ export async function POST(request: Request) {
                 gt: 0 // Exclude negative/zero P/E
               }
             },
-            select: {
-              ticker: true,
-              name: true,
-              currentPrice: true,
-              peRatio: true,
-              marketCap: true
-            },
+            select: COMPANY_SELECT_FIELDS,
             orderBy: {
               peRatio: 'asc'
             },
@@ -307,13 +322,7 @@ export async function POST(request: Request) {
                 gte: minMarketCap
               }
             },
-            select: {
-              ticker: true,
-              name: true,
-              currentPrice: true,
-              marketCap: true,
-              peRatio: true
-            },
+            select: COMPANY_SELECT_FIELDS,
             orderBy: {
               marketCap: 'desc'
             },
@@ -518,14 +527,7 @@ export async function POST(request: Request) {
           const [companies, totalCount] = await Promise.all([
             prisma.company.findMany({
               where,
-              select: {
-                ticker: true,
-                name: true,
-                currentPrice: true,
-                dividendYield: true,
-                marketCap: true,
-                peRatio: true
-              },
+              select: COMPANY_SELECT_FIELDS,
               orderBy: [
                 { dividendYield: 'desc' },
                 { marketCap: 'desc' }  // Secondary sort by market cap
@@ -562,14 +564,7 @@ export async function POST(request: Request) {
           const [companies, totalCount] = await Promise.all([
             prisma.company.findMany({
               where,
-              select: {
-                ticker: true,
-                name: true,
-                currentPrice: true,
-                beta: true,
-                marketCap: true,
-                peRatio: true
-              },
+              select: COMPANY_SELECT_FIELDS,
               orderBy: [
                 { beta: 'asc' },
                 { marketCap: 'desc' }  // Secondary sort by market cap
@@ -606,15 +601,7 @@ export async function POST(request: Request) {
           const [companies, totalCount] = await Promise.all([
             prisma.company.findMany({
               where,
-              select: {
-                ticker: true,
-                name: true,
-                latestRevenue: true,
-                latestRevenueYoY: true,
-                latestQuarter: true,
-                marketCap: true,
-                peRatio: true
-              },
+              select: COMPANY_SELECT_FIELDS,
               orderBy: [
                 { latestRevenueYoY: 'desc' },
                 { marketCap: 'desc' }  // Secondary sort by market cap
@@ -651,14 +638,7 @@ export async function POST(request: Request) {
             where: {
               latestNetIncome: { gte: minNetIncome }
             },
-            select: {
-              ticker: true,
-              name: true,
-              latestNetIncome: true,
-              latestNetIncomeYoY: true,
-              latestQuarter: true,
-              marketCap: true
-            },
+            select: COMPANY_SELECT_FIELDS,
             orderBy: { latestNetIncome: 'desc' },
             take: 50
           });
@@ -682,14 +662,7 @@ export async function POST(request: Request) {
             where: {
               latestOperatingMargin: { gte: minMargin }
             },
-            select: {
-              ticker: true,
-              name: true,
-              latestOperatingMargin: true,
-              latestGrossMargin: true,
-              latestQuarter: true,
-              marketCap: true
-            },
+            select: COMPANY_SELECT_FIELDS,
             orderBy: { latestOperatingMargin: 'desc' },
             take: 50
           });
@@ -713,14 +686,7 @@ export async function POST(request: Request) {
               currentPrice: { not: null },
               analystTargetPrice: { not: null }
             },
-            select: {
-              ticker: true,
-              name: true,
-              currentPrice: true,
-              analystTargetPrice: true,
-              peRatio: true,
-              marketCap: true
-            }
+            select: COMPANY_SELECT_FIELDS
           });
 
           // Filter to companies trading below analyst target and calculate upside
@@ -764,14 +730,7 @@ export async function POST(request: Request) {
             where: {
               beta: { gte: 1.3 }
             },
-            select: {
-              ticker: true,
-              name: true,
-              currentPrice: true,
-              beta: true,
-              marketCap: true,
-              peRatio: true
-            },
+            select: COMPANY_SELECT_FIELDS,
             orderBy: { beta: 'desc' },
             take: 50
           });
@@ -795,12 +754,8 @@ export async function POST(request: Request) {
               fiftyTwoWeekHigh: { not: null }
             },
             select: {
-              ticker: true,
-              name: true,
-              currentPrice: true,
-              fiftyTwoWeekHigh: true,
-              fiftyTwoWeekLow: true,
-              marketCap: true
+              ...COMPANY_SELECT_FIELDS,
+              fiftyTwoWeekHigh: true
             },
             take: 500 // Get more for filtering
           });
