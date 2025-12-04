@@ -874,8 +874,8 @@ export default function FilingPage() {
                         </div>
                         <p className="text-xs text-slate-600 mt-1">
                           {data.prediction.features.analystNetUpgrades > 0 ? '+' : ''}{data.prediction.features.analystNetUpgrades} net upgrades in 30d
-                          {data.prediction.features.analystMajorUpgrades > 0 && (
-                            <span className="text-teal-700"> • {data.prediction.features.analystMajorUpgrades} major firm{data.prediction.features.analystMajorUpgrades > 1 ? 's' : ''}</span>
+                          {(data.prediction.features.analystMajorUpgrades ?? 0) > 0 && (
+                            <span className="text-teal-700"> • {data.prediction.features.analystMajorUpgrades} major firm{(data.prediction.features.analystMajorUpgrades ?? 0) > 1 ? 's' : ''}</span>
                           )}
                         </p>
                       </div>
