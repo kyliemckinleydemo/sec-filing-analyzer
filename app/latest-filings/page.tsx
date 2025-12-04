@@ -210,9 +210,9 @@ export default function LatestFilingsPage() {
                       </Button>
                       <Button
                         variant="outline"
-                        onClick={() => window.open(filing.filingUrl, '_blank')}
+                        onClick={() => window.open(filing.edgarUrl, '_blank')}
                       >
-                        View Filing
+                        View on SEC.gov
                       </Button>
                     </div>
                   </div>

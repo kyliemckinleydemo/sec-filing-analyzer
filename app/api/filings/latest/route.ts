@@ -127,20 +127,26 @@ export async function GET(request: Request) {
     });
 
     // Format response
-    const formattedFilings = filings.map(filing => ({
-      accessionNumber: filing.accessionNumber,
-      ticker: filing.company.ticker,
-      companyName: filing.company.name,
-      cik: filing.cik,
-      filingType: filing.filingType,
-      filingDate: filing.filingDate.toISOString().split('T')[0],
-      reportDate: filing.reportDate?.toISOString().split('T')[0] || null,
-      primaryDocument: filing.filingUrl.split('/').pop(),
-      hasXBRL: true, // Our cron only fetches XBRL filings
-      filingUrl: filing.filingUrl,
-      edgarUrl: `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${filing.cik}&type=${filing.filingType}&dateb=&owner=exclude&count=10`,
-      // Company snapshot data for hover tooltip
-      companySnapshot: {
+    const formattedFilings = filings.map(filing => {
+      // Build proper SEC EDGAR viewer URL (removes dashes from accession number for URL)
+      const accessionNoDashes = filing.accessionNumber.replace(/-/g, '');
+      const cikPadded = filing.cik.padStart(10, '0');
+
+      return {
+        accessionNumber: filing.accessionNumber,
+        ticker: filing.company.ticker,
+        companyName: filing.company.name,
+        cik: filing.cik,
+        filingType: filing.filingType,
+        filingDate: filing.filingDate.toISOString().split('T')[0],
+        reportDate: filing.reportDate?.toISOString().split('T')[0] || null,
+        primaryDocument: filing.filingUrl.split('/').pop(),
+        hasXBRL: true, // Our cron only fetches XBRL filings
+        filingUrl: filing.filingUrl,
+        // Use SEC's iXBRL viewer for better rendering
+        edgarUrl: `https://www.sec.gov/cgi-bin/viewer?action=view&cik=${cikPadded}&accession_number=${filing.accessionNumber}&xbrl_type=v`,
+        // Company snapshot data for hover tooltip
+        companySnapshot: {
         currentPrice: filing.company.currentPrice,
         marketCap: filing.company.marketCap,
         peRatio: filing.company.peRatio,
@@ -155,7 +161,8 @@ export async function GET(request: Request) {
         latestQuarter: filing.company.latestQuarter,
         analystTargetPrice: filing.company.analystTargetPrice
       }
-    }));
+    };
+    });
 
     return NextResponse.json(formattedFilings);
   } catch (error) {
