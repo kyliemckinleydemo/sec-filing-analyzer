@@ -472,47 +472,47 @@ export default function QueryPage() {
                                   Market Cap{getSortIndicator('marketCap')}: <strong>${(company.marketCap / 1e9).toFixed(2)}B</strong>
                                 </span>
                               )}
-                              {company.dividendYield !== undefined && (
+                              {company.dividendYield != null && (
                                 <span className="text-slate-600">
                                   Dividend Yield{getSortIndicator('dividendYield')}: <strong>{(company.dividendYield * 100).toFixed(2)}%</strong>
                                 </span>
                               )}
-                              {company.beta !== undefined && (
+                              {company.beta != null && (
                                 <span className="text-slate-600">
                                   Beta{getSortIndicator('beta')}: <strong>{company.beta.toFixed(2)}</strong>
                                 </span>
                               )}
-                              {(company.revenueGrowth !== undefined || company.latestRevenueYoY !== undefined) && (
+                              {(company.revenueGrowth != null || company.latestRevenueYoY != null) && (
                                 <span className="text-slate-600">
-                                  Revenue Growth{getSortIndicator('latestRevenueYoY')}: <strong>{(company.revenueGrowth || company.latestRevenueYoY).toFixed(1)}%</strong>
+                                  Revenue Growth{getSortIndicator('latestRevenueYoY')}: <strong>{(company.revenueGrowth ?? company.latestRevenueYoY).toFixed(1)}%</strong>
                                 </span>
                               )}
-                              {company.latestNetIncome !== undefined && (
+                              {company.latestNetIncome != null && (
                                 <span className="text-slate-600">
                                   Net Income{getSortIndicator('latestNetIncome')}: <strong>${(company.latestNetIncome / 1e9).toFixed(2)}B</strong>
                                 </span>
                               )}
-                              {company.latestOperatingMargin !== undefined && (
+                              {company.latestOperatingMargin != null && (
                                 <span className="text-slate-600">
                                   Operating Margin{getSortIndicator('latestOperatingMargin')}: <strong>{company.latestOperatingMargin.toFixed(1)}%</strong>
                                 </span>
                               )}
-                              {company.fiftyTwoWeekHigh !== undefined && (
+                              {company.fiftyTwoWeekHigh != null && (
                                 <span className="text-slate-600">
                                   52W High: <strong>${company.fiftyTwoWeekHigh.toFixed(2)}</strong>
                                 </span>
                               )}
-                              {company.upside !== undefined && (
+                              {company.upside != null && (
                                 <span className="text-green-600">
                                   Upside{getSortIndicator('upsideValue')}: <strong>{company.upside}%</strong>
                                 </span>
                               )}
-                              {company.analystTargetPrice !== undefined && (
+                              {company.analystTargetPrice != null && (
                                 <span className="text-slate-600">
                                   Target{getSortIndicator('analystTargetPrice')}: <strong>${company.analystTargetPrice.toFixed(2)}</strong>
                                 </span>
                               )}
-                              {company.previousTarget !== undefined && company.latestTarget !== undefined && (
+                              {company.previousTarget != null && company.latestTarget != null && company.changePercent != null && (
                                 <span className={company.change > 0 ? 'text-green-600' : 'text-red-600'}>
                                   Target{getSortIndicator('changePercent')}: <strong>${company.previousTarget.toFixed(2)}</strong> → <strong>${company.latestTarget.toFixed(2)}</strong>
                                   <span className="ml-1">({company.change > 0 ? '+' : ''}{company.changePercent.toFixed(1)}%)</span>
