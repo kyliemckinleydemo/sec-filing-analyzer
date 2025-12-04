@@ -35,6 +35,15 @@ export async function GET(
       return NextResponse.json({ error: 'Filing not found' }, { status: 404 });
     }
 
+    // DEBUG: Log filing fields to diagnose concernLevel issue
+    console.log(`[Predict API DEBUG] Filing ${normalizedAccession}:`, {
+      concernLevel: filing.concernLevel,
+      sentimentScore: filing.sentimentScore,
+      riskScore: filing.riskScore,
+      predicted7dReturn: filing.predicted7dReturn,
+      hasAnalysisData: !!filing.analysisData
+    });
+
     // If prediction already exists, check if we can calculate accuracy
     if (filing.predicted7dReturn !== null) {
       console.log(`[Predict API] Prediction exists: ${filing.predicted7dReturn}%, filing date: ${filing.filingDate}, ticker: ${filing.company.ticker}`);
@@ -323,6 +332,14 @@ export async function GET(
         filing.filingType
       ),
     };
+
+    // DEBUG: Log key features being passed to prediction engine
+    console.log(`[Predict API DEBUG] Features for prediction:`, {
+      concernLevel: features.concernLevel,
+      sentimentScore: features.sentimentScore,
+      riskScoreDelta: features.riskScoreDelta,
+      analystNetUpgrades: features.analystNetUpgrades
+    });
 
     const prediction = await predictionEngine.predict(features);
 
