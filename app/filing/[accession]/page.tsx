@@ -641,7 +641,7 @@ export default function FilingPage() {
                   <p className="text-2xl font-bold">
                     {data.prediction.predicted7dReturn > 1
                       ? '🟢 Strong Buy'
-                      : data.prediction.predicted7dReturn > 0
+                      : data.prediction.predicted7dReturn >= 0.5
                       ? '🟢 Buy'
                       : data.prediction.predicted7dReturn > -1
                       ? '🟡 Hold'
