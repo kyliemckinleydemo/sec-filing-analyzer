@@ -13,6 +13,23 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useRouter } from 'next/navigation';
+import { CompanySnapshotTooltip } from '@/components/CompanySnapshotTooltip';
+
+interface CompanySnapshot {
+  currentPrice?: number | null;
+  marketCap?: number | null;
+  peRatio?: number | null;
+  dividendYield?: number | null;
+  beta?: number | null;
+  latestRevenue?: number | null;
+  latestRevenueYoY?: number | null;
+  latestNetIncome?: number | null;
+  latestNetIncomeYoY?: number | null;
+  latestGrossMargin?: number | null;
+  latestOperatingMargin?: number | null;
+  latestQuarter?: string | null;
+  analystTargetPrice?: number | null;
+}
 
 interface LatestFiling {
   accessionNumber: string;
@@ -26,6 +43,7 @@ interface LatestFiling {
   hasXBRL: boolean;
   filingUrl: string;
   edgarUrl: string;
+  companySnapshot: CompanySnapshot;
 }
 
 export default function LatestFilingsPage() {
@@ -149,47 +167,53 @@ export default function LatestFilingsPage() {
           <div className="space-y-4">
             {filings.map((filing) => (
               <Card key={filing.accessionNumber} className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl font-bold">{filing.ticker}</h3>
-                      <Badge className={getFilingTypeBadge(filing.filingType)}>
-                        {filing.filingType}
-                      </Badge>
-                      {filing.hasXBRL && (
-                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
-                          Has Financials
+                <CompanySnapshotTooltip
+                  ticker={filing.ticker}
+                  companyName={filing.companyName}
+                  snapshot={filing.companySnapshot}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-xl font-bold">{filing.ticker}</h3>
+                        <Badge className={getFilingTypeBadge(filing.filingType)}>
+                          {filing.filingType}
                         </Badge>
-                      )}
+                        {filing.hasXBRL && (
+                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-300">
+                            Has Financials
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-slate-600 mb-1">{filing.companyName}</p>
+                      <div className="flex gap-4 text-sm text-slate-500">
+                        <span>Filed: {new Date(filing.filingDate).toLocaleDateString()}</span>
+                        <span>•</span>
+                        <span>{getDaysSinceFiling(filing.filingDate)} days ago</span>
+                        {filing.reportDate && (
+                          <>
+                            <span>•</span>
+                            <span>Period: {new Date(filing.reportDate).toLocaleDateString()}</span>
+                          </>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-sm text-slate-600 mb-1">{filing.companyName}</p>
-                    <div className="flex gap-4 text-sm text-slate-500">
-                      <span>Filed: {new Date(filing.filingDate).toLocaleDateString()}</span>
-                      <span>•</span>
-                      <span>{getDaysSinceFiling(filing.filingDate)} days ago</span>
-                      {filing.reportDate && (
-                        <>
-                          <span>•</span>
-                          <span>Period: {new Date(filing.reportDate).toLocaleDateString()}</span>
-                        </>
-                      )}
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleAnalyze(filing)}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        Analyze
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => window.open(filing.filingUrl, '_blank')}
+                      >
+                        View Filing
+                      </Button>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={() => handleAnalyze(filing)}
-                      className="bg-blue-600 hover:bg-blue-700"
-                    >
-                      Analyze
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => window.open(filing.filingUrl, '_blank')}
-                    >
-                      View Filing
-                    </Button>
-                  </div>
-                </div>
+                </CompanySnapshotTooltip>
               </Card>
             ))}
           </div>

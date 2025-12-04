@@ -103,7 +103,20 @@ export async function GET(request: Request) {
           select: {
             ticker: true,
             name: true,
-            cik: true
+            cik: true,
+            currentPrice: true,
+            marketCap: true,
+            peRatio: true,
+            dividendYield: true,
+            beta: true,
+            latestRevenue: true,
+            latestRevenueYoY: true,
+            latestNetIncome: true,
+            latestNetIncomeYoY: true,
+            latestGrossMargin: true,
+            latestOperatingMargin: true,
+            latestQuarter: true,
+            analystTargetPrice: true
           }
         }
       },
@@ -126,6 +139,22 @@ export async function GET(request: Request) {
       hasXBRL: true, // Our cron only fetches XBRL filings
       filingUrl: filing.filingUrl,
       edgarUrl: `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${filing.cik}&type=${filing.filingType}&dateb=&owner=exclude&count=10`,
+      // Company snapshot data for hover tooltip
+      companySnapshot: {
+        currentPrice: filing.company.currentPrice,
+        marketCap: filing.company.marketCap,
+        peRatio: filing.company.peRatio,
+        dividendYield: filing.company.dividendYield,
+        beta: filing.company.beta,
+        latestRevenue: filing.company.latestRevenue,
+        latestRevenueYoY: filing.company.latestRevenueYoY,
+        latestNetIncome: filing.company.latestNetIncome,
+        latestNetIncomeYoY: filing.company.latestNetIncomeYoY,
+        latestGrossMargin: filing.company.latestGrossMargin,
+        latestOperatingMargin: filing.company.latestOperatingMargin,
+        latestQuarter: filing.company.latestQuarter,
+        analystTargetPrice: filing.company.analystTargetPrice
+      }
     }));
 
     return NextResponse.json(formattedFilings);
