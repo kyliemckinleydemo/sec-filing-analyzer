@@ -10,8 +10,9 @@
     "lint": "next lint",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "prisma generate",
-    "deploy": "vercel --prod --force",
-    "deploy:preview": "vercel --force"
+    "deploy": "vercel --prod --force && npm run set-alias",
+    "deploy:preview": "vercel --force",
+    "set-alias": "vercel alias set sec-filing-analyzer-indol.vercel.app"
   },
   "keywords": [],
   "author": "",
