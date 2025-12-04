@@ -431,33 +431,36 @@ export default function QueryPage() {
                 <CardContent>
                   <div className="space-y-3">
                     {results.companies.map((company: any, idx: number) => (
-                      <CompanySnapshotTooltip
-                        key={idx}
-                        ticker={company.ticker}
-                        companyName={company.name}
-                        snapshot={{
-                          currentPrice: company.currentPrice,
-                          marketCap: company.marketCap,
-                          peRatio: company.peRatio,
-                          dividendYield: company.dividendYield,
-                          beta: company.beta,
-                          latestRevenue: company.latestRevenue,
-                          latestRevenueYoY: company.latestRevenueYoY || company.revenueGrowth,
-                          latestNetIncome: company.latestNetIncome,
-                          latestNetIncomeYoY: company.latestNetIncomeYoY,
-                          latestGrossMargin: company.latestGrossMargin,
-                          latestOperatingMargin: company.latestOperatingMargin,
-                          latestQuarter: company.latestQuarter,
-                          analystTargetPrice: company.analystTargetPrice
-                        }}
-                      >
-                        <div className="p-4 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200">
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <span className="font-bold text-lg text-blue-600">{company.ticker}</span>
-                                <span className="text-sm text-slate-700">{company.name}</span>
-                              </div>
+                      <div key={idx} className="p-4 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <CompanySnapshotTooltip
+                                ticker={company.ticker}
+                                companyName={company.name}
+                                snapshot={{
+                                  currentPrice: company.currentPrice,
+                                  marketCap: company.marketCap,
+                                  peRatio: company.peRatio,
+                                  dividendYield: company.dividendYield,
+                                  beta: company.beta,
+                                  latestRevenue: company.latestRevenue,
+                                  latestRevenueYoY: company.latestRevenueYoY || company.revenueGrowth,
+                                  latestNetIncome: company.latestNetIncome,
+                                  latestNetIncomeYoY: company.latestNetIncomeYoY,
+                                  latestGrossMargin: company.latestGrossMargin,
+                                  latestOperatingMargin: company.latestOperatingMargin,
+                                  latestQuarter: company.latestQuarter,
+                                  analystTargetPrice: company.analystTargetPrice
+                                }}
+                              >
+                                <div className="flex items-center gap-2 cursor-help">
+                                  <span className="font-bold text-lg text-blue-600">{company.ticker}</span>
+                                  <span className="text-blue-500 text-xs">ⓘ</span>
+                                </div>
+                              </CompanySnapshotTooltip>
+                              <span className="text-sm text-slate-700">{company.name}</span>
+                            </div>
                               <div className="flex gap-4 text-sm flex-wrap">
                               {company.currentPrice && (
                                 <span className="text-slate-600">Price{getSortIndicator('currentPrice')}: <strong>${company.currentPrice.toFixed(2)}</strong></span>
@@ -524,7 +527,6 @@ export default function QueryPage() {
                             </div>
                           </div>
                         </div>
-                      </CompanySnapshotTooltip>
                     ))}
                   </div>
 

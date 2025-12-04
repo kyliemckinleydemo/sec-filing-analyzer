@@ -167,15 +167,19 @@ export default function LatestFilingsPage() {
           <div className="space-y-4">
             {filings.map((filing) => (
               <Card key={filing.accessionNumber} className="p-6 hover:shadow-lg transition-shadow">
-                <CompanySnapshotTooltip
-                  ticker={filing.ticker}
-                  companyName={filing.companyName}
-                  snapshot={filing.companySnapshot}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-bold">{filing.ticker}</h3>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <CompanySnapshotTooltip
+                        ticker={filing.ticker}
+                        companyName={filing.companyName}
+                        snapshot={filing.companySnapshot}
+                      >
+                        <div className="flex items-center gap-2 cursor-help">
+                          <h3 className="text-xl font-bold">{filing.ticker}</h3>
+                          <span className="text-blue-500 text-sm">ⓘ</span>
+                        </div>
+                      </CompanySnapshotTooltip>
                         <Badge className={getFilingTypeBadge(filing.filingType)}>
                           {filing.filingType}
                         </Badge>
@@ -213,7 +217,6 @@ export default function LatestFilingsPage() {
                       </Button>
                     </div>
                   </div>
-                </CompanySnapshotTooltip>
               </Card>
             ))}
           </div>
