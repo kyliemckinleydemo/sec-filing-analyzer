@@ -526,6 +526,7 @@ export default function QueryPage() {
                             </div>
                           </div>
                         </div>
+                      </div>
                     ))}
                   </div>
 
