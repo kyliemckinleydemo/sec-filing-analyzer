@@ -61,8 +61,37 @@ vercel
 vercel env add ANTHROPIC_API_KEY
 vercel env add DATABASE_URL
 
-# Deploy to production
-vercel --prod
+# Deploy to production (using npm script with --force)
+npm run deploy
+```
+
+## Using --force Flag (Default)
+
+**All deployments now use the `--force` flag by default** to skip build cache and ensure fresh builds.
+
+### Quick Commands
+```bash
+# Production deployment (recommended)
+npm run deploy
+
+# Preview deployment
+npm run deploy:preview
+```
+
+These scripts automatically use `--force` to:
+- Skip Vercel's build cache
+- Ensure all code changes are included
+- Prevent stale cache issues
+- Only adds 10-30 seconds to build time
+
+### Manual Deployment (Advanced)
+If you need to deploy without npm scripts:
+```bash
+# Production with force
+vercel --prod --force
+
+# Preview with force
+vercel --force
 ```
 
 ## Step 3: Initialize Database
@@ -130,13 +159,27 @@ Visit your deployment URL and test:
 
 ## Updating Deployment
 
+### Option 1: Automatic (Recommended)
 ```bash
-# Commit your changes
+# Commit and push your changes
 git add .
 git commit -m "Update feature"
 git push origin main
 
 # Vercel automatically deploys on push to main
+# (but may use cached builds)
+```
+
+### Option 2: Manual with --force (Guaranteed Fresh Build)
+```bash
+# Commit your changes
+git add .
+git commit -m "Update feature"
+
+# Deploy directly with force flag
+npm run deploy
+
+# This ensures no cached builds are used
 ```
 
 ## Support
