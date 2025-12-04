@@ -117,6 +117,7 @@ interface FilingAnalysisData {
       analystNetUpgrades?: number;
       analystMajorUpgrades?: number;
       analystMajorDowngrades?: number;
+      analystUpsidePotential?: number;
     };
   };
   accuracy?: {
@@ -665,7 +666,7 @@ export default function FilingPage() {
 
                   <div className="grid md:grid-cols-2 gap-3 text-sm">
                     {/* Major Price Drivers */}
-                    {data.prediction.features.guidanceChange && data.prediction.features.guidanceChange !== 'maintained' && (
+                    {data.prediction.features.guidanceChange && data.prediction.features.guidanceChange !== 'maintained' && data.prediction.features.guidanceChange !== 'not_provided' && (
                       <div className="bg-gradient-to-r from-green-50 to-blue-50 p-3 rounded border border-green-200">
                         <div className="flex items-center justify-between">
                           <span className="font-medium text-slate-700">📊 Guidance Change</span>
@@ -756,11 +757,11 @@ export default function FilingPage() {
                             data.prediction.features.sentimentScore > 0 ? 'text-green-600' :
                             data.prediction.features.sentimentScore < 0 ? 'text-red-600' : 'text-slate-600'
                           }`}>
-                            {(data.prediction.features.sentimentScore * 5).toFixed(1)}% impact
+                            {(data.prediction.features.sentimentScore * 3).toFixed(1)}% impact
                           </span>
                         </div>
                         <p className="text-xs text-slate-600 mt-1">
-                          Score: {data.prediction.features.sentimentScore.toFixed(2)} (5x weight)
+                          Score: {data.prediction.features.sentimentScore.toFixed(2)} (3x weight)
                         </p>
                       </div>
                     )}
@@ -877,6 +878,28 @@ export default function FilingPage() {
                           {(data.prediction.features.analystMajorUpgrades ?? 0) > 0 && (
                             <span className="text-teal-700"> • {data.prediction.features.analystMajorUpgrades} major firm{(data.prediction.features.analystMajorUpgrades ?? 0) > 1 ? 's' : ''}</span>
                           )}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Analyst Target Upside */}
+                    {typeof data.prediction.features.analystUpsidePotential === 'number' && Math.abs(data.prediction.features.analystUpsidePotential) > 10 && (
+                      <div className="bg-indigo-50 p-3 rounded border border-indigo-200">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-slate-700">🎯 Analyst Target</span>
+                          <span className={`font-bold ${
+                            data.prediction.features.analystUpsidePotential > 0 ? 'text-green-600' : 'text-red-600'
+                          }`}>
+                            {(() => {
+                              const impact = data.prediction.features.analystUpsidePotential > 0
+                                ? Math.min(1.0, data.prediction.features.analystUpsidePotential * 0.05)
+                                : Math.max(-1.0, data.prediction.features.analystUpsidePotential * 0.05);
+                              return `${impact > 0 ? '+' : ''}${impact.toFixed(1)}% impact`;
+                            })()}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-600 mt-1">
+                          {data.prediction.features.analystUpsidePotential.toFixed(1)}% {data.prediction.features.analystUpsidePotential > 0 ? 'upside' : 'downside'} to consensus target (capped at ±1%)
                         </p>
                       </div>
                     )}

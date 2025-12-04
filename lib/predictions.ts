@@ -94,10 +94,10 @@ class PredictionEngine {
     }
 
     // Factor 2: Sentiment Impact (MD&A tone analysis)
-    // OPTIMIZATION: Increased weight from 4 to 5 based on sentiment analysis integration
-    // Management tone is a strong predictor of post-filing returns
+    // REBALANCED: Reduced weight from 5 to 3 - guidance is more concrete than tone
+    // Management tone is useful but should be secondary to explicit guidance
     const sentiment = features.sentimentScore || 0;
-    const sentimentImpact = sentiment * 5; // Strong sentiment = strong impact (was 4)
+    const sentimentImpact = sentiment * 3; // Tone matters but guidance > sentiment (was 5)
     prediction += sentimentImpact;
 
     if (Math.abs(sentiment) > 0.2) {
