@@ -153,6 +153,8 @@ export default function FilingPage() {
   const [stockPrices, setStockPrices] = useState<any>(null);
   const [loadingStockPrices, setLoadingStockPrices] = useState(false);
   const [renderComplete, setRenderComplete] = useState(false);
+  const [isReanalyzing, setIsReanalyzing] = useState(false);
+  const [reanalyzeMessage, setReanalyzeMessage] = useState('');
 
   useEffect(() => {
     if (!accession) return;
@@ -445,6 +447,35 @@ export default function FilingPage() {
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleReanalyze = async () => {
+    if (!accession) return;
+
+    try {
+      setIsReanalyzing(true);
+      setReanalyzeMessage('');
+
+      const response = await fetch(`/api/reanalyze/${accession}`, {
+        method: 'POST',
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setReanalyzeMessage(result.message);
+        // Wait 1.5 seconds to show success message, then reload
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      } else {
+        setReanalyzeMessage(`Error: ${result.error}`);
+        setIsReanalyzing(false);
+      }
+    } catch (err: any) {
+      setReanalyzeMessage(`Error: ${err.message}`);
+      setIsReanalyzing(false);
+    }
   };
 
   return (
@@ -1611,7 +1642,22 @@ export default function FilingPage() {
           {data.analysis && (
             <Card>
               <CardHeader>
-                <CardTitle>📋 Executive Summary</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle>📋 Executive Summary</CardTitle>
+                  <Button
+                    variant="outline"
+                    onClick={handleReanalyze}
+                    disabled={isReanalyzing}
+                    className="text-xs gap-2"
+                  >
+                    {isReanalyzing ? '⏳ Re-analyzing...' : '🔄 Re-Analyze'}
+                  </Button>
+                </div>
+                {reanalyzeMessage && (
+                  <p className={`text-sm mt-2 ${reanalyzeMessage.includes('Error') ? 'text-red-600' : 'text-green-600'}`}>
+                    {reanalyzeMessage}
+                  </p>
+                )}
               </CardHeader>
               <CardContent>
                 <div className="prose prose-sm">
