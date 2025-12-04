@@ -752,16 +752,46 @@ export default function FilingPage() {
                     {typeof data.prediction.features.sentimentScore === 'number' && (
                       <div className="bg-slate-50 p-3 rounded border border-slate-200">
                         <div className="flex items-center justify-between">
-                          <span className="font-medium text-slate-700">😊 Management Sentiment</span>
-                          <span className={`font-bold ${
-                            data.prediction.features.sentimentScore > 0 ? 'text-green-600' :
-                            data.prediction.features.sentimentScore < 0 ? 'text-red-600' : 'text-slate-600'
-                          }`}>
-                            {(data.prediction.features.sentimentScore * 3).toFixed(1)}% impact
+                          <span className="font-medium text-slate-700">
+                            {(() => {
+                              const concern = data.prediction.features.concernLevel ?? 5.0;
+                              const sentiment = data.prediction.features.sentimentScore;
+                              if (concern >= 7 && sentiment > 0) {
+                                return '⚠️ Management Tone Misalignment';
+                              }
+                              return '😊 Management Sentiment';
+                            })()}
+                          </span>
+                          <span className={`font-bold ${(() => {
+                            const concern = data.prediction.features.concernLevel ?? 5.0;
+                            const sentiment = data.prediction.features.sentimentScore;
+                            let multiplier = 2.0;
+                            if (concern >= 7 && sentiment > 0) multiplier = -1.0;
+                            else if (concern >= 5 && concern < 7 && sentiment > 0) multiplier = 1.0;
+                            const impact = sentiment * multiplier;
+                            return impact > 0 ? 'text-green-600' : impact < 0 ? 'text-red-600' : 'text-slate-600';
+                          })()}`}>
+                            {(() => {
+                              const concern = data.prediction.features.concernLevel ?? 5.0;
+                              const sentiment = data.prediction.features.sentimentScore;
+                              let multiplier = 2.0;
+                              if (concern >= 7 && sentiment > 0) multiplier = -1.0;
+                              else if (concern >= 5 && concern < 7 && sentiment > 0) multiplier = 1.0;
+                              return (sentiment * multiplier).toFixed(1) + '% impact';
+                            })()}
                           </span>
                         </div>
                         <p className="text-xs text-slate-600 mt-1">
-                          Score: {data.prediction.features.sentimentScore.toFixed(2)} (3x weight)
+                          {(() => {
+                            const concern = data.prediction.features.concernLevel ?? 5.0;
+                            const sentiment = data.prediction.features.sentimentScore;
+                            if (concern >= 7 && sentiment > 0) {
+                              return `Optimistic tone (${sentiment.toFixed(2)}) contradicts HIGH concern (${concern.toFixed(1)}/10) - red flag`;
+                            } else if (concern >= 5 && concern < 7 && sentiment > 0) {
+                              return `Score: ${sentiment.toFixed(2)} (1x weight, dampened by concern)`;
+                            }
+                            return `Score: ${sentiment.toFixed(2)} (2x weight)`;
+                          })()}
                         </p>
                       </div>
                     )}

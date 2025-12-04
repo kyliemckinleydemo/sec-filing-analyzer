@@ -94,23 +94,41 @@ class PredictionEngine {
     }
 
     // Factor 2: Sentiment Impact (MD&A tone analysis)
-    // REBALANCED: Reduced weight from 5 to 3 - guidance is more concrete than tone
-    // Management tone is useful but should be secondary to explicit guidance
+    // CONCERN-ADJUSTED: Sentiment is only valuable when aligned with fundamentals
+    // High concern + positive sentiment = red flag (management overconfidence)
+    // Low concern + positive sentiment = confirmation (justified confidence)
     const sentiment = features.sentimentScore || 0;
-    const sentimentImpact = sentiment * 3; // Tone matters but guidance > sentiment (was 5)
-    prediction += sentimentImpact;
+    const concernLevel = features.concernLevel ?? 5.0; // Get concern early for sentiment adjustment
 
-    if (Math.abs(sentiment) > 0.2) {
+    // Sentiment damping based on concern level
+    // concernLevel 7+ (HIGH): Positive sentiment is suspect, gets inverted
+    // concernLevel 5-7 (ELEVATED): Positive sentiment dampened to 50%
+    // concernLevel <5 (LOW/MODERATE): Sentiment applied normally
+    let sentimentMultiplier = 2.0; // Base weight reduced from 3
+    if (concernLevel >= 7 && sentiment > 0) {
+      // High concern + optimistic tone = management disconnected from reality (red flag)
+      sentimentMultiplier = -1.0; // Invert positive sentiment to negative impact
       reasoningParts.push(
-        `${sentiment > 0 ? 'Positive' : 'Negative'} management sentiment (${sentimentImpact > 0 ? '+' : ''}${sentimentImpact.toFixed(2)}% impact)`
+        `⚠️ Management tone misalignment: Optimistic sentiment (${sentiment.toFixed(2)}) contradicts HIGH concern level (${concernLevel.toFixed(1)}/10) (${(sentiment * sentimentMultiplier).toFixed(2)}% penalty)`
+      );
+    } else if (concernLevel >= 5 && concernLevel < 7 && sentiment > 0) {
+      // Elevated concern: dampen optimistic sentiment by 50%
+      sentimentMultiplier = 1.0;
+    } else if (Math.abs(sentiment) > 0.2) {
+      // Normal case: sentiment aligned with concern or concern is low
+      reasoningParts.push(
+        `${sentiment > 0 ? 'Positive' : 'Negative'} management sentiment (${(sentiment * sentimentMultiplier).toFixed(2)}% impact)`
       );
     }
+
+    const sentimentImpact = sentiment * sentimentMultiplier;
+    prediction += sentimentImpact;
 
     // Factor 2b: Concern Level Assessment (NEW - Claude AI multi-factor risk scoring)
     // Synthesizes risk factors, sentiment, financial metrics, legal issues into 0-10 scale
     // This replaces legacy hardcoded risk/sentiment with actual filing analysis
     // 0-2 (LOW/bullish), 3-4 (MODERATE/stable), 5-6 (ELEVATED/cautious), 7-8 (HIGH/bearish), 9-10 (CRITICAL)
-    const concernLevel = features.concernLevel ?? 5.0; // Default to neutral if not available
+    // Note: concernLevel already retrieved above for sentiment adjustment
     const concernImpact = -(concernLevel - 5.0) * 0.6; // Center at 5, invert (lower concern = positive)
     prediction += concernImpact;
 

@@ -385,6 +385,15 @@ Provide a comprehensive risk assessment based on:
 4. Regulatory environment and competitive landscape
 5. Historical risk patterns for similar filings
 
+IMPORTANT - Business Model Accuracy:
+- Credit bureaus (Equifax, Experian, TransUnion): Do NOT have "credit losses" - they provide data/analytics services. Writeoffs are customer RECEIVABLES (unpaid bills), not loan losses.
+- Banks/lenders: DO have credit losses from loan defaults
+- Software/SaaS companies: Revenue is subscription-based, focus on churn and customer acquisition
+- Retailers: Inventory and consumer demand are key risks
+- Manufacturers: Supply chain and input costs are key risks
+
+Correctly identify the business model before analyzing risks.
+
 Note: Analyze based on general knowledge of the company. Do not mention data limitations.`;
 
         currentMDA = `${companyContext}
