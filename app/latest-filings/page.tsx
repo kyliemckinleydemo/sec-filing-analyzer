@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/select';
 import { useRouter } from 'next/navigation';
 import { CompanySnapshotTooltip } from '@/components/CompanySnapshotTooltip';
-import { Info } from 'lucide-react';
 
 interface CompanySnapshot {
   currentPrice?: number | null;
@@ -176,10 +175,9 @@ export default function LatestFilingsPage() {
                         companyName={filing.companyName}
                         snapshot={filing.companySnapshot}
                       >
-                        <div className="flex items-center gap-2 cursor-help">
-                          <h3 className="text-xl font-bold">{filing.ticker}</h3>
-                          <Info className="w-4 h-4 text-blue-500" />
-                        </div>
+                        <h3 className="text-xl font-bold text-blue-600 underline decoration-dotted decoration-blue-400 cursor-help hover:decoration-solid transition-all">
+                          {filing.ticker}
+                        </h3>
                       </CompanySnapshotTooltip>
                         <Badge className={getFilingTypeBadge(filing.filingType)}>
                           {filing.filingType}

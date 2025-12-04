@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
-import { Search, Sparkles, TrendingUp, Calendar, Building2, FileText, Info } from 'lucide-react';
+import { Search, Sparkles, TrendingUp, Calendar, Building2, FileText } from 'lucide-react';
 import { CompanySnapshotTooltip } from '@/components/CompanySnapshotTooltip';
 
 interface QueryResult {
@@ -454,10 +454,9 @@ export default function QueryPage() {
                                   analystTargetPrice: company.analystTargetPrice
                                 }}
                               >
-                                <div className="flex items-center gap-2 cursor-help">
-                                  <span className="font-bold text-lg text-blue-600">{company.ticker}</span>
-                                  <Info className="w-3 h-3 text-blue-500" />
-                                </div>
+                                <span className="font-bold text-lg text-blue-600 underline decoration-dotted decoration-blue-400 cursor-help hover:decoration-solid transition-all">
+                                  {company.ticker}
+                                </span>
                               </CompanySnapshotTooltip>
                               <span className="text-sm text-slate-700">{company.name}</span>
                             </div>
