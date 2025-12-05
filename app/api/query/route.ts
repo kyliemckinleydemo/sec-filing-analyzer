@@ -37,6 +37,200 @@ const COMPANY_SELECT_FIELDS = {
 };
 
 /**
+ * Parse compound queries with AND/OR operators
+ * Supports queries like: "PE < 15 and dividend yield > 3% or market cap > 100B"
+ */
+interface ParsedCondition {
+  field: string;
+  operator: string;
+  value: number | string;
+  unit?: string;
+}
+
+function parseCompoundQuery(query: string): { conditions: ParsedCondition[], operators: ('AND' | 'OR')[], sector?: string } | null {
+  // Check if query contains AND or OR operators
+  if (!/ and | or /i.test(query)) {
+    return null;
+  }
+
+  // Extract sector if mentioned
+  const sectorMatch = query.match(/(technology|tech|healthcare|health|financial|finance|banking|energy|consumer|industrial|materials|utilities|real\s*estate|communication)\s+(?:companies?|stocks?)/i);
+  const sector = sectorMatch ? sectorMatch[1] : undefined;
+
+  // Field name mappings (natural language -> database field)
+  const fieldMappings: Record<string, string> = {
+    'pe': 'peRatio',
+    'p/e': 'peRatio',
+    'pe ratio': 'peRatio',
+    'price to earnings': 'peRatio',
+    'forward pe': 'forwardPE',
+    'forward p/e': 'forwardPE',
+    'dividend yield': 'dividendYield',
+    'dividend': 'dividendYield',
+    'yield': 'dividendYield',
+    'beta': 'beta',
+    'volatility': 'beta',
+    'market cap': 'marketCap',
+    'marketcap': 'marketCap',
+    'mcap': 'marketCap',
+    'price': 'currentPrice',
+    'stock price': 'currentPrice',
+    'revenue growth': 'latestRevenueYoY',
+    'revenue': 'latestRevenue',
+    'net income growth': 'latestNetIncomeYoY',
+    'net income': 'latestNetIncome',
+    'earnings growth': 'latestNetIncomeYoY',
+    'gross margin': 'latestGrossMargin',
+    'operating margin': 'latestOperatingMargin',
+    '52 week high': 'fiftyTwoWeekHigh',
+    '52-week high': 'fiftyTwoWeekHigh',
+    '52 week low': 'fiftyTwoWeekLow',
+    '52-week low': 'fiftyTwoWeekLow',
+    'volume': 'volume',
+    'avg volume': 'averageVolume',
+    'average volume': 'averageVolume'
+  };
+
+  // Parse conditions: field operator value
+  const conditionPattern = /([a-z\s\/\-0-9]+?)\s*([<>=!]+|greater than|less than|equals?|above|below|over|under)\s*\$?([0-9.]+)([%bBmMkKtT])?/gi;
+  const conditions: ParsedCondition[] = [];
+  let match;
+
+  while ((match = conditionPattern.exec(query)) !== null) {
+    const fieldName = match[1].trim().toLowerCase();
+    let operator = match[2].trim();
+    const value = parseFloat(match[3]);
+    const unit = match[4]?.toLowerCase();
+
+    // Map natural language operators to symbols
+    const operatorMap: Record<string, string> = {
+      'greater than': '>',
+      'less than': '<',
+      'equals': '=',
+      'equal': '=',
+      'above': '>',
+      'below': '<',
+      'over': '>',
+      'under': '<'
+    };
+    operator = operatorMap[operator] || operator;
+
+    // Find database field name
+    const dbField = fieldMappings[fieldName];
+    if (dbField) {
+      conditions.push({ field: dbField, operator, value, unit });
+    }
+  }
+
+  if (conditions.length === 0) {
+    return null;
+  }
+
+  // Extract AND/OR operators
+  const operators: ('AND' | 'OR')[] = [];
+  const operatorMatches = query.match(/ (and|or) /gi);
+  if (operatorMatches) {
+    operators.push(...operatorMatches.map(op => op.trim().toUpperCase() as 'AND' | 'OR'));
+  }
+
+  return { conditions, operators, sector };
+}
+
+function buildWhereClause(parsedQuery: { conditions: ParsedCondition[], operators: ('AND' | 'OR')[], sector?: string }): any {
+  const { conditions, operators, sector } = parsedQuery;
+
+  // Build conditions array
+  const whereClauses = conditions.map(cond => {
+    let value = cond.value;
+
+    // Handle units (%, B, M, K for billions, millions, thousands)
+    if (cond.unit === '%') {
+      value = value / 100; // Convert percentage to decimal
+    } else if (cond.unit === 'b') {
+      value = value * 1_000_000_000;
+    } else if (cond.unit === 'm') {
+      value = value * 1_000_000;
+    } else if (cond.unit === 'k') {
+      value = value * 1_000;
+    } else if (cond.unit === 't') {
+      value = value * 1_000_000_000_000;
+    }
+
+    // Build Prisma where clause based on operator
+    switch (cond.operator) {
+      case '>':
+      case 'gt':
+        return { [cond.field]: { gt: value } };
+      case '>=':
+      case 'gte':
+        return { [cond.field]: { gte: value } };
+      case '<':
+      case 'lt':
+        return { [cond.field]: { lt: value } };
+      case '<=':
+      case 'lte':
+        return { [cond.field]: { lte: value } };
+      case '=':
+      case '==':
+      case 'eq':
+        return { [cond.field]: value };
+      case '!=':
+      case 'ne':
+        return { [cond.field]: { not: value } };
+      default:
+        return { [cond.field]: { gte: value } };
+    }
+  });
+
+  // Add sector filter if present
+  if (sector) {
+    const sectorMap: Record<string, string> = {
+      'technology': 'Technology',
+      'tech': 'Technology',
+      'healthcare': 'Healthcare',
+      'health': 'Healthcare',
+      'financial': 'Financial',
+      'finance': 'Financial',
+      'banking': 'Financial',
+      'energy': 'Energy',
+      'consumer': 'Consumer',
+      'industrial': 'Industrial',
+      'materials': 'Materials',
+      'utilities': 'Utilities',
+      'real estate': 'Real Estate',
+      'communication': 'Communication'
+    };
+    const mappedSector = sectorMap[sector.toLowerCase()] || sector;
+    whereClauses.push({ sector: { contains: mappedSector, mode: 'insensitive' } });
+  }
+
+  // Combine with AND/OR logic
+  // Default to AND if no operators specified
+  if (operators.length === 0 || operators.every(op => op === 'AND')) {
+    return { AND: whereClauses };
+  }
+
+  // If all OR operators
+  if (operators.every(op => op === 'OR')) {
+    return { OR: whereClauses };
+  }
+
+  // Mixed AND/OR - need to handle precedence
+  // For simplicity, evaluate left to right
+  // AND has higher precedence than OR
+  let result: any = whereClauses[0];
+  for (let i = 0; i < operators.length; i++) {
+    if (operators[i] === 'AND') {
+      result = { AND: [result, whereClauses[i + 1]] };
+    } else {
+      result = { OR: [result, whereClauses[i + 1]] };
+    }
+  }
+
+  return result;
+}
+
+/**
  * Serialize BigInt values to strings for JSON compatibility
  */
 function serializeBigInt(obj: any): any {
@@ -83,6 +277,59 @@ export async function POST(request: Request) {
 
     // Query patterns (most specific first)
     const patterns: QueryPattern[] = [
+      // Compound queries with AND/OR operators (highest priority)
+      {
+        pattern: / and | or /i, // Simple check for compound queries
+        handler: async (matches, query, skip = 0, pageSize = 50) => {
+          const parsed = parseCompoundQuery(query);
+          if (!parsed || parsed.conditions.length === 0) {
+            return null; // Fall through to other patterns
+          }
+
+          const whereClause = buildWhereClause(parsed);
+
+          const companies = await prisma.company.findMany({
+            where: whereClause,
+            select: COMPANY_SELECT_FIELDS,
+            skip,
+            take: pageSize
+          });
+
+          const totalCount = await prisma.company.count({
+            where: whereClause
+          });
+
+          // Build human-readable message
+          const conditionDescriptions = parsed.conditions.map((cond, i) => {
+            const operator = cond.operator === '>' ? 'greater than' :
+                           cond.operator === '<' ? 'less than' :
+                           cond.operator === '>=' ? 'at least' :
+                           cond.operator === '<=' ? 'at most' :
+                           cond.operator === '=' ? 'equal to' : cond.operator;
+            const unit = cond.unit === '%' ? '%' :
+                        cond.unit === 'b' ? 'B' :
+                        cond.unit === 'm' ? 'M' :
+                        cond.unit === 'k' ? 'K' : '';
+            return `${cond.field} ${operator} ${cond.value}${unit}`;
+          });
+
+          let message = `Companies matching: ${conditionDescriptions.join(' ' + (parsed.operators[0] || 'AND') + ' ')}`;
+          if (parsed.sector) {
+            message += ` in ${parsed.sector} sector`;
+          }
+          message += ` (${totalCount} found)`;
+
+          return {
+            companies,
+            totalCount,
+            pageSize,
+            currentPage: Math.floor(skip / pageSize) + 1,
+            totalPages: Math.ceil(totalCount / pageSize),
+            message
+          };
+        }
+      },
+
       // "Show [TICKER] analyst target price history" or "track over time"
       {
         pattern: /(?:show|track|get)(?:\s+me)?\s+(\w+)\s+(?:analyst\s+)?(?:target\s+price|eps\s+estimate|p\/e\s+ratio)\s+(?:history|over\s+time|trend)/i,
@@ -978,7 +1225,10 @@ export async function POST(request: Request) {
       const matches = normalizedQuery.match(pattern);
       if (matches) {
         const result = await handler(matches, normalizedQuery, skip, pageSize);
-        return NextResponse.json(serializeBigInt(result));
+        // If handler returns null, continue to next pattern
+        if (result !== null) {
+          return NextResponse.json(serializeBigInt(result));
+        }
       }
     }
 

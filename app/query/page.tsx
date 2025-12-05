@@ -69,8 +69,8 @@ export default function QueryPage() {
     },
     {
       icon: <TrendingUp className="w-5 h-5" />,
-      text: "Find companies near 52-week high",
-      category: "Momentum Screen"
+      text: "PE < 15 and dividend yield > 3%",
+      category: "Compound Query"
     },
     {
       icon: <Building2 className="w-5 h-5" />,
