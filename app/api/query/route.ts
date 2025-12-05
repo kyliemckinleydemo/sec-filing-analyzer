@@ -43,7 +43,7 @@ const COMPANY_SELECT_FIELDS = {
 interface ParsedCondition {
   field: string;
   operator: string;
-  value: number | string;
+  value: number;
   unit?: string;
 }
 
