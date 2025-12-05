@@ -776,6 +776,117 @@ export async function POST(request: Request) {
         }
       },
 
+      // Combined sector + undervalued + market cap queries
+      {
+        pattern: /(technology|tech|healthcare|health|financial|finance|banking|energy|oil|gas|consumer|retail|industrial|manufacturing|materials|utilities|real\s+estate|communication|telecom|media)\s+(?:companies?|stocks?|firms?).*?undervalued/i,
+        handler: async (matches, query, skip = 0, pageSize = 50) => {
+          // Map query terms to sector keywords
+          const sectorMap: Record<string, string[]> = {
+            'Technology': ['technology', 'tech'],
+            'Healthcare': ['healthcare', 'health'],
+            'Financial': ['financial', 'finance', 'banking'],
+            'Energy': ['energy', 'oil', 'gas'],
+            'Consumer': ['consumer', 'retail'],
+            'Industrial': ['industrial', 'manufacturing'],
+            'Materials': ['materials'],
+            'Utilities': ['utilities'],
+            'Real Estate': ['real estate'],
+            'Communication': ['communication', 'telecom', 'media']
+          };
+
+          const queryTerm = matches[1].toLowerCase();
+          let matchedSector: string | null = null;
+
+          // Find which sector matches
+          for (const [sector, keywords] of Object.entries(sectorMap)) {
+            if (keywords.some(keyword => queryTerm.includes(keyword.replace(/\s+/g, '\\s+')))) {
+              matchedSector = sector;
+              break;
+            }
+          }
+
+          if (!matchedSector) {
+            return { error: `Could not determine sector from "${queryTerm}"` };
+          }
+
+          // Extract market cap filter if present
+          const marketCapMatch = query.match(/market\s+cap\s*[>>=]\s*\$?(\d+)([bBmMkK])?/i);
+          let minMarketCap: number | null = null;
+
+          if (marketCapMatch) {
+            const value = parseFloat(marketCapMatch[1]);
+            const unit = marketCapMatch[2]?.toLowerCase();
+
+            if (unit === 'b') {
+              minMarketCap = value * 1_000_000_000;
+            } else if (unit === 'm') {
+              minMarketCap = value * 1_000_000;
+            } else if (unit === 'k') {
+              minMarketCap = value * 1_000;
+            } else {
+              minMarketCap = value; // Assume raw number
+            }
+          }
+
+          // Fetch all companies in sector with required fields
+          const whereClause: any = {
+            sector: {
+              contains: matchedSector,
+              mode: 'insensitive'
+            },
+            currentPrice: { not: null },
+            analystTargetPrice: { not: null }
+          };
+
+          if (minMarketCap !== null) {
+            whereClause.marketCap = { gte: minMarketCap };
+          }
+
+          const allCompanies = await prisma.company.findMany({
+            where: whereClause,
+            select: COMPANY_SELECT_FIELDS
+          });
+
+          // Filter to undervalued companies and calculate upside
+          const allUndervalued = allCompanies
+            .filter(c => c.currentPrice! < c.analystTargetPrice!)
+            .map(c => ({
+              ...c,
+              upside: ((c.analystTargetPrice! - c.currentPrice!) / c.currentPrice! * 100).toFixed(1),
+              upsideValue: ((c.analystTargetPrice! - c.currentPrice!) / c.currentPrice! * 100)
+            }))
+            .sort((a, b) => {
+              // Primary sort: highest upside first
+              const upsideDiff = b.upsideValue - a.upsideValue;
+              if (Math.abs(upsideDiff) > 0.01) return upsideDiff;
+              // Secondary sort: market cap descending
+              return (b.marketCap || 0) - (a.marketCap || 0);
+            });
+
+          const totalCount = allUndervalued.length;
+          const paginatedCompanies = allUndervalued.slice(skip, skip + pageSize);
+
+          let message = `Undervalued ${matchedSector} companies (${totalCount} total)`;
+          if (minMarketCap !== null) {
+            const mcapDisplay = minMarketCap >= 1_000_000_000
+              ? `$${(minMarketCap / 1_000_000_000).toFixed(0)}B`
+              : `$${(minMarketCap / 1_000_000).toFixed(0)}M`;
+            message += ` with market cap > ${mcapDisplay}`;
+          }
+
+          return {
+            companies: paginatedCompanies,
+            totalCount,
+            pageSize,
+            currentPage: Math.floor(skip / pageSize) + 1,
+            totalPages: Math.ceil(totalCount / pageSize),
+            sortBy: 'upsideValue',
+            sortOrder: 'desc',
+            message
+          };
+        }
+      },
+
       // Sector-based queries: "tech companies", "healthcare stocks", etc.
       {
         pattern: /(?:show|find|list|get)?\s*(?:me\s+)?(?:all\s+)?(technology|tech|healthcare|health|financial|finance|banking|energy|oil|gas|consumer|retail|industrial|manufacturing|materials|utilities|real\s+estate|communication|telecom|media)\s+(?:companies?|stocks?|firms?)/i,

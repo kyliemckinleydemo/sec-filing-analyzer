@@ -64,6 +64,16 @@ export default function QueryPage() {
     },
     {
       icon: <Building2 className="w-5 h-5" />,
+      text: "Show tech companies that are undervalued",
+      category: "Sector + Value"
+    },
+    {
+      icon: <TrendingUp className="w-5 h-5" />,
+      text: "Find companies near 52-week high",
+      category: "Momentum Screen"
+    },
+    {
+      icon: <Building2 className="w-5 h-5" />,
       text: "Show companies with market cap > 500B",
       category: "Large Cap Filter"
     },
@@ -648,6 +658,7 @@ export default function QueryPage() {
               </CardHeader>
               <CardContent>
                 <ul className="text-xs text-slate-700 space-y-1">
+                  <li>• Sector & Industry</li>
                   <li>• Current price</li>
                   <li>• Market cap</li>
                   <li>• P/E ratio & Forward P/E</li>
