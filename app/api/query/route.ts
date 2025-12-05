@@ -140,7 +140,7 @@ function buildWhereClause(parsedQuery: { conditions: ParsedCondition[], operator
   const { conditions, operators, sector } = parsedQuery;
 
   // Build conditions array
-  const whereClauses = conditions.map(cond => {
+  const whereClauses: any[] = conditions.map(cond => {
     let value = cond.value;
 
     // Handle units (%, B, M, K for billions, millions, thousands)
