@@ -525,6 +525,16 @@ export default function QueryPage() {
                               )}
                             </div>
                           </div>
+                          <div className="ml-4">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => router.push(`/latest-filings?ticker=${company.ticker}`)}
+                              className="whitespace-nowrap"
+                            >
+                              View Filings →
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))}

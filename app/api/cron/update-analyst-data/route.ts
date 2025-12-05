@@ -254,6 +254,83 @@ export async function GET(request: Request) {
 
     console.log(`[Cron] Analyst data update complete: ${updated} updated, ${errors} errors`);
 
+    // Update stock prices for ALL companies (not just recent filings)
+    console.log('[Cron] Updating stock prices for all companies...');
+    let stockPriceUpdates = 0;
+    let stockPriceErrors = 0;
+
+    try {
+      // Get all active companies
+      const allCompanies = await prisma.company.findMany({
+        select: { id: true, ticker: true }
+      });
+
+      console.log(`[Cron] Found ${allCompanies.length} companies to update`);
+
+      // Update in batches to avoid rate limits and timeout
+      const BATCH_SIZE = 100;
+      const BATCH_DELAY_MS = 2000; // 2 seconds between batches
+
+      for (let i = 0; i < allCompanies.length; i += BATCH_SIZE) {
+        const batch = allCompanies.slice(i, i + BATCH_SIZE);
+        console.log(`[Cron] Processing batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(allCompanies.length / BATCH_SIZE)}`);
+
+        for (const company of batch) {
+          try {
+            // Fetch latest quote data
+            const quote = await yahooFinance.quoteSummary(company.ticker, {
+              modules: ['price', 'summaryDetail', 'financialData']
+            });
+
+            const price = quote.price;
+            const summaryDetail = quote.summaryDetail;
+            const financialData = quote.financialData;
+
+            if (price || summaryDetail || financialData) {
+              await prisma.company.update({
+                where: { id: company.id },
+                data: {
+                  currentPrice: price?.regularMarketPrice ?? null,
+                  marketCap: price?.marketCap ?? null,
+                  peRatio: summaryDetail?.trailingPE ?? null,
+                  forwardPE: summaryDetail?.forwardPE ?? null,
+                  beta: summaryDetail?.beta ?? null,
+                  dividendYield: summaryDetail?.dividendYield ?? null,
+                  fiftyTwoWeekHigh: summaryDetail?.fiftyTwoWeekHigh ?? null,
+                  fiftyTwoWeekLow: summaryDetail?.fiftyTwoWeekLow ?? null,
+                  volume: price?.regularMarketVolume ? BigInt(price.regularMarketVolume) : null,
+                  averageVolume: summaryDetail?.averageVolume ? BigInt(summaryDetail.averageVolume) : null,
+                  analystTargetPrice: financialData?.targetMeanPrice ?? null,
+                  yahooLastUpdated: new Date()
+                }
+              });
+
+              stockPriceUpdates++;
+            }
+
+            // Rate limit: 100ms delay between requests
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+          } catch (error: any) {
+            // Skip companies with errors (delisted, invalid ticker, etc.)
+            if (!error.message?.includes('Not Found')) {
+              console.error(`[Cron] Error updating stock price for ${company.ticker}:`, error.message);
+            }
+            stockPriceErrors++;
+          }
+        }
+
+        // Delay between batches to avoid rate limits
+        if (i + BATCH_SIZE < allCompanies.length) {
+          await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
+        }
+      }
+
+      console.log(`[Cron] Stock price updates complete: ${stockPriceUpdates} updated, ${stockPriceErrors} errors`);
+    } catch (error: any) {
+      console.error('[Cron] Error in stock price update:', error.message);
+    }
+
     // Also handle paper trading operations (since we're limited to 2 cron jobs)
     // 1. Execute pending trades at market open
     // 2. Close expired positions (7+ days)
@@ -304,12 +381,16 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Updated analyst data for ${updated} filings, executed ${pendingExecuted} pending trades, closed ${paperTradingClosed} paper trading positions`,
+      message: `Updated analyst data for ${updated} filings, updated ${stockPriceUpdates} stock prices, executed ${pendingExecuted} pending trades, closed ${paperTradingClosed} paper trading positions`,
       results: {
         analystData: {
           updated,
           errors,
           total: recentFilings.length
+        },
+        stockPrices: {
+          updated: stockPriceUpdates,
+          errors: stockPriceErrors
         },
         paperTrading: {
           pendingExecuted,

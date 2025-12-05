@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CompanySnapshotTooltip } from '@/components/CompanySnapshotTooltip';
 
 interface CompanySnapshot {
@@ -46,12 +46,21 @@ interface LatestFiling {
   companySnapshot: CompanySnapshot;
 }
 
-export default function LatestFilingsPage() {
+function LatestFilingsContent() {
+  const searchParams = useSearchParams();
   const [filings, setFilings] = useState<LatestFiling[]>([]);
   const [loading, setLoading] = useState(true);
   const [tickerFilter, setTickerFilter] = useState('');
   const [filingTypeFilter, setFilingTypeFilter] = useState('all');
   const router = useRouter();
+
+  // Initialize ticker filter from URL on mount
+  useEffect(() => {
+    const tickerParam = searchParams.get('ticker');
+    if (tickerParam) {
+      setTickerFilter(tickerParam.toUpperCase());
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchFilings();
@@ -228,5 +237,13 @@ export default function LatestFilingsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function LatestFilingsPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">Loading...</div>}>
+      <LatestFilingsContent />
+    </Suspense>
   );
 }

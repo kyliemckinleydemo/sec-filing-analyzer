@@ -776,6 +776,70 @@ export async function POST(request: Request) {
         }
       },
 
+      // Sector-based queries: "tech companies", "healthcare stocks", etc.
+      {
+        pattern: /(?:show|find|list|get)?\s*(?:me\s+)?(?:all\s+)?(technology|tech|healthcare|health|financial|finance|banking|energy|oil|gas|consumer|retail|industrial|manufacturing|materials|utilities|real\s+estate|communication|telecom|media)\s+(?:companies?|stocks?|firms?)/i,
+        handler: async (matches, query, skip, pageSize) => {
+          // Map query terms to sector keywords
+          const sectorMap: Record<string, string[]> = {
+            'Technology': ['technology', 'tech'],
+            'Healthcare': ['healthcare', 'health'],
+            'Financial': ['financial', 'finance', 'banking'],
+            'Energy': ['energy', 'oil', 'gas'],
+            'Consumer': ['consumer', 'retail'],
+            'Industrial': ['industrial', 'manufacturing'],
+            'Materials': ['materials'],
+            'Utilities': ['utilities'],
+            'Real Estate': ['real estate'],
+            'Communication': ['communication', 'telecom', 'media']
+          };
+
+          const queryTerm = matches[1].toLowerCase();
+          let matchedSector: string | null = null;
+
+          // Find which sector matches
+          for (const [sector, keywords] of Object.entries(sectorMap)) {
+            if (keywords.some(keyword => queryTerm.includes(keyword.replace(/\s+/g, '\\s+')))) {
+              matchedSector = sector;
+              break;
+            }
+          }
+
+          if (!matchedSector) {
+            return { error: `Could not determine sector from "${queryTerm}"` };
+          }
+
+          const companies = await prisma.company.findMany({
+            where: {
+              sector: {
+                contains: matchedSector,
+                mode: 'insensitive'
+              }
+            },
+            select: COMPANY_SELECT_FIELDS,
+            skip,
+            take: pageSize
+          });
+
+          const totalCount = await prisma.company.count({
+            where: {
+              sector: {
+                contains: matchedSector,
+                mode: 'insensitive'
+              }
+            }
+          });
+
+          return {
+            companies,
+            totalCount,
+            totalPages: Math.ceil(totalCount / (pageSize || 20)),
+            currentPage: Math.floor((skip || 0) / (pageSize || 20)) + 1,
+            message: `Found ${totalCount} ${matchedSector} companies`
+          };
+        }
+      },
+
       // Fallback: Just show recent filings
       {
         pattern: /./,

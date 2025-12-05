@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { secRSSClient } from '@/lib/sec-rss-client';
 import { yahooFinanceClient } from '@/lib/yahoo-finance-client';
+import { runSupervisorChecks } from '@/lib/supervisor';
 
 // Mark route as dynamic to prevent static generation at build time
 export const dynamic = 'force-dynamic';
@@ -281,6 +282,17 @@ export async function GET(request: Request) {
       },
     });
 
+    // Run supervisor health checks after successful completion
+    console.log('[Cron RSS] Running supervisor health checks...');
+    let supervisorReport;
+    try {
+      supervisorReport = await runSupervisorChecks(false); // Don't auto-trigger (we just ran!)
+      console.log('[Cron RSS] Supervisor checks completed:', supervisorReport);
+    } catch (supervisorError: any) {
+      console.error('[Cron RSS] Supervisor checks failed:', supervisorError.message);
+      // Don't fail the whole job if supervisor fails
+    }
+
     return NextResponse.json({
       success: true,
       message: `Fetched ${results.fetched} filings, stored ${results.stored} (${results.mode} mode), updated ${yahooFinanceUpdates} companies with Yahoo Finance data`,
@@ -289,6 +301,7 @@ export async function GET(request: Request) {
         yahooFinanceUpdates,
         yahooFinanceErrors
       },
+      supervisorReport
     });
   } catch (error: any) {
     console.error('[Cron RSS] Error:', error);
