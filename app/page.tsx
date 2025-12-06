@@ -22,9 +22,11 @@ export default function Home() {
       <section className="container mx-auto px-4 py-20">
         <div className="text-center space-y-8">
           <div className="space-y-4">
-            <h1 className="text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 pb-2">
-              StockHuntr
-            </h1>
+            <div className="inline-block bg-white rounded-2xl px-12 py-6 shadow-xl border-2 border-slate-200">
+              <h1 className="text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                StockHuntr
+              </h1>
+            </div>
             <p className="text-2xl text-slate-700 max-w-3xl mx-auto leading-relaxed">
               AI-Powered SEC Filing Analysis & Stock Predictions
             </p>
