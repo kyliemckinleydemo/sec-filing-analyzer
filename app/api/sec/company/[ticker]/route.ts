@@ -57,22 +57,27 @@ export async function GET(
 
     // Not in our database - return early with helpful message
     if (!existingCompany) {
-      // Get some similar tickers or popular alternatives to suggest
-      const similarCompanies = await prisma.company.findMany({
+      // Get popular companies to suggest (top by market cap)
+      const popularCompanies = await prisma.companySnapshot.findMany({
         where: {
-          OR: [
-            { ticker: { startsWith: ticker.substring(0, 2).toUpperCase() } },
-            { name: { contains: ticker.toUpperCase() } },
-          ],
+          marketCap: { not: null },
         },
+        orderBy: { marketCap: 'desc' },
         take: 5,
-        select: { ticker: true, name: true },
+        select: {
+          company: {
+            select: { ticker: true, name: true }
+          },
+        },
+        distinct: ['companyId'],
       });
+
+      const suggestions = popularCompanies.map(s => s.company);
 
       return NextResponse.json({
         error: `We don't currently track ${ticker.toUpperCase()}`,
         tracked: false,
-        suggestions: similarCompanies,
+        suggestions,
         message: 'We track the top 640 companies by market cap. Try the Query page to explore what we have!',
       }, { status: 404 });
     }
