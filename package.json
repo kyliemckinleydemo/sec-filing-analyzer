@@ -12,7 +12,7 @@
     "postinstall": "prisma generate",
     "deploy": "vercel --prod --force && npm run set-alias",
     "deploy:preview": "vercel --force",
-    "set-alias": "vercel alias set sec-filing-analyzer-indol.vercel.app",
+    "set-alias": "vercel alias set stockhuntr.net",
     "trigger-cron": "npx tsx scripts/manual-cron-trigger.ts"
   },
   "keywords": [],
