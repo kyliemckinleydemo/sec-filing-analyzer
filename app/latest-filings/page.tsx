@@ -52,6 +52,9 @@ function LatestFilingsContent() {
   const [loading, setLoading] = useState(true);
   const [tickerFilter, setTickerFilter] = useState('');
   const [filingTypeFilter, setFilingTypeFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
   const router = useRouter();
 
   // Initialize ticker filter from URL on mount
@@ -63,24 +66,37 @@ function LatestFilingsContent() {
   }, [searchParams]);
 
   useEffect(() => {
-    fetchFilings();
+    setCurrentPage(1); // Reset to page 1 when filters change
+    fetchFilings(1);
   }, [tickerFilter, filingTypeFilter]);
 
-  const fetchFilings = async () => {
+  const fetchFilings = async (page: number = currentPage) => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (tickerFilter) params.append('ticker', tickerFilter);
       if (filingTypeFilter) params.append('filingType', filingTypeFilter);
+      params.append('page', page.toString());
 
       const response = await fetch(`/api/filings/latest?${params.toString()}`);
       const data = await response.json();
-      setFilings(data);
+
+      setFilings(data.filings || data); // Handle both old and new response format
+      if (data.pagination) {
+        setTotalPages(data.pagination.totalPages);
+        setTotalCount(data.pagination.totalCount);
+        setCurrentPage(data.pagination.currentPage);
+      }
     } catch (error) {
       console.error('Error fetching filings:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    fetchFilings(newPage);
   };
 
   const handleAnalyze = (filing: LatestFiling) => {
@@ -231,9 +247,54 @@ function LatestFilingsContent() {
         )}
 
         {!loading && filings.length > 0 && (
-          <div className="mt-6 text-center text-sm text-slate-500">
-            Showing {filings.length} recent filings with financial data (last 90 days)
-          </div>
+          <>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="mt-6 flex items-center justify-between border-t pt-4">
+                <div className="text-sm text-slate-600">
+                  Showing page {currentPage} of {totalPages} ({totalCount} total filings)
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1 || loading}
+                  >
+                    Previous
+                  </Button>
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    const pageNum = currentPage <= 3 ? i + 1 : currentPage - 2 + i;
+                    if (pageNum > totalPages) return null;
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={pageNum === currentPage ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(pageNum)}
+                        disabled={loading}
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages || loading}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}
+            {totalPages === 1 && (
+              <div className="mt-6 text-center text-sm text-slate-500">
+                Showing {filings.length} filings (last 90 days)
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

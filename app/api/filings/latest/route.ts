@@ -67,7 +67,8 @@ interface SECCompanyFilings {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const pageSize = parseInt(searchParams.get('limit') || '50');
+    const page = parseInt(searchParams.get('page') || '1');
     const ticker = searchParams.get('ticker')?.toUpperCase();
     const filingType = searchParams.get('filingType');
 
@@ -94,6 +95,13 @@ export async function GET(request: Request) {
     if (filingType && filingType !== 'all') {
       where.filingType = filingType;
     }
+
+    // Get total count for pagination
+    const totalCount = await prisma.filing.count({ where });
+
+    // Calculate pagination
+    const totalPages = Math.ceil(totalCount / pageSize);
+    const skip = (page - 1) * pageSize;
 
     // Fetch filings from database
     const filings = await prisma.filing.findMany({
@@ -123,7 +131,8 @@ export async function GET(request: Request) {
       orderBy: {
         filingDate: 'desc'
       },
-      take: limit
+      skip: skip,
+      take: pageSize
     });
 
     // Format response
@@ -164,7 +173,15 @@ export async function GET(request: Request) {
     };
     });
 
-    return NextResponse.json(formattedFilings);
+    return NextResponse.json({
+      filings: formattedFilings,
+      pagination: {
+        totalCount,
+        totalPages,
+        currentPage: page,
+        pageSize
+      }
+    });
   } catch (error) {
     console.error('Error fetching latest filings:', error);
     return NextResponse.json(
