@@ -22,7 +22,7 @@ export default function Home() {
       <section className="container mx-auto px-4 py-20">
         <div className="text-center space-y-6">
           <h1 className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 pb-2">
-            Stockhuntr
+            StockHuntr
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
             AI-powered SEC filing intelligence to analyze financial data, predict stock movements, and chat with your data using natural language

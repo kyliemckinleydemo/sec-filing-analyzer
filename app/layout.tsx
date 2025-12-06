@@ -6,7 +6,7 @@ import Navigation from "./components/Navigation";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Stockhuntr - AI-Powered SEC Filing Intelligence",
+  title: "StockHuntr - AI-Powered SEC Filing Intelligence",
   description: "AI-powered SEC filing intelligence to analyze financial data, predict stock movements, and chat with your data using natural language",
 };
 
