@@ -168,7 +168,7 @@ function LatestFilingsContent() {
               <SelectItem value="8-K">8-K (Current Events)</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" onClick={fetchFilings}>
+          <Button variant="outline" onClick={() => fetchFilings(currentPage)}>
             Refresh
           </Button>
         </div>
