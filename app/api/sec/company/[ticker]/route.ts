@@ -24,10 +24,16 @@ export async function GET(
     }
 
     // FAST PATH: Check if we already track this company in our database
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
     const existingCompany = await prisma.company.findUnique({
       where: { ticker: ticker.toUpperCase() },
       include: {
         filings: {
+          where: {
+            filingDate: { gte: oneYearAgo }
+          },
           orderBy: { filingDate: 'desc' },
           take: 20,
         },
@@ -64,7 +70,7 @@ export async function GET(
 
       // Try to get sector from Yahoo Finance for the searched ticker
       try {
-        const quote = await yahooFinance.quote(ticker.toUpperCase());
+        const quote: any = await yahooFinance.quote(ticker.toUpperCase());
         if (quote && quote.sector) {
           tickerSector = quote.sector;
           isValidTicker = true;
