@@ -3,6 +3,7 @@ import { secClient } from '@/lib/sec-client';
 import { cache, cacheKeys } from '@/lib/cache';
 import { prisma } from '@/lib/prisma';
 import { hasFinancialData } from '@/lib/filing-utils';
+import yahooFinance from 'yahoo-finance2';
 
 export async function GET(
   request: NextRequest,
@@ -57,28 +58,69 @@ export async function GET(
 
     // Not in our database - return early with helpful message
     if (!existingCompany) {
-      // Get popular companies to suggest (top by market cap)
-      const popularCompanies = await prisma.companySnapshot.findMany({
-        where: {
-          marketCap: { not: null },
-        },
-        orderBy: { marketCap: 'desc' },
-        take: 5,
-        select: {
-          company: {
-            select: { ticker: true, name: true }
-          },
-        },
-        distinct: ['companyId'],
-      });
+      let suggestions: Array<{ ticker: string; name: string }> = [];
+      let tickerSector: string | null = null;
+      let isValidTicker = false;
 
-      const suggestions = popularCompanies.map(s => s.company);
+      // Try to get sector from Yahoo Finance for the searched ticker
+      try {
+        const quote = await yahooFinance.quote(ticker.toUpperCase());
+        if (quote && quote.sector) {
+          tickerSector = quote.sector;
+          isValidTicker = true;
+
+          // Find companies in the same sector from our database
+          const sectorCompanies = await prisma.companySnapshot.findMany({
+            where: {
+              sector: tickerSector,
+              marketCap: { not: null },
+            },
+            orderBy: { marketCap: 'desc' },
+            take: 5,
+            select: {
+              company: {
+                select: { ticker: true, name: true }
+              },
+            },
+            distinct: ['companyId'],
+          });
+
+          suggestions = sectorCompanies.map(s => s.company);
+        }
+      } catch (error) {
+        // Ticker not found in Yahoo Finance - invalid ticker
+        console.log(`Ticker ${ticker} not found in Yahoo Finance`);
+      }
+
+      // If no sector found or no suggestions, fall back to top companies by market cap
+      if (suggestions.length === 0) {
+        const popularCompanies = await prisma.companySnapshot.findMany({
+          where: {
+            marketCap: { not: null },
+          },
+          orderBy: { marketCap: 'desc' },
+          take: 5,
+          select: {
+            company: {
+              select: { ticker: true, name: true }
+            },
+          },
+          distinct: ['companyId'],
+        });
+
+        suggestions = popularCompanies.map(s => s.company);
+      }
+
+      const message = isValidTicker
+        ? `We don't track ${ticker.toUpperCase()} yet. ${tickerSector ? `Here are similar companies in ${tickerSector}:` : 'Here are some top companies we track:'}`
+        : `"${ticker.toUpperCase()}" doesn't appear to be a valid ticker symbol. We track the top 640 companies by market cap. Here are some popular companies:`;
 
       return NextResponse.json({
-        error: `We don't currently track ${ticker.toUpperCase()}`,
+        error: message,
         tracked: false,
         suggestions,
-        message: 'We track the top 640 companies by market cap. Try the Query page to explore what we have!',
+        isValidTicker,
+        sector: tickerSector,
       }, { status: 404 });
     }
 
