@@ -64,25 +64,58 @@ export async function GET(
 
     // Not in our database - return early with helpful message
     if (!existingCompany) {
-      // Get top companies by market cap as suggestions
-      const popularCompanies = await prisma.companySnapshot.findMany({
-        where: {
-          marketCap: { not: null },
-        },
-        orderBy: { marketCap: 'desc' },
-        take: 5,
-        select: {
-          company: {
-            select: { ticker: true, name: true }
-          },
-        },
-        distinct: ['companyId'],
-      });
+      let suggestions = [];
 
-      const suggestions = popularCompanies.map(s => s.company);
+      try {
+        // Try to get sector from Yahoo Finance for the searched ticker
+        const quote: any = await yahooFinance.quote(ticker.toUpperCase());
+
+        if (quote && quote.sector) {
+          const tickerSector = quote.sector;
+
+          // Query Company model (which has sector field) for companies in same sector
+          const sectorCompanies = await prisma.company.findMany({
+            where: {
+              sector: {
+                contains: tickerSector,
+                mode: 'insensitive'
+              }
+            },
+            take: 5,
+            select: {
+              ticker: true,
+              name: true,
+              sector: true,
+            },
+          });
+
+          suggestions = sectorCompanies;
+        }
+      } catch (error) {
+        console.log('Failed to get sector-based suggestions, falling back to popular companies');
+      }
+
+      // Fall back to top companies by market cap if no sector suggestions
+      if (suggestions.length === 0) {
+        const popularCompanies = await prisma.companySnapshot.findMany({
+          where: {
+            marketCap: { not: null },
+          },
+          orderBy: { marketCap: 'desc' },
+          take: 5,
+          select: {
+            company: {
+              select: { ticker: true, name: true }
+            },
+          },
+          distinct: ['companyId'],
+        });
+
+        suggestions = popularCompanies.map(s => s.company);
+      }
 
       return NextResponse.json({
-        error: `We don't track ${ticker.toUpperCase()} yet. We track the top 640 companies by market cap. Here are some popular companies:`,
+        error: `We don't track ${ticker.toUpperCase()} yet. We track the top 640 companies by market cap. Here are some similar companies we track:`,
         tracked: false,
         suggestions,
       }, { status: 404 });
