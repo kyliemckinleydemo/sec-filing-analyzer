@@ -129,6 +129,67 @@ export default function FAQPage() {
           a: "This tool is designed for research and education, not automated trading. While the predictions are data-driven, they should be used as one input among many for investment decisions. We do not provide trading advice or guarantee returns. Always do your own due diligence and consider your risk tolerance."
         }
       ]
+    },
+    {
+      category: "Terms of Service & Legal Disclaimers",
+      questions: [
+        {
+          q: "What is the intended use of this platform?",
+          a: "This platform is provided strictly for educational and research purposes. It is designed to help users learn about SEC filings, financial analysis techniques, and machine learning applications in finance. This tool should NOT be used as the sole basis for investment decisions."
+        },
+        {
+          q: "Is this investment advice?",
+          a: "NO. Nothing on this platform constitutes investment advice, financial advice, trading advice, or any other type of professional advice. All content, predictions, analyses, and information are provided for informational and educational purposes only. You should consult with a licensed financial advisor before making any investment decisions."
+        },
+        {
+          q: "What are the risks of using predictions from this tool?",
+          a: "IMPORTANT: All predictions and analyses are based on historical data and machine learning models, which have inherent limitations. Past performance does NOT guarantee future results. Stock markets are unpredictable and influenced by countless factors beyond what any model can capture. Using this tool's predictions for actual trading carries significant risk of financial loss. You could lose some or all of your invested capital."
+        },
+        {
+          q: "What disclaimers apply to this service?",
+          a: "DISCLAIMERS: (1) NO WARRANTY - This service is provided 'as is' without warranties of any kind, express or implied. (2) NO GUARANTEE OF ACCURACY - We make no guarantees about the accuracy, completeness, or reliability of any predictions, analyses, or data. (3) DATA DELAYS - Market data may be delayed or contain errors. (4) MODEL LIMITATIONS - Our machine learning models are experimental and may produce incorrect predictions. (5) TECHNICAL ISSUES - The service may be unavailable, slow, or contain bugs at any time."
+        },
+        {
+          q: "What is your limitation of liability?",
+          a: "LIMITATION OF LIABILITY: To the maximum extent permitted by law, we shall NOT be liable for any direct, indirect, incidental, special, consequential, or punitive damages arising from: (1) your use or inability to use this service, (2) any predictions or analyses provided, (3) investment losses based on information from this platform, (4) errors, bugs, or inaccuracies in the service, or (5) unauthorized access to your data. Your use of this service is entirely at your own risk."
+        },
+        {
+          q: "Do you have a fiduciary duty to users?",
+          a: "NO. We do not have any fiduciary duty to users of this platform. We are not registered as an investment adviser, broker-dealer, or any other type of financial services provider. We do not manage accounts, execute trades, or provide personalized investment recommendations."
+        },
+        {
+          q: "What regulatory compliance applies?",
+          a: "REGULATORY DISCLOSURE: This platform is not regulated by the SEC, FINRA, or any other financial regulatory authority. We are not licensed to provide investment advice. All predictions and analyses are automated outputs from machine learning models and should be treated as educational demonstrations of AI/ML techniques, not as professional investment research."
+        },
+        {
+          q: "What are my responsibilities as a user?",
+          a: "USER RESPONSIBILITIES: By using this service, you acknowledge that: (1) You are solely responsible for your investment decisions, (2) You will conduct your own due diligence before making any trades, (3) You understand the risks of stock market investing, (4) You will comply with all applicable laws and regulations, (5) You will not rely solely on this tool for investment decisions, and (6) You may lose money if you trade based on predictions from this platform."
+        },
+        {
+          q: "Can I sue if I lose money using this tool?",
+          a: "ARBITRATION & DISPUTE RESOLUTION: By using this service, you agree that any disputes will be resolved through binding arbitration (not court proceedings) on an individual basis (not class action). You waive your right to a jury trial. To the fullest extent permitted by law, you agree not to bring any lawsuit or claim against us for losses incurred from using this service, including investment losses."
+        },
+        {
+          q: "What about forward-looking statements?",
+          a: "FORWARD-LOOKING STATEMENTS: Any predictions, forecasts, or forward-looking statements are inherently uncertain and based on assumptions that may prove incorrect. Actual results may differ materially from predictions. Factors that could cause actual results to differ include: market volatility, economic conditions, company-specific events, regulatory changes, geopolitical events, and limitations in our models."
+        },
+        {
+          q: "What is your privacy policy?",
+          a: "PRIVACY & DATA: We collect minimal personal data. We may collect: (1) usage analytics (pages viewed, features used), (2) technical data (IP address, browser type), and (3) any information you voluntarily provide. We do NOT sell your data to third parties. We use industry-standard security measures but cannot guarantee absolute security. By using this service, you consent to our data practices."
+        },
+        {
+          q: "Can these terms change?",
+          a: "CHANGES TO TERMS: We reserve the right to modify these terms, disclaimers, and the service at any time without prior notice. Continued use of the service after changes constitutes acceptance of the modified terms. We may also discontinue the service entirely at any time."
+        },
+        {
+          q: "What law governs these terms?",
+          a: "GOVERNING LAW: These terms are governed by the laws of the United States and the State of Delaware, without regard to conflict of law principles. Any disputes that are not subject to arbitration shall be brought exclusively in courts located in Delaware."
+        },
+        {
+          q: "What if I don't agree to these terms?",
+          a: "AGREEMENT TO TERMS: By accessing or using this platform, you acknowledge that you have read, understood, and agree to be bound by these terms and disclaimers. If you do not agree to these terms, you must immediately stop using this service and leave the website."
+        }
+      ]
     }
   ];
 
