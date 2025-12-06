@@ -73,7 +73,7 @@ export async function GET(
         error: `We don't currently track ${ticker.toUpperCase()}`,
         tracked: false,
         suggestions: similarCompanies,
-        message: 'We track 640+ companies including S&P 500 and high-volume stocks. Try the Query page to explore what we have!',
+        message: 'We track the top 640 companies by market cap. Try the Query page to explore what we have!',
       }, { status: 404 });
     }
 
