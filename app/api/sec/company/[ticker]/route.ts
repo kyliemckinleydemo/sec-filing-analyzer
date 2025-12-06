@@ -64,69 +64,27 @@ export async function GET(
 
     // Not in our database - return early with helpful message
     if (!existingCompany) {
-      let suggestions: Array<{ ticker: string; name: string }> = [];
-      let tickerSector: string | null = null;
-      let isValidTicker = false;
-
-      // Try to get sector from Yahoo Finance for the searched ticker
-      try {
-        const quote: any = await yahooFinance.quote(ticker.toUpperCase());
-        if (quote && quote.sector) {
-          tickerSector = quote.sector;
-          isValidTicker = true;
-
-          // Find companies in the same sector from our database
-          const sectorCompanies = await prisma.companySnapshot.findMany({
-            where: {
-              sector: tickerSector,
-              marketCap: { not: null },
-            },
-            orderBy: { marketCap: 'desc' },
-            take: 5,
-            select: {
-              company: {
-                select: { ticker: true, name: true }
-              },
-            },
-            distinct: ['companyId'],
-          });
-
-          suggestions = sectorCompanies.map(s => s.company);
-        }
-      } catch (error) {
-        // Ticker not found in Yahoo Finance - invalid ticker
-        console.log(`Ticker ${ticker} not found in Yahoo Finance`);
-      }
-
-      // If no sector found or no suggestions, fall back to top companies by market cap
-      if (suggestions.length === 0) {
-        const popularCompanies = await prisma.companySnapshot.findMany({
-          where: {
-            marketCap: { not: null },
+      // Get top companies by market cap as suggestions
+      const popularCompanies = await prisma.companySnapshot.findMany({
+        where: {
+          marketCap: { not: null },
+        },
+        orderBy: { marketCap: 'desc' },
+        take: 5,
+        select: {
+          company: {
+            select: { ticker: true, name: true }
           },
-          orderBy: { marketCap: 'desc' },
-          take: 5,
-          select: {
-            company: {
-              select: { ticker: true, name: true }
-            },
-          },
-          distinct: ['companyId'],
-        });
+        },
+        distinct: ['companyId'],
+      });
 
-        suggestions = popularCompanies.map(s => s.company);
-      }
-
-      const message = isValidTicker
-        ? `We don't track ${ticker.toUpperCase()} yet. ${tickerSector ? `Here are similar companies in ${tickerSector}:` : 'Here are some top companies we track:'}`
-        : `"${ticker.toUpperCase()}" doesn't appear to be a valid ticker symbol. We track the top 640 companies by market cap. Here are some popular companies:`;
+      const suggestions = popularCompanies.map(s => s.company);
 
       return NextResponse.json({
-        error: message,
+        error: `We don't track ${ticker.toUpperCase()} yet. We track the top 640 companies by market cap. Here are some popular companies:`,
         tracked: false,
         suggestions,
-        isValidTicker,
-        sector: tickerSector,
       }, { status: 404 });
     }
 
