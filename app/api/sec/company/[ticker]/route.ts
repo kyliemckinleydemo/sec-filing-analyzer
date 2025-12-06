@@ -89,7 +89,12 @@ export async function GET(
             },
           });
 
-          suggestions = sectorCompanies;
+          // Map to convert null to undefined for type compatibility
+          suggestions = sectorCompanies.map(c => ({
+            ticker: c.ticker,
+            name: c.name,
+            sector: c.sector ?? undefined
+          }));
         }
       } catch (error) {
         console.log('Failed to get sector-based suggestions, falling back to popular companies');
