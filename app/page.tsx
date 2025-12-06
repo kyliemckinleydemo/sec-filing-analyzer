@@ -20,47 +20,67 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20">
-        <div className="text-center space-y-6">
-          <h1 className="text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 pb-2">
-            StockHuntr
-          </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            AI-powered SEC filing intelligence to analyze financial data, predict stock movements, and chat with your data using natural language
-          </p>
-          <div className="inline-block bg-green-50 border border-green-200 rounded-lg px-4 py-2 mt-4">
-            <p className="text-sm text-green-700">
-              <strong>v3.0:</strong> Analyst Activity Tracking (Most Important ML Feature) • Concern Level Scoring • XBRL Financial Data • Natural Language Chat • 640+ companies tracked
+        <div className="text-center space-y-8">
+          <div className="space-y-4">
+            <h1 className="text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 pb-2">
+              StockHuntr
+            </h1>
+            <p className="text-2xl text-slate-700 max-w-3xl mx-auto leading-relaxed">
+              AI-Powered SEC Filing Analysis & Stock Predictions
+            </p>
+            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+              Analyze financial data • Predict stock movements • Chat with natural language
             </p>
           </div>
 
-          {/* Quick Actions */}
-          <div className="flex justify-center gap-4 mt-8">
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => router.push('/latest-filings')}
-              className="h-12"
-            >
-              View Latest Filings →
-            </Button>
+          {/* Compact Feature Tags */}
+          <div className="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
+            <span className="inline-flex items-center gap-1 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-xs font-medium border border-blue-200">
+              📊 Analyst Tracking
+            </span>
+            <span className="inline-flex items-center gap-1 bg-purple-50 text-purple-700 px-3 py-1.5 rounded-full text-xs font-medium border border-purple-200">
+              ⚠️ Risk Scoring
+            </span>
+            <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-xs font-medium border border-green-200">
+              💰 XBRL Data
+            </span>
+            <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-3 py-1.5 rounded-full text-xs font-medium border border-orange-200">
+              💬 Natural Language
+            </span>
+            <span className="inline-flex items-center gap-1 bg-slate-50 text-slate-700 px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200">
+              🏢 640+ Companies
+            </span>
           </div>
 
-          {/* Search Bar */}
+          {/* Search Bar - More Prominent */}
           <div className="max-w-2xl mx-auto mt-12 space-y-4">
-            <Input
-              placeholder="Search any ticker (e.g., AAPL, TSLA, MSFT)..."
-              className="h-14 text-lg"
-              value={ticker}
-              onChange={(e) => setTicker(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            />
-            <Button
-              className="w-full h-14 text-lg"
-              onClick={handleSearch}
-              disabled={!ticker}
-            >
-              Analyze Filing
-            </Button>
+            <div className="relative">
+              <Input
+                placeholder="Enter any ticker symbol (AAPL, TSLA, MSFT)..."
+                className="h-16 text-lg px-6 shadow-lg border-2 border-slate-200 focus:border-blue-400 transition-all"
+                value={ticker}
+                onChange={(e) => setTicker(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button
+                className="flex-1 h-14 text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg"
+                onClick={handleSearch}
+                disabled={!ticker}
+              >
+                <span className="mr-2">🔍</span>
+                Analyze Filing
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => router.push('/latest-filings')}
+                className="h-14 px-6 border-2 hover:bg-slate-50"
+              >
+                Latest Filings →
+              </Button>
+            </div>
           </div>
         </div>
       </section>
