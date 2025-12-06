@@ -175,67 +175,29 @@ export default function Home() {
 
       {/* Legal Disclaimer Footer */}
       <section className="bg-slate-800 text-white py-12 mt-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 max-w-4xl">
           <Card className="bg-slate-700 border-slate-600">
             <CardHeader>
               <CardTitle className="text-2xl text-center text-white">
                 ⚖️ Important Legal Disclaimers
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm text-slate-200">
+            <CardContent className="space-y-4">
               <div className="bg-yellow-900/30 border border-yellow-600 rounded-lg p-4">
                 <p className="font-bold text-yellow-300 mb-2">🎓 FOR EDUCATIONAL AND RESEARCH PURPOSES ONLY</p>
-                <p>
+                <p className="text-sm text-slate-200">
                   This platform is designed to help users learn about SEC filings, financial analysis techniques, and machine learning applications in finance.
-                  It is NOT intended to provide investment advice or trading recommendations.
+                  It is NOT intended to provide investment advice or trading recommendations. Nothing on this platform constitutes investment, financial, or trading advice.
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <p className="font-bold text-white mb-2">⚠️ Not Investment Advice</p>
-                  <p className="text-xs">
-                    Nothing on this platform constitutes investment, financial, or trading advice.
-                    All predictions and analyses are provided for informational purposes only.
-                    You should consult with a licensed financial advisor before making any investment decisions.
-                  </p>
-                </div>
-
-                <div>
-                  <p className="font-bold text-white mb-2">📉 Risk of Loss</p>
-                  <p className="text-xs">
-                    Stock market investing carries significant risk.
-                    Past performance does not guarantee future results.
-                    Using predictions from this tool for trading may result in financial loss.
-                    You could lose some or all of your invested capital.
-                  </p>
-                </div>
-
-                <div>
-                  <p className="font-bold text-white mb-2">🤖 Model Limitations</p>
-                  <p className="text-xs">
-                    Our machine learning models are experimental and based on historical data.
-                    They have inherent limitations and may produce incorrect predictions.
-                    Models cannot predict external shocks, market crashes, or company-specific events not disclosed in filings.
-                  </p>
-                </div>
-
-                <div>
-                  <p className="font-bold text-white mb-2">🚫 No Guarantees</p>
-                  <p className="text-xs">
-                    We make no guarantees about the accuracy, completeness, or reliability of any predictions or analyses.
-                    This service is provided "as is" without warranties of any kind.
-                    Market data may be delayed or contain errors.
-                  </p>
-                </div>
-              </div>
-
-              <div className="bg-red-900/30 border border-red-600 rounded-lg p-4 mt-4">
+              <div className="bg-red-900/30 border border-red-600 rounded-lg p-4">
                 <p className="font-bold text-red-300 mb-2">📋 Your Responsibilities</p>
-                <p className="text-xs">
+                <p className="text-sm text-slate-200">
                   By using this service, you acknowledge that: (1) You are solely responsible for your investment decisions,
                   (2) You will conduct your own due diligence before making any trades, (3) You understand the risks of stock market investing,
-                  (4) You will not rely solely on this tool for investment decisions, and (5) You may lose money if you trade based on information from this platform.
+                  (4) You will not rely solely on this tool for investment decisions, and (5) You may lose money if you trade based on predictions from this platform.
+                  Stock markets are unpredictable and you could lose some or all of your invested capital.
                 </p>
               </div>
 
