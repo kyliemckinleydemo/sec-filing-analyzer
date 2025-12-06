@@ -68,10 +68,14 @@ export async function GET(
 
       try {
         // Try to get sector from Yahoo Finance for the searched ticker
-        const quote: any = await yahooFinance.quote(ticker.toUpperCase());
+        const summary = await yahooFinance.quoteSummary(ticker.toUpperCase(), {
+          modules: ['assetProfile']
+        });
+        console.log(`[${ticker}] Yahoo assetProfile sector:`, summary.assetProfile?.sector);
 
-        if (quote && quote.sector) {
-          const tickerSector = quote.sector;
+        if (summary.assetProfile?.sector) {
+          const tickerSector = summary.assetProfile.sector;
+          console.log(`[${ticker}] Found sector: ${tickerSector}`);
 
           // Query Company model (which has sector field) for companies in same sector
           const sectorCompanies = await prisma.company.findMany({
@@ -89,15 +93,19 @@ export async function GET(
             },
           });
 
+          console.log(`[${ticker}] Found ${sectorCompanies.length} sector matches`);
+
           // Map to convert null to undefined for type compatibility
           suggestions = sectorCompanies.map(c => ({
             ticker: c.ticker,
             name: c.name,
             sector: c.sector ?? undefined
           }));
+        } else {
+          console.log(`[${ticker}] No sector found in Yahoo quote`);
         }
       } catch (error) {
-        console.log('Failed to get sector-based suggestions, falling back to popular companies');
+        console.log(`[${ticker}] Error getting sector:`, error);
       }
 
       // Fall back to top companies by market cap if no sector suggestions
