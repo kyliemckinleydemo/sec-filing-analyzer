@@ -64,7 +64,7 @@ export async function GET(
 
     // Not in our database - return early with helpful message
     if (!existingCompany) {
-      let suggestions = [];
+      let suggestions: Array<{ ticker: string; name: string; sector?: string }> = [];
 
       try {
         // Try to get sector from Yahoo Finance for the searched ticker
