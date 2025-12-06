@@ -136,7 +136,11 @@ type AnalysisStep =
   | 'fetching-filing'
   | 'parsing-content'
   | 'fetching-prior'
-  | 'running-ai'
+  | 'analyzing-risks'
+  | 'analyzing-sentiment'
+  | 'extracting-financials'
+  | 'comparing-consensus'
+  | 'running-ml-model'
   | 'generating-prediction'
   | 'complete';
 
@@ -164,10 +168,14 @@ export default function FilingPage() {
         setLoading(true);
         setCurrentStep('fetching-filing');
 
-        // Simulate step updates (in real implementation, these would come from API)
+        // Simulate step updates with more granular progress during AI analysis
         const updateSteps = setTimeout(() => setCurrentStep('parsing-content'), 2000);
         const updateSteps2 = setTimeout(() => setCurrentStep('fetching-prior'), 5000);
-        const updateSteps3 = setTimeout(() => setCurrentStep('running-ai'), 8000);
+        const updateSteps3 = setTimeout(() => setCurrentStep('analyzing-risks'), 8000);
+        const updateSteps4 = setTimeout(() => setCurrentStep('analyzing-sentiment'), 14000);
+        const updateSteps5 = setTimeout(() => setCurrentStep('extracting-financials'), 20000);
+        const updateSteps6 = setTimeout(() => setCurrentStep('comparing-consensus'), 26000);
+        const updateSteps7 = setTimeout(() => setCurrentStep('running-ml-model'), 32000);
 
         // Get query params from URL to pass to analyze API
         const searchParams = new URLSearchParams(window.location.search);
@@ -189,6 +197,10 @@ export default function FilingPage() {
         clearTimeout(updateSteps);
         clearTimeout(updateSteps2);
         clearTimeout(updateSteps3);
+        clearTimeout(updateSteps4);
+        clearTimeout(updateSteps5);
+        clearTimeout(updateSteps6);
+        clearTimeout(updateSteps7);
         setCurrentStep('generating-prediction');
 
         // Fetch prediction
@@ -306,31 +318,55 @@ export default function FilingPage() {
         emoji: '📄',
         title: 'Fetching Filing from SEC',
         description: 'Downloading filing HTML from SEC.gov...',
-        progress: 20,
+        progress: 15,
       },
       'parsing-content': {
         emoji: '🔍',
         title: 'Parsing Document',
         description: 'Extracting Risk Factors and MD&A sections...',
-        progress: 35,
+        progress: 30,
       },
       'fetching-prior': {
         emoji: '📊',
         title: 'Fetching Prior Filing',
         description: 'Getting previous filing for comparison...',
-        progress: 50,
+        progress: 45,
       },
-      'running-ai': {
-        emoji: '🤖',
-        title: 'Running AI Analysis',
-        description: 'Claude is analyzing risks, sentiment, and changes...',
-        progress: 75,
+      'analyzing-risks': {
+        emoji: '⚠️',
+        title: 'Analyzing Risk Factors',
+        description: 'Identifying key risks and changes from prior period...',
+        progress: 55,
+      },
+      'analyzing-sentiment': {
+        emoji: '💭',
+        title: 'Analyzing Management Sentiment',
+        description: 'Evaluating management tone and business outlook...',
+        progress: 65,
+      },
+      'extracting-financials': {
+        emoji: '💰',
+        title: 'Extracting Financial Metrics',
+        description: 'Parsing revenue, earnings, and key financial data...',
+        progress: 72,
+      },
+      'comparing-consensus': {
+        emoji: '📉',
+        title: 'Comparing to Analyst Consensus',
+        description: 'Checking earnings surprises vs. Wall Street estimates...',
+        progress: 79,
+      },
+      'running-ml-model': {
+        emoji: '🧠',
+        title: 'Running ML Prediction Model',
+        description: 'Generating 7-day return forecast with 80% accuracy...',
+        progress: 86,
       },
       'generating-prediction': {
         emoji: '📈',
-        title: 'Generating Prediction',
-        description: 'Calculating 7-day stock return prediction...',
-        progress: 90,
+        title: 'Finalizing Analysis',
+        description: 'Calculating confidence scores and trading signals...',
+        progress: 93,
       },
       'complete': {
         emoji: '✅',
