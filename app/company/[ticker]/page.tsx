@@ -21,6 +21,14 @@ interface CompanyData {
     name: string;
   };
   filings: Filing[];
+  tracked?: boolean;
+}
+
+interface ErrorResponse {
+  error: string;
+  tracked: false;
+  suggestions?: Array<{ ticker: string; name: string }>;
+  message?: string;
 }
 
 export default function CompanyPage() {
@@ -30,6 +38,7 @@ export default function CompanyPage() {
   const [data, setData] = useState<CompanyData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [errorDetails, setErrorDetails] = useState<ErrorResponse | null>(null);
   const [displayCount, setDisplayCount] = useState(10);
 
   useEffect(() => {
@@ -41,7 +50,9 @@ export default function CompanyPage() {
         const response = await fetch(`/api/sec/company/${ticker}`);
 
         if (!response.ok) {
-          throw new Error('Failed to fetch company data');
+          const errorData = await response.json();
+          setErrorDetails(errorData);
+          throw new Error(errorData.error || 'Failed to fetch company data');
         }
 
         const result = await response.json();
@@ -70,29 +81,51 @@ export default function CompanyPage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <Card className="max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+        <Card className="max-w-2xl w-full">
           <CardHeader>
-            <CardTitle>❌ Company Not Found</CardTitle>
-            <CardDescription>
-              {error || 'Failed to load company data for'} {ticker ? ticker.toUpperCase() : ''}
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-3xl">🔍</span>
+              {ticker ? ticker.toUpperCase() : 'Company'} Not Tracked
+            </CardTitle>
+            <CardDescription className="text-base">
+              {error}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="text-sm text-slate-600">
-              <p className="mb-2">This could happen if:</p>
-              <ul className="list-disc pl-5 space-y-1">
-                <li>The ticker symbol is incorrect</li>
-                <li>The company doesn't file with the SEC (non-US companies)</li>
-                <li>The SEC API is temporarily unavailable</li>
-              </ul>
-            </div>
-            <div className="flex gap-2">
+          <CardContent className="space-y-6">
+            {errorDetails?.message && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-800">{errorDetails.message}</p>
+              </div>
+            )}
+
+            {errorDetails?.suggestions && errorDetails.suggestions.length > 0 && (
+              <div>
+                <h3 className="font-semibold mb-3">Similar companies we track:</h3>
+                <div className="space-y-2">
+                  {errorDetails.suggestions.map((company) => (
+                    <Button
+                      key={company.ticker}
+                      variant="outline"
+                      className="w-full justify-start text-left h-auto py-3"
+                      onClick={() => router.push(`/company/${company.ticker}`)}
+                    >
+                      <div>
+                        <div className="font-semibold">{company.ticker}</div>
+                        <div className="text-sm text-slate-600">{company.name}</div>
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-2">
               <Button onClick={() => router.push('/')} variant="outline" className="flex-1">
                 ← Back to Home
               </Button>
-              <Button onClick={() => window.location.reload()} variant="default" className="flex-1">
-                Try Again
+              <Button onClick={() => router.push('/query')} variant="default" className="flex-1">
+                Browse All Companies →
               </Button>
             </div>
           </CardContent>

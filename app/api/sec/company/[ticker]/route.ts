@@ -22,7 +22,62 @@ export async function GET(
       return NextResponse.json(cached);
     }
 
-    // Get company by ticker
+    // FAST PATH: Check if we already track this company in our database
+    const existingCompany = await prisma.company.findUnique({
+      where: { ticker: ticker.toUpperCase() },
+      include: {
+        filings: {
+          orderBy: { filingDate: 'desc' },
+          take: 20,
+        },
+      },
+    });
+
+    // If we track it and have filings, return immediately (fast!)
+    if (existingCompany && existingCompany.filings.length > 0) {
+      const result = {
+        company: {
+          cik: existingCompany.cik,
+          ticker: existingCompany.ticker,
+          name: existingCompany.name,
+        },
+        filings: existingCompany.filings.map(f => ({
+          accessionNumber: f.accessionNumber,
+          form: f.filingType,
+          filingDate: f.filingDate.toISOString().split('T')[0],
+          reportDate: f.reportDate?.toISOString().split('T')[0],
+          primaryDocDescription: f.filingType,
+          filingUrl: f.filingUrl,
+        })),
+        tracked: true,
+      };
+      cache.set(cacheKey, result, 3600000);
+      return NextResponse.json(result);
+    }
+
+    // Not in our database - return early with helpful message
+    if (!existingCompany) {
+      // Get some similar tickers or popular alternatives to suggest
+      const similarCompanies = await prisma.company.findMany({
+        where: {
+          OR: [
+            { ticker: { startsWith: ticker.substring(0, 2).toUpperCase() } },
+            { name: { contains: ticker.toUpperCase() } },
+          ],
+        },
+        take: 5,
+        select: { ticker: true, name: true },
+      });
+
+      return NextResponse.json({
+        error: `We don't currently track ${ticker.toUpperCase()}`,
+        tracked: false,
+        suggestions: similarCompanies,
+        message: 'We track 640+ companies including S&P 500 and high-volume stocks. Try the Query page to explore what we have!',
+      }, { status: 404 });
+    }
+
+    // If we have the company but no filings yet, fall back to SEC API
     const companyInfo = await secClient.getCompanyByTicker(ticker);
 
     if (!companyInfo) {
