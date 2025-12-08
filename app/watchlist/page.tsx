@@ -6,6 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface Company {
   ticker: string;
@@ -33,6 +40,7 @@ interface SectorWatch {
 export default function WatchlistPage() {
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [sectorWatchlist, setSectorWatchlist] = useState<SectorWatch[]>([]);
+  const [validSectors, setValidSectors] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [newTicker, setNewTicker] = useState('');
   const [newSector, setNewSector] = useState('');
@@ -42,7 +50,18 @@ export default function WatchlistPage() {
 
   useEffect(() => {
     fetchWatchlist();
+    fetchValidSectors();
   }, []);
+
+  const fetchValidSectors = async () => {
+    try {
+      const response = await fetch('/api/watchlist/sector');
+      const data = await response.json();
+      setValidSectors(data.sectors || []);
+    } catch (error) {
+      console.error('Error fetching valid sectors:', error);
+    }
+  };
 
   const fetchWatchlist = async () => {
     try {
@@ -211,12 +230,22 @@ export default function WatchlistPage() {
             </CardHeader>
             <CardContent>
               <form onSubmit={handleAddSector} className="flex gap-2">
-                <Input
-                  placeholder="Enter sector (e.g., Technology)"
+                <Select
                   value={newSector}
-                  onChange={(e) => setNewSector(e.target.value)}
+                  onValueChange={setNewSector}
                   disabled={adding}
-                />
+                >
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Select a sector..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {validSectors.map((sector) => (
+                      <SelectItem key={sector} value={sector}>
+                        {sector}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Button type="submit" disabled={adding || !newSector}>
                   {adding ? 'Adding...' : 'Add'}
                 </Button>

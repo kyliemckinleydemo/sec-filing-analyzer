@@ -36,6 +36,20 @@ export default function Home() {
             <Button
               variant="ghost"
               size="sm"
+              onClick={() => router.push('/watchlist')}
+            >
+              Watchlist
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push('/query')}
+            >
+              Query
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => router.push('/faq')}
             >
               FAQ

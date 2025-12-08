@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
+// Valid sectors from our database
+const VALID_SECTORS = [
+  'Basic Materials',
+  'Communication Services',
+  'Consumer Cyclical',
+  'Consumer Defensive',
+  'Energy',
+  'Financial Services',
+  'Healthcare',
+  'Industrials',
+  'Real Estate',
+  'Technology',
+  'Utilities',
+];
+
 // POST /api/watchlist/sector - Add sector to watchlist
 export async function POST(request: NextRequest) {
   try {
@@ -19,6 +34,18 @@ export async function POST(request: NextRequest) {
     if (!sector) {
       return NextResponse.json(
         { error: 'Sector is required' },
+        { status: 400 }
+      );
+    }
+
+    // Validate sector name
+    if (!VALID_SECTORS.includes(sector)) {
+      return NextResponse.json(
+        {
+          error: 'Invalid sector',
+          message: `Sector must be one of: ${VALID_SECTORS.join(', ')}`,
+          validSectors: VALID_SECTORS
+        },
         { status: 400 }
       );
     }
@@ -49,6 +76,13 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// GET /api/watchlist/sector - Get valid sectors
+export async function GET() {
+  return NextResponse.json({
+    sectors: VALID_SECTORS
+  });
 }
 
 // DELETE /api/watchlist/sector - Remove sector from watchlist
