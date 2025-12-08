@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { Navigation } from '@/components/Navigation';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -100,14 +101,12 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <Navigation />
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-5xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <Link href="/" className="text-gray-600 hover:text-gray-900 text-sm">
-                ← Back to Home
-              </Link>
-              <h1 className="text-2xl font-bold text-gray-900 mt-1">
+              <h1 className="text-2xl font-bold text-gray-900">
                 💬 Chat with Your Filing Data
               </h1>
               <p className="text-sm text-gray-600 mt-1">

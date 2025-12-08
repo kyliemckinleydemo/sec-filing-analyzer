@@ -128,9 +128,10 @@ export function FilingChat({ ticker, companyName, filingType, filingDate }: Fili
       <Button
         onClick={() => setIsOpen(true)}
         size="lg"
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+        className="fixed bottom-6 right-6 shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex items-center gap-2 px-4 py-3 h-auto rounded-full"
       >
-        <MessageCircle className="h-6 w-6" />
+        <MessageCircle className="h-5 w-5" />
+        <span className="font-medium">Chat with Filing</span>
       </Button>
     );
   }

@@ -57,6 +57,13 @@ export default function Home() {
             <Button
               variant="ghost"
               size="sm"
+              onClick={() => router.push('/chat')}
+            >
+              AI Chat
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => router.push('/faq')}
             >
               FAQ
@@ -79,7 +86,7 @@ export default function Home() {
               AI-Powered SEC Filing Analysis & Stock Predictions
             </p>
             <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              Analyze financial data • Predict stock movements • Chat with natural language
+              Analyze financial data • Predict stock movements • <strong className="text-blue-600">Chat with filings using AI</strong>
             </p>
           </div>
 
