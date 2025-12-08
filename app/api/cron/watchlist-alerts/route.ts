@@ -123,6 +123,9 @@ export async function POST(request: NextRequest) {
       const watchedTickers = user.watchlist.map(w => w.ticker);
       const watchedSectors = user.sectorWatchlist.map(s => s.sector);
 
+      // Track which filings have been added to avoid duplicates
+      const addedFilingIds = new Set<string>();
+
       // Check each alert type
       for (const alert of user.alerts) {
         if (alert.alertType === 'new_filing') {
@@ -133,12 +136,15 @@ export async function POST(request: NextRequest) {
           );
 
           relevantFilings.forEach(filing => {
-            userNotifications.push({ type: 'new_filing', filing });
+            if (!addedFilingIds.has(filing.accessionNumber)) {
+              userNotifications.push({ type: 'new_filing', filing });
+              addedFilingIds.add(filing.accessionNumber);
+            }
           });
         }
 
         if (alert.alertType === 'sector_filing') {
-          // Find filings for watched sectors
+          // Find filings for watched sectors (excluding already-added watchlist tickers)
           const sectorFilings = recentFilings.filter(f =>
             f.company.sector && watchedSectors.some(sector =>
               f.company.sector?.toLowerCase().includes(sector.toLowerCase())
@@ -147,7 +153,11 @@ export async function POST(request: NextRequest) {
           );
 
           sectorFilings.forEach(filing => {
-            userNotifications.push({ type: 'sector_filing', filing });
+            // Skip if this filing was already added (e.g., from individual watchlist)
+            if (!addedFilingIds.has(filing.accessionNumber)) {
+              userNotifications.push({ type: 'sector_filing', filing });
+              addedFilingIds.add(filing.accessionNumber);
+            }
           });
         }
 
@@ -161,7 +171,10 @@ export async function POST(request: NextRequest) {
           );
 
           predictedFilings.forEach(filing => {
-            userNotifications.push({ type: 'prediction_result', filing });
+            if (!addedFilingIds.has(filing.accessionNumber)) {
+              userNotifications.push({ type: 'prediction_result', filing });
+              addedFilingIds.add(filing.accessionNumber);
+            }
           });
         }
 
