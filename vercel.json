@@ -22,8 +22,16 @@
       "schedule": "0 2 * * *"
     },
     {
+      "path": "/api/cron/update-analyst-data",
+      "schedule": "0 14 * * *"
+    },
+    {
       "path": "/api/cron/watchlist-alerts?time=morning",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/watchlist-alerts?time=evening",
+      "schedule": "0 23 * * *"
     }
   ]
 }
