@@ -71,7 +71,7 @@ export default function Home() {
               ⚠️ Risk Scoring
             </span>
             <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-xs font-medium border border-green-200">
-              💰 XBRL Data
+              🔔 Smart Alerts
             </span>
             <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-3 py-1.5 rounded-full text-xs font-medium border border-orange-200">
               💬 Natural Language
@@ -183,6 +183,27 @@ export default function Home() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
+                <span className="text-4xl">🔔</span>
+                Watchlist Alerts
+              </CardTitle>
+              <CardDescription>
+                Stay informed with personalized email alerts for your tracked stocks
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li>• Morning & evening digest emails (8am & 6pm ET)</li>
+                <li>• Track companies, sectors, or individual tickers</li>
+                <li>• New filings, predictions, & analyst activity</li>
+                <li>• Customizable thresholds & delivery preferences</li>
+                <li>• Never miss important updates on your watchlist</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
                 <span className="text-4xl">📊</span>
                 Visual Insights
               </CardTitle>
@@ -212,7 +233,7 @@ export default function Home() {
               <br />
               Free tools just show raw filings with no financial insights.
               <br />
-              <strong>Our tool: AI risk scoring + XBRL financial data + stock predictions + natural language chat.</strong>
+              <strong>Our tool: AI risk scoring + stock predictions + smart alerts + natural language chat.</strong>
               <br />
               <span className="text-blue-600 font-semibold mt-2 inline-block">
                 All at a fraction of traditional terminal costs.
