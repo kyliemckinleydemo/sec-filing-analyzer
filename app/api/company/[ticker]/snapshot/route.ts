@@ -46,7 +46,7 @@ export async function GET(
       const startDate = new Date();
       startDate.setMonth(startDate.getMonth() - 6);
 
-      const [quote, summary, news, historical] = await Promise.all([
+      const [quote, summary, historical] = await Promise.all([
         yahooFinance.quote(tickerUpper),
         yahooFinance.quoteSummary(tickerUpper, {
           modules: [
@@ -57,13 +57,59 @@ export async function GET(
             'recommendationTrend'
           ]
         }),
-        yahooFinance.search(tickerUpper, { newsCount: 10 }),
         yahooFinance.historical(tickerUpper, {
           period1: startDate.toISOString().split('T')[0],
           period2: endDate.toISOString().split('T')[0],
           interval: '1d'
         })
       ]);
+
+      // Fetch news from SerpAPI (Google News) for more recent results
+      const serpApiKey = process.env.SERPAPI_KEY;
+      if (serpApiKey) {
+        try {
+          const newsQuery = `${company.name} stock`;
+          const serpUrl = `https://serpapi.com/search?engine=google_news&q=${encodeURIComponent(newsQuery)}&api_key=${serpApiKey}`;
+
+          const newsResponse = await fetch(serpUrl);
+          const newsData = await newsResponse.json();
+
+          if (newsData.news_results && newsData.news_results.length > 0) {
+            newsArticles = newsData.news_results.slice(0, 10).map((article: any) => ({
+              title: article.title,
+              publisher: article.source?.name || 'Unknown',
+              link: article.link,
+              publishedAt: article.date || null,
+              thumbnail: article.thumbnail,
+            }));
+          }
+        } catch (error: any) {
+          console.error(`[Snapshot] Error fetching SerpAPI news for ${tickerUpper}:`, error.message);
+          // Fall back to Yahoo Finance news if SerpAPI fails
+          const yahooNews = await yahooFinance.search(tickerUpper, { newsCount: 10 });
+          if (yahooNews.news && yahooNews.news.length > 0) {
+            newsArticles = yahooNews.news.map((article: any) => ({
+              title: article.title,
+              publisher: article.publisher,
+              link: article.link,
+              publishedAt: article.providerPublishTime ? new Date(article.providerPublishTime * 1000).toISOString() : null,
+              thumbnail: article.thumbnail?.resolutions?.[0]?.url,
+            }));
+          }
+        }
+      } else {
+        // No SerpAPI key, use Yahoo Finance as fallback
+        const yahooNews = await yahooFinance.search(tickerUpper, { newsCount: 10 });
+        if (yahooNews.news && yahooNews.news.length > 0) {
+          newsArticles = yahooNews.news.map((article: any) => ({
+            title: article.title,
+            publisher: article.publisher,
+            link: article.link,
+            publishedAt: article.providerPublishTime ? new Date(article.providerPublishTime * 1000).toISOString() : null,
+            thumbnail: article.thumbnail?.resolutions?.[0]?.url,
+          }));
+        }
+      }
 
       liveData = {
         currentPrice: quote.regularMarketPrice,
@@ -90,17 +136,6 @@ export async function GET(
         returnOnEquity: summary.financialData?.returnOnEquity,
         freeCashflow: summary.financialData?.freeCashflow,
       };
-
-      // Extract news articles
-      if (news.news && news.news.length > 0) {
-        newsArticles = news.news.map((article: any) => ({
-          title: article.title,
-          publisher: article.publisher,
-          link: article.link,
-          publishedAt: article.providerPublishTime ? new Date(article.providerPublishTime * 1000).toISOString() : null,
-          thumbnail: article.thumbnail?.resolutions?.[0]?.url,
-        }));
-      }
 
       // Extract price history
       if (historical && historical.length > 0) {
