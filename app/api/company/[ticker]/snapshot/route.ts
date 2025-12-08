@@ -38,8 +38,9 @@ export async function GET(
 
     // Fetch LIVE data from Yahoo Finance
     let liveData: any = {};
+    let newsArticles: any[] = [];
     try {
-      const [quote, summary] = await Promise.all([
+      const [quote, summary, news] = await Promise.all([
         yahooFinance.quote(tickerUpper),
         yahooFinance.quoteSummary(tickerUpper, {
           modules: [
@@ -49,7 +50,8 @@ export async function GET(
             'defaultKeyStatistics',
             'recommendationTrend'
           ]
-        })
+        }),
+        yahooFinance.search(tickerUpper, { newsCount: 10 })
       ]);
 
       liveData = {
@@ -77,6 +79,17 @@ export async function GET(
         returnOnEquity: summary.financialData?.returnOnEquity,
         freeCashflow: summary.financialData?.freeCashflow,
       };
+
+      // Extract news articles
+      if (news.news && news.news.length > 0) {
+        newsArticles = news.news.map((article: any) => ({
+          title: article.title,
+          publisher: article.publisher,
+          link: article.link,
+          publishedAt: article.providerPublishTime ? new Date(article.providerPublishTime * 1000).toISOString() : null,
+          thumbnail: article.thumbnail?.resolutions?.[0]?.url,
+        }));
+      }
     } catch (error: any) {
       console.error(`[Snapshot] Error fetching Yahoo Finance data for ${tickerUpper}:`, error.message);
       // Continue with database data if Yahoo Finance fails
@@ -99,6 +112,7 @@ export async function GET(
         industry: company.industry,
       },
       liveData,
+      news: newsArticles,
       fundamentals: {
         // Latest financials from our database (from most recent filing)
         latestRevenue: company.latestRevenue,

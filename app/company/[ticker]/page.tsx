@@ -7,6 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 
+interface NewsArticle {
+  title: string;
+  publisher: string;
+  link: string;
+  publishedAt: string | null;
+  thumbnail?: string;
+}
+
 interface SnapshotData {
   company: {
     ticker: string;
@@ -15,6 +23,7 @@ interface SnapshotData {
     sector?: string;
     industry?: string;
   };
+  news: NewsArticle[];
   liveData: {
     currentPrice?: number;
     previousClose?: number;
@@ -174,7 +183,7 @@ export default function CompanySnapshotPage() {
     );
   }
 
-  const { company, liveData, fundamentals, filings, analystActivity } = data;
+  const { company, liveData, fundamentals, filings, analystActivity, news } = data;
 
   // Calculate price change
   const priceChange = liveData.currentPrice && liveData.previousClose
@@ -473,6 +482,64 @@ export default function CompanySnapshotPage() {
                   </div>
                 )}
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Recent News */}
+        {news && news.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Recent News</CardTitle>
+              <CardDescription>Latest news and headlines</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {news.slice(0, 8).map((article, index) => (
+                  <a
+                    key={index}
+                    href={article.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex gap-3 p-3 border rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    {article.thumbnail && (
+                      <img
+                        src={article.thumbnail}
+                        alt=""
+                        className="w-20 h-20 object-cover rounded flex-shrink-0"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm line-clamp-2 mb-1">
+                        {article.title}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-slate-600">
+                        <span>{article.publisher}</span>
+                        {article.publishedAt && (
+                          <>
+                            <span>•</span>
+                            <span>
+                              {new Date(article.publishedAt).toLocaleDateString(undefined, {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit'
+                              })}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+
+              {news.length > 8 && (
+                <div className="text-center mt-4 text-sm text-slate-600">
+                  + {news.length - 8} more news articles
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
