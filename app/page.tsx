@@ -170,26 +170,6 @@ export default function Home() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <span className="text-4xl">📈</span>
-                Stock Predictions
-              </CardTitle>
-              <CardDescription>
-                Data-driven predictions of 7-day forward stock performance
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm text-slate-600">
-                <li>• 7-day return predictions with confidence scores</li>
-                <li>• Transparent model reasoning & feature breakdown</li>
-                <li>• Prediction vs actual comparison charts</li>
-                <li>• Buy/Sell/Hold signals based on magnitude</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
                 <span className="text-4xl">💬</span>
                 Chat with SEC Filings
               </CardTitle>
@@ -245,6 +225,26 @@ export default function Home() {
                 <li>• Line charts: performance over time</li>
                 <li>• Real-time filing feed (640+ companies tracked)</li>
                 <li>• Color-coded accuracy indicators</li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <span className="text-4xl">📈</span>
+                Stock Predictions
+              </CardTitle>
+              <CardDescription>
+                Data-driven predictions of 7-day forward stock performance
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-sm text-slate-600">
+                <li>• 7-day return predictions with confidence scores</li>
+                <li>• Transparent model reasoning & feature breakdown</li>
+                <li>• Prediction vs actual comparison charts</li>
+                <li>• Buy/Sell/Hold signals based on magnitude</li>
               </ul>
             </CardContent>
           </Card>
