@@ -83,10 +83,10 @@ export default function Home() {
               </h1>
             </div>
             <p className="text-2xl text-slate-700 max-w-3xl mx-auto leading-relaxed">
-              AI-Powered SEC Filing Analysis & Stock Predictions
+              Chat with SEC Filings Using AI
             </p>
             <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              Analyze financial data • Predict stock movements • <strong className="text-blue-600">Chat with filings using AI</strong>
+              Ask questions about any company's filings in plain English • Get AI-powered risk analysis • Track stock predictions
             </p>
           </div>
 
@@ -102,7 +102,7 @@ export default function Home() {
               🔔 Smart Alerts
             </span>
             <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-3 py-1.5 rounded-full text-xs font-medium border border-orange-200">
-              💬 Natural Language
+              💬 Chat with Filings
             </span>
             <span className="inline-flex items-center gap-1 bg-slate-50 text-slate-700 px-3 py-1.5 rounded-full text-xs font-medium border border-slate-200">
               🏢 640+ Companies
