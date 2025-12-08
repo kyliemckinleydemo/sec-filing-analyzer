@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 
 interface NewsArticle {
   title: string;
@@ -60,6 +60,10 @@ interface SnapshotData {
     latestOperatingMargin?: number;
     latestQuarter?: string;
   };
+  priceHistory: Array<{
+    date: string;
+    price: number;
+  }>;
   filings: Array<{
     accessionNumber: string;
     filingType: string;
@@ -183,7 +187,7 @@ export default function CompanySnapshotPage() {
     );
   }
 
-  const { company, liveData, fundamentals, filings, analystActivity, news } = data;
+  const { company, liveData, priceHistory, fundamentals, filings, analystActivity, news } = data;
 
   // Calculate price change
   const priceChange = liveData.currentPrice && liveData.previousClose
@@ -540,6 +544,65 @@ export default function CompanySnapshotPage() {
                   + {news.length - 8} more news articles
                 </div>
               )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Stock Price History Chart */}
+        {priceHistory && priceHistory.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Stock Price History (6 Months)</CardTitle>
+              <CardDescription>${company.ticker} daily closing prices</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={priceHistory}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fill: '#64748b', fontSize: 12 }}
+                      tickFormatter={(value) => {
+                        const date = new Date(value);
+                        return `${date.getMonth() + 1}/${date.getDate()}`;
+                      }}
+                    />
+                    <YAxis
+                      tick={{ fill: '#64748b', fontSize: 12 }}
+                      tickFormatter={(value) => `$${value.toFixed(0)}`}
+                      domain={['dataMin - 5', 'dataMax + 5']}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px',
+                        padding: '8px'
+                      }}
+                      formatter={(value: number) => [`$${value.toFixed(2)}`, 'Price']}
+                      labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="price"
+                      stroke="#2563eb"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorPrice)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
         )}

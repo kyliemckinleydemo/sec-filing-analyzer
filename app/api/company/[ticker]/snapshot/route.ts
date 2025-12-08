@@ -39,8 +39,14 @@ export async function GET(
     // Fetch LIVE data from Yahoo Finance
     let liveData: any = {};
     let newsArticles: any[] = [];
+    let priceHistory: any[] = [];
     try {
-      const [quote, summary, news] = await Promise.all([
+      // Calculate date range for price history (6 months)
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setMonth(startDate.getMonth() - 6);
+
+      const [quote, summary, news, historical] = await Promise.all([
         yahooFinance.quote(tickerUpper),
         yahooFinance.quoteSummary(tickerUpper, {
           modules: [
@@ -51,7 +57,12 @@ export async function GET(
             'recommendationTrend'
           ]
         }),
-        yahooFinance.search(tickerUpper, { newsCount: 10 })
+        yahooFinance.search(tickerUpper, { newsCount: 10 }),
+        yahooFinance.historical(tickerUpper, {
+          period1: startDate.toISOString().split('T')[0],
+          period2: endDate.toISOString().split('T')[0],
+          interval: '1d'
+        })
       ]);
 
       liveData = {
@@ -90,6 +101,14 @@ export async function GET(
           thumbnail: article.thumbnail?.resolutions?.[0]?.url,
         }));
       }
+
+      // Extract price history
+      if (historical && historical.length > 0) {
+        priceHistory = historical.map((point: any) => ({
+          date: point.date.toISOString().split('T')[0],
+          price: Math.round(point.close * 100) / 100,
+        }));
+      }
     } catch (error: any) {
       console.error(`[Snapshot] Error fetching Yahoo Finance data for ${tickerUpper}:`, error.message);
       // Continue with database data if Yahoo Finance fails
@@ -112,6 +131,7 @@ export async function GET(
         industry: company.industry,
       },
       liveData,
+      priceHistory,
       news: newsArticles,
       fundamentals: {
         // Latest financials from our database (from most recent filing)
