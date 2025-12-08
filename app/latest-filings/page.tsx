@@ -200,7 +200,13 @@ function LatestFilingsContent() {
                         companyName={filing.companyName}
                         snapshot={filing.companySnapshot}
                       >
-                        <h3 className="text-xl font-bold text-blue-600 underline decoration-dotted decoration-blue-400 cursor-help hover:decoration-solid transition-all">
+                        <h3
+                          className="text-xl font-bold text-blue-600 underline decoration-dotted decoration-blue-400 cursor-pointer hover:decoration-solid transition-all"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/company/${filing.ticker}`);
+                          }}
+                        >
                           {filing.ticker}
                         </h3>
                       </CompanySnapshotTooltip>

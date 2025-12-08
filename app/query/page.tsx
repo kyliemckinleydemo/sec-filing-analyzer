@@ -204,7 +204,12 @@ export default function QueryPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
-                    <span className="text-2xl font-bold text-blue-600">{results.company.ticker}</span>
+                    <span
+                      className="text-2xl font-bold text-blue-600 cursor-pointer hover:underline"
+                      onClick={() => router.push(`/company/${results.company.ticker}`)}
+                    >
+                      {results.company.ticker}
+                    </span>
                     <span className="text-lg text-slate-600">{results.company.name}</span>
                   </CardTitle>
                   <CardDescription>{results.message || 'Historical Snapshots'}</CardDescription>
@@ -253,7 +258,12 @@ export default function QueryPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
-                    <span className="text-2xl font-bold text-blue-600">{results.company.ticker}</span>
+                    <span
+                      className="text-2xl font-bold text-blue-600 cursor-pointer hover:underline"
+                      onClick={() => router.push(`/company/${results.company.ticker}`)}
+                    >
+                      {results.company.ticker}
+                    </span>
                     <span className="text-lg text-slate-600">{results.company.name}</span>
                   </CardTitle>
                   <CardDescription>{results.message || 'Before/After Comparison'}</CardDescription>
@@ -464,11 +474,22 @@ export default function QueryPage() {
                                   analystTargetPrice: company.analystTargetPrice
                                 }}
                               >
-                                <span className="font-bold text-lg text-blue-600 underline decoration-dotted decoration-blue-400 cursor-help hover:decoration-solid transition-all">
+                                <span
+                                  className="font-bold text-lg text-blue-600 underline decoration-dotted decoration-blue-400 cursor-pointer hover:decoration-solid transition-all"
+                                  onClick={() => router.push(`/company/${company.ticker}`)}
+                                >
                                   {company.ticker}
                                 </span>
                               </CompanySnapshotTooltip>
                               <span className="text-sm text-slate-700">{company.name}</span>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => router.push(`/company/${company.ticker}`)}
+                                className="ml-2"
+                              >
+                                View Snapshot →
+                              </Button>
                             </div>
                               <div className="flex gap-4 text-sm flex-wrap">
                               {company.currentPrice && (
