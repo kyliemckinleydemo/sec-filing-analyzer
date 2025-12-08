@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { secClient } from '@/lib/sec-client';
 import { cache, cacheKeys } from '@/lib/cache';
 import { prisma } from '@/lib/prisma';
-import { hasFinancialData } from '@/lib/filing-utils';
 import yahooFinance from 'yahoo-finance2';
 import { requireUnauthRateLimit, addRateLimitHeaders } from '@/lib/api-middleware';
 import { generateFingerprint, checkUnauthRateLimit } from '@/lib/rate-limit';
@@ -52,7 +51,6 @@ export async function GET(
             filingDate: { gte: oneYearAgo }
           },
           orderBy: { filingDate: 'desc' },
-          take: 20,
         },
       },
     });
@@ -232,9 +230,15 @@ export async function GET(
       });
     }
 
-    // Store recent filings in database
-    for (const filing of filings.filings.slice(0, 10)) {
-      // Only store last 10
+    // Store recent filings in database (last 12 months)
+    const twelveMonthsAgo = new Date();
+    twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
+
+    const recentFilings = filings.filings.filter(f =>
+      new Date(f.filingDate) >= twelveMonthsAgo
+    );
+
+    for (const filing of recentFilings) {
       await prisma.filing.upsert({
         where: { accessionNumber: filing.accessionNumber },
         create: {
@@ -250,48 +254,13 @@ export async function GET(
       });
     }
 
-    // v1.0: Filter to only filings with financial data
-    // First, fetch stored filings with analysis data to check for financial data
-    const storedFilings = await prisma.filing.findMany({
-      where: {
-        companyId: company.id,
-        analysisData: { not: null },
-      },
-      select: {
-        accessionNumber: true,
-        filingType: true,
-        analysisData: true,
-      },
-    });
-
-    // Create a map of filings with financial data
-    const financialFilingAccessions = new Set(
-      storedFilings
-        .filter(f => hasFinancialData(f))
-        .map(f => f.accessionNumber)
-    );
-
-    // Filter SEC filings to only include those with financial data (if analyzed)
-    const filteredFilings = filings.filings
-      .slice(0, 20)
-      .map(filing => ({
-        ...filing,
-        hasFinancialData: financialFilingAccessions.has(filing.accessionNumber),
-      }))
-      .filter(filing =>
-        // Include if not yet analyzed OR if has financial data
-        !storedFilings.find(sf => sf.accessionNumber === filing.accessionNumber) ||
-        filing.hasFinancialData
-      );
-
     const result = {
       company: {
         cik: companyInfo.cik,
         ticker: ticker.toUpperCase(),
         name: companyInfo.name,
       },
-      filings: filteredFilings,
-      totalFilingsWithData: financialFilingAccessions.size,
+      filings: recentFilings,
     };
 
     // Cache for 1 hour
