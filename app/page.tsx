@@ -191,19 +191,19 @@ export default function Home() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <span className="text-4xl">💬</span>
-                Natural Language Chat
+                Chat with SEC Filings
               </CardTitle>
               <CardDescription>
-                Ask questions about filings using plain English
+                Ask questions about any company's filings in plain English
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-slate-600">
-                <li>• Find undervalued stocks based on financial metrics</li>
-                <li>• Query analyst upgrades/downgrades & street sentiment</li>
-                <li>• Query financial metrics & performance trends</li>
-                <li>• Analyze risk levels across companies</li>
-                <li>• Filter by ticker or search across all 640+ companies</li>
+                <li>• "What business segments does this company report?"</li>
+                <li>• "What percentage of revenue comes from international markets?"</li>
+                <li>• "What are the main risk factors mentioned?"</li>
+                <li>• "How has revenue growth trended over recent quarters?"</li>
+                <li>• Get instant answers from 10-K, 10-Q, and 8-K filings</li>
               </ul>
             </CardContent>
           </Card>
