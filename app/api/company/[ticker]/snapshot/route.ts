@@ -138,7 +138,7 @@ export async function GET(
         activityDate: a.activityDate.toISOString(),
         actionType: a.actionType,
         firm: a.firm,
-        analyst: a.analyst,
+        analyst: a.analystName,
         previousRating: a.previousRating,
         newRating: a.newRating,
         previousTarget: a.previousTarget,
