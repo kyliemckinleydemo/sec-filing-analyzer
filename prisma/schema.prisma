@@ -132,6 +132,12 @@ model User {
   apiKey        String?  @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  // Relations
+  watchlist        Watchlist[]
+  sectorWatchlist  SectorWatch[]
+  alerts           Alert[]
+  magicLinkTokens  MagicLinkToken[]
 }
 
 model CronJobRun {
@@ -421,4 +427,83 @@ model AnalystActivity {
   @@index([activityDate])
   @@index([actionType])
   @@index([companyId, activityDate, actionType])
+}
+
+// Watchlist for tracking individual stocks
+model Watchlist {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  ticker    String   // Company ticker symbol
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, ticker])
+  @@index([userId])
+  @@index([ticker])
+}
+
+// Sector watchlist for tracking entire sectors
+model SectorWatch {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  sector    String   // Sector name (e.g., "Technology", "Healthcare")
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, sector])
+  @@index([userId])
+  @@index([sector])
+}
+
+// Alert preferences for notifications
+model Alert {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Alert type: "new_filing", "prediction_result", "analyst_change", "sector_filing"
+  alertType  String
+
+  // Optional filters
+  ticker     String?  // Specific ticker (null = all watched stocks)
+  sector     String?  // Specific sector (null = all watched sectors)
+
+  // Alert settings
+  enabled    Boolean  @default(true)
+  frequency  String   @default("immediate") // "immediate", "daily_digest", "weekly_digest"
+
+  // Thresholds for filtering
+  minConcernLevel     Float?  // Only alert if concern level >= this (0-10)
+  minPredictedReturn  Float?  // Only alert if predicted return >= this (%)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId, alertType])
+  @@index([userId, enabled])
+}
+
+// Magic link tokens for passwordless authentication
+model MagicLinkToken {
+  id        String   @id @default(cuid())
+  userId    String?  // Null for new users who haven't signed in yet
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  email     String
+  token     String   @unique
+  expiresAt DateTime
+
+  // Track if token has been used
+  used      Boolean  @default(false)
+  usedAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([email])
+  @@index([expiresAt])
 }
