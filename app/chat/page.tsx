@@ -90,13 +90,14 @@ export default function ChatPage() {
   };
 
   const exampleQueries = [
-    'Which filing had the biggest stock price jump in 7 days?',
-    'Show me companies where the ML prediction was accurate',
-    'Which filings outperformed the S&P 500 (positive alpha)?',
-    'Compare predicted vs actual returns for companies with low concern levels',
-    'Which companies are near 52-week highs with strong revenue growth?',
-    'Show me filings with negative actual returns despite positive predictions',
-    'What was the average 7-day return for filings that beat earnings?',
+    'What business segments does this company report?',
+    'What percentage of revenue comes from international markets?',
+    'What are the main risk factors mentioned in recent filings?',
+    'How has revenue growth trended over recent quarters?',
+    'What geographic regions are mentioned for revenue breakdown?',
+    'What recent changes to management or executives were disclosed?',
+    'What major acquisitions or divestitures are discussed?',
+    'How does the company describe their competitive advantages?',
   ];
 
   return (
@@ -107,32 +108,37 @@ export default function ChatPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                💬 Chat with Your Filing Data
+                💬 Analyze a Company's Filings
               </h1>
               <p className="text-sm text-gray-600 mt-1">
-                Ask questions about SEC filings, concern levels, and risk trends
+                Deep dive into a specific company's SEC filings and financial disclosures
               </p>
             </div>
           </div>
 
           <div className="mt-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Filter by ticker (optional):
+              Select a company to analyze:
             </label>
             <input
               type="text"
               value={ticker}
               onChange={(e) => setTicker(e.target.value.toUpperCase())}
-              placeholder="e.g., MSFT"
-              className="w-32 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter ticker (e.g., AAPL, MSFT, TSLA)"
+              className="w-80 px-4 py-2 border-2 border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
             {ticker && (
               <button
                 onClick={() => setTicker('')}
-                className="ml-2 text-sm text-gray-600 hover:text-gray-900"
+                className="ml-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
               >
                 Clear
               </button>
+            )}
+            {!ticker && (
+              <p className="text-xs text-gray-500 mt-1">
+                Enter a ticker to start asking questions about that company
+              </p>
             )}
           </div>
         </div>
