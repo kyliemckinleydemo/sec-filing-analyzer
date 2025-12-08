@@ -42,11 +42,44 @@ export async function GET(
 
     // If we track it and have filings, return immediately (fast!)
     if (existingCompany && existingCompany.filings.length > 0) {
+      // Fetch recent analyst activity
+      const recentAnalystActivity = await prisma.analystActivity.findMany({
+        where: { companyId: existingCompany.id },
+        orderBy: { activityDate: 'desc' },
+        take: 10,
+      });
+
       const result = {
         company: {
           cik: existingCompany.cik,
           ticker: existingCompany.ticker,
           name: existingCompany.name,
+          sector: existingCompany.sector,
+          industry: existingCompany.industry,
+          // Market data
+          marketCap: existingCompany.marketCap,
+          currentPrice: existingCompany.currentPrice,
+          peRatio: existingCompany.peRatio,
+          forwardPE: existingCompany.forwardPE,
+          fiftyTwoWeekHigh: existingCompany.fiftyTwoWeekHigh,
+          fiftyTwoWeekLow: existingCompany.fiftyTwoWeekLow,
+          analystTargetPrice: existingCompany.analystTargetPrice,
+          dividendYield: existingCompany.dividendYield,
+          beta: existingCompany.beta,
+          volume: existingCompany.volume,
+          averageVolume: existingCompany.averageVolume,
+          analystRating: existingCompany.analystRating,
+          analystRatingCount: existingCompany.analystRatingCount,
+          // Latest financials
+          latestRevenue: existingCompany.latestRevenue,
+          latestRevenueYoY: existingCompany.latestRevenueYoY,
+          latestNetIncome: existingCompany.latestNetIncome,
+          latestNetIncomeYoY: existingCompany.latestNetIncomeYoY,
+          latestEPS: existingCompany.latestEPS,
+          latestEPSYoY: existingCompany.latestEPSYoY,
+          latestGrossMargin: existingCompany.latestGrossMargin,
+          latestOperatingMargin: existingCompany.latestOperatingMargin,
+          latestQuarter: existingCompany.latestQuarter,
         },
         filings: existingCompany.filings.map(f => ({
           accessionNumber: f.accessionNumber,
@@ -55,6 +88,19 @@ export async function GET(
           reportDate: f.reportDate?.toISOString().split('T')[0],
           primaryDocDescription: f.filingType,
           filingUrl: f.filingUrl,
+          concernLevel: f.concernLevel,
+          predicted7dReturn: f.predicted7dReturn,
+        })),
+        analystActivity: recentAnalystActivity.map(a => ({
+          id: a.id,
+          activityDate: a.activityDate.toISOString(),
+          actionType: a.actionType,
+          firm: a.firm,
+          analyst: a.analyst,
+          previousRating: a.previousRating,
+          newRating: a.newRating,
+          previousTarget: a.previousTarget,
+          newTarget: a.newTarget,
         })),
         tracked: true,
       };
