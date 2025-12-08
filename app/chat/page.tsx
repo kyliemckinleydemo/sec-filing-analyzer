@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
@@ -10,7 +10,7 @@ interface Message {
   content: string;
 }
 
-export default function ChatPage() {
+function ChatPageContent() {
   const searchParams = useSearchParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -361,4 +361,12 @@ function formatMarkdown(text: string): string {
     .replace(/`(.*?)`/g, '<code class="bg-gray-100 px-1 rounded">$1</code>')
     .replace(/\n\n/g, '</p><p class="mt-2">')
     .replace(/\n/g, '<br/>');
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <ChatPageContent />
+    </Suspense>
+  );
 }
