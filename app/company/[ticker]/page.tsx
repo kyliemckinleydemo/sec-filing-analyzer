@@ -381,13 +381,13 @@ export default function CompanySnapshotPage() {
 
               {(fundamentals.latestGrossMargin !== null || fundamentals.latestOperatingMargin !== null) && (
                 <div className="grid grid-cols-2 gap-6 mt-6 pt-6 border-t">
-                  {fundamentals.latestGrossMargin !== null && (
+                  {fundamentals.latestGrossMargin !== null && fundamentals.latestGrossMargin !== undefined && (
                     <div>
                       <div className="text-sm text-slate-600 mb-1">Gross Margin</div>
                       <div className="text-xl font-bold">{formatPercent(fundamentals.latestGrossMargin / 100)}</div>
                     </div>
                   )}
-                  {fundamentals.latestOperatingMargin !== null && (
+                  {fundamentals.latestOperatingMargin !== null && fundamentals.latestOperatingMargin !== undefined && (
                     <div>
                       <div className="text-sm text-slate-600 mb-1">Operating Margin</div>
                       <div className="text-xl font-bold">{formatPercent(fundamentals.latestOperatingMargin / 100)}</div>
