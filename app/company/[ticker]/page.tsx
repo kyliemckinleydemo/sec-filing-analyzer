@@ -210,9 +210,17 @@ export default function CompanySnapshotPage() {
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <Button variant="outline" onClick={() => router.push('/')} className="mb-4">
-            ← Back
-          </Button>
+          <div className="flex gap-2 mb-4">
+            <Button variant="outline" onClick={() => router.push('/')}>
+              ← Back
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              onClick={() => router.push(`/chat?ticker=${company.ticker}`)}
+            >
+              💬 Chat with AI
+            </Button>
+          </div>
 
           <div className="flex items-start justify-between">
             <div>

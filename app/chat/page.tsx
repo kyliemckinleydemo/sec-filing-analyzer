@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 
 interface Message {
@@ -10,11 +11,20 @@ interface Message {
 }
 
 export default function ChatPage() {
+  const searchParams = useSearchParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [ticker, setTicker] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-fill ticker from URL parameter
+  useEffect(() => {
+    const tickerParam = searchParams.get('ticker');
+    if (tickerParam) {
+      setTicker(tickerParam.toUpperCase());
+    }
+  }, [searchParams]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
