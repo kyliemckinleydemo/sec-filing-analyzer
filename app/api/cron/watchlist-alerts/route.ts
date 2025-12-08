@@ -19,12 +19,29 @@ export async function POST(request: NextRequest) {
     console.log(`[Watchlist Alerts] Starting ${deliveryTime} cron job...`);
     const startTime = Date.now();
 
-    // Get filings from last 24 hours
-    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    // Calculate time window based on delivery time
+    // Morning (8am): 6pm yesterday → 8am today (14 hours)
+    // Evening (6pm): 8am today → 6pm today (10 hours)
+    const now = new Date();
+    let windowStart: Date;
+    let windowEnd: Date = now;
+
+    if (deliveryTime === 'morning') {
+      // Morning: Look back to 6pm yesterday (14 hours ago)
+      windowStart = new Date(now.getTime() - 14 * 60 * 60 * 1000);
+    } else {
+      // Evening: Look back to 8am today (10 hours ago)
+      windowStart = new Date(now.getTime() - 10 * 60 * 60 * 1000);
+    }
+
+    console.log(`[Watchlist Alerts] Time window: ${windowStart.toISOString()} → ${windowEnd.toISOString()}`);
 
     const recentFilings = await prisma.filing.findMany({
       where: {
-        filingDate: { gte: yesterday },
+        filingDate: {
+          gte: windowStart,
+          lte: windowEnd,
+        },
         filingType: { in: ['10-K', '10-Q', '8-K'] },
       },
       include: {
@@ -39,10 +56,13 @@ export async function POST(request: NextRequest) {
       orderBy: { filingDate: 'desc' },
     });
 
-    // Get analyst activity from last 24 hours
+    // Get analyst activity from the same time window
     const recentAnalystActivity = await prisma.analystActivity.findMany({
       where: {
-        activityDate: { gte: yesterday },
+        activityDate: {
+          gte: windowStart,
+          lte: windowEnd,
+        },
       },
       include: {
         company: {
@@ -209,6 +229,9 @@ async function sendAlertEmail(
   const analystChanges = notifications.filter(n => n.type === 'analyst_change');
 
   const timeLabel = deliveryTime === 'morning' ? '🌅 Morning' : '🌙 Evening';
+  const timePeriod = deliveryTime === 'morning'
+    ? 'Overnight activity (6pm yesterday - 8am today)'
+    : 'Today\'s activity (8am - 6pm today)';
   const totalAlerts = newFilings.length + predictions.length + analystChanges.length;
 
   // Build email HTML
@@ -217,6 +240,7 @@ async function sendAlertEmail(
       <div style="background: linear-gradient(to right, #2563eb, #7c3aed); padding: 20px; border-radius: 8px 8px 0 0;">
         <h1 style="color: white; margin: 0;">StockHuntr ${timeLabel} Alerts</h1>
         <p style="color: white; margin: 5px 0 0 0;">Updates for your tracked stocks</p>
+        <p style="color: rgba(255,255,255,0.8); margin: 5px 0 0 0; font-size: 13px;">${timePeriod}</p>
       </div>
 
       <div style="background: white; padding: 20px; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
