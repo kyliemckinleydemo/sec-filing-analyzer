@@ -113,6 +113,31 @@ export async function POST(request: NextRequest) {
       update: {},
     });
 
+    // Auto-create all alert types if user doesn't have any
+    const existingAlerts = await prisma.alert.count({
+      where: { userId: session.userId },
+    });
+
+    if (existingAlerts === 0) {
+      const alertTypes = ['new_filing', 'prediction_result', 'analyst_change', 'sector_filing'];
+
+      await Promise.all(
+        alertTypes.map(alertType =>
+          prisma.alert.create({
+            data: {
+              userId: session.userId,
+              alertType,
+              enabled: true,
+              frequency: 'immediate',
+              deliveryTime: 'both',
+            },
+          })
+        )
+      );
+
+      console.log(`[Watchlist] Auto-created ${alertTypes.length} alert types for user ${session.userId}`);
+    }
+
     return NextResponse.json({
       success: true,
       item: watchlistItem,
