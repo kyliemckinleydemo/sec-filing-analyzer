@@ -43,6 +43,13 @@ export default function Home() {
             <Button
               variant="ghost"
               size="sm"
+              onClick={() => router.push('/alerts')}
+            >
+              Alerts
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => router.push('/query')}
             >
               Query
