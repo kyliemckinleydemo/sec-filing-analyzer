@@ -587,11 +587,9 @@ export default function CompanySnapshotPage() {
               <div className="text-center mt-4">
                 <Button
                   variant="outline"
-                  onClick={() => {
-                    // Show all filings - could implement a modal or expand inline
-                  }}
+                  onClick={() => router.push(`/company/${company.ticker}/filings`)}
                 >
-                  View All {filings.length} Filings
+                  View All {filings.length} Filings →
                 </Button>
               </div>
             )}
