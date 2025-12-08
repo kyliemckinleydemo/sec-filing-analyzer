@@ -13,7 +13,7 @@ export default function Home() {
 
   const handleSearch = () => {
     if (ticker) {
-      router.push(`/company/${ticker.toUpperCase()}`);
+      router.push(`/company/${ticker.toUpperCase()}/filings`);
     }
   };
 

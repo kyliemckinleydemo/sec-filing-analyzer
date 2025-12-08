@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import yahooFinance from 'yahoo-finance2';
+import Parser from 'rss-parser';
+import { requireUnauthRateLimit, addRateLimitHeaders } from '@/lib/api-middleware';
+import { generateFingerprint, checkUnauthRateLimit } from '@/lib/rate-limit';
 
 export async function GET(
   request: NextRequest,
@@ -12,6 +15,17 @@ export async function GET(
     if (!ticker) {
       return NextResponse.json({ error: 'Ticker is required' }, { status: 400 });
     }
+
+    // Check rate limit for unauthenticated users (20 requests/day)
+    // Authenticated users bypass this limit
+    const rateLimitCheck = await requireUnauthRateLimit(request);
+    if (!rateLimitCheck.allowed) {
+      return rateLimitCheck.response!;
+    }
+
+    // Get rate limit info for response headers
+    const fingerprint = generateFingerprint(request);
+    const rateLimit = checkUnauthRateLimit(fingerprint);
 
     const tickerUpper = ticker.toUpperCase();
 
@@ -64,28 +78,43 @@ export async function GET(
         })
       ]);
 
-      // Fetch news from SerpAPI (Google News) for more recent results
-      const serpApiKey = process.env.SERPAPI_KEY;
-      if (serpApiKey) {
+      // Fetch news from Google News RSS feed (stable and reliable)
+      try {
+        const parser = new Parser();
+        const newsQuery = `${company.name} stock`;
+        const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(newsQuery)}`;
+
+        const feed = await parser.parseURL(rssUrl);
+
+        if (feed.items && feed.items.length > 0) {
+          newsArticles = feed.items.slice(0, 10).map((item: any) => {
+            // Google News RSS embeds source in title like "Title - Source Name"
+            let title = item.title || 'Unknown';
+            let publisher = 'Unknown';
+
+            // Try to extract source from title
+            const titleMatch = title.match(/^(.+?)\s*-\s*(.+?)$/);
+            if (titleMatch && titleMatch.length === 3) {
+              title = titleMatch[1].trim();
+              publisher = titleMatch[2].trim();
+            } else {
+              // Fallback to other fields
+              publisher = item.source?.name || item.creator || item['dc:source'] || 'Unknown';
+            }
+
+            return {
+              title,
+              publisher,
+              link: item.link || '',
+              publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : null,
+              thumbnail: null,
+            };
+          });
+        }
+      } catch (error: any) {
+        console.error(`[Snapshot] Error fetching Google News RSS for ${tickerUpper}:`, error.message);
+        // Fall back to Yahoo Finance news if RSS fails
         try {
-          const newsQuery = `${company.name} stock`;
-          const serpUrl = `https://serpapi.com/search?engine=google_news&q=${encodeURIComponent(newsQuery)}&api_key=${serpApiKey}`;
-
-          const newsResponse = await fetch(serpUrl);
-          const newsData = await newsResponse.json();
-
-          if (newsData.news_results && newsData.news_results.length > 0) {
-            newsArticles = newsData.news_results.slice(0, 10).map((article: any) => ({
-              title: article.title,
-              publisher: article.source?.name || 'Unknown',
-              link: article.link,
-              publishedAt: article.date || null,
-              thumbnail: article.thumbnail,
-            }));
-          }
-        } catch (error: any) {
-          console.error(`[Snapshot] Error fetching SerpAPI news for ${tickerUpper}:`, error.message);
-          // Fall back to Yahoo Finance news if SerpAPI fails
           const yahooNews = await yahooFinance.search(tickerUpper, { newsCount: 10 });
           if (yahooNews.news && yahooNews.news.length > 0) {
             newsArticles = yahooNews.news.map((article: any) => ({
@@ -96,18 +125,8 @@ export async function GET(
               thumbnail: article.thumbnail?.resolutions?.[0]?.url,
             }));
           }
-        }
-      } else {
-        // No SerpAPI key, use Yahoo Finance as fallback
-        const yahooNews = await yahooFinance.search(tickerUpper, { newsCount: 10 });
-        if (yahooNews.news && yahooNews.news.length > 0) {
-          newsArticles = yahooNews.news.map((article: any) => ({
-            title: article.title,
-            publisher: article.publisher,
-            link: article.link,
-            publishedAt: article.providerPublishTime ? new Date(article.providerPublishTime * 1000).toISOString() : null,
-            thumbnail: article.thumbnail?.resolutions?.[0]?.url,
-          }));
+        } catch (yahooError: any) {
+          console.error(`[Snapshot] Error fetching Yahoo Finance news for ${tickerUpper}:`, yahooError.message);
         }
       }
 
@@ -137,11 +156,14 @@ export async function GET(
         freeCashflow: summary.financialData?.freeCashflow,
       };
 
-      // Extract price history
+      // Extract price history with additional data for tooltips
       if (historical && historical.length > 0) {
         priceHistory = historical.map((point: any) => ({
           date: point.date.toISOString().split('T')[0],
           price: Math.round(point.close * 100) / 100,
+          high: point.high ? Math.round(point.high * 100) / 100 : null,
+          low: point.low ? Math.round(point.low * 100) / 100 : null,
+          volume: point.volume || null,
         }));
       }
     } catch (error: any) {
@@ -156,8 +178,8 @@ export async function GET(
       take: 20,
     });
 
-    // Return combined data
-    return NextResponse.json({
+    // Return combined data with rate limit headers
+    const response = NextResponse.json({
       company: {
         ticker: company.ticker,
         name: company.name,
@@ -200,6 +222,13 @@ export async function GET(
         newTarget: a.newTarget,
       })),
     });
+
+    // Add rate limit headers to response
+    if (!rateLimitCheck.session) {
+      return addRateLimitHeaders(response, rateLimit.limit, rateLimit.remaining, rateLimit.resetAt);
+    }
+
+    return response;
   } catch (error: any) {
     console.error('[Snapshot] Error:', error);
     return NextResponse.json(

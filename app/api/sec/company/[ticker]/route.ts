@@ -4,6 +4,8 @@ import { cache, cacheKeys } from '@/lib/cache';
 import { prisma } from '@/lib/prisma';
 import { hasFinancialData } from '@/lib/filing-utils';
 import yahooFinance from 'yahoo-finance2';
+import { requireUnauthRateLimit, addRateLimitHeaders } from '@/lib/api-middleware';
+import { generateFingerprint, checkUnauthRateLimit } from '@/lib/rate-limit';
 
 export async function GET(
   request: NextRequest,
@@ -16,11 +18,26 @@ export async function GET(
       return NextResponse.json({ error: 'Ticker is required' }, { status: 400 });
     }
 
+    // Check rate limit for unauthenticated users (20 requests/day)
+    // Authenticated users bypass this limit
+    const rateLimitCheck = await requireUnauthRateLimit(request);
+    if (!rateLimitCheck.allowed) {
+      return rateLimitCheck.response!;
+    }
+
+    // Get rate limit info for response headers
+    const fingerprint = generateFingerprint(request);
+    const rateLimit = checkUnauthRateLimit(fingerprint);
+
     // Check cache first
     const cacheKey = `company:${ticker.toUpperCase()}`;
     const cached = cache.get(cacheKey);
     if (cached) {
-      return NextResponse.json(cached);
+      const response = NextResponse.json(cached);
+      if (!rateLimitCheck.session) {
+        return addRateLimitHeaders(response, rateLimit.limit, rateLimit.remaining, rateLimit.resetAt);
+      }
+      return response;
     }
 
     // FAST PATH: Check if we already track this company in our database
@@ -105,7 +122,11 @@ export async function GET(
         tracked: true,
       };
       cache.set(cacheKey, result, 3600000);
-      return NextResponse.json(result);
+      const response = NextResponse.json(result);
+      if (!rateLimitCheck.session) {
+        return addRateLimitHeaders(response, rateLimit.limit, rateLimit.remaining, rateLimit.resetAt);
+      }
+      return response;
     }
 
     // Not in our database - return early with helpful message
@@ -276,7 +297,11 @@ export async function GET(
     // Cache for 1 hour
     cache.set(cacheKey, result, 3600000);
 
-    return NextResponse.json(result);
+    const response = NextResponse.json(result);
+    if (!rateLimitCheck.session) {
+      return addRateLimitHeaders(response, rateLimit.limit, rateLimit.remaining, rateLimit.resetAt);
+    }
+    return response;
   } catch (error: any) {
     console.error('Error fetching company:', error);
     return NextResponse.json(

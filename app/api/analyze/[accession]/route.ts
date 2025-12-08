@@ -9,6 +9,7 @@ import { xbrlParser } from '@/lib/xbrl-parser';
 import { financialDataClient } from '@/lib/yahoo-finance';
 import { yahooFinancePythonClient } from '@/lib/yahoo-finance-python';
 import { generateMLPrediction } from '@/lib/ml-prediction';
+import { requireAuthAndAIQuota } from '@/lib/api-middleware';
 
 /**
  * Analyze a specific SEC filing using Claude AI
@@ -33,6 +34,12 @@ export async function GET(
         { error: 'Accession number is required' },
         { status: 400 }
       );
+    }
+
+    // Check authentication and AI quota (requires login, 100 analyses/day)
+    const authCheck = await requireAuthAndAIQuota(request);
+    if (!authCheck.allowed) {
+      return authCheck.response!;
     }
 
     // Disabled caching - always regenerate analysis for fresh results

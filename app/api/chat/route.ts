@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { claudeClient } from '@/lib/claude-client';
+import { requireAuthAndAIQuota } from '@/lib/api-middleware';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -133,6 +134,24 @@ function buildFilingContext(filings: any[]) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication and AI quota (requires login, 100 analyses/day)
+    const authCheck = await requireAuthAndAIQuota(request);
+    if (!authCheck.allowed) {
+      return new Response(
+        JSON.stringify({
+          error: authCheck.response?.status === 401 ? 'Authentication required' : 'Daily quota exceeded',
+          message: authCheck.response?.status === 401
+            ? 'Sign up for free to access AI-powered chat. Get 100 AI analyses per day!'
+            : 'You\'ve used all your AI analyses for today. Resets at midnight.',
+          requiresAuth: true,
+        }),
+        {
+          status: authCheck.response?.status || 401,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
     const { message, ticker } = await request.json();
 
     if (!message || typeof message !== 'string') {

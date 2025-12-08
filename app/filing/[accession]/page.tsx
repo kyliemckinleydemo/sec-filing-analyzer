@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, Cell, ReferenceLine, ReferenceDot } from 'recharts';
+import { FilingChat } from '@/components/FilingChat';
 
 interface FilingAnalysisData {
   filing: {
@@ -413,11 +414,16 @@ export default function FilingPage() {
                   { key: 'fetching-filing', label: 'Fetch filing from SEC' },
                   { key: 'parsing-content', label: 'Parse document sections' },
                   { key: 'fetching-prior', label: 'Fetch prior filing' },
-                  { key: 'running-ai', label: 'Run AI analysis' },
-                  { key: 'generating-prediction', label: 'Generate prediction' },
+                  { key: 'analyzing-risks', label: 'Analyze risk factors' },
+                  { key: 'analyzing-sentiment', label: 'Analyze management sentiment' },
+                  { key: 'extracting-financials', label: 'Extract financial metrics' },
+                  { key: 'comparing-consensus', label: 'Compare to analyst consensus' },
+                  { key: 'running-ml-model', label: 'Run ML prediction model' },
+                  { key: 'generating-prediction', label: 'Finalize analysis' },
                 ].map((item) => {
-                  const stepIndex = ['fetching-filing', 'parsing-content', 'fetching-prior', 'running-ai', 'generating-prediction'].indexOf(item.key);
-                  const currentIndex = ['fetching-filing', 'parsing-content', 'fetching-prior', 'running-ai', 'generating-prediction'].indexOf(currentStep);
+                  const allSteps = ['fetching-filing', 'parsing-content', 'fetching-prior', 'analyzing-risks', 'analyzing-sentiment', 'extracting-financials', 'comparing-consensus', 'running-ml-model', 'generating-prediction', 'complete'];
+                  const stepIndex = allSteps.indexOf(item.key);
+                  const currentIndex = allSteps.indexOf(currentStep);
                   const isComplete = stepIndex < currentIndex;
                   const isCurrent = item.key === currentStep;
 
@@ -1933,6 +1939,16 @@ export default function FilingPage() {
           )}
         </div>
       </div>
+
+      {/* AI Chat Component - Fixed position floating button */}
+      {data && data.filing.company && (
+        <FilingChat
+          ticker={data.filing.company.ticker}
+          companyName={data.filing.company.name}
+          filingType={data.filing.filingType}
+          filingDate={data.filing.filingDate}
+        />
+      )}
     </div>
   );
 }

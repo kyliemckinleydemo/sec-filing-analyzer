@@ -63,6 +63,9 @@ interface SnapshotData {
   priceHistory: Array<{
     date: string;
     price: number;
+    high?: number | null;
+    low?: number | null;
+    volume?: number | null;
   }>;
   filings: Array<{
     accessionNumber: string;
@@ -403,6 +406,96 @@ export default function CompanySnapshotPage() {
           </Card>
         )}
 
+        {/* Stock Price History Chart */}
+        {priceHistory && priceHistory.length > 0 && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Stock Price History (6 Months)</CardTitle>
+              <CardDescription>${company.ticker} daily closing prices</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={priceHistory}
+                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fill: '#64748b', fontSize: 12 }}
+                      tickFormatter={(value) => {
+                        const date = new Date(value);
+                        return `${date.getMonth() + 1}/${date.getDate()}`;
+                      }}
+                    />
+                    <YAxis
+                      tick={{ fill: '#64748b', fontSize: 12 }}
+                      tickFormatter={(value) => `$${value.toFixed(0)}`}
+                      domain={['dataMin - 5', 'dataMax + 5']}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px',
+                        padding: '12px'
+                      }}
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload;
+                          return (
+                            <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-lg">
+                              <p className="font-semibold text-gray-900 mb-2">
+                                {new Date(data.date).toLocaleDateString()}
+                              </p>
+                              <div className="space-y-1 text-sm">
+                                <p className="text-blue-600 font-medium">
+                                  Close: ${data.price.toFixed(2)}
+                                </p>
+                                {data.high && (
+                                  <p className="text-green-600">
+                                    High: ${data.high.toFixed(2)}
+                                  </p>
+                                )}
+                                {data.low && (
+                                  <p className="text-red-600">
+                                    Low: ${data.low.toFixed(2)}
+                                  </p>
+                                )}
+                                {data.volume && (
+                                  <p className="text-gray-600">
+                                    Volume: {(data.volume / 1000000).toFixed(2)}M
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="price"
+                      stroke="#2563eb"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#colorPrice)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Analyst Activity */}
         {analystActivity.length > 0 && (
           <Card className="mb-8">
@@ -544,65 +637,6 @@ export default function CompanySnapshotPage() {
                   + {news.length - 8} more news articles
                 </div>
               )}
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Stock Price History Chart */}
-        {priceHistory && priceHistory.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Stock Price History (6 Months)</CardTitle>
-              <CardDescription>${company.ticker} daily closing prices</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={priceHistory}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis
-                      dataKey="date"
-                      tick={{ fill: '#64748b', fontSize: 12 }}
-                      tickFormatter={(value) => {
-                        const date = new Date(value);
-                        return `${date.getMonth() + 1}/${date.getDate()}`;
-                      }}
-                    />
-                    <YAxis
-                      tick={{ fill: '#64748b', fontSize: 12 }}
-                      tickFormatter={(value) => `$${value.toFixed(0)}`}
-                      domain={['dataMin - 5', 'dataMax + 5']}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        padding: '8px'
-                      }}
-                      formatter={(value: number) => [`$${value.toFixed(2)}`, 'Price']}
-                      labelFormatter={(label) => new Date(label).toLocaleDateString()}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="price"
-                      stroke="#2563eb"
-                      strokeWidth={2}
-                      fillOpacity={1}
-                      fill="url(#colorPrice)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
             </CardContent>
           </Card>
         )}
