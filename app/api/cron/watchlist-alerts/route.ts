@@ -282,10 +282,14 @@ async function sendAlertEmail(
             Filed: ${new Date(filing.filingDate).toLocaleDateString()}
           </div>
           ${concernBadge}
-          <div style="margin-top: 10px;">
+          <div style="margin-top: 10px; display: flex; gap: 15px;">
             <a href="${baseUrl}/filing/${filing.accessionNumber}"
                style="color: #2563eb; text-decoration: none; font-size: 14px;">
               View Analysis →
+            </a>
+            <a href="${baseUrl}/company/${filing.company.ticker}"
+               style="color: #6b7280; text-decoration: none; font-size: 14px;">
+              All ${filing.company.ticker} Filings →
             </a>
           </div>
         </div>
@@ -318,10 +322,14 @@ async function sendAlertEmail(
               Confidence: ${(filing.predictionConfidence * 100).toFixed(0)}%
             </div>
           ` : ''}
-          <div style="margin-top: 10px;">
+          <div style="margin-top: 10px; display: flex; gap: 15px;">
             <a href="${baseUrl}/filing/${filing.accessionNumber}"
                style="color: #7c3aed; text-decoration: none; font-size: 14px;">
               View Details →
+            </a>
+            <a href="${baseUrl}/company/${filing.company.ticker}"
+               style="color: #6b7280; text-decoration: none; font-size: 14px;">
+              All ${filing.company.ticker} Filings →
             </a>
           </div>
         </div>
@@ -382,6 +390,16 @@ async function sendAlertEmail(
           </div>
           <div style="font-size: 12px; color: #9ca3af; margin-top: 3px;">
             ${new Date(filing.filingDate).toLocaleDateString()}
+          </div>
+          <div style="margin-top: 8px; display: flex; gap: 15px;">
+            <a href="${baseUrl}/filing/${filing.accessionNumber}"
+               style="color: #2563eb; text-decoration: none; font-size: 13px;">
+              View Analysis →
+            </a>
+            <a href="${baseUrl}/company/${filing.company.ticker}"
+               style="color: #6b7280; text-decoration: none; font-size: 13px;">
+              All ${filing.company.ticker} Filings →
+            </a>
           </div>
         </div>
       `;
