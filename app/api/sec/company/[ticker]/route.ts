@@ -83,8 +83,8 @@ export async function GET(
           analystTargetPrice: existingCompany.analystTargetPrice,
           dividendYield: existingCompany.dividendYield,
           beta: existingCompany.beta,
-          volume: existingCompany.volume,
-          averageVolume: existingCompany.averageVolume,
+          volume: existingCompany.volume ? Number(existingCompany.volume) : null,
+          averageVolume: existingCompany.averageVolume ? Number(existingCompany.averageVolume) : null,
           analystRating: existingCompany.analystRating,
           analystRatingCount: existingCompany.analystRatingCount,
           // Latest financials
