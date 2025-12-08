@@ -52,7 +52,7 @@ export default function Home() {
               size="sm"
               onClick={() => router.push('/query')}
             >
-              Query
+              Companies
             </Button>
             <Button
               variant="ghost"
