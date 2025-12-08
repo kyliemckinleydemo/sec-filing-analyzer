@@ -21,6 +21,7 @@ interface Alert {
   sector?: string;
   enabled: boolean;
   frequency: string;
+  deliveryTime: string;
   minConcernLevel?: number;
   minPredictedReturn?: number;
   createdAt: string;
@@ -112,6 +113,22 @@ export default function AlertsPage() {
         body: JSON.stringify({
           id: alert.id,
           frequency,
+        }),
+      });
+      await fetchAlerts();
+    } catch (error) {
+      console.error('Error updating alert:', error);
+    }
+  };
+
+  const handleUpdateDeliveryTime = async (alert: Alert, deliveryTime: string) => {
+    try {
+      await fetch('/api/alerts', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: alert.id,
+          deliveryTime,
         }),
       });
       await fetchAlerts();
@@ -273,6 +290,30 @@ export default function AlertsPage() {
                             <SelectItem value="weekly_digest">Weekly Digest (once per week)</SelectItem>
                           </SelectContent>
                         </Select>
+                      </div>
+
+                      {/* Delivery Time */}
+                      <div>
+                        <label className="text-sm font-medium text-slate-700 mb-2 block">
+                          Delivery Time
+                        </label>
+                        <Select
+                          value={alert.deliveryTime}
+                          onValueChange={(value) => handleUpdateDeliveryTime(alert, value)}
+                          disabled={!alert.enabled}
+                        >
+                          <SelectTrigger className="max-w-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="both">Both Morning & Evening (Default)</SelectItem>
+                            <SelectItem value="morning">Morning Only (8:00am ET)</SelectItem>
+                            <SelectItem value="evening">Evening Only (6:00pm ET)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Choose when you want to receive daily alert emails
+                        </p>
                       </div>
 
                       {/* Thresholds */}

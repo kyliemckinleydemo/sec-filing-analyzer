@@ -12,7 +12,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    console.log('[Watchlist Alerts] Starting cron job...');
+    // Get delivery time from query params (morning or evening)
+    const { searchParams } = new URL(request.url);
+    const deliveryTime = searchParams.get('time') || 'morning'; // Default to morning
+
+    console.log(`[Watchlist Alerts] Starting ${deliveryTime} cron job...`);
     const startTime = Date.now();
 
     // Get filings from last 24 hours
@@ -53,19 +57,30 @@ export async function POST(request: NextRequest) {
 
     console.log(`[Watchlist Alerts] Found ${recentFilings.length} filings and ${recentAnalystActivity.length} analyst activities`);
 
-    // Get all users with enabled alerts
+    // Get all users with enabled alerts matching this delivery time
     const usersWithAlerts = await prisma.user.findMany({
       where: {
         alerts: {
           some: {
             enabled: true,
-            frequency: 'immediate', // For now, handle immediate alerts (daily/weekly digest can be separate)
+            frequency: 'immediate',
+            OR: [
+              { deliveryTime: deliveryTime }, // Matches specific time (morning or evening)
+              { deliveryTime: 'both' },       // Wants both morning and evening
+            ],
           },
         },
       },
       include: {
         alerts: {
-          where: { enabled: true, frequency: 'immediate' },
+          where: {
+            enabled: true,
+            frequency: 'immediate',
+            OR: [
+              { deliveryTime: deliveryTime },
+              { deliveryTime: 'both' },
+            ],
+          },
         },
         watchlist: true,
         sectorWatchlist: true,
@@ -145,9 +160,9 @@ export async function POST(request: NextRequest) {
       // Send email if there are notifications
       if (userNotifications.length > 0) {
         try {
-          await sendAlertEmail(user.email, userNotifications);
+          await sendAlertEmail(user.email, userNotifications, deliveryTime);
           emailsSent++;
-          console.log(`[Watchlist Alerts] Sent email to ${user.email} with ${userNotifications.length} alerts`);
+          console.log(`[Watchlist Alerts] Sent ${deliveryTime} email to ${user.email} with ${userNotifications.length} alerts`);
         } catch (error) {
           console.error(`[Watchlist Alerts] Failed to send email to ${user.email}:`, error);
           errorsCount++;
@@ -181,7 +196,8 @@ export async function POST(request: NextRequest) {
 
 async function sendAlertEmail(
   email: string,
-  notifications: Array<{ type: string; filing?: any; analystActivity?: any }>
+  notifications: Array<{ type: string; filing?: any; analystActivity?: any }>,
+  deliveryTime: string
 ) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
                   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
@@ -192,11 +208,14 @@ async function sendAlertEmail(
   const predictions = notifications.filter(n => n.type === 'prediction_result');
   const analystChanges = notifications.filter(n => n.type === 'analyst_change');
 
+  const timeLabel = deliveryTime === 'morning' ? '🌅 Morning' : '🌙 Evening';
+  const totalAlerts = newFilings.length + predictions.length + analystChanges.length;
+
   // Build email HTML
   let emailHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="background: linear-gradient(to right, #2563eb, #7c3aed); padding: 20px; border-radius: 8px 8px 0 0;">
-        <h1 style="color: white; margin: 0;">StockHuntr Watchlist Alerts</h1>
+        <h1 style="color: white; margin: 0;">StockHuntr ${timeLabel} Alerts</h1>
         <p style="color: white; margin: 5px 0 0 0;">Updates for your tracked stocks</p>
       </div>
 
@@ -368,7 +387,7 @@ async function sendAlertEmail(
   await resend.emails.send({
     from: 'StockHuntr Alerts <alerts@stockhuntr.com>',
     to: email,
-    subject: `StockHuntr: ${newFilings.length + predictions.length + analystChanges.length} New Alerts`,
+    subject: `${timeLabel} Update: ${totalAlerts} New Alerts from StockHuntr`,
     html: emailHtml,
   });
 }

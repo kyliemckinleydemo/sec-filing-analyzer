@@ -475,6 +475,7 @@ model Alert {
   // Alert settings
   enabled    Boolean  @default(true)
   frequency  String   @default("immediate") // "immediate", "daily_digest", "weekly_digest"
+  deliveryTime String @default("both")      // "morning", "evening", "both"
 
   // Thresholds for filtering
   minConcernLevel     Float?  // Only alert if concern level >= this (0-10)

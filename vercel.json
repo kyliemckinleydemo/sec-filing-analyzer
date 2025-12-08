@@ -26,8 +26,12 @@
       "schedule": "0 14 * * *"
     },
     {
-      "path": "/api/cron/watchlist-alerts",
-      "schedule": "45 14 * * *"
+      "path": "/api/cron/watchlist-alerts?time=morning",
+      "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron/watchlist-alerts?time=evening",
+      "schedule": "0 23 * * *"
     }
   ]
 }

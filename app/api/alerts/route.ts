@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { alertType, ticker, sector, enabled, frequency, minConcernLevel, minPredictedReturn } = await request.json();
+    const { alertType, ticker, sector, enabled, frequency, deliveryTime, minConcernLevel, minPredictedReturn } = await request.json();
 
     if (!alertType) {
       return NextResponse.json(
@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
         sector: sector || null,
         enabled: enabled !== undefined ? enabled : true,
         frequency: frequency || 'immediate',
+        deliveryTime: deliveryTime || 'both',
         minConcernLevel: minConcernLevel || null,
         minPredictedReturn: minPredictedReturn || null,
       },
@@ -85,7 +86,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const { id, enabled, frequency, minConcernLevel, minPredictedReturn } = await request.json();
+    const { id, enabled, frequency, deliveryTime, minConcernLevel, minPredictedReturn } = await request.json();
 
     if (!id) {
       return NextResponse.json(
@@ -111,6 +112,7 @@ export async function PATCH(request: NextRequest) {
       data: {
         ...(enabled !== undefined && { enabled }),
         ...(frequency && { frequency }),
+        ...(deliveryTime && { deliveryTime }),
         ...(minConcernLevel !== undefined && { minConcernLevel }),
         ...(minPredictedReturn !== undefined && { minPredictedReturn }),
       },
