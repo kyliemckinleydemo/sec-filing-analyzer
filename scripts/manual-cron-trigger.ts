@@ -15,13 +15,14 @@ if (!CRON_SECRET) {
 async function triggerCron(jobName: string, endpoint: string) {
   console.log(`\n🔄 Triggering ${jobName}...`);
   console.log(`   URL: ${BASE_URL}${endpoint}`);
-  
+
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
         'Authorization': `Bearer ${CRON_SECRET}`,
-        'User-Agent': 'manual-trigger-script'
+        'User-Agent': 'manual-trigger-script',
+        'Content-Type': 'application/json'
       }
     });
 
@@ -61,12 +62,23 @@ async function main() {
     await triggerCron('Supervisor Health Check', '/api/cron/supervisor');
   }
 
+  if (args.includes('alerts-morning') || args.includes('alerts')) {
+    await triggerCron('Watchlist Alerts (Morning)', '/api/cron/watchlist-alerts?time=morning');
+  }
+
+  if (args.includes('alerts-evening') || args.includes('alerts')) {
+    await triggerCron('Watchlist Alerts (Evening)', '/api/cron/watchlist-alerts?time=evening');
+  }
+
   console.log('\n✨ Done!');
   console.log('\nUsage:');
-  console.log('  npm run trigger-cron              # Run all jobs');
-  console.log('  npm run trigger-cron filings      # Run filings only');
-  console.log('  npm run trigger-cron analyst      # Run analyst/stock prices only');
-  console.log('  npm run trigger-cron supervisor   # Run supervisor only');
+  console.log('  npm run trigger-cron                  # Run all jobs');
+  console.log('  npm run trigger-cron filings          # Run filings only');
+  console.log('  npm run trigger-cron analyst          # Run analyst/stock prices only');
+  console.log('  npm run trigger-cron supervisor       # Run supervisor only');
+  console.log('  npm run trigger-cron alerts           # Run both alert digests');
+  console.log('  npm run trigger-cron alerts-morning   # Run morning alerts only');
+  console.log('  npm run trigger-cron alerts-evening   # Run evening alerts only');
 }
 
 main().catch(console.error);
