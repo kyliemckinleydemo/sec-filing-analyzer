@@ -59,7 +59,7 @@ export async function GET(
         previousClose: quote.regularMarketPreviousClose,
         marketCap: quote.marketCap,
         volume: quote.regularMarketVolume,
-        averageVolume: quote.averageVolume,
+        averageVolume: (quote as any).averageVolume,
         fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh,
         fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
 
