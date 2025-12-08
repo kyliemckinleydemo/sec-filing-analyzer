@@ -30,6 +30,7 @@ export default function Home() {
               variant="ghost"
               size="sm"
               onClick={() => router.push('/latest-filings')}
+              title="Browse the most recent SEC filings from all tracked companies"
             >
               Latest Filings
             </Button>
@@ -37,6 +38,7 @@ export default function Home() {
               variant="ghost"
               size="sm"
               onClick={() => router.push('/watchlist')}
+              title="Track specific companies and get email alerts (requires signup)"
             >
               Watchlist
             </Button>
@@ -44,6 +46,7 @@ export default function Home() {
               variant="ghost"
               size="sm"
               onClick={() => router.push('/alerts')}
+              title="Manage your alert preferences and notification settings (requires signup)"
             >
               Alerts
             </Button>
@@ -51,6 +54,7 @@ export default function Home() {
               variant="ghost"
               size="sm"
               onClick={() => router.push('/query')}
+              title="Search and filter through all 640+ tracked companies"
             >
               Companies
             </Button>
@@ -58,6 +62,7 @@ export default function Home() {
               variant="ghost"
               size="sm"
               onClick={() => router.push('/chat')}
+              title="Ask questions about company filings in plain English using AI"
             >
               AI Chat
             </Button>
@@ -65,6 +70,7 @@ export default function Home() {
               variant="ghost"
               size="sm"
               onClick={() => router.push('/faq')}
+              title="Frequently asked questions and documentation"
             >
               FAQ
             </Button>

@@ -218,16 +218,16 @@ function ChatPageContent() {
                   </h3>
                   <div className="space-y-2">
                     <button
-                      onClick={() => setInput('Which filing had the biggest stock price jump in 7 days?')}
+                      onClick={() => setInput(ticker ? `Which ${ticker} filing had the biggest stock price jump in 7 days?` : 'Which filing had the biggest stock price jump in 7 days?')}
                       className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-blue-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-blue-200"
                     >
-                      Which filing had the biggest stock price jump in 7 days?
+                      {ticker ? `Which ${ticker} filing had the biggest stock price jump?` : 'Which filing had the biggest stock price jump in 7 days?'}
                     </button>
                     <button
-                      onClick={() => setInput('Which filings outperformed the S&P 500 (positive alpha)?')}
+                      onClick={() => setInput(ticker ? `Show me ${ticker} filings that outperformed the S&P 500` : 'Which filings outperformed the S&P 500 (positive alpha)?')}
                       className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-blue-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-blue-200"
                     >
-                      Which filings outperformed the S&P 500?
+                      {ticker ? `${ticker} filings that outperformed the S&P 500?` : 'Which filings outperformed the S&P 500?'}
                     </button>
                   </div>
                 </div>
@@ -238,16 +238,16 @@ function ChatPageContent() {
                   </h3>
                   <div className="space-y-2">
                     <button
-                      onClick={() => setInput('Which company had the best revenue growth last quarter?')}
+                      onClick={() => setInput(ticker ? `What is ${ticker}'s revenue growth trend over the past year?` : 'Which company had the best revenue growth last quarter?')}
                       className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-green-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-green-200"
                     >
-                      Best revenue growth last quarter?
+                      {ticker ? `${ticker}'s revenue growth trend?` : 'Best revenue growth last quarter?'}
                     </button>
                     <button
-                      onClick={() => setInput('Show me companies with revenue over $50B and positive YoY growth')}
+                      onClick={() => setInput(ticker ? `How has ${ticker}'s net income changed year-over-year?` : 'Show me companies with revenue over $50B and positive YoY growth')}
                       className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-green-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-green-200"
                     >
-                      Large companies with positive growth?
+                      {ticker ? `${ticker}'s net income year-over-year changes?` : 'Large companies with positive growth?'}
                     </button>
                   </div>
                 </div>
@@ -258,16 +258,16 @@ function ChatPageContent() {
                   </h3>
                   <div className="space-y-2">
                     <button
-                      onClick={() => setInput('Show me companies where the ML prediction was accurate')}
+                      onClick={() => setInput(ticker ? `How accurate were the ML predictions for ${ticker} filings?` : 'Show me companies where the ML prediction was accurate')}
                       className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-purple-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-purple-200"
                     >
-                      Where was ML prediction accurate?
+                      {ticker ? `ML prediction accuracy for ${ticker}?` : 'Where was ML prediction accurate?'}
                     </button>
                     <button
-                      onClick={() => setInput('Show me filings with negative actual returns despite positive predictions')}
+                      onClick={() => setInput(ticker ? `Show me ${ticker} filings where predicted return differed from actual` : 'Show me filings with negative actual returns despite positive predictions')}
                       className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-purple-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-purple-200"
                     >
-                      Where did ML get it wrong?
+                      {ticker ? `${ticker} predicted vs actual differences?` : 'Where did ML get it wrong?'}
                     </button>
                   </div>
                 </div>
@@ -278,16 +278,16 @@ function ChatPageContent() {
                   </h3>
                   <div className="space-y-2">
                     <button
-                      onClick={() => setInput('Compare predicted vs actual returns for companies with low concern levels')}
+                      onClick={() => setInput(ticker ? `What is the concern level for ${ticker}'s most recent filing?` : 'Compare predicted vs actual returns for companies with low concern levels')}
                       className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-red-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-red-200"
                     >
-                      Returns for low concern level filings?
+                      {ticker ? `${ticker}'s concern level and risk factors?` : 'Returns for low concern level filings?'}
                     </button>
                     <button
-                      onClick={() => setInput('Which filings had high concern levels but positive returns?')}
+                      onClick={() => setInput(ticker ? `How have ${ticker}'s concern levels trended over recent filings?` : 'Which filings had high concern levels but positive returns?')}
                       className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-red-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-red-200"
                     >
-                      High concern but positive performance?
+                      {ticker ? `${ticker}'s concern level trends?` : 'High concern but positive performance?'}
                     </button>
                   </div>
                 </div>
