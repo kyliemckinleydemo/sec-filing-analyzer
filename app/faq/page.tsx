@@ -110,6 +110,10 @@ export default function FAQPage() {
         {
           q: "How frequently is data updated?",
           a: "The Latest Filings page shows filings from the last 90 days, updated in real-time as companies file with the SEC. When you analyze a filing, the app fetches the latest version directly from EDGAR and generates fresh predictions. The model is continuously refined as we analyze more filings and observe actual outcomes."
+        },
+        {
+          q: "What are the limitations of your external data sources?",
+          a: "IMPORTANT DATA DISCLAIMERS: We rely on external data sources (SEC EDGAR, Yahoo Finance) and cannot guarantee their accuracy, completeness, availability, or validity. Limitations include: (1) SEC EDGAR - Filings may contain errors, restatements, or be amended after initial submission. XBRL data may be tagged incorrectly by companies. (2) Yahoo Finance - Stock prices may be delayed (15-20 minutes), contain gaps, or have inaccuracies. Analyst data aggregation may be incomplete or outdated. Consensus estimates may not reflect all analysts. (3) Data Availability - External APIs may be temporarily unavailable, rate-limited, or discontinued without notice. (4) No Independent Verification - We do not independently verify the accuracy of data from external sources. Users should cross-reference important information with official company filings and licensed financial data providers. (5) Historical Data - Past data may be revised or restated, affecting model accuracy. We are not responsible for losses resulting from inaccurate, incomplete, or unavailable data from third-party sources."
         }
       ]
     },
