@@ -194,34 +194,34 @@ export default function FAQPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#0f172a_0%,#020617_50%)] text-foreground">
       {/* Header */}
       <div className="container mx-auto px-4 py-8">
         <Button
           variant="outline"
           onClick={() => router.push('/')}
-          className="mb-4"
+          className="mb-4 border-white/45"
         >
           ← Back to Home
         </Button>
-        <h1 className="text-4xl font-bold mb-2">Frequently Asked Questions</h1>
-        <p className="text-slate-600 mb-8">
+        <h1 className="text-4xl font-bold mb-2 text-white">Frequently Asked Questions</h1>
+        <p className="text-gray-300 mb-8">
           Learn about how our SEC filing analysis and prediction model works
         </p>
 
         {/* FAQ Sections */}
         <div className="space-y-6">
           {faqs.map((section, idx) => (
-            <Card key={idx}>
+            <Card key={idx} className="bg-[rgba(15,23,42,0.96)] border-white/[0.18]">
               <CardHeader>
-                <CardTitle className="text-2xl">{section.category}</CardTitle>
+                <CardTitle className="text-2xl text-white">{section.category}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   {section.questions.map((item, qIdx) => (
-                    <div key={qIdx} className="border-b border-slate-200 last:border-0 pb-4 last:pb-0">
-                      <h3 className="font-bold text-lg text-slate-800 mb-2">{item.q}</h3>
-                      <p className="text-slate-600 leading-relaxed">{item.a}</p>
+                    <div key={qIdx} className="border-b border-white/10 last:border-0 pb-4 last:pb-0">
+                      <h3 className="font-bold text-lg text-gray-100 mb-2">{item.q}</h3>
+                      <p className="text-gray-300 leading-relaxed">{item.a}</p>
                     </div>
                   ))}
                 </div>
@@ -231,10 +231,10 @@ export default function FAQPage() {
         </div>
 
         {/* CTA Section */}
-        <Card className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
+        <Card className="mt-8 bg-[radial-gradient(circle_at_left,rgba(34,197,94,0.16),rgba(15,23,42,0.98))] border-white/[0.18]">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Ready to analyze filings?</CardTitle>
-            <CardDescription className="text-lg mt-2">
+            <CardTitle className="text-2xl text-white">Ready to analyze filings?</CardTitle>
+            <CardDescription className="text-lg mt-2 text-gray-300">
               Start exploring SEC filings with AI-powered insights
             </CardDescription>
           </CardHeader>
@@ -242,7 +242,7 @@ export default function FAQPage() {
             <Button
               size="lg"
               onClick={() => router.push('/latest-filings')}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-gradient-to-br from-primary to-secondary text-[#0b1120] font-semibold shadow-[0_14px_30px_rgba(34,197,94,0.36)] hover:brightness-110"
             >
               View Latest Filings
             </Button>
@@ -250,6 +250,7 @@ export default function FAQPage() {
               size="lg"
               variant="outline"
               onClick={() => router.push('/')}
+              className="border-white/45"
             >
               Search by Ticker
             </Button>
