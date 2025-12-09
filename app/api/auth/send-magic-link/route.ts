@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // Send email via Resend
     await resend.emails.send({
-      from: 'StockHuntr <onboarding@resend.dev>',
+      from: 'StockHuntr <noreply@stockhuntr.net>',
       to: normalizedEmail,
       subject: 'Sign in to StockHuntr',
       html: `

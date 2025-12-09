@@ -440,7 +440,7 @@ async function sendAlertEmail(
 
   // Send email
   await resend.emails.send({
-    from: 'StockHuntr Alerts <onboarding@resend.dev>',
+    from: 'StockHuntr Alerts <alerts@stockhuntr.net>',
     to: email,
     subject: `${timeLabel} Update: ${totalAlerts} New Alerts from StockHuntr`,
     html: emailHtml,

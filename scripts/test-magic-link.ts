@@ -17,7 +17,7 @@ async function testMagicLink() {
 
   try {
     const result = await resend.emails.send({
-      from: 'StockHuntr <onboarding@resend.dev>',
+      from: 'StockHuntr <noreply@stockhuntr.net>',
       to: email,
       subject: 'Sign in to StockHuntr',
       html: `

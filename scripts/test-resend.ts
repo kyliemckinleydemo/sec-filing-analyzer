@@ -16,7 +16,7 @@ async function testResend() {
   try {
     console.log('\n--- Sending test email ---');
     const result = await resend.emails.send({
-      from: 'StockHuntr <onboarding@resend.dev>',
+      from: 'StockHuntr <noreply@stockhuntr.net>',
       to: 'john@greatfallsventures.com',
       subject: 'Test Email from StockHuntr',
       html: '<h1>Test Email</h1><p>If you received this, Resend is working!</p>',
@@ -35,7 +35,7 @@ async function testResend() {
       console.log('\nOptions:');
       console.log('1. Verify stockhuntr.com domain in Resend dashboard');
       console.log('2. Use a verified sender email (e.g., from your personal domain)');
-      console.log('3. Use Resend\'s sandbox domain (onboarding@resend.dev) for testing');
+      console.log('3. Use Resend\'s sandbox domain (noreply@stockhuntr.net) for testing');
     }
   }
 }
