@@ -71,6 +71,13 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Ensure input text is always visible */
+  input, textarea, select {
+    color: hsl(var(--foreground));
+  }
+  input::placeholder, textarea::placeholder {
+    color: hsl(var(--muted-foreground));
+  }
 }
 
 /* Print styles for filing reports */
