@@ -392,7 +392,7 @@ export default function FilingPage() {
       'running-ml-model': {
         emoji: '🧠',
         title: 'Running ML Prediction Model',
-        description: 'Generating 7-day return forecast with 80% accuracy...',
+        description: 'Generating 7-day return forecast with 74+% accuracy...',
         progress: 86,
       },
       'generating-prediction': {
@@ -431,7 +431,7 @@ export default function FilingPage() {
                 <h3 className="font-semibold text-lg mb-3 text-slate-900">What you get with a free account:</h3>
                 <ul className="text-left space-y-2 text-sm text-slate-700">
                   <li>✅ <strong className="text-slate-900">100 AI analyses per day</strong> - Comprehensive risk & sentiment analysis</li>
-                  <li>✅ <strong className="text-slate-900">ML-powered predictions</strong> - 7-day return forecasts with 80% accuracy</li>
+                  <li>✅ <strong className="text-slate-900">ML-powered predictions</strong> - 7-day return forecasts with 74+% accuracy</li>
                   <li>✅ <strong className="text-slate-900">Interactive AI chat</strong> - Ask questions about any filing</li>
                   <li>✅ <strong className="text-slate-900">Real-time alerts</strong> - Get notified when watched companies file</li>
                   <li>✅ <strong className="text-slate-900">Custom watchlists</strong> - Track your portfolio companies</li>
@@ -650,14 +650,14 @@ export default function FilingPage() {
           </Card>
         )}
 
-        {/* ML Prediction Card - NEW 80% ACCURACY MODEL */}
+        {/* ML Prediction Card - NEW 74+% ACCURACY MODEL */}
         {data.mlPrediction && (
           <Card className="mb-6 border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-blue-50 shadow-lg" data-print-section="prediction">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-2xl">🎯 ML Price Prediction</CardTitle>
                 <span className="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-semibold">
-                  80% Accuracy Model
+                  74+% Accuracy Model
                 </span>
               </div>
               <CardDescription>
@@ -713,7 +713,7 @@ export default function FilingPage() {
               <div className="bg-white p-4 rounded-lg border border-emerald-200">
                 <h4 className="font-semibold text-slate-800 mb-2">📊 About This Model</h4>
                 <p className="text-sm text-slate-700">
-                  This prediction comes from a RandomForest ML model that achieved 80% directional accuracy
+                  This prediction comes from a RandomForest ML model that achieved 74+% directional accuracy
                   on historical filings. The model uses 40+ features including analyst activity (upgrades/downgrades in last 30 days),
                   technical indicators (RSI, MACD, moving averages), valuation metrics (P/E ratios), and market context (S&P 500, VIX).
                   <strong className="text-emerald-700"> Most important feature: Net analyst upgrades in the 30 days before filing.</strong>
@@ -1997,7 +1997,7 @@ export default function FilingPage() {
                   {/* ML Model Note */}
                   <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
                     <p className="text-sm text-purple-900">
-                      <strong>📈 ML Model Impact:</strong> Net analyst upgrades in the 30 days before filing is the <strong>most important feature</strong> in our RandomForest ML prediction model (80% directional accuracy). Upgrades signal positive street momentum and often predict short-term price gains.
+                      <strong>📈 ML Model Impact:</strong> Net analyst upgrades in the 30 days before filing is the <strong>most important feature</strong> in our RandomForest ML prediction model (74+% directional accuracy). Upgrades signal positive street momentum and often predict short-term price gains.
                     </p>
                   </div>
                 </div>

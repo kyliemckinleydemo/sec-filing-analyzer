@@ -78,9 +78,9 @@ export async function GET(request: Request) {
 
     // Build where clause
     const where: any = {
-      // Only include filings from last 90 days
+      // Only include filings from last 180 days
       filingDate: {
-        gte: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
+        gte: new Date(Date.now() - 180 * 24 * 60 * 60 * 1000)
       },
       // Only include financial filings (10-K, 10-Q, 8-K)
       filingType: {
