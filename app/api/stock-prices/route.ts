@@ -23,24 +23,31 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ prices: [] });
       }
 
-      const companies = await prisma.company.findMany({
-        where: {
-          ticker: { in: tickers }
-        },
-        select: {
-          ticker: true,
-          currentPrice: true
+      // Fetch live prices from Yahoo Finance for all tickers
+      const pricePromises = tickers.map(ticker => fetchYahooQuote(ticker));
+      const yahooResults = await Promise.allSettled(pricePromises);
+
+      const prices = yahooResults.map((result, index) => {
+        const ticker = tickers[index];
+
+        if (result.status === 'fulfilled' && result.value) {
+          return {
+            ticker,
+            currentPrice: result.value.currentPrice,
+            change: result.value.change,
+            changePercent: result.value.changePercent
+          };
+        } else {
+          // If Yahoo Finance fails, return 0s
+          console.warn(`Failed to fetch price for ${ticker}`);
+          return {
+            ticker,
+            currentPrice: 0,
+            change: 0,
+            changePercent: 0
+          };
         }
       });
-
-      // For now, return 0 for change fields since they're not stored in the database
-      // TODO: Calculate changes from historical snapshots or fetch from Yahoo Finance API
-      const prices = companies.map(company => ({
-        ticker: company.ticker,
-        currentPrice: company.currentPrice || 0,
-        change: 0,
-        changePercent: 0
-      }));
 
       return NextResponse.json({ prices });
     }
@@ -216,5 +223,59 @@ async function fetchYahooFinanceData(
   } catch (error) {
     console.error(`[Yahoo Finance] Error fetching ${ticker}:`, error);
     return [];
+  }
+}
+
+/**
+ * Fetch current quote data from Yahoo Finance API
+ * Returns current price, change, and change percent
+ */
+async function fetchYahooQuote(
+  ticker: string
+): Promise<{ currentPrice: number; change: number; changePercent: number } | null> {
+  try {
+    // Yahoo Finance quote API endpoint
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
+
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; SEC-Filing-Analyzer/1.0)'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Yahoo Finance API returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    const result = data.chart?.result?.[0];
+
+    if (!result) {
+      console.warn(`[Yahoo Finance Quote] No data for ${ticker}`);
+      return null;
+    }
+
+    // Get current price from meta
+    const meta = result.meta;
+    const currentPrice = meta?.regularMarketPrice;
+    const previousClose = meta?.chartPreviousClose || meta?.previousClose;
+
+    if (!currentPrice || !previousClose) {
+      console.warn(`[Yahoo Finance Quote] Missing price data for ${ticker}`);
+      return null;
+    }
+
+    // Calculate change and change percent
+    const change = currentPrice - previousClose;
+    const changePercent = (change / previousClose) * 100;
+
+    return {
+      currentPrice: Math.round(currentPrice * 100) / 100,
+      change: Math.round(change * 100) / 100,
+      changePercent: Math.round(changePercent * 100) / 100
+    };
+  } catch (error) {
+    console.error(`[Yahoo Finance Quote] Error fetching ${ticker}:`, error);
+    return null;
   }
 }
