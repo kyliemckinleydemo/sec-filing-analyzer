@@ -142,7 +142,7 @@ export default function QueryPage() {
                   <input
                     type="text"
                     placeholder="Ask a question... (e.g., 'Show AAPL analyst target price history')"
-                    className="w-full h-14 pl-12 pr-4 text-lg border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+                    className="w-full h-14 pl-12 pr-4 text-lg text-slate-900 placeholder:text-slate-500 border-2 border-slate-200 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleQuery()}
