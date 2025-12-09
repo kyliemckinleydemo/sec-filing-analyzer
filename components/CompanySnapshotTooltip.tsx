@@ -71,7 +71,7 @@ export function CompanySnapshotTooltip({ ticker, companyName, snapshot, children
                 <div className="text-xs font-semibold text-slate-500 uppercase">Valuation</div>
                 {snapshot.currentPrice && (
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Stock Price:</span>
+                    <span className="text-slate-600">Price (Last Close):</span>
                     <span className="font-semibold">${snapshot.currentPrice.toFixed(2)}</span>
                   </div>
                 )}

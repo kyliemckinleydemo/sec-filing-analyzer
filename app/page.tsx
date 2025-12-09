@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
+import { CompanySnapshotTooltip } from '@/components/CompanySnapshotTooltip';
 
 interface User {
   id: string;
@@ -13,11 +14,28 @@ interface User {
   tier: string;
 }
 
+interface CompanySnapshot {
+  currentPrice?: number | null;
+  marketCap?: number | null;
+  peRatio?: number | null;
+  dividendYield?: number | null;
+  beta?: number | null;
+  latestRevenue?: number | null;
+  latestRevenueYoY?: number | null;
+  latestNetIncome?: number | null;
+  latestNetIncomeYoY?: number | null;
+  latestGrossMargin?: number | null;
+  latestOperatingMargin?: number | null;
+  latestQuarter?: string | null;
+  analystTargetPrice?: number | null;
+}
+
 interface WatchlistItem {
   id: string;
   ticker: string;
   companyName: string;
   addedAt: string;
+  company?: CompanySnapshot;
 }
 
 interface RecentFiling {
@@ -28,6 +46,7 @@ interface RecentFiling {
   filedAt: string;
   accessionNumber: string;
   filed_at?: string;
+  companySnapshot?: CompanySnapshot;
 }
 
 interface StockPrice {
@@ -271,7 +290,13 @@ export default function Home() {
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
-                              <div className="font-semibold text-primary underline decoration-dotted decoration-primary/60 hover:decoration-solid transition-all cursor-pointer">{item.ticker}</div>
+                              <CompanySnapshotTooltip
+                                ticker={item.ticker}
+                                companyName={item.companyName}
+                                snapshot={item.company || {}}
+                              >
+                                <div className="font-semibold text-primary underline decoration-dotted decoration-primary/60 hover:decoration-solid transition-all cursor-pointer">{item.ticker}</div>
+                              </CompanySnapshotTooltip>
                               <div className="text-sm text-muted-foreground">{item.companyName}</div>
                             </div>
                             {price ? (
@@ -342,7 +367,13 @@ export default function Home() {
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div>
-                            <div className="font-semibold text-primary underline decoration-dotted decoration-primary/60 hover:decoration-solid transition-all cursor-pointer">{filing.ticker}</div>
+                            <CompanySnapshotTooltip
+                              ticker={filing.ticker}
+                              companyName={filing.companyName}
+                              snapshot={filing.companySnapshot || {}}
+                            >
+                              <div className="font-semibold text-primary underline decoration-dotted decoration-primary/60 hover:decoration-solid transition-all cursor-pointer">{filing.ticker}</div>
+                            </CompanySnapshotTooltip>
                             <div className="text-sm text-muted-foreground">{filing.companyName}</div>
                           </div>
                           <span className="text-xs px-2 py-1 rounded-full bg-primary/20 border border-primary text-primary">
