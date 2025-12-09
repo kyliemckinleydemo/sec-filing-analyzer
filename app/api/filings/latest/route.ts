@@ -64,6 +64,10 @@ interface SECCompanyFilings {
   };
 }
 
+// Disable caching for this dynamic route
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -180,6 +184,12 @@ export async function GET(request: Request) {
         totalPages,
         currentPage: page,
         pageSize
+      }
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+        'CDN-Cache-Control': 'no-store',
+        'Vercel-CDN-Cache-Control': 'no-store'
       }
     });
   } catch (error) {
