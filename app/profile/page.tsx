@@ -124,7 +124,7 @@ export default function ProfilePage() {
             </p>
 
             <p className="text-lg text-gray-200 font-semibold">
-              Completely free. Forever.
+              Completely free.
             </p>
           </div>
 
@@ -268,7 +268,7 @@ export default function ProfilePage() {
                   <p className="text-lg capitalize">{user?.tier}</p>
                   {user?.tier === 'free' && (
                     <span className="text-xs px-2 py-1 rounded-full bg-primary/20 border border-primary text-primary">
-                      100% Free Forever
+                      100% Free
                     </span>
                   )}
                 </div>
