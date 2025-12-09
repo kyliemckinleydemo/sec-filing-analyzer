@@ -44,7 +44,7 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <UserMenu />
             <Button
-              onClick={() => router.push('/query')}
+              onClick={() => router.push('/profile')}
               className="bg-gradient-to-br from-primary to-secondary text-[#0b1120] font-semibold shadow-[0_14px_30px_rgba(34,197,94,0.36)] hover:brightness-110"
             >
               Start Free
@@ -86,10 +86,10 @@ export default function Home() {
 
             <div className="flex flex-wrap gap-3 mb-4">
               <Button
-                onClick={() => router.push('/query')}
+                onClick={() => router.push('/profile')}
                 className="bg-gradient-to-br from-primary to-secondary text-[#0b1120] font-semibold shadow-[0_14px_30px_rgba(34,197,94,0.36)] hover:brightness-110"
               >
-                Analyze a Filing
+                Start Free
               </Button>
               <Button
                 onClick={() => router.push('/latest-filings')}
@@ -541,10 +541,10 @@ export default function Home() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Button
-                onClick={() => router.push('/query')}
+                onClick={() => router.push('/profile')}
                 className="bg-gradient-to-br from-primary to-secondary text-[#0b1120] font-semibold shadow-[0_14px_30px_rgba(34,197,94,0.36)] hover:brightness-110"
               >
-                Analyze a Filing
+                Start Free
               </Button>
               <Button
                 onClick={() => router.push('/latest-filings')}

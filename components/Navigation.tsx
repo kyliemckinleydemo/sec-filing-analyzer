@@ -49,7 +49,7 @@ export function Navigation() {
         <div className="flex items-center gap-3">
           <UserMenu />
           <Button
-            onClick={() => router.push('/query')}
+            onClick={() => router.push('/profile')}
             className="bg-gradient-to-br from-primary to-secondary text-[#0b1120] font-semibold shadow-[0_14px_30px_rgba(34,197,94,0.36)] hover:brightness-110"
           >
             Start Free
