@@ -19,7 +19,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#0f172a_0%,#020617_50%)] text-foreground">
       {/* Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-[18px] bg-[linear-gradient(to_bottom,rgba(15,23,42,0.92),rgba(15,23,42,0.75),transparent)] border-b border-white/[0.24]">
+      <header className="sticky top-0 z-50 backdrop-blur-[18px] bg-[#020617] border-b border-white/[0.24]">
         <div className="container mx-auto px-6 py-3 flex items-center justify-between gap-6">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-xl bg-[radial-gradient(circle_at_20%_0%,#22d3ee_0%,#22c55e_45%,#0f172a_100%)] flex items-center justify-center text-sm font-bold text-[#0b1120] shadow-[0_10px_30px_rgba(34,197,94,0.45)]">
