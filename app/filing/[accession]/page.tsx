@@ -186,7 +186,15 @@ export default function FilingPage() {
         const analysisRes = await fetch(`/api/analyze/${accession}${queryString ? `?${queryString}` : ''}`);
 
         if (!analysisRes.ok) {
-          throw new Error(`Analysis failed: ${analysisRes.status} ${analysisRes.statusText}`);
+          // Try to parse error response for better error message
+          const errorData = await analysisRes.json().catch(() => ({}));
+
+          if (analysisRes.status === 401) {
+            // Authentication required
+            throw new Error(errorData.message || 'Sign up for free to access AI-powered filing analysis. Get 100 analyses per day!');
+          }
+
+          throw new Error(errorData.error || errorData.message || `Analysis failed: ${analysisRes.status} ${analysisRes.statusText}`);
         }
 
         const analysisData = await analysisRes.json();
