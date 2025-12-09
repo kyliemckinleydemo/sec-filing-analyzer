@@ -785,7 +785,7 @@ export default function Home() {
                   </tr>
                   <tr>
                     <td className="py-2">Price</td>
-                    <td className="text-primary">Fraction of cost</td>
+                    <td className="text-primary">Free</td>
                     <td className="text-white/70">$2K+/month</td>
                     <td className="text-primary">Free (raw)</td>
                   </tr>
