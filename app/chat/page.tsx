@@ -149,7 +149,7 @@ function ChatPageContent() {
               value={ticker}
               onChange={(e) => setTicker(e.target.value.toUpperCase())}
               placeholder="Enter ticker (e.g., AAPL, MSFT, TSLA)"
-              className="w-80 px-4 py-2 border-2 border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-80 px-4 py-2 border-2 border-gray-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
             {ticker && (
               <button
@@ -351,7 +351,7 @@ function ChatPageContent() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask a question about SEC filings..."
               disabled={isLoading}
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
+              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
             />
             <button
               type="submit"

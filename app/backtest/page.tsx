@@ -105,7 +105,7 @@ export default function BacktestPage() {
                 value={ticker}
                 onChange={(e) => setTicker(e.target.value.toUpperCase())}
                 placeholder="Enter ticker (e.g., AAPL)"
-                className="flex-1 px-4 py-2 border border-slate-300 rounded-lg"
+                className="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-500"
               />
               <Button onClick={runBacktest} disabled={loading || !ticker}>
                 {loading ? 'Running...' : 'Run Backtest'}
