@@ -441,8 +441,8 @@ export default function FilingPage() {
             <div className="flex flex-col gap-3">
               <Button
                 onClick={() => {
-                  // Redirect to home with signup modal
-                  window.location.href = '/?signup=true';
+                  // Redirect to profile/signup page
+                  window.location.href = '/profile';
                 }}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg py-6"
               >
