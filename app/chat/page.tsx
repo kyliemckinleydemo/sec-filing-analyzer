@@ -55,8 +55,22 @@ function ChatPageContent() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to get response');
+        const errorData = await response.json();
+
+        // Handle authentication errors with a friendly message
+        if (errorData.requiresAuth || response.status === 401) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              content: `🔒 **${errorData.error || 'Authentication Required'}**\n\n${errorData.message || 'Please sign up or log in to use AI chat.'}\n\n[Sign up for free](/profile) to get started!`,
+            },
+          ]);
+          setIsLoading(false);
+          return;
+        }
+
+        throw new Error(errorData.message || errorData.error || 'Failed to get response');
       }
 
       // Handle streaming response
@@ -91,7 +105,7 @@ function ChatPageContent() {
         ...prev,
         {
           role: 'assistant',
-          content: `Error: ${error.message}`,
+          content: `⚠️ **Error**: ${error.message}`,
         },
       ]);
     } finally {
@@ -356,6 +370,7 @@ function ChatPageContent() {
 // Simple markdown formatter (handles basic markdown)
 function formatMarkdown(text: string): string {
   return text
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 hover:text-blue-800 underline">$1</a>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/`(.*?)`/g, '<code class="bg-gray-100 px-1 rounded">$1</code>')
