@@ -19,11 +19,19 @@
   "crons": [
     {
       "path": "/api/cron/daily-filings-rss",
-      "schedule": "0 2 * * *"
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/daily-filings-rss",
+      "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron/daily-filings-rss",
+      "schedule": "0 22 * * *"
     },
     {
       "path": "/api/cron/update-analyst-data",
-      "schedule": "0 14 * * *"
+      "schedule": "0 3 * * *"
     },
     {
       "path": "/api/cron/watchlist-alerts?time=morning",
