@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAuthAndAIQuota } from '@/lib/api-middleware';
 
 export async function POST(
   request: NextRequest,
@@ -7,6 +8,12 @@ export async function POST(
 ) {
   try {
     const { accession } = await params;
+
+    // Check authentication and AI quota (re-analysis triggers full AI analysis, requires auth)
+    const authCheck = await requireAuthAndAIQuota(request);
+    if (!authCheck.allowed) {
+      return authCheck.response!;
+    }
 
     // Normalize accession number
     const normalizedAccession = accession.includes('-')

@@ -5,6 +5,7 @@ import { cache } from '@/lib/cache';
 import { accuracyTracker } from '@/lib/accuracy-tracker';
 import { marketMomentumClient } from '@/lib/market-momentum';
 import { macroIndicatorsClient } from '@/lib/macro-indicators';
+import { requireUnauthRateLimit } from '@/lib/api-middleware';
 
 export async function GET(
   request: NextRequest,
@@ -12,6 +13,12 @@ export async function GET(
 ) {
   try {
     const { accession } = await params;
+
+    // Check authentication/rate limit (authenticated users bypass, unauth limited to 20/day)
+    const authCheck = await requireUnauthRateLimit(request);
+    if (!authCheck.allowed) {
+      return authCheck.response!;
+    }
 
     // Normalize accession number (add dashes if missing)
     const normalizedAccession = accession.includes('-')
