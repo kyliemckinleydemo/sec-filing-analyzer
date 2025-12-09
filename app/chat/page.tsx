@@ -326,7 +326,7 @@ function ChatPageContent() {
                 >
                   {message.role === 'assistant' ? (
                     <div
-                      className="prose prose-sm max-w-none"
+                      className="prose prose-sm max-w-none text-slate-900"
                       dangerouslySetInnerHTML={{
                         __html: formatMarkdown(message.content),
                       }}
@@ -371,10 +371,10 @@ function ChatPageContent() {
 function formatMarkdown(text: string): string {
   return text
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 hover:text-blue-800 underline">$1</a>')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/`(.*?)`/g, '<code class="bg-gray-100 px-1 rounded">$1</code>')
-    .replace(/\n\n/g, '</p><p class="mt-2">')
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900">$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em class="text-slate-900">$1</em>')
+    .replace(/`(.*?)`/g, '<code class="bg-gray-100 text-slate-900 px-1 rounded">$1</code>')
+    .replace(/\n\n/g, '</p><p class="text-slate-900 mt-2">')
     .replace(/\n/g, '<br/>');
 }
 

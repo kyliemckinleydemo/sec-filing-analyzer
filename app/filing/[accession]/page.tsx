@@ -1788,9 +1788,9 @@ export default function FilingPage() {
                 )}
               </CardHeader>
               <CardContent>
-                <div className="prose prose-sm">
+                <div className="prose prose-sm text-slate-900">
                   {data.analysis.summary.split('\n').map((line, i) => (
-                    <p key={i}>{line}</p>
+                    <p key={i} className="text-slate-900">{line}</p>
                   ))}
                 </div>
               </CardContent>
