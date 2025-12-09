@@ -1,20 +1,54 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 /**
- * Fetch stock price data for a given ticker around a filing date
- * Returns daily prices from 30 days before to 30 days after the filing
- *
- * Uses Yahoo Finance API (via query1.finance.yahoo.com)
+ * Fetch stock price data:
+ * 1. If tickers param (plural): Returns current prices from database for multiple tickers
+ * 2. If ticker + filingDate: Returns historical prices around filing date from Yahoo Finance
  */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const tickersParam = searchParams.get('tickers');
     const ticker = searchParams.get('ticker');
     const filingDate = searchParams.get('filingDate');
 
+    // Handle multiple tickers request (for dashboard watchlist)
+    if (tickersParam) {
+      const tickers = tickersParam.split(',').map(t => t.trim()).filter(Boolean);
+
+      if (tickers.length === 0) {
+        return NextResponse.json({ prices: [] });
+      }
+
+      const companies = await prisma.company.findMany({
+        where: {
+          ticker: { in: tickers }
+        },
+        select: {
+          ticker: true,
+          currentPrice: true,
+          regularMarketChange: true,
+          regularMarketChangePercent: true
+        }
+      });
+
+      const prices = companies.map(company => ({
+        ticker: company.ticker,
+        currentPrice: company.currentPrice || 0,
+        change: company.regularMarketChange || 0,
+        changePercent: company.regularMarketChangePercent || 0
+      }));
+
+      return NextResponse.json({ prices });
+    }
+
+    // Handle single ticker + filing date request (existing functionality)
     if (!ticker || !filingDate) {
       return NextResponse.json(
-        { error: 'Missing ticker or filingDate parameter' },
+        { error: 'Missing ticker or filingDate parameter (or tickers for multiple)' },
         { status: 400 }
       );
     }

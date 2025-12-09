@@ -271,7 +271,7 @@ export default function Home() {
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
-                              <div className="font-semibold text-white">{item.ticker}</div>
+                              <div className="font-semibold text-primary underline decoration-dotted decoration-primary/60 hover:decoration-solid transition-all cursor-pointer">{item.ticker}</div>
                               <div className="text-sm text-muted-foreground">{item.companyName}</div>
                             </div>
                             {price ? (
@@ -342,7 +342,7 @@ export default function Home() {
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div>
-                            <div className="font-semibold text-white">{filing.ticker}</div>
+                            <div className="font-semibold text-primary underline decoration-dotted decoration-primary/60 hover:decoration-solid transition-all cursor-pointer">{filing.ticker}</div>
                             <div className="text-sm text-muted-foreground">{filing.companyName}</div>
                           </div>
                           <span className="text-xs px-2 py-1 rounded-full bg-primary/20 border border-primary text-primary">
