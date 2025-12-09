@@ -29,17 +29,17 @@ export async function GET(request: NextRequest) {
         },
         select: {
           ticker: true,
-          currentPrice: true,
-          regularMarketChange: true,
-          regularMarketChangePercent: true
+          currentPrice: true
         }
       });
 
+      // For now, return 0 for change fields since they're not stored in the database
+      // TODO: Calculate changes from historical snapshots or fetch from Yahoo Finance API
       const prices = companies.map(company => ({
         ticker: company.ticker,
         currentPrice: company.currentPrice || 0,
-        change: company.regularMarketChange || 0,
-        changePercent: company.regularMarketChangePercent || 0
+        change: 0,
+        changePercent: 0
       }));
 
       return NextResponse.json({ prices });
