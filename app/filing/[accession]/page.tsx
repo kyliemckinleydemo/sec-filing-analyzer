@@ -160,9 +160,33 @@ export default function FilingPage() {
   const [renderComplete, setRenderComplete] = useState(false);
   const [isReanalyzing, setIsReanalyzing] = useState(false);
   const [reanalyzeMessage, setReanalyzeMessage] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  // Check authentication on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me');
+        const data = await response.json();
+        setIsAuthenticated(!!data.user);
+      } catch (err) {
+        setIsAuthenticated(false);
+      } finally {
+        setCheckingAuth(false);
+      }
+    };
+    checkAuth();
+  }, []);
 
   useEffect(() => {
-    if (!accession) return;
+    // Only run analysis if authenticated and auth check is complete
+    if (!accession || checkingAuth || isAuthenticated === null) return;
+    if (!isAuthenticated) {
+      // Don't auto-run analysis for unauthenticated users
+      setLoading(false);
+      return;
+    }
 
     const fetchAnalysis = async () => {
       try {
@@ -236,7 +260,7 @@ export default function FilingPage() {
     };
 
     fetchAnalysis();
-  }, [accession]);
+  }, [accession, checkingAuth, isAuthenticated]);
 
   // Fetch stock price data when filing data is loaded
   useEffect(() => {
@@ -386,6 +410,57 @@ export default function FilingPage() {
     };
     return steps[step];
   };
+
+  // Show signup CTA for unauthenticated users
+  if (!checkingAuth && isAuthenticated === false && !loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <Card className="w-full max-w-2xl mx-4">
+          <CardHeader>
+            <div className="text-center space-y-4">
+              <div className="text-6xl">🔒</div>
+              <CardTitle className="text-3xl">AI Analysis Requires Free Account</CardTitle>
+              <CardDescription className="text-lg">
+                Get instant AI-powered filing analysis with predictive insights
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
+              <div className="text-center">
+                <h3 className="font-semibold text-lg mb-3">What you get with a free account:</h3>
+                <ul className="text-left space-y-2 text-sm">
+                  <li>✅ <strong>100 AI analyses per day</strong> - Comprehensive risk & sentiment analysis</li>
+                  <li>✅ <strong>ML-powered predictions</strong> - 7-day return forecasts with 80% accuracy</li>
+                  <li>✅ <strong>Interactive AI chat</strong> - Ask questions about any filing</li>
+                  <li>✅ <strong>Real-time alerts</strong> - Get notified when watched companies file</li>
+                  <li>✅ <strong>Custom watchlists</strong> - Track your portfolio companies</li>
+                </ul>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              <Button
+                onClick={() => router.push('/?signup=true')}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg py-6"
+              >
+                Sign Up Free - No Credit Card Required
+              </Button>
+              <Button
+                onClick={() => router.back()}
+                variant="outline"
+                className="w-full"
+              >
+                ← Back to Filings
+              </Button>
+            </div>
+            <p className="text-center text-xs text-slate-500">
+              Already have an account? <a href="/?signin=true" className="text-blue-600 hover:underline">Sign in</a>
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (loading || !renderComplete) {
     const stepDetails = getStepDetails(currentStep);
