@@ -27,6 +27,14 @@ interface RecentFiling {
   formType: string;
   filedAt: string;
   accessionNumber: string;
+  filed_at?: string;
+}
+
+interface StockPrice {
+  ticker: string;
+  currentPrice: number;
+  change: number;
+  changePercent: number;
 }
 
 export default function Home() {
@@ -34,6 +42,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [recentFilings, setRecentFilings] = useState<RecentFiling[]>([]);
+  const [stockPrices, setStockPrices] = useState<Record<string, StockPrice>>({});
   const router = useRouter();
 
   useEffect(() => {
@@ -46,6 +55,12 @@ export default function Home() {
       fetchRecentFilings();
     }
   }, [user]);
+
+  useEffect(() => {
+    if (watchlist.length > 0) {
+      fetchStockPrices();
+    }
+  }, [watchlist]);
 
   const fetchUser = async () => {
     try {
@@ -82,6 +97,23 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Error fetching recent filings:', error);
+    }
+  };
+
+  const fetchStockPrices = async () => {
+    try {
+      const tickers = watchlist.map(item => item.ticker).join(',');
+      const response = await fetch(`/api/stock-prices?tickers=${tickers}`);
+      const data = await response.json();
+      if (data.prices) {
+        const priceMap: Record<string, StockPrice> = {};
+        data.prices.forEach((price: StockPrice) => {
+          priceMap[price.ticker] = price;
+        });
+        setStockPrices(priceMap);
+      }
+    } catch (error) {
+      console.error('Error fetching stock prices:', error);
     }
   };
 
@@ -217,21 +249,36 @@ export default function Home() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {watchlist.map((item) => (
-                      <button
-                        key={item.id}
-                        onClick={() => router.push(`/company/${item.ticker}/filings`)}
-                        className="w-full text-left p-3 rounded-lg bg-[rgba(15,23,42,0.6)] border border-white/10 hover:border-primary/50 transition-colors"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="font-semibold text-white">{item.ticker}</div>
-                            <div className="text-sm text-muted-foreground">{item.companyName}</div>
+                    {watchlist.map((item) => {
+                      const price = stockPrices[item.ticker];
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => router.push(`/company/${item.ticker}/filings`)}
+                          className="w-full text-left p-3 rounded-lg bg-[rgba(15,23,42,0.6)] border border-white/10 hover:border-primary/50 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="font-semibold text-white">{item.ticker}</div>
+                              <div className="text-sm text-muted-foreground">{item.companyName}</div>
+                            </div>
+                            {price ? (
+                              <div className="text-right mr-3">
+                                <div className="font-semibold text-white">${price.currentPrice.toFixed(2)}</div>
+                                <div className={`text-xs ${price.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                  {price.change >= 0 ? '▲' : '▼'} {Math.abs(price.changePercent).toFixed(2)}%
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="text-right mr-3">
+                                <div className="text-xs text-muted-foreground">Loading...</div>
+                              </div>
+                            )}
+                            <span className="text-primary">→</span>
                           </div>
-                          <span className="text-primary">→</span>
-                        </div>
-                      </button>
-                    ))}
+                        </button>
+                      );
+                    })}
                     {watchlist.length >= 6 && (
                       <Button
                         onClick={() => router.push('/watchlist')}
@@ -269,26 +316,33 @@ export default function Home() {
                 <p className="text-center text-muted-foreground py-8">No recent filings available.</p>
               ) : (
                 <div className="grid md:grid-cols-2 gap-3">
-                  {recentFilings.map((filing) => (
-                    <button
-                      key={filing.id}
-                      onClick={() => router.push(`/filing/${filing.accessionNumber}`)}
-                      className="text-left p-4 rounded-lg bg-[rgba(15,23,42,0.6)] border border-white/10 hover:border-primary/50 transition-colors"
-                    >
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <div className="font-semibold text-white">{filing.ticker}</div>
-                          <div className="text-sm text-muted-foreground">{filing.companyName}</div>
+                  {recentFilings.map((filing) => {
+                    // Handle both filedAt and filed_at field names
+                    const filingDate = filing.filed_at || filing.filedAt;
+                    const dateObj = new Date(filingDate);
+                    const isValidDate = !isNaN(dateObj.getTime());
+
+                    return (
+                      <button
+                        key={filing.id}
+                        onClick={() => router.push(`/filing/${filing.accessionNumber}`)}
+                        className="text-left p-4 rounded-lg bg-[rgba(15,23,42,0.6)] border border-white/10 hover:border-primary/50 transition-colors"
+                      >
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <div className="font-semibold text-white">{filing.ticker}</div>
+                            <div className="text-sm text-muted-foreground">{filing.companyName}</div>
+                          </div>
+                          <span className="text-xs px-2 py-1 rounded-full bg-primary/20 border border-primary text-primary">
+                            {filing.formType}
+                          </span>
                         </div>
-                        <span className="text-xs px-2 py-1 rounded-full bg-primary/20 border border-primary text-primary">
-                          {filing.formType}
-                        </span>
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Filed {new Date(filing.filedAt).toLocaleDateString()}
-                      </div>
-                    </button>
-                  ))}
+                        <div className="text-xs text-muted-foreground">
+                          {isValidDate ? `Filed ${dateObj.toLocaleDateString()}` : 'Recently filed'}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </CardContent>
