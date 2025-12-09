@@ -443,10 +443,10 @@ export default function FilingPage() {
                       <span
                         className={`text-sm ${
                           isComplete
-                            ? 'text-slate-900 line-through'
+                            ? 'text-gray-400 line-through'
                             : isCurrent
-                            ? 'text-slate-900 font-semibold'
-                            : 'text-slate-500'
+                            ? 'text-white font-semibold'
+                            : 'text-white'
                         }`}
                       >
                         {item.label}

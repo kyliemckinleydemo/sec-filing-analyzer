@@ -231,10 +231,22 @@ export default function Home() {
             {/* Your Watchlist */}
             <Card className="bg-[rgba(15,23,42,0.96)] border-white/[0.18]">
               <CardHeader>
-                <CardTitle className="text-xl text-white">Your Watchlist</CardTitle>
-                <CardDescription>
-                  {watchlist.length === 0 ? 'Start tracking companies' : `Tracking ${watchlist.length} companies`}
-                </CardDescription>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-xl text-white">Your Watchlist</CardTitle>
+                    <CardDescription>
+                      {watchlist.length === 0 ? 'Start tracking companies' : `Tracking ${watchlist.length} companies`}
+                    </CardDescription>
+                  </div>
+                  <Button
+                    onClick={() => router.push('/watchlist')}
+                    variant="outline"
+                    size="sm"
+                    className="border-white/45"
+                  >
+                    Manage
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent>
                 {watchlist.length === 0 ? (
