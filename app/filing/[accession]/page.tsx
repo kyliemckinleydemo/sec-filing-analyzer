@@ -419,8 +419,8 @@ export default function FilingPage() {
           <CardHeader>
             <div className="text-center space-y-4">
               <div className="text-6xl">🔒</div>
-              <CardTitle className="text-3xl">AI Analysis Requires Free Account</CardTitle>
-              <CardDescription className="text-lg">
+              <CardTitle className="text-3xl text-slate-900">AI Analysis Requires Free Account</CardTitle>
+              <CardDescription className="text-lg text-slate-600">
                 Get instant AI-powered filing analysis with predictive insights
               </CardDescription>
             </div>
@@ -428,19 +428,22 @@ export default function FilingPage() {
           <CardContent className="space-y-6">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
               <div className="text-center">
-                <h3 className="font-semibold text-lg mb-3">What you get with a free account:</h3>
-                <ul className="text-left space-y-2 text-sm">
-                  <li>✅ <strong>100 AI analyses per day</strong> - Comprehensive risk & sentiment analysis</li>
-                  <li>✅ <strong>ML-powered predictions</strong> - 7-day return forecasts with 80% accuracy</li>
-                  <li>✅ <strong>Interactive AI chat</strong> - Ask questions about any filing</li>
-                  <li>✅ <strong>Real-time alerts</strong> - Get notified when watched companies file</li>
-                  <li>✅ <strong>Custom watchlists</strong> - Track your portfolio companies</li>
+                <h3 className="font-semibold text-lg mb-3 text-slate-900">What you get with a free account:</h3>
+                <ul className="text-left space-y-2 text-sm text-slate-700">
+                  <li>✅ <strong className="text-slate-900">100 AI analyses per day</strong> - Comprehensive risk & sentiment analysis</li>
+                  <li>✅ <strong className="text-slate-900">ML-powered predictions</strong> - 7-day return forecasts with 80% accuracy</li>
+                  <li>✅ <strong className="text-slate-900">Interactive AI chat</strong> - Ask questions about any filing</li>
+                  <li>✅ <strong className="text-slate-900">Real-time alerts</strong> - Get notified when watched companies file</li>
+                  <li>✅ <strong className="text-slate-900">Custom watchlists</strong> - Track your portfolio companies</li>
                 </ul>
               </div>
             </div>
             <div className="flex flex-col gap-3">
               <Button
-                onClick={() => router.push('/?signup=true')}
+                onClick={() => {
+                  // Redirect to home with signup modal
+                  window.location.href = '/?signup=true';
+                }}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg py-6"
               >
                 Sign Up Free - No Credit Card Required
@@ -448,7 +451,7 @@ export default function FilingPage() {
               <Button
                 onClick={() => router.back()}
                 variant="outline"
-                className="w-full"
+                className="w-full text-slate-700"
               >
                 ← Back to Filings
               </Button>
