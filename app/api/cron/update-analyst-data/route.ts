@@ -254,7 +254,7 @@ export async function GET(request: Request) {
 
     console.log(`[Cron] Analyst data update complete: ${updated} updated, ${errors} errors`);
 
-    // Update stock prices for companies with recent activity (past 30 days) or in watchlists
+    // Update stock prices for companies with recent activity (past 30 days)
     console.log('[Cron] Updating stock prices for active companies...');
     let stockPriceUpdates = 0;
     let stockPriceErrors = 0;
@@ -263,34 +263,21 @@ export async function GET(request: Request) {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      // Get companies with recent filings OR in active watchlists
+      // Get companies with recent filings (past 30 days)
       const activeCompanies = await prisma.company.findMany({
         where: {
-          OR: [
-            {
-              filings: {
-                some: {
-                  filingDate: {
-                    gte: thirtyDaysAgo
-                  }
-                }
-              }
-            },
-            {
-              watchlistCompanies: {
-                some: {
-                  watchlist: {
-                    isActive: true
-                  }
-                }
+          filings: {
+            some: {
+              filingDate: {
+                gte: thirtyDaysAgo
               }
             }
-          ]
+          }
         },
         select: { id: true, ticker: true }
       });
 
-      console.log(`[Cron] Found ${activeCompanies.length} active companies to update (recent filings or in watchlists)`);
+      console.log(`[Cron] Found ${activeCompanies.length} active companies to update (recent filings in past 30 days)`);
 
       // Update in batches to avoid rate limits and timeout
       const BATCH_SIZE = 100;
