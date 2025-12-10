@@ -254,26 +254,51 @@ export async function GET(request: Request) {
 
     console.log(`[Cron] Analyst data update complete: ${updated} updated, ${errors} errors`);
 
-    // Update stock prices for ALL companies (not just recent filings)
-    console.log('[Cron] Updating stock prices for all companies...');
+    // Update stock prices for companies with recent activity (past 30 days) or in watchlists
+    console.log('[Cron] Updating stock prices for active companies...');
     let stockPriceUpdates = 0;
     let stockPriceErrors = 0;
 
     try {
-      // Get all active companies
-      const allCompanies = await prisma.company.findMany({
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      // Get companies with recent filings OR in active watchlists
+      const activeCompanies = await prisma.company.findMany({
+        where: {
+          OR: [
+            {
+              filings: {
+                some: {
+                  filingDate: {
+                    gte: thirtyDaysAgo
+                  }
+                }
+              }
+            },
+            {
+              watchlistCompanies: {
+                some: {
+                  watchlist: {
+                    isActive: true
+                  }
+                }
+              }
+            }
+          ]
+        },
         select: { id: true, ticker: true }
       });
 
-      console.log(`[Cron] Found ${allCompanies.length} companies to update`);
+      console.log(`[Cron] Found ${activeCompanies.length} active companies to update (recent filings or in watchlists)`);
 
       // Update in batches to avoid rate limits and timeout
       const BATCH_SIZE = 100;
       const BATCH_DELAY_MS = 2000; // 2 seconds between batches
 
-      for (let i = 0; i < allCompanies.length; i += BATCH_SIZE) {
-        const batch = allCompanies.slice(i, i + BATCH_SIZE);
-        console.log(`[Cron] Processing batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(allCompanies.length / BATCH_SIZE)}`);
+      for (let i = 0; i < activeCompanies.length; i += BATCH_SIZE) {
+        const batch = activeCompanies.slice(i, i + BATCH_SIZE);
+        console.log(`[Cron] Processing batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(activeCompanies.length / BATCH_SIZE)}`);
 
         for (const company of batch) {
           try {
@@ -321,7 +346,7 @@ export async function GET(request: Request) {
         }
 
         // Delay between batches to avoid rate limits
-        if (i + BATCH_SIZE < allCompanies.length) {
+        if (i + BATCH_SIZE < activeCompanies.length) {
           await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
         }
       }
