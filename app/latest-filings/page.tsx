@@ -78,7 +78,12 @@ function LatestFilingsContent() {
       if (filingTypeFilter) params.append('filingType', filingTypeFilter);
       params.append('page', page.toString());
 
-      const response = await fetch(`/api/filings/latest?${params.toString()}`);
+      const response = await fetch(`/api/filings/latest?${params.toString()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       const data = await response.json();
 
       setFilings(data.filings || data); // Handle both old and new response format
@@ -297,7 +302,7 @@ function LatestFilingsContent() {
             )}
             {totalPages === 1 && (
               <div className="mt-6 text-center text-sm text-slate-500">
-                Showing {filings.length} filings (last 90 days)
+                Showing {filings.length} filings (last 180 days)
               </div>
             )}
           </>
