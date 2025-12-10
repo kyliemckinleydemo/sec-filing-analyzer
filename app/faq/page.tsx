@@ -167,7 +167,7 @@ export default function FAQPage() {
         },
         {
           q: "What are my responsibilities as a user?",
-          a: "USER RESPONSIBILITIES: By using this service, you acknowledge that: (1) You are solely responsible for your investment decisions, (2) You will conduct your own due diligence before making any trades, (3) You understand the risks of stock market investing, (4) You will comply with all applicable laws and regulations, (5) You will not rely on this tool for investment decisions, and (6) You may lose money if you trade based on predictions from this platform."
+          a: "USER RESPONSIBILITIES: By using this service, you acknowledge that: (1) You are solely responsible for your investment decisions, (2) You will conduct your own due diligence before making any trades, (3) You understand the risks of stock market investing, (4) You will comply with all applicable laws and regulations, (5) You will not rely on this tool for investment decisions, and (6) You may lose some or all of your money if you trade based on predictions from this platform."
         },
         {
           q: "Can I sue if I lose money using this tool?",

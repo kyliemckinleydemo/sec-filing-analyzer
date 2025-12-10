@@ -823,7 +823,7 @@ export default function Home() {
                 <li>You will conduct your own due diligence before making any trades.</li>
                 <li>You understand the risks of stock market investing.</li>
                 <li>You will not rely on this tool for investment decisions.</li>
-                <li>You may lose money if you trade based on predictions from this platform.</li>
+                <li>You may lose some or all of your money if you trade based on predictions from this platform.</li>
               </ul>
               <p className="text-muted-foreground">
                 Stock markets are unpredictable and you could lose some or all of
