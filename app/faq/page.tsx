@@ -76,7 +76,7 @@ export default function FAQPage() {
       questions: [
         {
           q: "How did you backtest the model?",
-          a: "We collected historical filings from 430+ companies (S&P 500 and high-volume stocks) going back 2+ years. For each filing, we: (1) Extracted features as if analyzing in real-time, (2) Made predictions, (3) Waited 7 trading days, (4) Calculated actual returns from Yahoo Finance, and (5) Compared predicted vs. actual. This process was repeated for thousands of filings to measure accuracy."
+          a: "We collected historical filings from 640+ companies (S&P 500 and high-volume stocks) going back 2+ years. For each filing, we: (1) Extracted features as if analyzing in real-time, (2) Made predictions, (3) Waited 7 trading days, (4) Calculated actual returns from Yahoo Finance, and (5) Compared predicted vs. actual. This process was repeated for thousands of filings to measure accuracy."
         },
         {
           q: "What is the model's accuracy?",
@@ -97,7 +97,7 @@ export default function FAQPage() {
       questions: [
         {
           q: "What companies are covered?",
-          a: "We track 430+ companies including all S&P 500 constituents and high-volume stocks across major sectors: Technology (AAPL, MSFT, GOOGL, NVDA, etc.), Finance (JPM, BAC, GS), Healthcare (UNH, JNJ, PFE), Consumer (AMZN, WMT, TSLA), Energy (XOM, CVX), and more. The list is continuously updated to include newly public companies and remove delisted ones."
+          a: "We track 640+ companies including all S&P 500 constituents and high-volume stocks across major sectors: Technology (AAPL, MSFT, GOOGL, NVDA, etc.), Finance (JPM, BAC, GS), Healthcare (UNH, JNJ, PFE), Consumer (AMZN, WMT, TSLA), Energy (XOM, CVX), and more. The list is continuously updated to include newly public companies and remove delisted ones."
         },
         {
           q: "What types of filings do you analyze?",
