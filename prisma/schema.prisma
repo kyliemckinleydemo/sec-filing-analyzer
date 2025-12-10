@@ -255,6 +255,8 @@ model MacroIndicators {
   // Market indices (close prices and returns)
   spxClose      Float?  // S&P 500 close
   spxReturn7d   Float?  // S&P 500 7-day return
+  spxReturn14d  Float?  // S&P 500 14-day return
+  spxReturn21d  Float?  // S&P 500 21-day return
   spxReturn30d  Float?  // S&P 500 30-day return
 
   // Volatility
