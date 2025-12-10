@@ -419,7 +419,7 @@ export default function FilingPage() {
           <CardHeader>
             <div className="text-center space-y-4">
               <div className="text-6xl">🔒</div>
-              <CardTitle className="text-3xl text-slate-900">AI Analysis Requires Free Account</CardTitle>
+              <CardTitle className="text-3xl">AI Analysis Requires Free Account</CardTitle>
               <CardDescription className="text-lg text-slate-600">
                 Get instant AI-powered filing analysis with predictive insights
               </CardDescription>
@@ -1788,9 +1788,9 @@ export default function FilingPage() {
                 )}
               </CardHeader>
               <CardContent>
-                <div className="prose prose-sm text-slate-900">
+                <div className="prose prose-sm">
                   {data.analysis.summary.split('\n').map((line, i) => (
-                    <p key={i} className="text-slate-900">{line}</p>
+                    <p key={i}>{line}</p>
                   ))}
                 </div>
               </CardContent>

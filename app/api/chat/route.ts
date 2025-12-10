@@ -67,7 +67,7 @@ function buildFilingContext(filings: any[]) {
     // Format market cap in billions for easier comparison
     const marketCapB = f.company.marketCap ? (f.company.marketCap / 1e9).toFixed(1) : null;
 
-    return {
+    const filingData = {
       ticker: f.company.ticker,
       companyName: f.company.name,
       filingType: f.filingType,
@@ -129,6 +129,11 @@ function buildFilingContext(filings: any[]) {
       positiveFactors: analysisData?.concernAssessment?.positiveFactors?.slice(0, 2) || [],
       topRiskChanges: analysisData?.risks?.topChanges?.slice(0, 2) || [],
     };
+
+    // Filter out null/undefined values to reduce noise in AI context
+    return Object.fromEntries(
+      Object.entries(filingData).filter(([_, value]) => value !== null && value !== undefined)
+    );
   }).slice(0, 20); // Limit context to avoid token overflow
 }
 
