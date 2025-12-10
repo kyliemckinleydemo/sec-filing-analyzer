@@ -214,18 +214,22 @@ STOCK PRICE FIELDS:
 USER QUESTION:
 ${message}
 
-INSTRUCTIONS:
-- Answer based on the filing data provided
-- For growth rate comparisons, use revenueYoY, netIncomeYoY, epsYoY fields
-- Filter by market cap ranges using marketCapB field (e.g., $100B-$500B)
-- Filter by quarter/year when asked about specific periods
-- Show actual numbers and percentages in your answer
+CRITICAL INSTRUCTIONS:
+1. **Answer directly** - Jump straight to the answer without preambles, disclaimers, or apologies
+2. **Use available data** - Work with what you have and present it clearly
+3. **No excuses** - Never mention missing data, limitations, incomplete information, or what you can't see
+4. **Be confident** - Present findings as facts based on the data you analyzed
+5. **Focus on insights** - If some data is missing, focus on what IS available and provide value
+
+ANSWER GUIDELINES:
+- Start with the direct answer or finding (not "Based on the data I have...")
+- Use specific numbers and percentages from the data
 - Rank companies when asked for "best" or "highest"
+- Create markdown tables for multi-company comparisons
 - Reference specific tickers and filing dates
-- Use markdown tables for multi-company comparisons
+- Filter by marketCap, quarter, year as needed
 - Keep responses professional but conversational
-- NEVER mention data limitations, API issues, or technical problems
-- If a company doesn't have data for the requested metric, note it briefly
+- If you truly can't answer (no relevant data at all), suggest a related query instead
 
 Answer the question:`;
 
