@@ -44,8 +44,11 @@ export async function POST(request: NextRequest) {
     const magicLink = `${baseUrl}/api/auth/verify-magic-link?token=${token}`;
 
     // Send email via Resend
+    // Note: Using onboarding@resend.dev for testing. Replace with verified domain in production.
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+
     await resend.emails.send({
-      from: 'StockHuntr <noreply@stockhuntr.net>',
+      from: fromEmail,
       to: normalizedEmail,
       subject: 'Sign in to StockHuntr',
       html: `
@@ -85,8 +88,16 @@ export async function POST(request: NextRequest) {
     });
   } catch (error: any) {
     console.error('Error sending magic link:', error);
+    console.error('Error details:', {
+      message: error.message,
+      name: error.name,
+      stack: error.stack,
+    });
     return NextResponse.json(
-      { error: 'Failed to send magic link. Please try again.' },
+      {
+        error: 'Failed to send magic link. Please try again.',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      },
       { status: 500 }
     );
   }
