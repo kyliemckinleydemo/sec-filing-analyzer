@@ -329,44 +329,104 @@ TEXT:
 
 CRITICAL INSTRUCTION: NEVER mention data limitations, rate limiting, or data access issues in your analysis. Focus only on extracting substantive financial information.
 
-CRITICAL - Earnings Surprise Detection:
+========================================
+PART 1: GUIDANCE EXTRACTION (HIGHEST PRIORITY)
+========================================
+
+**Guidance is THE MOST CRITICAL data point - it moves markets more than anything else.**
+
+GUIDANCE DETECTION INSTRUCTIONS:
+You MUST exhaustively search for ANY mention of forward-looking statements, outlook, or guidance. Do NOT default to "not_provided" unless you've thoroughly checked for these signals:
+
+1. EXPLICIT GUIDANCE PHRASES:
+   - "guidance", "outlook", "forecast", "expect", "anticipate", "estimate", "project"
+   - "full-year", "FY", "Q1", "Q2", "Q3", "Q4", "next quarter", "remainder of", "going forward"
+   - "revenue of $X to $Y", "EPS of $X to $Y", "margins of X% to Y%"
+
+2. RAISED GUIDANCE SIGNALS (guidanceDirection = "raised"):
+   - "raised guidance", "increased outlook", "raising forecast", "upgraded expectations"
+   - "now expect higher", "improved outlook", "better than previously expected"
+   - "revised upward", "increasing our guidance", "above prior guidance"
+   - Specific number increases: "raised revenue guidance from $X to $Y"
+
+3. LOWERED GUIDANCE SIGNALS (guidanceDirection = "lowered"):
+   - "lowered guidance", "reduced outlook", "cutting forecast", "downgraded expectations"
+   - "now expect lower", "revised downward", "below prior guidance"
+   - "reduced guidance", "lowering our forecast", "decreased expectations"
+   - **ESPECIALLY IMPORTANT**: "facing headwinds", "challenging environment", "uncertainty" + lower numbers
+   - Specific number decreases: "lowered revenue guidance from $X to $Y"
+
+4. MAINTAINED GUIDANCE SIGNALS (guidanceDirection = "maintained"):
+   - "reaffirming guidance", "maintaining outlook", "confirmed expectations"
+   - "consistent with prior guidance", "unchanged outlook", "on track"
+   - "remains in line with", "no change to guidance"
+
+5. IMPLICIT GUIDANCE (count as raised/lowered/maintained):
+   - If management discusses "strong momentum" + gives specific forward numbers = likely raised
+   - If management discusses "challenges" + gives specific forward numbers = likely lowered
+   - If management gives forward numbers without comparison = mark as "maintained" (not "not_provided")
+
+CRITICAL: A guidance MISS (lowered) is the MOST NEGATIVE signal for a stock. A guidance RAISE is the MOST POSITIVE signal. You MUST detect these if present.
+
+========================================
+PART 2: EARNINGS SURPRISE DETECTION (CRITICAL)
+========================================
+
 You MUST search for ANY mention of analyst expectations, consensus estimates, or Wall Street forecasts.
 
-Common phrases to look for:
-1. BEATS: "exceeded expectations", "beat analyst estimates", "surpassed consensus", "above estimates", "better than expected", "topped forecasts", "outperformed expectations"
+EARNINGS SURPRISE PHRASES:
+1. BEATS: "exceeded expectations", "beat analyst estimates", "surpassed consensus", "above estimates", "better than expected", "topped forecasts", "outperformed expectations", "stronger than anticipated"
    CRITICAL: A "beat" means actual results ABOVE expectations (positive)
-2. MISSES: "fell short", "missed estimates", "below expectations", "below consensus", "disappointed", "underperformed expectations"
+
+2. MISSES: "fell short", "missed estimates", "below expectations", "below consensus", "disappointed", "underperformed expectations", "weaker than expected", "came in under"
    CRITICAL: A "miss" means actual results BELOW expectations (negative)
-3. EXPLICIT COMPARISONS: "EPS of $X.XX vs estimate of $Y.YY", "$X.X billion vs consensus $Y.Y billion"
-4. IMPLIED BEATS: If the filing mentions "strong quarter" or "record results" along with specific numbers, this often implies a beat
-5. IMPLIED MISSES: If the filing is defensive or mentions "challenges" along with results, this may imply a miss
+
+3. EXPLICIT COMPARISONS:
+   - "EPS of $X.XX vs estimate of $Y.YY" or "vs. Street estimate of $Y.YY"
+   - "$X.X billion vs consensus $Y.Y billion" or "vs. analyst forecast of $Y.Y billion"
+   - Look for tables showing "Actual", "Estimate", "Surprise"
+
+4. IMPLIED BEATS:
+   - "strong quarter" or "record results" + specific numbers = likely beat
+   - "exceeded targets", "ahead of plan", "blew past expectations"
+
+5. IMPLIED MISSES:
+   - Defensive language: "despite challenges" + results = likely miss
+   - "difficult quarter", "below our internal expectations"
+
+========================================
+PART 3: OTHER FINANCIAL METRICS
+========================================
 
 Extract the following:
 1. Revenue growth rates (YoY, QoQ)
    CRITICAL: Higher positive growth % = better (e.g., +15% is better than +8%)
    CRITICAL: Negative growth = revenue declining (concerning)
    CRITICAL: Include both the current period and prior period if available for comparison
+
 2. Profit margin trends (expanding/contracting)
    CRITICAL: "Expanding" means margins are INCREASING (earnings growing faster than revenue - positive)
    CRITICAL: "Contracting" means margins are DECREASING (earnings growing slower than revenue - negative)
    CRITICAL: "Stable" means margins roughly unchanged
-3. Forward guidance (raised/lowered/maintained)
-   CRITICAL: "raised" = increased outlook (positive), "lowered" = reduced outlook (negative)
-4. **EARNINGS SURPRISES** (beat/miss vs expectations) - THIS IS CRITICAL
-5. Key business metrics (user growth, ARPU, etc.)
-6. Management outlook statements
+
+3. Key business metrics (user growth, ARPU, etc.)
+4. Management outlook statements
+
+========================================
+OUTPUT FORMAT (STRICT JSON)
+========================================
 
 Return ONLY valid JSON:
 {
   "revenueGrowth": "+12% YoY" or "Not disclosed",
-  "marginTrend": "Expanding" or "Contracting" or "Stable",
+  "marginTrend": "Expanding" or "Contracting" or "Stable" or "Not disclosed",
   "guidanceDirection": "raised" | "lowered" | "maintained" | "not_provided",
-  "guidanceDetails": "Raised Q4 guidance to $X-Y billion",
+  "guidanceDetails": "Raised Q4 revenue guidance to $X-Y billion from prior $A-B billion",
   "keyMetrics": ["iPhone revenue +15%", "Services revenue $24.2B"],
-  "surprises": ["EPS beat consensus by 9.8%", "Revenue beat by $4.5B (5.0%)"],
+  "surprises": ["EPS beat consensus by 9.8%", "Revenue missed by $1.2B (2.5%)"],
   "guidanceComparison": {
     "change": "raised" | "lowered" | "maintained" | "new",
-    "details": "Comparison of current vs prior guidance"
+    "details": "Comparison of current vs prior guidance if available"
   }
 }
 
@@ -376,8 +436,15 @@ CRITICAL: For "surprises" array, use this format:
 - "EPS missed consensus by X%" or "EPS missed by $X.XX"
 - "Revenue missed consensus by X%" or "Revenue missed by $XB"
 
+REMEMBER:
+- Only use "not_provided" for guidanceDirection if you truly cannot find ANY forward-looking statements
+- Even vague guidance like "expect continued growth" should be marked as "maintained"
+- Guidance changes (raised/lowered) are MAJOR market movers - DO NOT MISS THESE
+- Earnings misses + guidance cuts = extremely bearish (stock will likely drop significantly)
+- Earnings beats + guidance raises = extremely bullish (stock will likely rally)
+
 Note: guidanceComparison will only be populated if prior period MD&A is provided for comparison.
-Focus on quantitative data that impacts stock price. If information isn't found, use "Not disclosed".`;
+Focus on quantitative data that impacts stock price.`;
 
   async analyzeRiskFactors(
     currentRisks: string,
