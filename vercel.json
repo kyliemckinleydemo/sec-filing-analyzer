@@ -1,5 +1,4 @@
 {
-  "buildCommand": "export NODE_OPTIONS='--max-old-space-size=8192' && npx prisma generate && npm run build",
   "framework": "nextjs",
   "regions": ["iad1"],
   "functions": {
