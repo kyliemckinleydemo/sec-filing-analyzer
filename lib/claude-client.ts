@@ -90,6 +90,7 @@ export interface FilingAnalysis {
 class ClaudeClient {
   private client: Anthropic;
   private model = 'claude-sonnet-4-5-20250929';
+  private haikuModel = 'claude-3-5-haiku-20241022';
 
   constructor() {
     const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -99,6 +100,14 @@ class ClaudeClient {
       );
     }
     this.client = new Anthropic({ apiKey });
+  }
+
+  /**
+   * Get the appropriate model based on use case
+   * @param useCase - 'bulk' for batch processing (cheaper, faster), 'user' for user-facing features (higher quality)
+   */
+  private getModel(useCase: 'bulk' | 'user' = 'user'): string {
+    return useCase === 'bulk' ? this.haikuModel : this.model;
   }
 
   private readonly RISK_ANALYSIS_PROMPT = `You are a financial analyst AI specializing in SEC filing risk assessment.
@@ -448,7 +457,8 @@ Focus on quantitative data that impacts stock price.`;
 
   async analyzeRiskFactors(
     currentRisks: string,
-    priorRisks?: string
+    priorRisks?: string,
+    useCase: 'bulk' | 'user' = 'user'
   ): Promise<RiskAnalysis> {
     const prompt = this.RISK_ANALYSIS_PROMPT.replace(
       '{currentRisks}',
@@ -457,7 +467,7 @@ Focus on quantitative data that impacts stock price.`;
 
     try {
       const response = await this.client.messages.create({
-        model: this.model,
+        model: this.getModel(useCase),
         max_tokens: 4096,
         temperature: 0.3, // Lower temperature for more consistent analysis
         messages: [
@@ -520,7 +530,7 @@ Focus on quantitative data that impacts stock price.`;
     }
   }
 
-  async analyzeSentiment(mdaText: string): Promise<SentimentAnalysis> {
+  async analyzeSentiment(mdaText: string, useCase: 'bulk' | 'user' = 'user'): Promise<SentimentAnalysis> {
     // Check if there's meaningful MD&A content
     if (!mdaText || mdaText.trim().length < 50 || mdaText.toLowerCase().includes('not available')) {
       return {
@@ -536,7 +546,7 @@ Focus on quantitative data that impacts stock price.`;
 
     try {
       const response = await this.client.messages.create({
-        model: this.model,
+        model: this.getModel(useCase),
         max_tokens: 1024,
         temperature: 0.3,
         messages: [
@@ -613,7 +623,8 @@ Focus on quantitative data that impacts stock price.`;
   async generateConcernAssessment(
     risks: RiskAnalysis,
     sentiment: SentimentAnalysis,
-    financialMetrics?: FinancialMetrics
+    financialMetrics?: FinancialMetrics,
+    useCase: 'bulk' | 'user' = 'user'
   ): Promise<ConcernAssessment> {
     const prompt = this.CONCERN_ASSESSMENT_PROMPT
       .replace('{riskAnalysis}', JSON.stringify(risks, null, 2))
@@ -622,7 +633,7 @@ Focus on quantitative data that impacts stock price.`;
 
     try {
       const response = await this.client.messages.create({
-        model: this.model,
+        model: this.getModel(useCase),
         max_tokens: 2048,
         temperature: 0.3,
         messages: [
@@ -680,7 +691,7 @@ Focus on quantitative data that impacts stock price.`;
     }
   }
 
-  async extractFinancialMetrics(filingText: string, priorMDA?: string): Promise<FinancialMetrics> {
+  async extractFinancialMetrics(filingText: string, priorMDA?: string, useCase: 'bulk' | 'user' = 'user'): Promise<FinancialMetrics> {
     let prompt = this.FINANCIAL_METRICS_PROMPT.replace('{filingText}', filingText.slice(0, 30000)); // Limit size
 
     // If prior MD&A is available, add guidance comparison instructions
@@ -690,7 +701,7 @@ Focus on quantitative data that impacts stock price.`;
 
     try {
       const response = await this.client.messages.create({
-        model: this.model,
+        model: this.getModel(useCase),
         max_tokens: 1024,
         temperature: 0.1, // Very low temp for factual extraction
         messages: [
@@ -726,7 +737,8 @@ Focus on quantitative data that impacts stock price.`;
   async generateFilingContentSummary(
     filingText: string,
     filingType: string,
-    companyName: string
+    companyName: string,
+    useCase: 'bulk' | 'user' = 'user'
   ): Promise<string> {
     const prompt = `Summarize what this ${filingType} filing from ${companyName} contains.
 
@@ -745,7 +757,7 @@ Return ONLY bullet points, no introduction.`;
 
     try {
       const response = await this.client.messages.create({
-        model: this.model,
+        model: this.getModel(useCase),
         max_tokens: 512,
         temperature: 0.2,
         messages: [
@@ -771,7 +783,8 @@ Return ONLY bullet points, no introduction.`;
   async generateExecutiveSummary(
     filingText: string,
     riskAnalysis: RiskAnalysis,
-    sentimentAnalysis: SentimentAnalysis
+    sentimentAnalysis: SentimentAnalysis,
+    useCase: 'bulk' | 'user' = 'user'
   ): Promise<string> {
     const prompt = `Create a concise executive summary (3-5 bullet points) of this SEC filing.
 
@@ -789,7 +802,7 @@ Return ONLY bullet points, no introduction.`;
 
     try {
       const response = await this.client.messages.create({
-        model: this.model,
+        model: this.getModel(useCase),
         max_tokens: 512,
         messages: [
           {
@@ -848,18 +861,19 @@ Return ONLY bullet points, no introduction.`;
     priorRisks?: string,
     filingType?: string,
     companyName?: string,
-    priorMDA?: string
+    priorMDA?: string,
+    useCase: 'bulk' | 'user' = 'user'
   ): Promise<FilingAnalysis> {
     try {
       const fullText = currentRisks + '\n\n' + mdaText;
 
       // Run all analysis in parallel for speed
       const [risks, sentiment, financialMetrics, filingContentSummary] = await Promise.all([
-        this.analyzeRiskFactors(currentRisks, priorRisks),
-        this.analyzeSentiment(mdaText),
-        this.extractFinancialMetrics(fullText, priorMDA),
+        this.analyzeRiskFactors(currentRisks, priorRisks, useCase),
+        this.analyzeSentiment(mdaText, useCase),
+        this.extractFinancialMetrics(fullText, priorMDA, useCase),
         filingType && companyName
-          ? this.generateFilingContentSummary(fullText, filingType, companyName)
+          ? this.generateFilingContentSummary(fullText, filingType, companyName, useCase)
           : Promise.resolve(undefined),
       ]);
 
@@ -867,14 +881,16 @@ Return ONLY bullet points, no introduction.`;
       const concernAssessment = await this.generateConcernAssessment(
         risks,
         sentiment,
-        financialMetrics
+        financialMetrics,
+        useCase
       );
 
       // Generate summary
       const summary = await this.generateExecutiveSummary(
         fullText,
         risks,
-        sentiment
+        sentiment,
+        useCase
       );
 
       return {
