@@ -156,7 +156,7 @@ export function CompanySnapshotTooltip({ ticker, companyName, snapshot, children
                 {snapshot.dividendYield && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">Dividend Yield:</span>
-                    <span className="font-semibold text-slate-900">{(snapshot.dividendYield * 100).toFixed(2)}%</span>
+                    <span className="font-semibold text-slate-900">{snapshot.dividendYield.toFixed(2)}%</span>
                   </div>
                 )}
               </div>

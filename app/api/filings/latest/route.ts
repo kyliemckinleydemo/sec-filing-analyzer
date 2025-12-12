@@ -150,8 +150,8 @@ export async function GET(request: Request) {
         ticker: filing.company.ticker,
         companyName: filing.company.name,
         cik: filing.cik,
-        filingType: filing.filingType,
-        filingDate: filing.filingDate.toISOString().split('T')[0],
+        formType: filing.filingType, // Match expected field name
+        filedAt: filing.filingDate.toISOString().split('T')[0], // Match expected field name
         reportDate: filing.reportDate?.toISOString().split('T')[0] || null,
         primaryDocument: filing.filingUrl.split('/').pop(),
         hasXBRL: true, // Our cron only fetches XBRL filings
