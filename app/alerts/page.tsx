@@ -244,7 +244,7 @@ export default function AlertsPage() {
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <h3 className="font-bold text-lg">{getAlertTypeLabel(alert.alertType)}</h3>
+                        <h3 className="font-bold text-lg text-slate-900">{getAlertTypeLabel(alert.alertType)}</h3>
                         {alert.enabled ? (
                           <Badge className="bg-green-100 text-green-700">Enabled</Badge>
                         ) : (
