@@ -150,9 +150,9 @@ export async function GET(request: Request) {
         ticker: filing.company.ticker,
         companyName: filing.company.name,
         cik: filing.cik,
-        formType: filing.filingType, // Match expected field name
-        filedAt: filing.filingDate.toISOString().split('T')[0], // Match expected field name
-        reportDate: filing.reportDate?.toISOString().split('T')[0] || null,
+        filingType: filing.filingType, // Fixed: match frontend expectation
+        filingDate: filing.filingDate.toISOString(), // Fixed: return full ISO string for frontend parsing
+        reportDate: filing.reportDate?.toISOString() || null, // Fixed: return full ISO string
         primaryDocument: filing.filingUrl.split('/').pop(),
         hasXBRL: true, // Our cron only fetches XBRL filings
         filingUrl: filing.filingUrl,
