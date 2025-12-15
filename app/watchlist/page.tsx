@@ -214,6 +214,7 @@ export default function WatchlistPage() {
                   value={newTicker}
                   onChange={(e) => setNewTicker(e.target.value.toUpperCase())}
                   disabled={adding}
+                  className="border-2 border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200"
                 />
                 <Button type="submit" disabled={adding || !newTicker}>
                   {adding ? 'Adding...' : 'Add'}
