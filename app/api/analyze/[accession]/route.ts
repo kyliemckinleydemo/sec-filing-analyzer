@@ -54,25 +54,47 @@ export async function GET(
       ? accession
       : `${accession.slice(0, 10)}-${accession.slice(10, 12)}-${accession.slice(12)}`;
 
-    // ALWAYS delete existing filing to ensure fresh analysis (no stale cache)
+    // Check if filing already exists with analysis data
     const existingFiling = await prisma.filing.findUnique({
       where: { accessionNumber: normalizedAccession },
+      include: { company: true },
     });
 
-    if (existingFiling) {
-      console.log(`Deleting existing filing ${normalizedAccession} for fresh analysis...`);
-      // Delete related predictions first (foreign key constraint)
-      await prisma.prediction.deleteMany({
-        where: { filingId: existingFiling.id },
-      });
-      // Delete the filing
-      await prisma.filing.delete({
-        where: { accessionNumber: normalizedAccession },
-      });
+    // If filing exists with analysis, return it (don't regenerate unless forced)
+    if (existingFiling && existingFiling.analysisData) {
+      console.log(`✅ Returning cached analysis for ${normalizedAccession}`);
+      const analysis = JSON.parse(existingFiling.analysisData);
+
+      const result = {
+        filing: {
+          accessionNumber: existingFiling.accessionNumber,
+          filingType: existingFiling.filingType,
+          filingDate: existingFiling.filingDate,
+          company: existingFiling.company ? {
+            name: existingFiling.company.name,
+            ticker: existingFiling.company.ticker,
+          } : undefined,
+        },
+        analysis,
+        summary: existingFiling.aiSummary,
+        riskScore: existingFiling.riskScore,
+        sentimentScore: existingFiling.sentimentScore,
+        mlPrediction: existingFiling.predicted7dReturn ? {
+          predicted7dReturn: existingFiling.predicted7dReturn,
+          predictionConfidence: existingFiling.predictionConfidence,
+          tradingSignal: (existingFiling.predictionConfidence && existingFiling.predictionConfidence >= 0.60 && Math.abs(existingFiling.predicted7dReturn) >= 2.0)
+            ? (existingFiling.predicted7dReturn > 0 ? 'BUY' : 'SELL')
+            : 'HOLD',
+          confidenceLabel: existingFiling.predictionConfidence && existingFiling.predictionConfidence >= 0.80 ? 'HIGH' :
+                          existingFiling.predictionConfidence && existingFiling.predictionConfidence >= 0.70 ? 'MEDIUM' : 'LOW',
+        } : null,
+      };
+
+      return NextResponse.json(result);
     }
 
-    // Create filing from URL params
-    let filing = null;
+    // If filing doesn't exist or has no analysis, we need to create/analyze it
+    // Get query params to create filing
     const { searchParams } = new URL(request.url);
     const ticker = searchParams.get('ticker');
     const cik = searchParams.get('cik');
@@ -83,10 +105,24 @@ export async function GET(
 
     if (!ticker || !cik || !filingType || !filingDate || !filingUrl || !companyName) {
       return NextResponse.json(
-        { error: 'Filing not found in database. Please provide: ticker, cik, filingType, filingDate, filingUrl, companyName as query parameters.' },
+        { error: 'Filing not found in database and missing required parameters. Please provide: ticker, cik, filingType, filingDate, filingUrl, companyName as query parameters to analyze a new filing.' },
         { status: 404 }
       );
     }
+
+    // Delete existing filing without analysis to regenerate
+    if (existingFiling && !existingFiling.analysisData) {
+      console.log(`Deleting incomplete filing ${normalizedAccession} to regenerate...`);
+      await prisma.prediction.deleteMany({
+        where: { filingId: existingFiling.id },
+      });
+      await prisma.filing.delete({
+        where: { accessionNumber: normalizedAccession },
+      });
+    }
+
+    // Create filing from URL params
+    let filing = null;
 
     // Create company if it doesn't exist
     let company = await prisma.company.findUnique({

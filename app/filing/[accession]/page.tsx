@@ -465,7 +465,7 @@ export default function FilingPage() {
     );
   }
 
-  if (loading || !renderComplete) {
+  if ((loading || !renderComplete) && !error) {
     const stepDetails = getStepDetails(currentStep);
 
     return (
