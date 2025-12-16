@@ -1799,7 +1799,7 @@ export default function FilingPage() {
 
           {/* Risk Analysis */}
           {data.analysis && (
-            <Card data-print-section="risks">
+            <Card className="border-2 border-red-200 bg-gradient-to-r from-red-50 to-orange-50" data-print-section="risks">
               <CardHeader>
                 <CardTitle>⚠️ Risk Analysis</CardTitle>
                 <CardDescription>
@@ -1840,7 +1840,7 @@ export default function FilingPage() {
 
           {/* Concern Assessment */}
           {data.analysis?.concernAssessment && (
-            <Card data-print-section="concern">
+            <Card className="border-2 border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50" data-print-section="concern">
               <CardHeader>
                 <CardTitle>⚠️ Concern Assessment</CardTitle>
                 <CardDescription>
@@ -1851,7 +1851,7 @@ export default function FilingPage() {
                 <div className="space-y-4">
                   {/* Concern Level Bar */}
                   <div>
-                    <div className="flex justify-between text-xs mb-1 text-slate-600">
+                    <div className="flex justify-between text-xs mb-1 text-slate-700 font-medium">
                       <span>Low</span>
                       <span>Moderate</span>
                       <span>Elevated</span>
@@ -1869,8 +1869,8 @@ export default function FilingPage() {
                   </div>
 
                   {/* Reasoning */}
-                  <div className="bg-slate-50 p-3 rounded">
-                    <p className="text-sm text-slate-700">{data.analysis.concernAssessment.reasoning}</p>
+                  <div className="bg-white p-4 rounded border border-slate-200">
+                    <p className="text-sm text-slate-800">{data.analysis.concernAssessment.reasoning}</p>
                   </div>
 
                   {/* Concern Factors */}
@@ -1881,7 +1881,7 @@ export default function FilingPage() {
                         {data.analysis.concernAssessment.concernFactors.map((factor, i) => (
                           <li key={i} className="flex items-start gap-2">
                             <span className="text-red-600 font-bold">•</span>
-                            <span className="text-sm text-slate-700">{factor}</span>
+                            <span className="text-sm text-slate-800">{factor}</span>
                           </li>
                         ))}
                       </ul>
@@ -1896,7 +1896,7 @@ export default function FilingPage() {
                         {data.analysis.concernAssessment.positiveFactors.map((factor, i) => (
                           <li key={i} className="flex items-start gap-2">
                             <span className="text-green-600 font-bold">•</span>
-                            <span className="text-sm text-slate-700">{factor}</span>
+                            <span className="text-sm text-slate-800">{factor}</span>
                           </li>
                         ))}
                       </ul>
