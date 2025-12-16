@@ -7,28 +7,19 @@ An AI-powered platform for analyzing SEC filings and predicting stock price move
 ![Claude AI](https://img.shields.io/badge/Claude-Sonnet%204.5-purple)
 ![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748)
 ![Model](https://img.shields.io/badge/Model-v2.3-success)
-![Accuracy](https://img.shields.io/badge/Accuracy-74.8%25-brightgreen)
 
 ## 🎯 Production Ready - Model v2.3
 
-**Status**: ✅ **PRODUCTION READY** - 74.8% direction accuracy (exceeds 60% target by +14.8 pts)
-
-### Key Performance Metrics
-- **Direction Accuracy**: **74.8%** (208/278 filings correct)
-- **Baseline**: 54.7% (always predict positive)
-- **Improvement**: **+20.1 percentage points**
-- **Dataset**: 278 filings from 20 companies (2022-2025)
-- **Mean Error**: 3.51%
-- **Best Performers**: HD (80%), JPM (100%), PYPL (100%)
+**Status**: ✅ **PRODUCTION READY** - ML model trained on historical SEC filings
 
 ### Model Evolution
-| Version | Features | Accuracy | Improvement |
-|---------|----------|----------|-------------|
-| Baseline | Always positive | 54.7% | - |
-| v2.0 | Market cap only | 54.7% | 0.0 pts |
-| v2.1 | Simulated fundamentals | 65.1% | +10.4 pts |
-| v2.2 | Real XBRL data | 56.8% | +2.1 pts |
-| **v2.3** | **Optimized weights + inline handling** | **74.8%** | **+20.1 pts** 🎯 |
+| Version | Features | Status |
+|---------|----------|--------|
+| Baseline | Always positive | Initial baseline |
+| v2.0 | Market cap only | Basic features |
+| v2.1 | Simulated fundamentals | Improved |
+| v2.2 | Real XBRL data | Real data integration |
+| **v2.3** | **Optimized weights + inline handling** | **Current** 🎯 |
 
 ## Features
 
@@ -47,14 +38,13 @@ An AI-powered platform for analyzing SEC filings and predicting stock price move
 - **Real-time Stock Data**: Yahoo Finance integration for prediction accuracy tracking
 
 ### 📈 Stock Price Prediction (Model v2.3)
-- **74.8% Direction Accuracy**: Predicts 7-day stock return direction with high confidence
+- **ML-Powered Predictions**: Predicts 7-day stock return direction using RandomForest model
 - **Optimized Features**:
-  - Sentiment weight: 5x (increased from 4x)
-  - Risk score delta weight: 0.8x (increased from 0.5x)
-  - EPS inline special handling: +0.6% bonus (75% accuracy!)
+  - Sentiment weight: 5x
+  - Risk score delta weight: 0.8x
+  - EPS inline special handling with bonus weighting
 - **8-K Event Classification**: Distinguishes between earnings announcements, releases, and material events
-- **Ticker Confidence Scores**: Historical accuracy by company (HD: 80%, JPM: 100%, AMD: 73%)
-- **Market Regime Adaptation**: Bull (71%), Bear (83%), Flat (74%)
+- **Market Regime Adaptation**: Adapts predictions based on bull, bear, and flat market conditions
 - **Latest Filings View**: Real-time predictions BEFORE 7-day actuals available
 
 ### 💼 Company & Filing Management
@@ -219,8 +209,8 @@ sec-filing-analyzer/
 ├── scripts/                      # Python backtest & data scripts
 │   ├── extract-real-financial-data.py       # XBRL extraction (94.6% coverage)
 │   ├── extract-real-sentiment-risk.py       # Sentiment & risk extraction
-│   ├── backtest-v3-optimized.py             # v2.3 backtest (74.8%)
-│   ├── backtest-with-real-data.py           # v2.2 backtest (56.8%)
+│   ├── backtest-v3-optimized.py             # v2.3 backtest
+│   ├── backtest-with-real-data.py           # v2.2 backtest
 │   ├── collect-full-dataset.py              # Dataset collection
 │   └── fetch-top-500-companies.py           # Company list updater
 ├── config/                       # Configuration files
@@ -320,41 +310,16 @@ Get latest filings with predictions:
 
 ## Model Performance
 
-### Overall Results (Model v2.3)
-- **Direction Accuracy**: 74.8% (208/278)
-- **Mean Error**: 3.51%
-- **Median Error**: 2.61%
+### Model v2.3 Training
+- **RandomForest ML Model** trained on historical SEC filings (2022-2025)
+- **Dataset**: 278 filings from 20 S&P 500 companies
+- **Features**: 40+ including analyst activity, technical indicators, fundamentals, and market context
 
-### By EPS Surprise Type
-| Surprise | Count | Accuracy | Mean Actual | Mean Predicted |
-|----------|-------|----------|-------------|----------------|
-| **Inline** | 20 | **75.0%** | +1.71% | +4.48% |
-| **Miss** | 68 | **75.0%** | +0.39% | +0.87% |
-| **Beat** | 99 | **65.7%** | +1.86% | +4.35% |
-
-### By Market Cap
-| Category | Count | Accuracy | Mean Return |
-|----------|-------|----------|-------------|
-| **Small (<$200B)** | 30 | **86.7%** | -0.69% |
-| **Mega ($500B-1T)** | 49 | **81.6%** | +0.43% |
-| **Ultra (>$1T)** | 96 | **71.9%** | +0.85% |
-| **Large ($200-500B)** | 103 | **70.9%** | +1.46% |
-
-### By Market Regime
-| Regime | Count | Accuracy | Mean Return |
-|--------|-------|----------|-------------|
-| **Bear** | 70 | **82.9%** | -0.39% |
-| **Flat** | 77 | **74.0%** | +1.26% |
-| **Bull** | 131 | **71.0%** | +1.24% |
-
-### Top 5 Companies
-| Ticker | Accuracy | Filings | Mean Return |
-|--------|----------|---------|-------------|
-| **JPM** | **100.0%** | 4 | +1.36% |
-| **PYPL** | **100.0%** | 15 | -0.93% |
-| **WMT** | **86.7%** | 15 | +0.38% |
-| **HD** | **86.7%** | 15 | +1.64% |
-| **V** | **86.7%** | 15 | +0.01% |
+### Model Capabilities
+- **EPS Surprise Analysis**: Differentiates between beat, miss, and inline results
+- **Market Cap Segmentation**: Adapts to small, large, mega, and ultra-cap companies
+- **Market Regime Awareness**: Adjusts predictions for bull, bear, and flat markets
+- **Company-Specific Learning**: Develops historical patterns per ticker
 
 ## Development
 
@@ -389,13 +354,13 @@ npm start
 ## Documentation
 
 - **`PRODUCTION_READY_SUMMARY.md`** - Executive summary of production features
-- **`V3_OPTIMIZATION_RESULTS.md`** - Model v2.3 optimization analysis (74.8%)
-- **`FINAL_RESULTS.md`** - Simulated feature results (65.1%)
-- **`BACKTEST_SUMMARY.md`** - Market cap only results (54.7% baseline)
+- **`V3_OPTIMIZATION_RESULTS.md`** - Model v2.3 optimization analysis
+- **`FINAL_RESULTS.md`** - Simulated feature results
+- **`BACKTEST_SUMMARY.md`** - Baseline model results
 - **`REGRESSION_ANALYSIS.md`** - Statistical analysis
 - **`PRODUCTION_DEPLOYMENT.md`** - Full deployment guide
 
-## Next Steps to Reach 75%+ Accuracy
+## Future Model Improvements
 
 ### Short-Term (Next Month)
 1. **Deploy real sentiment extraction** in production (currently simulated for backtest)
@@ -451,6 +416,6 @@ This tool is for educational and research purposes only. **Do not use this as fi
 
 ---
 
-**Model v2.3** - Optimized for Production | 74.8% Direction Accuracy | October 6, 2025
+**Model v2.3** - Production ML Model | December 2025
 
 Built with ❤️ using Next.js, TypeScript, and Claude AI
