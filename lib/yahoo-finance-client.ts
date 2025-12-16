@@ -6,6 +6,11 @@
  * More reliable than Alpha Vantage for high-volume apps
  */
 
+import yahooFinance from 'yahoo-finance2';
+
+// Suppress yahoo-finance2 survey notice
+yahooFinance.suppressNotices(['yahooSurvey']);
+
 export interface StockPrice {
   date: string;
   open: number;

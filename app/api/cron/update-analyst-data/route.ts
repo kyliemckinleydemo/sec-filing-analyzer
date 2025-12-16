@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import yahooFinance from 'yahoo-finance2';
 
+// Suppress yahoo-finance2 survey notice
+yahooFinance.suppressNotices(['yahooSurvey']);
+
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
 
