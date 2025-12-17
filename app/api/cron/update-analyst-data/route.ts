@@ -270,8 +270,10 @@ export async function GET(request: Request) {
             // Revenue surprise calculation
             if (earnings.financialsChart?.quarterly) {
               for (const q of earnings.financialsChart.quarterly) {
-                if (q.date === closestEarnings.date && q.revenue !== null && q.revenueEstimate !== null && q.revenueEstimate !== 0) {
-                  const revMagnitude = ((q.revenue - q.revenueEstimate) / Math.abs(q.revenueEstimate)) * 100;
+                // Type assertion needed as yahoo-finance2 types don't include revenueEstimate
+                const qData = q as any;
+                if (q.date === closestEarnings.date && q.revenue !== null && qData.revenueEstimate !== null && qData.revenueEstimate !== undefined && qData.revenueEstimate !== 0) {
+                  const revMagnitude = ((q.revenue - qData.revenueEstimate) / Math.abs(qData.revenueEstimate)) * 100;
                   revenueSurpriseMagnitude = revMagnitude;
                   if (revMagnitude > 5) revenueSurprise = 'beat';
                   else if (revMagnitude < -5) revenueSurprise = 'miss';
