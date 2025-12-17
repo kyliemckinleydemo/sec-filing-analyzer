@@ -100,6 +100,7 @@ interface FilingAnalysisData {
     confidence: number;
     reasoning?: string;
     actual7dReturn?: number;
+    actual7dAlpha?: number;
     modelVersion?: string;
     features?: {
       riskScoreDelta?: number;
@@ -344,6 +345,52 @@ export default function FilingPage() {
       }, 1500); // 1.5 second delay to ensure charts render
     }
   }, [data, loading, loadingStockPrices]);
+
+  // Helper function to determine if this is a Strong Buy signal
+  const isStrongBuy = (prediction: any, features: any) => {
+    if (!prediction || !features) return false;
+
+    // Quantitative criteria: High confidence bullish prediction
+    const hasBullishPrediction =
+      prediction.predicted7dReturn > 1.5 &&
+      prediction.predictionConfidence > 0.6;
+
+    if (!hasBullishPrediction) return false;
+
+    // Fundamental confirmation: At least one strong signal
+    const hasEpsBeat = features.epsSurprise === 'beat';
+    const hasGuidanceSupport =
+      features.guidanceChange === 'raised' ||
+      features.guidanceChange === 'maintained';
+    const hasAnalystSupport =
+      (features.analystNetUpgrades && features.analystNetUpgrades > 0);
+    const hasStrongConsensus =
+      (features.analystConsensus && features.analystConsensus > 65);
+
+    return hasEpsBeat || hasGuidanceSupport || hasAnalystSupport || hasStrongConsensus;
+  };
+
+  // Get list of bullish signals that triggered Strong Buy
+  const getStrongBuySignals = (features: any) => {
+    const signals: string[] = [];
+
+    if (features.epsSurprise === 'beat') {
+      signals.push('EPS Beat Consensus');
+    }
+    if (features.guidanceChange === 'raised') {
+      signals.push('Guidance Raised');
+    } else if (features.guidanceChange === 'maintained') {
+      signals.push('Guidance Maintained');
+    }
+    if (features.analystNetUpgrades && features.analystNetUpgrades > 0) {
+      signals.push(`${features.analystNetUpgrades} Net Analyst Upgrade${features.analystNetUpgrades > 1 ? 's' : ''}`);
+    }
+    if (features.analystConsensus && features.analystConsensus > 65) {
+      signals.push(`Strong Analyst Consensus (${features.analystConsensus.toFixed(0)}/100)`);
+    }
+
+    return signals;
+  };
 
   const getStepDetails = (step: AnalysisStep) => {
     const steps = {
@@ -709,6 +756,42 @@ export default function FilingPage() {
                   </p>
                 </div>
               </div>
+
+              {/* Strong Buy Alpha Display */}
+              {isStrongBuy(data.mlPrediction, data.prediction?.features) && data.prediction?.actual7dAlpha && (
+                <div className="mb-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-500 rounded-lg p-6 shadow-md">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl">💪</span>
+                      <div>
+                        <h3 className="text-2xl font-bold text-green-700">STRONG BUY</h3>
+                        <p className="text-sm text-green-600">High-conviction bullish signal</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-green-600 mb-1">7-Day Alpha vs S&P 500</p>
+                      <p className="text-4xl font-bold text-green-700">
+                        {data.prediction.actual7dAlpha > 0 ? '+' : ''}
+                        {data.prediction.actual7dAlpha.toFixed(2)}%
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="bg-white/50 rounded-lg p-4">
+                    <p className="text-sm font-semibold text-green-700 mb-2">Confirmed by:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {getStrongBuySignals(data.prediction?.features || {}).map((signal, idx) => (
+                        <span
+                          key={idx}
+                          className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium"
+                        >
+                          ✓ {signal}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="bg-white p-4 rounded-lg border border-emerald-200">
                 <h4 className="font-semibold text-slate-800 mb-2">📊 About This Model</h4>

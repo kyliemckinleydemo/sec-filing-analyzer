@@ -44,6 +44,7 @@ interface RecentFiling {
   companyName: string;
   formType: string;
   filedAt: string;
+  filingDate?: string; // API returns this field
   accessionNumber: string;
   filed_at?: string;
   companySnapshot?: CompanySnapshot;
@@ -226,7 +227,7 @@ export default function Home() {
           </div>
 
           {/* Prominent Search Section */}
-          <Card className="bg-gradient-to-r from-blue-600 to-blue-700 border-0 mb-8 overflow-hidden">
+          <Card className="bg-gradient-to-r from-blue-600 to-blue-700 border-0 mb-8 overflow-visible">
             <CardContent className="p-8">
               <div className="text-center mb-6">
                 <h2 className="text-3xl font-bold text-white mb-2">
@@ -450,8 +451,8 @@ export default function Home() {
               ) : (
                 <div className="grid md:grid-cols-2 gap-3">
                   {recentFilings.map((filing) => {
-                    // Handle both filedAt and filed_at field names
-                    const filingDate = filing.filed_at || filing.filedAt;
+                    // Handle different field names from API
+                    const filingDate = (filing as any).filingDate || filing.filed_at || filing.filedAt;
                     const dateObj = new Date(filingDate);
                     const isValidDate = !isNaN(dateObj.getTime());
 
