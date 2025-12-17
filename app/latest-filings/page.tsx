@@ -46,11 +46,21 @@ interface LatestFiling {
   companySnapshot: CompanySnapshot;
 }
 
+interface CompanySuggestion {
+  ticker: string;
+  name: string;
+  marketCap: number | null;
+  filingCount: number;
+}
+
 function LatestFilingsContent() {
   const searchParams = useSearchParams();
   const [filings, setFilings] = useState<LatestFiling[]>([]);
   const [loading, setLoading] = useState(true);
   const [tickerFilter, setTickerFilter] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [suggestions, setSuggestions] = useState<CompanySuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [filingTypeFilter, setFilingTypeFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -62,8 +72,29 @@ function LatestFilingsContent() {
     const tickerParam = searchParams.get('ticker');
     if (tickerParam) {
       setTickerFilter(tickerParam.toUpperCase());
+      setSearchInput(tickerParam.toUpperCase());
     }
   }, [searchParams]);
+
+  // Autocomplete search
+  useEffect(() => {
+    if (searchInput.length < 1) {
+      setSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/companies/search?q=${encodeURIComponent(searchInput)}`);
+        const data = await response.json();
+        setSuggestions(data.companies || []);
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+      }
+    }, 300); // Debounce
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   useEffect(() => {
     setCurrentPage(1); // Reset to page 1 when filters change
@@ -122,6 +153,29 @@ function LatestFilingsContent() {
     router.push(`/filing/${normalizedAccession}?${params.toString()}`);
   };
 
+  const handleSelectTicker = (ticker: string) => {
+    setSearchInput(ticker);
+    setTickerFilter(ticker);
+    setShowSuggestions(false);
+    router.push(`/latest-filings?ticker=${ticker}`);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchInput.trim()) {
+      setTickerFilter(searchInput.toUpperCase());
+      setShowSuggestions(false);
+      router.push(`/latest-filings?ticker=${searchInput.toUpperCase()}`);
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput('');
+    setTickerFilter('');
+    setSuggestions([]);
+    router.push('/latest-filings');
+  };
+
   const getDaysSinceFiling = (filingDate: string) => {
     const days = Math.floor(
       (Date.now() - new Date(filingDate).getTime()) / (1000 * 60 * 60 * 24)
@@ -145,23 +199,90 @@ function LatestFilingsContent() {
         <Button
           variant="outline"
           onClick={() => router.push('/')}
-          className="mb-4"
+          className="mb-6"
         >
           ← Back to Home
         </Button>
-        <h1 className="text-4xl font-bold mb-2">Latest SEC Filings</h1>
-        <p className="text-slate-600 mb-6">
-          Recent filings with financial data from 640+ tracked companies. Click "Analyze" to get AI-powered predictions.
-        </p>
 
-        {/* Filters */}
-        <div className="flex gap-4 mb-6">
-          <Input
-            placeholder="Filter by ticker (e.g., AAPL)"
-            value={tickerFilter}
-            onChange={(e) => setTickerFilter(e.target.value.toUpperCase())}
-            className="max-w-xs"
-          />
+        {/* Hero Search Section */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl shadow-2xl p-8 mb-8">
+          <h1 className="text-4xl font-bold text-white mb-3 text-center">
+            🔍 Search SEC Filings
+          </h1>
+          <p className="text-blue-100 text-center mb-6 text-lg">
+            Find AI-powered predictions for your favorite stocks
+          </p>
+
+          <form onSubmit={handleSearch} className="max-w-3xl mx-auto">
+            <div className="relative">
+              <Input
+                placeholder="Enter ticker symbol (e.g., AAPL, MSFT, GOOGL) or company name..."
+                value={searchInput}
+                onChange={(e) => {
+                  setSearchInput(e.target.value.toUpperCase());
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                className="h-14 text-lg pl-5 pr-28 border-4 border-white/20 focus:border-white/40 bg-white/95 shadow-lg"
+              />
+              <div className="absolute right-2 top-2 flex gap-2">
+                {searchInput && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearSearch}
+                    className="h-10 text-slate-600 hover:text-slate-900"
+                  >
+                    Clear
+                  </Button>
+                )}
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="h-10 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6"
+                >
+                  Search
+                </Button>
+              </div>
+
+              {/* Autocomplete Suggestions */}
+              {showSuggestions && suggestions.length > 0 && (
+                <Card className="absolute w-full mt-2 z-50 shadow-xl max-h-80 overflow-y-auto">
+                  {suggestions.map((company) => (
+                    <div
+                      key={company.ticker}
+                      className="p-4 hover:bg-slate-50 cursor-pointer border-b last:border-b-0 transition-colors"
+                      onClick={() => handleSelectTicker(company.ticker)}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="font-bold text-blue-600 text-lg">{company.ticker}</div>
+                          <div className="text-sm text-slate-600">{company.name}</div>
+                        </div>
+                        <div className="text-right text-sm text-slate-500">
+                          {company.filingCount} filings
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </Card>
+              )}
+            </div>
+          </form>
+
+          {tickerFilter && (
+            <div className="mt-4 text-center">
+              <span className="inline-block bg-white/20 text-white px-4 py-2 rounded-full text-sm">
+                Showing results for: <strong>{tickerFilter}</strong>
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Secondary Filters */}
+        <div className="flex gap-4 mb-6 items-center">
           <Select value={filingTypeFilter} onValueChange={setFilingTypeFilter}>
             <SelectTrigger className="max-w-xs">
               <SelectValue placeholder="All filing types" />
@@ -176,6 +297,11 @@ function LatestFilingsContent() {
           <Button variant="outline" onClick={() => fetchFilings(currentPage)}>
             Refresh
           </Button>
+          {totalCount > 0 && (
+            <span className="text-sm text-slate-600 ml-auto">
+              {totalCount} filing{totalCount !== 1 ? 's' : ''} found
+            </span>
+          )}
         </div>
 
         {/* Loading State */}
