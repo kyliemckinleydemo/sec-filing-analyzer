@@ -56,12 +56,21 @@ interface StockPrice {
   changePercent: number;
 }
 
+interface CompanySuggestion {
+  ticker: string;
+  name: string;
+  filingCount: number;
+}
+
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [recentFilings, setRecentFilings] = useState<RecentFiling[]>([]);
   const [stockPrices, setStockPrices] = useState<Record<string, StockPrice>>({});
+  const [searchInput, setSearchInput] = useState('');
+  const [suggestions, setSuggestions] = useState<CompanySuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -80,6 +89,30 @@ export default function Home() {
       fetchStockPrices();
     }
   }, [watchlist]);
+
+  // Autocomplete search
+  useEffect(() => {
+    if (searchInput.length < 1) {
+      setSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/companies/search?q=${encodeURIComponent(searchInput)}`);
+        const data = await response.json();
+        setSuggestions(data.companies || []);
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const handleSearch = (ticker: string) => {
+    router.push(`/latest-filings?ticker=${ticker}`);
+  };
 
   const fetchUser = async () => {
     try {
@@ -191,6 +224,69 @@ export default function Home() {
               </CardHeader>
             </Card>
           </div>
+
+          {/* Prominent Search Section */}
+          <Card className="bg-gradient-to-r from-blue-600 to-blue-700 border-0 mb-8 overflow-hidden">
+            <CardContent className="p-8">
+              <div className="text-center mb-6">
+                <h2 className="text-3xl font-bold text-white mb-2">
+                  🔍 Search SEC Filings
+                </h2>
+                <p className="text-blue-100 text-lg">
+                  Find AI-powered predictions for any company
+                </p>
+              </div>
+
+              <div className="max-w-2xl mx-auto relative">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Enter ticker (e.g., AAPL, MSFT) or company name..."
+                    value={searchInput}
+                    onChange={(e) => {
+                      setSearchInput(e.target.value.toUpperCase());
+                      setShowSuggestions(true);
+                    }}
+                    onFocus={() => setShowSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                    className="w-full h-14 px-5 pr-24 text-lg rounded-lg border-2 border-white/20 focus:border-white/40 bg-white/95 text-slate-900 outline-none"
+                  />
+                  <Button
+                    onClick={() => searchInput && handleSearch(searchInput)}
+                    className="absolute right-2 top-2 h-10 bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    Search
+                  </Button>
+                </div>
+
+                {/* Autocomplete Suggestions */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute w-full mt-2 bg-white rounded-lg shadow-2xl z-50 max-h-80 overflow-y-auto">
+                    {suggestions.map((company) => (
+                      <div
+                        key={company.ticker}
+                        className="p-4 hover:bg-slate-50 cursor-pointer border-b last:border-b-0 transition-colors"
+                        onClick={() => {
+                          handleSearch(company.ticker);
+                          setShowSuggestions(false);
+                        }}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <div className="font-bold text-blue-600 text-lg">{company.ticker}</div>
+                            <div className="text-sm text-slate-600">{company.name}</div>
+                          </div>
+                          <div className="text-sm text-slate-500">
+                            {company.filingCount} filings
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
           <div className="grid lg:grid-cols-2 gap-6 mb-8">
             {/* Quick Actions */}
