@@ -150,13 +150,24 @@ export async function GET(request: Request) {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    const recentFilings = await prisma.filing.findMany({
+    // Keywords to identify earnings 8-Ks
+    const earningsKeywords = [
+      'earnings', 'quarterly results', 'financial results',
+      'q1 20', 'q2 20', 'q3 20', 'q4 20',
+      'first quarter', 'second quarter', 'third quarter', 'fourth quarter',
+      'net income', 'revenue', 'eps', 'diluted earnings'
+    ];
+
+    const allRecentFilings = await prisma.filing.findMany({
       where: {
         filingDate: {
           gte: sevenDaysAgo
         },
         filingType: {
-          in: ['10-K', '10-Q']
+          in: ['10-K', '10-Q', '8-K']
+        },
+        analysisData: {
+          not: null
         }
       },
       include: {
@@ -167,7 +178,22 @@ export async function GET(request: Request) {
       }
     });
 
-    console.log(`[Cron] Found ${recentFilings.length} filings from past 7 days`);
+    // Filter for financial filings (10-K, 10-Q, and earnings 8-Ks only)
+    const recentFilings = allRecentFilings.filter(filing => {
+      if (filing.filingType === '10-K' || filing.filingType === '10-Q') return true;
+      if (filing.filingType === '8-K' && filing.analysisData) {
+        try {
+          const data = JSON.parse(filing.analysisData);
+          const summary = (data.filingContentSummary || data.summary || '').toLowerCase();
+          return earningsKeywords.some(kw => summary.includes(kw));
+        } catch {
+          return false;
+        }
+      }
+      return false;
+    });
+
+    console.log(`[Cron] Found ${allRecentFilings.length} total filings, ${recentFilings.length} financial filings from past 7 days`);
 
     let updated = 0;
     let errors = 0;
@@ -177,13 +203,14 @@ export async function GET(request: Request) {
         const ticker = filing.company?.ticker;
         if (!ticker) continue;
 
-        // Fetch analyst consensus
+        // Fetch analyst consensus and earnings data
         const quote = await yahooFinance.quoteSummary(ticker, {
-          modules: ['financialData', 'recommendationTrend']
+          modules: ['financialData', 'recommendationTrend', 'earnings']
         });
 
         const fd = quote.financialData;
         const trend = quote.recommendationTrend?.trend?.[0];
+        const earnings = quote.earnings;
 
         // Fetch analyst activity
         const activity = await getAnalystActivity(ticker, filing.filingDate);
@@ -205,6 +232,55 @@ export async function GET(request: Request) {
         let upsidePotential = null;
         if (fd?.targetMeanPrice && fd?.currentPrice) {
           upsidePotential = ((fd.targetMeanPrice - fd.currentPrice) / fd.currentPrice) * 100;
+        }
+
+        // Calculate EPS and Revenue surprises
+        let epsSurprise: 'beat' | 'miss' | 'inline' | 'unknown' = 'unknown';
+        let epsSurpriseMagnitude: number | null = null;
+        let revenueSurprise: 'beat' | 'miss' | 'inline' | 'unknown' = 'unknown';
+        let revenueSurpriseMagnitude: number | null = null;
+
+        if (earnings?.earningsChart?.quarterly) {
+          // Find the earnings report closest to filing date
+          const filingTime = filing.filingDate.getTime();
+          let closestEarnings = null;
+          let minDiff = Infinity;
+
+          for (const q of earnings.earningsChart.quarterly) {
+            if (q.date) {
+              const earningsTime = new Date(q.date).getTime();
+              const diff = Math.abs(filingTime - earningsTime);
+              if (diff < minDiff && diff < 90 * 24 * 60 * 60 * 1000) { // Within 90 days
+                minDiff = diff;
+                closestEarnings = q;
+              }
+            }
+          }
+
+          if (closestEarnings) {
+            // EPS surprise calculation
+            if (closestEarnings.actual !== null && closestEarnings.estimate !== null && closestEarnings.estimate !== 0) {
+              const epsMagnitude = ((closestEarnings.actual - closestEarnings.estimate) / Math.abs(closestEarnings.estimate)) * 100;
+              epsSurpriseMagnitude = epsMagnitude;
+              if (epsMagnitude > 5) epsSurprise = 'beat';
+              else if (epsMagnitude < -5) epsSurprise = 'miss';
+              else epsSurprise = 'inline';
+            }
+
+            // Revenue surprise calculation
+            if (earnings.financialsChart?.quarterly) {
+              for (const q of earnings.financialsChart.quarterly) {
+                if (q.date === closestEarnings.date && q.revenue !== null && q.revenueEstimate !== null && q.revenueEstimate !== 0) {
+                  const revMagnitude = ((q.revenue - q.revenueEstimate) / Math.abs(q.revenueEstimate)) * 100;
+                  revenueSurpriseMagnitude = revMagnitude;
+                  if (revMagnitude > 5) revenueSurprise = 'beat';
+                  else if (revMagnitude < -5) revenueSurprise = 'miss';
+                  else revenueSurprise = 'inline';
+                  break;
+                }
+              }
+            }
+          }
         }
 
         // Merge analyst data into analysisData JSON
@@ -232,6 +308,16 @@ export async function GET(request: Request) {
               netUpgrades: activity.netUpgrades,
               majorUpgrades: activity.majorUpgrades,
               majorDowngrades: activity.majorDowngrades
+            }
+          },
+          financialMetrics: {
+            ...existingData.financialMetrics,
+            structuredData: {
+              ...existingData.financialMetrics?.structuredData,
+              epsSurprise,
+              epsSurpriseMagnitude,
+              revenueSurprise,
+              revenueSurpriseMagnitude
             }
           }
         };
