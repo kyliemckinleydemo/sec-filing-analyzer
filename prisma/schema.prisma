@@ -86,6 +86,14 @@ model Filing {
   actual7dAlpha     Float?   // 7-day return vs SPX (market-relative)
   actual30dAlpha    Float?   // 30-day return vs SPX
 
+  // Earnings data (for surprise calculation)
+  consensusEPS      Float?   // Analyst consensus EPS
+  actualEPS         Float?   // Actual reported EPS
+  epsSurprise       Float?   // EPS surprise % (actual - consensus) / consensus * 100
+  consensusRevenue  Float?   // Analyst consensus revenue (billions)
+  actualRevenue     Float?   // Actual reported revenue (billions)
+  revenueSurprise   Float?   // Revenue surprise %
+
   predictions     Prediction[]
   stockPrices     StockPrice[]
   snapshots       CompanySnapshot[]

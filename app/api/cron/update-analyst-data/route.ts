@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import yahooFinance from 'yahoo-finance2';
+import { yfinanceClient } from '@/lib/yfinance-client';
 
 // Suppress yahoo-finance2 survey notice
 yahooFinance.suppressNotices(['yahooSurvey']);
@@ -234,53 +235,43 @@ export async function GET(request: Request) {
           upsidePotential = ((fd.targetMeanPrice - fd.currentPrice) / fd.currentPrice) * 100;
         }
 
-        // Calculate EPS and Revenue surprises
+        // Fetch earnings surprise data using our yfinance client
+        const earningsResponse = await yfinanceClient.getEarningsHistory(ticker);
+
+        let consensusEPS: number | null = null;
+        let actualEPS: number | null = null;
         let epsSurprise: 'beat' | 'miss' | 'inline' | 'unknown' = 'unknown';
         let epsSurpriseMagnitude: number | null = null;
         let revenueSurprise: 'beat' | 'miss' | 'inline' | 'unknown' = 'unknown';
         let revenueSurpriseMagnitude: number | null = null;
 
-        if (earnings?.earningsChart?.quarterly) {
-          // Find the earnings report closest to filing date
-          const filingTime = filing.filingDate.getTime();
-          let closestEarnings = null;
-          let minDiff = Infinity;
-
-          for (const q of earnings.earningsChart.quarterly) {
-            if (q.date) {
-              const earningsTime = new Date(q.date).getTime();
-              const diff = Math.abs(filingTime - earningsTime);
-              if (diff < minDiff && diff < 90 * 24 * 60 * 60 * 1000) { // Within 90 days
-                minDiff = diff;
-                closestEarnings = q;
-              }
-            }
-          }
+        if (earningsResponse.success && earningsResponse.data.length > 0) {
+          // Find earnings report closest to filing date
+          const closestEarnings = yfinanceClient.findClosestEarnings(
+            earningsResponse.data,
+            filing.filingDate,
+            90 // Within 90 days
+          );
 
           if (closestEarnings) {
-            // EPS surprise calculation
-            if (closestEarnings.actual !== null && closestEarnings.estimate !== null && closestEarnings.estimate !== 0) {
-              const epsMagnitude = ((closestEarnings.actual - closestEarnings.estimate) / Math.abs(closestEarnings.estimate)) * 100;
-              epsSurpriseMagnitude = epsMagnitude;
-              if (epsMagnitude > 5) epsSurprise = 'beat';
-              else if (epsMagnitude < -5) epsSurprise = 'miss';
+            // Store consensus and actual EPS
+            consensusEPS = closestEarnings.epsEstimate;
+            actualEPS = closestEarnings.epsActual;
+
+            // Calculate surprise if we have both values
+            if (closestEarnings.epsSurprise !== null) {
+              epsSurpriseMagnitude = closestEarnings.epsSurprise * 100; // Convert to percentage
+              if (epsSurpriseMagnitude > 2) epsSurprise = 'beat';
+              else if (epsSurpriseMagnitude < -2) epsSurprise = 'miss';
               else epsSurprise = 'inline';
             }
 
-            // Revenue surprise calculation
-            if (earnings.financialsChart?.quarterly) {
-              for (const q of earnings.financialsChart.quarterly) {
-                // Type assertion needed as yahoo-finance2 types don't include revenueEstimate
-                const qData = q as any;
-                if (q.date === closestEarnings.date && q.revenue !== null && qData.revenueEstimate !== null && qData.revenueEstimate !== undefined && qData.revenueEstimate !== 0) {
-                  const revMagnitude = ((q.revenue - qData.revenueEstimate) / Math.abs(qData.revenueEstimate)) * 100;
-                  revenueSurpriseMagnitude = revMagnitude;
-                  if (revMagnitude > 5) revenueSurprise = 'beat';
-                  else if (revMagnitude < -5) revenueSurprise = 'miss';
-                  else revenueSurprise = 'inline';
-                  break;
-                }
-              }
+            // Revenue surprise (if available)
+            if (closestEarnings.revenueSurprise !== null) {
+              revenueSurpriseMagnitude = closestEarnings.revenueSurprise;
+              if (revenueSurpriseMagnitude > 2) revenueSurprise = 'beat';
+              else if (revenueSurpriseMagnitude < -2) revenueSurprise = 'miss';
+              else revenueSurprise = 'inline';
             }
           }
         }
@@ -324,10 +315,16 @@ export async function GET(request: Request) {
           }
         };
 
-        // Update filing
+        // Update filing with both dedicated fields and analysisData
         await prisma.filing.update({
           where: { id: filing.id },
           data: {
+            // Store in dedicated fields for model training
+            consensusEPS,
+            actualEPS,
+            epsSurprise: epsSurpriseMagnitude,
+            revenueSurprise: revenueSurpriseMagnitude,
+            // Keep analysisData for backwards compatibility
             analysisData: JSON.stringify(updatedAnalysisData)
           }
         });

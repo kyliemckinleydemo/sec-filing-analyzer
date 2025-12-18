@@ -26,17 +26,14 @@ export interface AnalystEstimates {
   analystCount?: number;
 }
 
-interface FMPAnalystEstimate {
-  date: string;
+interface FMPEarningsData {
   symbol: string;
-  estimatedRevenueAvg: number;
-  estimatedRevenueLow: number;
-  estimatedRevenueHigh: number;
-  estimatedEpsAvg: number;
-  estimatedEpsLow: number;
-  estimatedEpsHigh: number;
-  numberAnalystEstimatedRevenue: number;
-  numberAnalystsEstimatedEps: number;
+  date: string; // Earnings date
+  epsActual: number | null;
+  epsEstimated: number | null;
+  revenueActual: number | null;
+  revenueEstimated: number | null;
+  lastUpdated: string;
 }
 
 export interface EarningsComparison {
@@ -52,7 +49,7 @@ export interface EarningsComparison {
 
 class FinancialDataClient {
   private apiKey: string | undefined;
-  private baseUrl = 'https://financialmodelingprep.com/api/v3';
+  private baseUrl = 'https://financialmodelingprep.com';
 
   constructor() {
     this.apiKey = process.env.FMP_API_KEY; // Financial Modeling Prep API key
@@ -63,8 +60,8 @@ class FinancialDataClient {
   }
 
   /**
-   * Fetch analyst estimates for a given ticker and quarter
-   * Uses Financial Modeling Prep API (free tier available)
+   * Fetch analyst estimates and actuals for a given ticker and quarter
+   * Uses FMP /stable/earnings endpoint (2025+ API)
    */
   async getAnalystEstimates(
     ticker: string,
@@ -76,9 +73,10 @@ class FinancialDataClient {
     }
 
     try {
-      console.log(`[FMP API] Fetching quarterly estimates for ${ticker}...`);
+      console.log(`[FMP API] Fetching earnings data for ${ticker}...`);
 
-      const url = `${this.baseUrl}/analyst-estimates/${ticker}?period=quarter&limit=8&apikey=${this.apiKey}`;
+      // Use new /stable/earnings endpoint (free tier: limit=5)
+      const url = `${this.baseUrl}/stable/earnings?symbol=${ticker}&limit=5&apikey=${this.apiKey}`;
       const response = await fetch(url, {
         headers: {
           'User-Agent': 'SEC Filing Analyzer',
@@ -90,54 +88,76 @@ class FinancialDataClient {
         return null;
       }
 
-      const data: FMPAnalystEstimate[] = await response.json();
+      const data: FMPEarningsData[] = await response.json();
 
       if (!data || data.length === 0) {
-        console.log(`[FMP API] No analyst estimates found for ${ticker}`);
+        console.log(`[FMP API] No earnings data found for ${ticker}`);
         return null;
       }
 
-      // Find the estimate closest to the filing date
+      // Find the earnings report closest to the filing date
       const filingTime = filingDate.getTime();
-      let closestEstimate: FMPAnalystEstimate | null = null;
+      let closestEarnings: FMPEarningsData | null = null;
       let smallestDiff = Infinity;
 
-      for (const estimate of data) {
-        const estimateDate = new Date(estimate.date);
-        const diff = Math.abs(estimateDate.getTime() - filingTime);
+      for (const earnings of data) {
+        // Skip if no estimate data
+        if (!earnings.epsEstimated && !earnings.revenueEstimated) {
+          continue;
+        }
+
+        const earningsDate = new Date(earnings.date);
+        const diff = Math.abs(earningsDate.getTime() - filingTime);
 
         if (diff < smallestDiff) {
           smallestDiff = diff;
-          closestEstimate = estimate;
+          closestEarnings = earnings;
         }
       }
 
-      if (!closestEstimate) {
+      if (!closestEarnings) {
+        console.log(`[FMP API] No earnings with estimates found for ${ticker}`);
         return null;
       }
 
-      // Only use estimates within 90 days of filing
-      if (smallestDiff > 90 * 24 * 60 * 60 * 1000) {
-        console.log(`[FMP API] Closest estimate is ${Math.round(smallestDiff / (24 * 60 * 60 * 1000))} days away - too far`);
+      // Only use earnings within 45 days of filing (10-K/Q usually filed within 30-40 days)
+      if (smallestDiff > 45 * 24 * 60 * 60 * 1000) {
+        console.log(`[FMP API] Closest earnings is ${Math.round(smallestDiff / (24 * 60 * 60 * 1000))} days away - too far`);
         return null;
       }
 
-      const estimateDate = new Date(closestEstimate.date);
-      const quarter = `Q${Math.floor(estimateDate.getMonth() / 3) + 1} ${estimateDate.getFullYear()}`;
+      const earningsDate = new Date(closestEarnings.date);
+      const quarter = `Q${Math.floor(earningsDate.getMonth() / 3) + 1}`;
+      const year = earningsDate.getFullYear();
 
-      console.log(`[FMP API] Found estimates for ${quarter}: EPS ${closestEstimate.estimatedEpsAvg}, Revenue $${(closestEstimate.estimatedRevenueAvg / 1e9).toFixed(2)}B`);
+      // Calculate surprises if we have both estimated and actual
+      let epsSurprise: number | undefined;
+      let revenueSurprise: number | undefined;
+
+      if (closestEarnings.epsActual && closestEarnings.epsEstimated) {
+        epsSurprise = ((closestEarnings.epsActual - closestEarnings.epsEstimated) / Math.abs(closestEarnings.epsEstimated)) * 100;
+      }
+
+      if (closestEarnings.revenueActual && closestEarnings.revenueEstimated) {
+        revenueSurprise = ((closestEarnings.revenueActual - closestEarnings.revenueEstimated) / closestEarnings.revenueEstimated) * 100;
+      }
+
+      console.log(`[FMP API] Found ${quarter} ${year}: EPS ${closestEarnings.epsEstimated} → ${closestEarnings.epsActual || 'pending'}`);
 
       return {
         ticker,
-        fiscalQuarter: quarter,
-        fiscalYear: estimateDate.getFullYear(),
-        consensusEPS: closestEstimate.estimatedEpsAvg,
-        consensusRevenue: closestEstimate.estimatedRevenueAvg,
-        analystCount: closestEstimate.numberAnalystsEstimatedEps,
-        earningsDate: estimateDate,
+        fiscalQuarter: `${quarter} ${year}`,
+        fiscalYear: year,
+        consensusEPS: closestEarnings.epsEstimated || undefined,
+        consensusRevenue: closestEarnings.revenueEstimated || undefined,
+        actualEPS: closestEarnings.epsActual || undefined,
+        actualRevenue: closestEarnings.revenueActual || undefined,
+        epsSurprise,
+        revenueSurprise,
+        earningsDate,
       };
     } catch (error: any) {
-      console.error(`[FMP API] Error fetching analyst estimates:`, error.message);
+      console.error(`[FMP API] Error fetching earnings data:`, error.message);
       return null;
     }
   }
