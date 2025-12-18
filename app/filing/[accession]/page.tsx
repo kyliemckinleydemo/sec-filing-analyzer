@@ -1203,74 +1203,92 @@ export default function FilingPage() {
 
                   <div className="space-y-4 text-sm">
                     <div>
-                      <h4 className="font-semibold text-lg mb-2">Model Version: v2.0-research-2025</h4>
+                      <h4 className="font-semibold text-lg mb-2">Model Version: v3.1 Baseline (Production)</h4>
                       <p className="text-slate-600">
-                        Our prediction model is based on peer-reviewed academic research and real market data from 2024-2025,
-                        not generic assumptions. Each factor's weight is derived from statistical analysis of thousands of SEC filings.
+                        Our production model uses a simple, proven approach: <strong>earnings surprise only</strong>.
+                        After extensive research testing volume, short interest, and multi-factor models, we found that
+                        the baseline earnings model outperforms complex alternatives. Performance: <strong>67.5% accuracy</strong>,
+                        <strong>+103.74% avg return</strong>.
+                      </p>
+                    </div>
+
+                    <div className="border-t pt-4 bg-blue-50 p-3 rounded">
+                      <h4 className="font-semibold mb-2">💡 Why Simplicity Wins</h4>
+                      <p className="text-slate-600 text-xs">
+                        We tested 5 experimental approaches: confidence filtering, pre-filing volume, short interest signals,
+                        and multi-factor models. All <strong>failed to improve</strong> over the baseline. The single biggest
+                        improvement (+8.5 pts) came from <strong>data quality</strong> (removing duplicates and outliers),
+                        not from adding features. See our <a href="/EXPERIMENTAL_SUMMARY.md" className="text-blue-600 underline">research summary</a> for details.
                       </p>
                     </div>
 
                     <div className="border-t pt-4">
-                      <h4 className="font-semibold mb-3">Key Factors & Research Basis:</h4>
+                      <h4 className="font-semibold mb-3">Model Features (6 total):</h4>
 
                       <div className="space-y-3">
                         <div className="bg-green-50 p-3 rounded">
-                          <p className="font-medium text-green-900">📊 Guidance Changes (±3.5-4.0%)</p>
+                          <p className="font-medium text-green-900">📈 EPS Surprise</p>
                           <p className="text-xs text-slate-600 mt-1">
-                            <strong>Research:</strong> Industry studies show forward guidance changes are the #1 price driver.
-                            Raised guidance: +3.5% avg. Lowered guidance: -4.0% avg (asymmetric reaction).
+                            Raw percentage difference between actual and estimated EPS. Primary signal for market reaction.
                           </p>
                         </div>
 
                         <div className="bg-yellow-50 p-3 rounded">
-                          <p className="font-medium text-yellow-900">💰 EPS Surprises (+1.3% / -2.9%)</p>
+                          <p className="font-medium text-yellow-900">📊 Surprise Magnitude</p>
                           <p className="text-xs text-slate-600 mt-1">
-                            <strong>Source:</strong> 2024 Q3 S&P 500 earnings data. EPS beats averaged +1.3% returns,
-                            while misses averaged -2.9% (market punishes bad news 2x harder).
-                          </p>
-                        </div>
-
-                        <div className="bg-purple-50 p-3 rounded">
-                          <p className="font-medium text-purple-900">📈 Revenue Surprises (+0.8% / -1.5%)</p>
-                          <p className="text-xs text-slate-600 mt-1">
-                            <strong>Research:</strong> 2024 Accounting Review study found revenue surprises particularly important
-                            for companies with lower earnings quality.
+                            Absolute value of surprise. Larger surprises (positive or negative) drive bigger reactions.
                           </p>
                         </div>
 
                         <div className="bg-blue-50 p-3 rounded">
-                          <p className="font-medium text-blue-900">😊 Management Sentiment (4x multiplier)</p>
+                          <p className="font-medium text-blue-900">✅ EPS Beat (>2%)</p>
                           <p className="text-xs text-slate-600 mt-1">
-                            <strong>Research:</strong> NLP studies show MD&A tone analysis has predictive power for future returns.
-                            Weight increased from 3x to 4x based on 2024-2025 findings.
+                            Binary flag: Did the company beat estimates by more than 2%? Moderate bullish signal.
                           </p>
                         </div>
 
                         <div className="bg-orange-50 p-3 rounded">
-                          <p className="font-medium text-orange-900">⚠️ Risk Factor Changes (0.5x multiplier)</p>
+                          <p className="font-medium text-orange-900">❌ EPS Miss (<-2%)</p>
                           <p className="text-xs text-slate-600 mt-1">
-                            <strong>Research:</strong> 2025 study analyzed 21,421 10-K reports (2002-2024) and found risk factor
-                            tone significantly predicts weekly stock returns. Weight increased from 0.3x to 0.5x.
+                            Binary flag: Did the company miss estimates by more than 2%? Counterintuitively shows slight bullish signal in recent data.
                           </p>
                         </div>
 
-                        <div className="bg-indigo-50 p-3 rounded">
-                          <p className="font-medium text-indigo-900">📊 Company-Specific Patterns (40% weight)</p>
+                        <div className="bg-purple-50 p-3 rounded">
+                          <p className="font-medium text-purple-900">🚀 Large Beat (>10%)</p>
                           <p className="text-xs text-slate-600 mt-1">
-                            Historical filing reactions for this specific ticker are weighted 2x higher (40% vs 20%)
-                            than generic market patterns for more personalized predictions.
+                            Major positive surprise. Moderate bullish signal (coefficient: +0.050).
+                          </p>
+                        </div>
+
+                        <div className="bg-red-50 p-3 rounded">
+                          <p className="font-medium text-red-900">⚠️ Large Miss (<-10%) - STRONGEST SIGNAL</p>
+                          <p className="text-xs text-slate-600 mt-1">
+                            <strong>Coefficient: -0.131</strong> - The model's most powerful feature. Model is <strong>2.6x better</strong> at
+                            avoiding disasters (large misses) than picking winners (large beats). Use for risk management.
                           </p>
                         </div>
                       </div>
                     </div>
 
                     <div className="border-t pt-4">
-                      <h4 className="font-semibold mb-2">Why Asymmetric Impacts?</h4>
+                      <h4 className="font-semibold mb-2">Why Asymmetric Performance?</h4>
                       <p className="text-slate-600 text-xs">
-                        Research consistently shows markets react more strongly to negative news than positive news.
-                        For example, EPS misses cause -2.9% drops vs +1.3% gains for beats. Our model reflects this
-                        behavioral finance reality.
+                        The model has <strong>asymmetric strength</strong>: large miss coefficient (-0.131) is 2.6x stronger than
+                        large beat coefficient (+0.050). This means the model is much better at identifying what to
+                        <strong> avoid</strong> rather than what to buy. Ideal for risk management and short strategies.
                       </p>
+                    </div>
+
+                    <div className="border-t pt-4 bg-slate-100 p-3 rounded">
+                      <h4 className="font-semibold mb-2">What We Tested (and Why They Failed):</h4>
+                      <ul className="text-xs text-slate-600 space-y-1 ml-4 list-disc">
+                        <li><strong>Confidence filtering</strong>: -84 pts spread drop, lost 76% of trades</li>
+                        <li><strong>Pre-filing volume</strong>: Only 5% data coverage, added noise</li>
+                        <li><strong>Short interest (5-10%)</strong>: Looked promising (+58% standalone) but 0.0 importance in model (22% coverage)</li>
+                        <li><strong>Multi-factor model</strong>: Combined all signals, performed -3.23 pts worse than baseline</li>
+                        <li><strong>Data cleaning</strong>: ✅ The ONLY improvement (+8.5 pts from removing 966 duplicates, 870 outliers)</li>
+                      </ul>
                     </div>
 
                     <div className="border-t pt-4 bg-slate-50 p-3 rounded">

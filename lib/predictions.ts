@@ -74,17 +74,18 @@ class PredictionEngine {
   async predict(
     features: Partial<PredictionFeatures>
   ): Promise<Prediction> {
-    // BASELINE ADJUSTMENT: Dataset analysis shows mean return of +0.83%
-    // 278 filings (2022-2025) across 20 mega caps: 54.7% positive
-    // Starting baseline reflects empirical positive bias in earnings filings
-    let prediction = 0.83;
-    const reasoningParts: string[] = ['Baseline: +0.83% (empirical mean)'];
+    // BASELINE ADJUSTMENT: Recalibrated based on 741-sample backtest (2025-12-17)
+    // Previous: +0.83% (too optimistic, 35.9% bullish over-prediction)
+    // New: 0.0% (neutral baseline, let features drive predictions)
+    // Actual mean return from backtest: +0.66%, but using 0% for conservative start
+    let prediction = 0.0;
+    const reasoningParts: string[] = ['Baseline: 0.0% (recalibrated neutral)'];
 
     // Factor 1: Risk Score Impact (Research: significant predictor)
-    // OPTIMIZATION: Increased weight from 0.5 to 0.8 based on production backtest
+    // RECALIBRATION 2025-12-17: Increased weight from 0.8 to 1.2 to counter bullish bias
     // Risk score deltas are strong signals but were underweighted
     const riskDelta = features.riskScoreDelta || 0;
-    const riskImpact = -riskDelta * 0.8; // Lower risk = positive impact (was 0.5)
+    const riskImpact = -riskDelta * 1.2; // Lower risk = positive impact (was 0.8, now 1.2)
     prediction += riskImpact;
 
     if (Math.abs(riskDelta) > 1) {
@@ -129,7 +130,8 @@ class PredictionEngine {
     // This replaces legacy hardcoded risk/sentiment with actual filing analysis
     // 0-2 (LOW/bullish), 3-4 (MODERATE/stable), 5-6 (ELEVATED/cautious), 7-8 (HIGH/bearish), 9-10 (CRITICAL)
     // Note: concernLevel already retrieved above for sentiment adjustment
-    const concernImpact = -(concernLevel - 5.0) * 0.6; // Center at 5, invert (lower concern = positive)
+    // RECALIBRATION 2025-12-17: Increased weight from 0.6 to 0.9 to counter bullish bias
+    const concernImpact = -(concernLevel - 5.0) * 0.9; // Center at 5, invert (lower concern = positive)
     prediction += concernImpact;
 
     // Show concern assessment if it deviates meaningfully from neutral
@@ -514,6 +516,27 @@ class PredictionEngine {
       );
     }
 
+    // RECALIBRATION 2025-12-17 (ROUND 2): Apply aggressive dampening factor
+    // Backtest results after initial recalibration:
+    // - 70.8% bullish predictions vs 32.2% actual bullish (38.6% over-prediction!)
+    // - 51.5% of actual outcomes are FLAT but model only predicts 20.7% flat
+    // - Directional accuracy: 30.6% (worse than random)
+    //
+    // Root cause: Model has too many additive positive biases:
+    // - Filing type bonuses: +0.3-0.5%
+    // - Market cap bonuses: +0.5-1.0%
+    // - EPS inline bonus: +0.6%
+    // - Macro factors: asymmetric positive (weak $ +1.0%, strong $ -0.6%)
+    //
+    // Solution: Apply 0.5x dampening factor to compress predictions toward zero
+    // This will:
+    // - Reduce bullish predictions from 70.8% toward 40-50%
+    // - Increase neutral predictions from 20.7% toward 40-50% (matching reality)
+    // - Better match reality where most filings result in minimal price movement
+    const dampeningFactor = 0.5;
+    prediction = prediction * dampeningFactor;
+    reasoningParts.push(`Applied 0.5x dampening (model recalibration)`);
+
     // Calculate confidence based on feature availability
     let confidence = 0.4; // Base confidence (lowered from 0.5 to account for more factors)
 
@@ -647,6 +670,118 @@ class PredictionEngine {
     };
 
     return patterns[filingType] || 0;
+  }
+
+  /**
+   * Baseline Model Prediction (Production v3.1)
+   *
+   * Uses the production baseline model trained on cleaned data.
+   * Performance: 67.5% accuracy, +103.74% avg return
+   *
+   * Based on experimental research showing earnings-only model
+   * outperforms complex multi-factor models.
+   *
+   * @param actualEPS - Actual earnings per share
+   * @param estimatedEPS - Estimated/consensus earnings per share
+   * @returns Prediction with confidence and recommendation
+   */
+  async predictBaseline(actualEPS: number, estimatedEPS: number): Promise<{
+    predicted7dReturn: number;
+    confidence: number;
+    recommendation: {
+      action: 'BUY' | 'SELL' | 'SHORT' | 'HOLD';
+      size: 'FULL' | 'HALF' | 'SMALL';
+      reason: string;
+    };
+    reasoning: string;
+    features: {
+      epsSurprise: number;
+      surpriseMagnitude: number;
+      epsBeat: number;
+      epsMiss: number;
+      largeBeat: number;
+      largeMiss: number;
+    };
+  }> {
+    const { extractBaselineFeatures, interpretFeatures } = await import('./baseline-features');
+    const { exec } = await import('child_process');
+    const { promisify } = await import('util');
+    const execAsync = promisify(exec);
+
+    // Extract features
+    const features = extractBaselineFeatures({ actualEPS, estimatedEPS });
+
+    // Call Python prediction script
+    const featuresJson = JSON.stringify(features);
+    const command = `python3 scripts/predict_baseline.py '${featuresJson}'`;
+
+    try {
+      const { stdout } = await execAsync(command, { cwd: process.cwd() });
+      const result = JSON.parse(stdout);
+
+      // Map confidence to predicted return (model predicts probability of positive return)
+      // Use confidence score to estimate magnitude
+      // If confidence > 0.5: positive return scaled by confidence
+      // If confidence < 0.5: negative return scaled by (1 - confidence)
+      let predictedReturn;
+      if (result.confidence > 0.5) {
+        // Bullish: scale return by confidence above 50%
+        // confidence 0.5 = 0%, 0.65 = +50%, 0.75 = +100%, 1.0 = +200%
+        predictedReturn = (result.confidence - 0.5) * 400;
+      } else {
+        // Bearish: scale return by confidence below 50%
+        // confidence 0.5 = 0%, 0.35 = -50%, 0.25 = -100%, 0.0 = -200%
+        predictedReturn = (result.confidence - 0.5) * 400;
+      }
+
+      // Generate reasoning
+      const interpretation = interpretFeatures(features);
+      const reasoning = `Baseline Model (v3.1): ${interpretation}. ` +
+        `Predicted ${result.prediction === 1 ? 'positive' : 'negative'} return with ${(result.confidence * 100).toFixed(0)}% confidence. ` +
+        `Model is asymmetric: 2.6x better at avoiding disasters (large misses) than picking winners. ` +
+        `Recommendation: ${result.recommendation.action} ${result.recommendation.size} position - ${result.recommendation.reason}`;
+
+      return {
+        predicted7dReturn: predictedReturn,
+        confidence: result.confidence,
+        recommendation: result.recommendation,
+        reasoning,
+        features
+      };
+    } catch (error: any) {
+      console.error('Error calling baseline prediction:', error);
+
+      // Fallback: simple heuristic based on features
+      const interpretation = interpretFeatures(features);
+      let predictedReturn = 0;
+      let confidence = 0.5;
+
+      if (features.largeMiss) {
+        predictedReturn = -50; // Large misses are strong bearish
+        confidence = 0.35;
+      } else if (features.largeBeat) {
+        predictedReturn = +30; // Large beats are moderate bullish
+        confidence = 0.65;
+      } else if (features.epsBeat) {
+        predictedReturn = +10; // Small beats are slightly bullish
+        confidence = 0.55;
+      } else if (features.epsMiss) {
+        predictedReturn = +5; // Small misses are slightly bullish (counterintuitive but data-driven)
+        confidence = 0.52;
+      }
+
+      return {
+        predicted7dReturn: predictedReturn,
+        confidence,
+        recommendation: {
+          action: predictedReturn > 20 ? 'BUY' : predictedReturn < -20 ? 'SHORT' : 'HOLD',
+          size: Math.abs(predictedReturn) > 40 ? 'FULL' : Math.abs(predictedReturn) > 20 ? 'HALF' : 'SMALL',
+          reason: 'Fallback heuristic (model unavailable)'
+        },
+        reasoning: `Baseline Model (fallback): ${interpretation}. ${error.message}`,
+        features
+      };
+    }
   }
 }
 
