@@ -1,0 +1,56 @@
+{
+  "timestamp": "2025-12-18T16:27:36.934467",
+  "model_type": "Logistic Regression (Baseline)",
+  "features": [
+    "epsSurprise",
+    "surpriseMagnitude",
+    "epsBeat",
+    "epsMiss",
+    "largeBeat",
+    "largeMiss"
+  ],
+  "train_size": 2466.333333333333,
+  "test_size": 1057,
+  "metrics": {
+    "accuracy": 0.674550614947966,
+    "auc": 0.5824329723735282,
+    "precision": 0.674550614947966,
+    "recall": 1.0,
+    "f1": 0.8056497175141243,
+    "return_spread": NaN,
+    "avg_return_pos": 1.0374315387372786,
+    "avg_return_neg": NaN
+  },
+  "confusion_matrix": {
+    "tn": 0,
+    "fp": 344,
+    "fn": 0,
+    "tp": 713
+  },
+  "feature_importance": [
+    {
+      "feature": "largeMiss",
+      "coefficient": -0.1311637100002205
+    },
+    {
+      "feature": "epsMiss",
+      "coefficient": 0.06026414670846281
+    },
+    {
+      "feature": "largeBeat",
+      "coefficient": 0.05013051323771246
+    },
+    {
+      "feature": "surpriseMagnitude",
+      "coefficient": 0.02892656555960546
+    },
+    {
+      "feature": "epsBeat",
+      "coefficient": 0.02563957025872671
+    },
+    {
+      "feature": "epsSurprise",
+      "coefficient": 0.012317273235941817
+    }
+  ]
+}
