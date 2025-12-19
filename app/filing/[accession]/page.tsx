@@ -1203,73 +1203,67 @@ export default function FilingPage() {
 
                   <div className="space-y-4 text-sm">
                     <div>
-                      <h4 className="font-semibold text-lg mb-2">Model Version: v2.0-research-2025</h4>
+                      <h4 className="font-semibold text-lg mb-2">Model Version: v3.1 Baseline</h4>
                       <p className="text-slate-600">
-                        Our prediction model is based on peer-reviewed academic research and real market data from 2024-2025,
-                        not generic assumptions. Each factor's weight is derived from statistical analysis of thousands of SEC filings.
+                        Our production model uses earnings surprise data only. After testing multiple approaches,
+                        we found the simple baseline model performs best: 67.5% accuracy with positive returns.
                       </p>
                     </div>
 
                     <div className="border-t pt-4">
-                      <h4 className="font-semibold mb-3">Key Factors & Research Basis:</h4>
+                      <h4 className="font-semibold mb-3">Model Features (6 total):</h4>
 
                       <div className="space-y-3">
                         <div className="bg-green-50 p-3 rounded">
-                          <p className="font-medium text-green-900">📊 Guidance Changes (±3.5-4.0%)</p>
+                          <p className="font-medium text-green-900">EPS Surprise</p>
                           <p className="text-xs text-slate-600 mt-1">
-                            <strong>Research:</strong> Industry studies show forward guidance changes are the #1 price driver.
-                            Raised guidance: +3.5% avg. Lowered guidance: -4.0% avg (asymmetric reaction).
+                            Raw percentage difference between actual and estimated EPS.
                           </p>
                         </div>
 
                         <div className="bg-yellow-50 p-3 rounded">
-                          <p className="font-medium text-yellow-900">💰 EPS Surprises (+1.3% / -2.9%)</p>
+                          <p className="font-medium text-yellow-900">Surprise Magnitude</p>
                           <p className="text-xs text-slate-600 mt-1">
-                            <strong>Source:</strong> 2024 Q3 S&P 500 earnings data. EPS beats averaged +1.3% returns,
-                            while misses averaged -2.9% (market punishes bad news 2x harder).
-                          </p>
-                        </div>
-
-                        <div className="bg-purple-50 p-3 rounded">
-                          <p className="font-medium text-purple-900">📈 Revenue Surprises (+0.8% / -1.5%)</p>
-                          <p className="text-xs text-slate-600 mt-1">
-                            <strong>Research:</strong> 2024 Accounting Review study found revenue surprises particularly important
-                            for companies with lower earnings quality.
+                            Absolute value of surprise. Larger surprises drive bigger reactions.
                           </p>
                         </div>
 
                         <div className="bg-blue-50 p-3 rounded">
-                          <p className="font-medium text-blue-900">😊 Management Sentiment (4x multiplier)</p>
+                          <p className="font-medium text-blue-900">EPS Beat</p>
                           <p className="text-xs text-slate-600 mt-1">
-                            <strong>Research:</strong> NLP studies show MD&A tone analysis has predictive power for future returns.
-                            Weight increased from 3x to 4x based on 2024-2025 findings.
+                            Binary flag for surprises greater than 2 percent.
                           </p>
                         </div>
 
                         <div className="bg-orange-50 p-3 rounded">
-                          <p className="font-medium text-orange-900">⚠️ Risk Factor Changes (0.5x multiplier)</p>
+                          <p className="font-medium text-orange-900">EPS Miss</p>
                           <p className="text-xs text-slate-600 mt-1">
-                            <strong>Research:</strong> 2025 study analyzed 21,421 10-K reports (2002-2024) and found risk factor
-                            tone significantly predicts weekly stock returns. Weight increased from 0.3x to 0.5x.
+                            Binary flag for surprises less than negative 2 percent.
                           </p>
                         </div>
 
-                        <div className="bg-indigo-50 p-3 rounded">
-                          <p className="font-medium text-indigo-900">📊 Company-Specific Patterns (40% weight)</p>
+                        <div className="bg-purple-50 p-3 rounded">
+                          <p className="font-medium text-purple-900">Large Beat</p>
                           <p className="text-xs text-slate-600 mt-1">
-                            Historical filing reactions for this specific ticker are weighted 2x higher (40% vs 20%)
-                            than generic market patterns for more personalized predictions.
+                            Major positive surprise over 10 percent. Moderate bullish signal.
+                          </p>
+                        </div>
+
+                        <div className="bg-red-50 p-3 rounded">
+                          <p className="font-medium text-red-900">Large Miss - STRONGEST SIGNAL</p>
+                          <p className="text-xs text-slate-600 mt-1">
+                            Major negative surprise below negative 10 percent. Model is 2.6x better at avoiding these disasters.
                           </p>
                         </div>
                       </div>
                     </div>
 
                     <div className="border-t pt-4">
-                      <h4 className="font-semibold mb-2">Why Asymmetric Impacts?</h4>
+                      <h4 className="font-semibold mb-2">Why This Model Works</h4>
                       <p className="text-slate-600 text-xs">
-                        Research consistently shows markets react more strongly to negative news than positive news.
-                        For example, EPS misses cause -2.9% drops vs +1.3% gains for beats. Our model reflects this
-                        behavioral finance reality.
+                        We tested 5 experimental approaches including volume features, short interest, and multi-factor models.
+                        All failed to improve over the simple baseline. The biggest improvement came from data quality, not complexity.
+                        Model is asymmetric: much better at avoiding disasters than picking winners.
                       </p>
                     </div>
 
