@@ -101,6 +101,7 @@ export async function GET(
           predicted7dReturn: filing.predicted7dReturn,
           confidence: filing.predictionConfidence || 0.6,
           actual7dReturn: filing.actual7dReturn || accuracyResult?.actual7dReturn,
+          actual7dAlpha: filing.actual7dAlpha,
           features: storedFeatures,
           modelVersion: 'v2.0-research-2025',
         },
@@ -297,58 +298,110 @@ export async function GET(
       // Continue without analyst data
     }
 
-    // Generate prediction with research-backed enhanced features
-    const features = {
-      riskScoreDelta: riskScoreDelta, // Use calculated delta, not absolute score
-      sentimentScore: filing.sentimentScore || 0,
-      concernLevel: filing.concernLevel || undefined, // Multi-factor concern assessment
-      riskCountNew: 2, // Mock - would parse from analysisData
-      filingType: filing.filingType as '10-K' | '10-Q' | '8-K',
-      eventType,
-      hasFinancialMetrics,
-      guidanceDirection,
-      // NEW: Major price drivers
-      guidanceChange: guidanceChange as any,
-      epsSurprise: epsSurprise as any,
-      epsSurpriseMagnitude: epsSurpriseMagnitude,
-      revenueSurprise: revenueSurprise as any,
-      revenueSurpriseMagnitude: revenueSurpriseMagnitude,
-      // NEW: Valuation context (from Yahoo Finance)
-      peRatio: peRatio,
-      marketCap: marketCap, // in billions
-      // NEW: Market context (SPY momentum + regime)
-      marketMomentum: marketMomentum,
-      marketRegime: marketRegime as any,
-      marketVolatility: marketVolatility,
-      flightToQuality: flightToQuality,
-      // NEW: Macro economic context
-      dollarStrength: dollarStrength as any,
-      dollar30dChange: dollar30dChange,
-      gdpProxyTrend: gdpProxyTrend as any,
-      equityFlowBias: equityFlowBias as any,
-      // NEW: Analyst activity & sentiment
-      analystNetUpgrades: analystNetUpgrades,
-      analystMajorUpgrades: analystMajorUpgrades,
-      analystMajorDowngrades: analystMajorDowngrades,
-      analystConsensus: analystConsensus,
-      analystUpsidePotential: analystUpsidePotential,
-      // Company-specific patterns
-      ticker: filing.company.ticker || undefined,
-      avgHistoricalReturn: await predictionEngine.getHistoricalPattern(
-        filing.company.ticker || '',
-        filing.filingType
-      ),
-    };
+    // TRY BASELINE MODEL FIRST (v3.1) if we have EPS data
+    let prediction;
+    let actualEPS: number | undefined;
+    let estimatedEPS: number | undefined;
 
-    // DEBUG: Log key features being passed to prediction engine
-    console.log(`[Predict API DEBUG] Features for prediction:`, {
-      concernLevel: features.concernLevel,
-      sentimentScore: features.sentimentScore,
-      riskScoreDelta: features.riskScoreDelta,
-      analystNetUpgrades: features.analystNetUpgrades
-    });
+    // Try to extract actual and estimated EPS from structured data
+    if (filing.analysisData) {
+      try {
+        const analysis = JSON.parse(filing.analysisData);
+        if (analysis.financialMetrics?.structuredData) {
+          actualEPS = analysis.financialMetrics.structuredData.actualEPS;
+          estimatedEPS = analysis.financialMetrics.structuredData.estimatedEPS;
+        }
+      } catch (e) {
+        console.error('Error extracting EPS data:', e);
+      }
+    }
 
-    const prediction = await predictionEngine.predict(features);
+    // Use baseline model if we have both actual and estimated EPS
+    if (actualEPS !== undefined && estimatedEPS !== undefined &&
+        !isNaN(actualEPS) && !isNaN(estimatedEPS)) {
+      console.log(`[Predict API] Using BASELINE MODEL v3.1 for ${filing.company.ticker}`);
+      console.log(`[Predict API] EPS Data: actual=${actualEPS}, estimated=${estimatedEPS}`);
+
+      try {
+        const baselinePrediction = await predictionEngine.predictBaseline(actualEPS, estimatedEPS);
+
+        prediction = {
+          predicted7dReturn: baselinePrediction.predicted7dReturn,
+          confidence: baselinePrediction.confidence,
+          reasoning: baselinePrediction.reasoning,
+          features: {
+            ...baselinePrediction.features,
+            modelVersion: 'v3.1-baseline',
+            actualEPS,
+            estimatedEPS
+          }
+        };
+
+        console.log(`[Predict API] Baseline prediction: ${prediction.predicted7dReturn.toFixed(2)}% (confidence: ${(prediction.confidence * 100).toFixed(1)}%)`);
+      } catch (error) {
+        console.error('[Predict API] Baseline model failed, falling back to v2.0:', error);
+        // Fall through to legacy model below
+        actualEPS = undefined; // Reset to trigger fallback
+      }
+    }
+
+    // FALLBACK: Use legacy v2.0 model if no EPS data or baseline failed
+    if (!prediction) {
+      console.log(`[Predict API] Using LEGACY MODEL v2.0 for ${filing.company.ticker} (no EPS data available)`);
+
+      // Generate prediction with research-backed enhanced features
+      const features = {
+        riskScoreDelta: riskScoreDelta, // Use calculated delta, not absolute score
+        sentimentScore: filing.sentimentScore || 0,
+        concernLevel: filing.concernLevel || undefined, // Multi-factor concern assessment
+        riskCountNew: 2, // Mock - would parse from analysisData
+        filingType: filing.filingType as '10-K' | '10-Q' | '8-K',
+        eventType,
+        hasFinancialMetrics,
+        guidanceDirection,
+        // NEW: Major price drivers
+        guidanceChange: guidanceChange as any,
+        epsSurprise: epsSurprise as any,
+        epsSurpriseMagnitude: epsSurpriseMagnitude,
+        revenueSurprise: revenueSurprise as any,
+        revenueSurpriseMagnitude: revenueSurpriseMagnitude,
+        // NEW: Valuation context (from Yahoo Finance)
+        peRatio: peRatio,
+        marketCap: marketCap, // in billions
+        // NEW: Market context (SPY momentum + regime)
+        marketMomentum: marketMomentum,
+        marketRegime: marketRegime as any,
+        marketVolatility: marketVolatility,
+        flightToQuality: flightToQuality,
+        // NEW: Macro economic context
+        dollarStrength: dollarStrength as any,
+        dollar30dChange: dollar30dChange,
+        gdpProxyTrend: gdpProxyTrend as any,
+        equityFlowBias: equityFlowBias as any,
+        // NEW: Analyst activity & sentiment
+        analystNetUpgrades: analystNetUpgrades,
+        analystMajorUpgrades: analystMajorUpgrades,
+        analystMajorDowngrades: analystMajorDowngrades,
+        analystConsensus: analystConsensus,
+        analystUpsidePotential: analystUpsidePotential,
+        // Company-specific patterns
+        ticker: filing.company.ticker || undefined,
+        avgHistoricalReturn: await predictionEngine.getHistoricalPattern(
+          filing.company.ticker || '',
+          filing.filingType
+        ),
+      };
+
+      // DEBUG: Log key features being passed to prediction engine
+      console.log(`[Predict API DEBUG] Features for prediction:`, {
+        concernLevel: features.concernLevel,
+        sentimentScore: features.sentimentScore,
+        riskScoreDelta: features.riskScoreDelta,
+        analystNetUpgrades: features.analystNetUpgrades
+      });
+
+      prediction = await predictionEngine.predict(features);
+    }
 
     // Store prediction
     await prisma.filing.update({
