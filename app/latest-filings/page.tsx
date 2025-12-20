@@ -65,15 +65,17 @@ function LatestFilingsContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [isInitialized, setIsInitialized] = useState(false);
   const router = useRouter();
 
-  // Initialize ticker filter from URL on mount
+  // Initialize ticker filter from URL on mount - runs FIRST
   useEffect(() => {
     const tickerParam = searchParams.get('ticker');
     if (tickerParam) {
       setTickerFilter(tickerParam.toUpperCase());
       setSearchInput(tickerParam.toUpperCase());
     }
+    setIsInitialized(true); // Mark as initialized after reading URL params
   }, [searchParams]);
 
   // Autocomplete search
@@ -97,10 +99,13 @@ function LatestFilingsContent() {
   }, [searchInput]);
 
   useEffect(() => {
+    // Skip initial fetch until URL params are read
+    if (!isInitialized) return;
+
     setCurrentPage(1); // Reset to page 1 when filters change
     setFilings([]); // Clear old results immediately to prevent showing stale data
     fetchFilings(1);
-  }, [tickerFilter, filingTypeFilter]);
+  }, [tickerFilter, filingTypeFilter, isInitialized]);
 
   const fetchFilings = async (page: number = currentPage) => {
     setLoading(true);
