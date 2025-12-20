@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import yahooFinance from 'yahoo-finance2';
-import { yfinanceClient } from '@/lib/yfinance-client';
 
 // Suppress yahoo-finance2 survey notice
 yahooFinance.suppressNotices(['yahooSurvey']);
@@ -235,9 +234,7 @@ export async function GET(request: Request) {
           upsidePotential = ((fd.targetMeanPrice - fd.currentPrice) / fd.currentPrice) * 100;
         }
 
-        // Fetch earnings surprise data using our yfinance client
-        const earningsResponse = await yfinanceClient.getEarningsHistory(ticker);
-
+        // Fetch earnings surprise data using yahoo-finance2 (Node.js native, no Python required)
         let consensusEPS: number | null = null;
         let actualEPS: number | null = null;
         let epsSurprise: 'beat' | 'miss' | 'inline' | 'unknown' = 'unknown';
@@ -245,35 +242,66 @@ export async function GET(request: Request) {
         let revenueSurprise: 'beat' | 'miss' | 'inline' | 'unknown' = 'unknown';
         let revenueSurpriseMagnitude: number | null = null;
 
-        if (earningsResponse.success && earningsResponse.data.length > 0) {
-          // Find earnings report closest to filing date
-          const closestEarnings = yfinanceClient.findClosestEarnings(
-            earningsResponse.data,
-            filing.filingDate,
-            90 // Within 90 days
-          );
+        try {
+          const earningsQuote = await yahooFinance.quoteSummary(ticker, {
+            modules: ['earningsHistory']
+          });
 
-          if (closestEarnings) {
-            // Store consensus and actual EPS
-            consensusEPS = closestEarnings.epsEstimate;
-            actualEPS = closestEarnings.epsActual;
+          const history = earningsQuote.earningsHistory?.history;
+          if (history && history.length > 0) {
+            // Find earnings report closest to filing date (within 90 days)
+            let closestEarnings = null;
+            let smallestDiff = Infinity;
+            const filingTime = filing.filingDate.getTime();
 
-            // Calculate surprise if we have both values
-            if (closestEarnings.epsSurprise !== null) {
-              epsSurpriseMagnitude = closestEarnings.epsSurprise * 100; // Convert to percentage
-              if (epsSurpriseMagnitude > 2) epsSurprise = 'beat';
-              else if (epsSurpriseMagnitude < -2) epsSurprise = 'miss';
-              else epsSurprise = 'inline';
+            for (const period of history) {
+              // Parse quarter date (e.g., "3Q2024" -> approximate date)
+              const quarterFmt = (period.quarter as any)?.fmt;
+              if (!quarterFmt) continue;
+
+              const quarterMatch = quarterFmt.match(/(\d)Q(\d{4})/);
+              if (!quarterMatch) continue;
+
+              const quarter = parseInt(quarterMatch[1]);
+              const year = parseInt(quarterMatch[2]);
+              // Approximate: Q1=Jan 31, Q2=Apr 30, Q3=Jul 31, Q4=Oct 31
+              const monthMap = [0, 0, 3, 6, 9]; // Jan, Apr, Jul, Oct
+              const earningsDate = new Date(year, monthMap[quarter], [31, 30, 31, 31][quarter - 1]);
+
+              const diff = Math.abs(earningsDate.getTime() - filingTime);
+              if (diff < smallestDiff) {
+                smallestDiff = diff;
+                closestEarnings = period;
+              }
             }
 
-            // Revenue surprise (if available)
-            if (closestEarnings.revenueSurprise !== null) {
-              revenueSurpriseMagnitude = closestEarnings.revenueSurprise;
-              if (revenueSurpriseMagnitude > 2) revenueSurprise = 'beat';
-              else if (revenueSurpriseMagnitude < -2) revenueSurprise = 'miss';
-              else revenueSurprise = 'inline';
+            // Only use if within 90 days
+            const daysDiff = smallestDiff / (1000 * 60 * 60 * 24);
+            if (closestEarnings && daysDiff <= 90) {
+              // Extract EPS data using type assertions for yahoo-finance2 response format
+              const epsEstimate = (closestEarnings.epsEstimate as any)?.raw ?? closestEarnings.epsEstimate;
+              const epsActual = (closestEarnings.epsActual as any)?.raw ?? closestEarnings.epsActual;
+              const surprisePercent = (closestEarnings.surprisePercent as any)?.raw ?? closestEarnings.surprisePercent;
+
+              if (typeof epsEstimate === 'number') {
+                consensusEPS = epsEstimate;
+              }
+              if (typeof epsActual === 'number') {
+                actualEPS = epsActual;
+              }
+
+              // Calculate surprise
+              if (typeof surprisePercent === 'number') {
+                epsSurpriseMagnitude = surprisePercent * 100; // Already in decimal, convert to percentage
+                if (epsSurpriseMagnitude > 2) epsSurprise = 'beat';
+                else if (epsSurpriseMagnitude < -2) epsSurprise = 'miss';
+                else epsSurprise = 'inline';
+              }
             }
           }
+        } catch (earningsError: any) {
+          // Silently fail - not all tickers have earnings data
+          console.log(`[Cron] No earnings history for ${ticker}: ${earningsError.message}`);
         }
 
         // Merge analyst data into analysisData JSON
