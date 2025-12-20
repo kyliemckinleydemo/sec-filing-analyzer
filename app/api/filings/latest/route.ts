@@ -91,7 +91,9 @@ export async function GET(request: Request) {
     // Filter by ticker if specified
     if (ticker) {
       where.company = {
-        ticker: ticker
+        is: {
+          ticker: ticker
+        }
       };
     }
 
