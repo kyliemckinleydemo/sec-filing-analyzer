@@ -224,7 +224,7 @@ function LatestFilingsContent() {
                 }}
                 onFocus={() => setShowSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                className="h-14 text-lg pl-5 pr-28 border-4 border-white/20 focus:border-white/40 bg-white/95 shadow-lg text-slate-900 placeholder:text-slate-500"
+                className="h-14 text-lg pl-5 pr-28 border-4 border-white/20 focus:border-white/40 bg-white shadow-lg !text-slate-900 placeholder:text-slate-400 focus:!text-slate-900"
               />
               <div className="absolute right-2 top-2 flex gap-2">
                 {searchInput && (
