@@ -98,6 +98,7 @@ function LatestFilingsContent() {
 
   useEffect(() => {
     setCurrentPage(1); // Reset to page 1 when filters change
+    setFilings([]); // Clear old results immediately to prevent showing stale data
     fetchFilings(1);
   }, [tickerFilter, filingTypeFilter]);
 
@@ -173,6 +174,7 @@ function LatestFilingsContent() {
     setSearchInput('');
     setTickerFilter('');
     setSuggestions([]);
+    setFilings([]); // Clear results immediately
     router.push('/latest-filings');
   };
 
