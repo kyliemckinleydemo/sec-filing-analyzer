@@ -146,9 +146,9 @@ export async function GET(request: Request) {
   try {
     console.log('[Cron] Starting analyst data update...');
 
-    // Get filings from the past 7 days that need analyst data
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    // Get filings from the past 30 days that need analyst data
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     // Keywords to identify earnings 8-Ks
     const earningsKeywords = [
@@ -161,7 +161,7 @@ export async function GET(request: Request) {
     const allRecentFilings = await prisma.filing.findMany({
       where: {
         filingDate: {
-          gte: sevenDaysAgo
+          gte: thirtyDaysAgo
         },
         filingType: {
           in: ['10-K', '10-Q', '8-K']
@@ -193,7 +193,7 @@ export async function GET(request: Request) {
       return false;
     });
 
-    console.log(`[Cron] Found ${allRecentFilings.length} total filings, ${recentFilings.length} financial filings from past 7 days`);
+    console.log(`[Cron] Found ${allRecentFilings.length} total filings, ${recentFilings.length} financial filings from past 30 days`);
 
     let updated = 0;
     let errors = 0;
@@ -376,16 +376,13 @@ export async function GET(request: Request) {
     let stockPriceErrors = 0;
 
     try {
-      const sevenDaysAgo = new Date();
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
-      // Get companies with recent filings (past 7 days) - these are priority
+      // Get companies with recent filings (past 30 days) - these are priority
       const activeCompanies = await prisma.company.findMany({
         where: {
           filings: {
             some: {
               filingDate: {
-                gte: sevenDaysAgo
+                gte: thirtyDaysAgo
               }
             }
           }
@@ -393,7 +390,7 @@ export async function GET(request: Request) {
         select: { id: true, ticker: true }
       });
 
-      console.log(`[Cron] Found ${activeCompanies.length} recently filed companies to update (past 7 days)`);
+      console.log(`[Cron] Found ${activeCompanies.length} recently filed companies to update (past 30 days)`);
 
       // Update in batches to avoid rate limits and timeout
       const BATCH_SIZE = 100;
