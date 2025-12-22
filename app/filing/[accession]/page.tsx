@@ -12,6 +12,7 @@ interface FilingAnalysisData {
     accessionNumber: string;
     filingType: string;
     filingDate: string;
+    hasFinancials?: boolean;
     company?: {
       name: string;
       ticker: string;
@@ -146,6 +147,47 @@ type AnalysisStep =
   | 'generating-prediction'
   | 'complete';
 
+/**
+ * Determine if a filing has financial data
+ * Similar to scripts/utils/has-financials.ts but works with API response data
+ */
+function hasFinancialData(filing: { filingType: string }, financialMetrics?: any): boolean {
+  // 10-K and 10-Q always have financials
+  if (filing.filingType === '10-K' || filing.filingType === '10-Q') {
+    return true;
+  }
+
+  // For 8-K, check if analysis contains financial metrics
+  if (filing.filingType === '8-K' && financialMetrics) {
+    const fm = financialMetrics;
+
+    // Check for any financial data indicators
+    const hasFinancials =
+      // Structured data from Yahoo Finance (earnings, revenue)
+      fm.structuredData ||
+      // EPS/Revenue surprises
+      fm.surprises?.length > 0 ||
+      // Revenue growth metrics (only if it's a number or meaningful string, not "Not disclosed")
+      (fm.revenueGrowth !== undefined &&
+       fm.revenueGrowth !== null &&
+       fm.revenueGrowth !== 'Not disclosed' &&
+       fm.revenueGrowth !== 'not_disclosed') ||
+      // Key financial metrics
+      fm.keyMetrics?.length > 0 ||
+      // Guidance (only if it's a meaningful direction, not "not_provided")
+      (fm.guidanceDirection &&
+       fm.guidanceDirection !== 'not_provided' &&
+       fm.guidanceDirection !== 'Not provided') ||
+      (fm.guidanceChange &&
+       fm.guidanceChange !== 'not_provided' &&
+       fm.guidanceChange !== 'Not provided');
+
+    return !!hasFinancials;
+  }
+
+  return false;
+}
+
 export default function FilingPage() {
   console.log('🚀 FilingPage component loaded - NEW VERSION with renderComplete + progress bar at 95%');
   const params = useParams();
@@ -248,8 +290,18 @@ export default function FilingPage() {
 
         setCurrentStep('complete');
 
+        // Compute hasFinancials for conditional rendering
+        const hasFinancials = hasFinancialData(
+          analysisData.filing,
+          analysisData.analysis?.financialMetrics
+        );
+
         setData({
           ...analysisData,
+          filing: {
+            ...analysisData.filing,
+            hasFinancials,
+          },
           prediction: predictionData.prediction,
           accuracy: predictionData.accuracy,
         });
@@ -698,7 +750,7 @@ export default function FilingPage() {
         )}
 
         {/* ML Prediction Card */}
-        {data.mlPrediction && (
+        {data.mlPrediction && data.filing.hasFinancials && (
           <Card className="mb-6 border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-blue-50 shadow-lg" data-print-section="prediction">
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -813,7 +865,7 @@ export default function FilingPage() {
         )}
 
         {/* Old Prediction Card (Legacy - For Comparison) */}
-        {data.prediction && !data.mlPrediction && (
+        {data.prediction && !data.mlPrediction && data.filing.hasFinancials && (
           <Card className="mb-6 border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50">
             <CardHeader>
               <CardTitle className="text-2xl">
@@ -1443,7 +1495,7 @@ export default function FilingPage() {
         )}
 
         {/* Stock Price Performance Chart */}
-        {stockPrices && stockPrices.prices && stockPrices.prices.length > 0 && (
+        {stockPrices && stockPrices.prices && stockPrices.prices.length > 0 && data.filing.hasFinancials && (
           <Card className="mb-6 border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50" data-print-section="stock-chart">
             <CardHeader>
               <CardTitle className="text-2xl">📊 Stock Price Performance</CardTitle>
@@ -1589,7 +1641,7 @@ export default function FilingPage() {
         )}
 
         {/* Financial Metrics Card */}
-        {data.analysis?.financialMetrics && (
+        {data.analysis?.financialMetrics && data.filing.hasFinancials && (
           <Card className="mb-6 border-2 border-green-200 bg-gradient-to-r from-green-50 to-emerald-50" data-print-section="financial">
             <CardHeader>
               <CardTitle className="text-2xl">💰 Key Financial Metrics</CardTitle>
@@ -1984,7 +2036,7 @@ export default function FilingPage() {
           )}
 
           {/* Analyst Activity & Sentiment */}
-          {data.analysis?.analyst && (
+          {data.analysis?.analyst && data.filing.hasFinancials && (
             <Card className="border-2 border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50" data-print-section="analyst">
               <CardHeader>
                 <CardTitle>📊 Analyst Activity & Sentiment (30 Days Before Filing)</CardTitle>
