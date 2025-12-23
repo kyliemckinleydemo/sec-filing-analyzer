@@ -132,11 +132,19 @@ export async function GET(request: Request) {
   const userAgent = request.headers.get('user-agent');
   const cronSecret = process.env.CRON_SECRET;
 
-  const isVercelCron = userAgent?.includes('vercel-cron/');
+  // Check multiple indicators that this is a Vercel cron request
+  const isVercelCron = userAgent?.includes('vercel-cron/') ||
+                       request.headers.get('x-vercel-cron') === '1' ||
+                       request.headers.get('user-agent')?.toLowerCase().includes('vercel');
   const hasValidAuth = cronSecret && authHeader === `Bearer ${cronSecret}`;
 
   if (!isVercelCron && !hasValidAuth) {
-    console.error('[Cron] Unauthorized request - not from Vercel cron and no valid auth header');
+    console.error('[Cron] Unauthorized request', {
+      userAgent,
+      hasAuthHeader: !!authHeader,
+      hasCronSecret: !!cronSecret,
+      allHeaders: Object.fromEntries(request.headers.entries())
+    });
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: 401 }
@@ -146,9 +154,10 @@ export async function GET(request: Request) {
   try {
     console.log('[Cron] Starting analyst data update...');
 
-    // Get filings from the past 30 days that need analyst data
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    // Get filings from the past 7 days that need analyst data
+    // (Running daily, we only need to update recent filings)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     // Keywords to identify earnings 8-Ks
     const earningsKeywords = [
@@ -161,7 +170,7 @@ export async function GET(request: Request) {
     const allRecentFilings = await prisma.filing.findMany({
       where: {
         filingDate: {
-          gte: thirtyDaysAgo
+          gte: sevenDaysAgo
         },
         filingType: {
           in: ['10-K', '10-Q', '8-K']
@@ -193,7 +202,7 @@ export async function GET(request: Request) {
       return false;
     });
 
-    console.log(`[Cron] Found ${allRecentFilings.length} total filings, ${recentFilings.length} financial filings from past 30 days`);
+    console.log(`[Cron] Found ${allRecentFilings.length} total filings, ${recentFilings.length} financial filings from past 7 days`);
 
     let updated = 0;
     let errors = 0;
@@ -376,13 +385,13 @@ export async function GET(request: Request) {
     let stockPriceErrors = 0;
 
     try {
-      // Get companies with recent filings (past 30 days) - these are priority
+      // Get companies with recent filings (past 7 days) - these are priority
       const activeCompanies = await prisma.company.findMany({
         where: {
           filings: {
             some: {
               filingDate: {
-                gte: thirtyDaysAgo
+                gte: sevenDaysAgo
               }
             }
           }
@@ -390,7 +399,7 @@ export async function GET(request: Request) {
         select: { id: true, ticker: true }
       });
 
-      console.log(`[Cron] Found ${activeCompanies.length} recently filed companies to update (past 30 days)`);
+      console.log(`[Cron] Found ${activeCompanies.length} recently filed companies to update (past 7 days)`);
 
       // Update in batches to avoid rate limits and timeout
       const BATCH_SIZE = 100;
