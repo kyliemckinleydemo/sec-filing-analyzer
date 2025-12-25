@@ -526,6 +526,14 @@ Note: Base analysis on general knowledge. Do not mention data access limitations
     try {
       console.log('Running Claude AI analysis...');
 
+      // Determine if this filing has financial data (for AI summary guidance)
+      // 10-K and 10-Q always have financials
+      // 8-K only if it contains earnings-related keywords
+      const hasFinancialData = filing.filingType === '10-K' || filing.filingType === '10-Q' ||
+        (filing.filingType === '8-K' && /earnings|quarterly results|financial results|q[1-4] 20\d{2}|revenue|net income|eps|diluted earnings/i.test(filingHtml));
+
+      console.log(`Filing type: ${filing.filingType}, Has financial data: ${hasFinancialData}`);
+
       // PARALLELIZATION: Run Claude analysis and Yahoo Finance data fetch in parallel
       // They're independent operations, so we can save ~2s by running together
       const [analysis, preloadedYahooData] = await Promise.all([
@@ -536,7 +544,9 @@ Note: Base analysis on general knowledge. Do not mention data access limitations
           priorRisks,
           filing.filingType,
           filing.company.name,
-          priorMDA
+          priorMDA,
+          'user', // useCase
+          hasFinancialData
         ),
 
         // Yahoo Finance data (~1-2s) - preload for later use

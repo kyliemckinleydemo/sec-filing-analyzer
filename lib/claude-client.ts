@@ -784,8 +784,13 @@ Return ONLY bullet points, no introduction.`;
     filingText: string,
     riskAnalysis: RiskAnalysis,
     sentimentAnalysis: SentimentAnalysis,
-    useCase: 'bulk' | 'user' = 'user'
+    useCase: 'bulk' | 'user' = 'user',
+    hasFinancialData: boolean = true
   ): Promise<string> {
+    const forecastGuidance = hasFinancialData
+      ? ''
+      : '\n\nIMPORTANT: This filing does NOT contain financial results. Do NOT make stock price forecasts, predictions, or trading recommendations. Focus only on the disclosed events and their qualitative implications.';
+
     const prompt = `Create a concise executive summary (3-5 bullet points) of this SEC filing.
 
 Focus on:
@@ -796,7 +801,7 @@ Focus on:
 Risk Analysis:
 ${JSON.stringify(riskAnalysis.topChanges)}
 
-Sentiment: ${sentimentAnalysis.tone} (${sentimentAnalysis.sentimentScore})
+Sentiment: ${sentimentAnalysis.tone} (${sentimentAnalysis.sentimentScore})${forecastGuidance}
 
 Return ONLY bullet points, no introduction.`;
 
@@ -862,7 +867,8 @@ Return ONLY bullet points, no introduction.`;
     filingType?: string,
     companyName?: string,
     priorMDA?: string,
-    useCase: 'bulk' | 'user' = 'user'
+    useCase: 'bulk' | 'user' = 'user',
+    hasFinancialData: boolean = true
   ): Promise<FilingAnalysis> {
     try {
       const fullText = currentRisks + '\n\n' + mdaText;
@@ -885,12 +891,13 @@ Return ONLY bullet points, no introduction.`;
         useCase
       );
 
-      // Generate summary
+      // Generate summary (with guidance on whether to make price forecasts)
       const summary = await this.generateExecutiveSummary(
         fullText,
         risks,
         sentiment,
-        useCase
+        useCase,
+        hasFinancialData
       );
 
       return {

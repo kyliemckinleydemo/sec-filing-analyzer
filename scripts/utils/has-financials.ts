@@ -21,8 +21,21 @@ export function hasFinancials(filing: {
 
       // Check for any financial data indicators
       const hasFinancialData =
-        // Structured data from Yahoo Finance (earnings, revenue)
-        fm?.structuredData ||
+        // Structured data with actual financial metrics (not just sector/industry metadata)
+        (fm?.structuredData && (
+          fm.structuredData.revenue !== undefined ||
+          fm.structuredData.netIncome !== undefined ||
+          fm.structuredData.eps !== undefined ||
+          fm.structuredData.grossMargin !== undefined ||
+          fm.structuredData.operatingMargin !== undefined ||
+          fm.structuredData.revenueYoY !== undefined ||
+          fm.structuredData.netIncomeYoY !== undefined ||
+          fm.structuredData.epsYoY !== undefined ||
+          fm.structuredData.consensusEPS !== undefined ||
+          fm.structuredData.consensusRevenue !== undefined ||
+          fm.structuredData.epsSurprisePercent !== undefined ||
+          fm.structuredData.revenueSurprisePercent !== undefined
+        )) ||
         // EPS/Revenue surprises
         fm?.surprises?.length > 0 ||
         // Revenue growth metrics (only if it's a number or meaningful string, not "Not disclosed")
