@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { hasFinancials } from '@/lib/has-financials';
 
 interface SECFiling {
   accessionNumber: string;
@@ -147,6 +148,12 @@ export async function GET(request: Request) {
       const accessionNoDashes = filing.accessionNumber.replace(/-/g, '');
       const cikPadded = filing.cik.padStart(10, '0');
 
+      // Check if filing actually has financial data (not just XBRL format)
+      const hasFinancialData = hasFinancials({
+        filingType: filing.filingType,
+        analysisData: filing.analysisData
+      });
+
       return {
         accessionNumber: filing.accessionNumber,
         ticker: filing.company.ticker,
@@ -156,7 +163,7 @@ export async function GET(request: Request) {
         filingDate: filing.filingDate.toISOString(), // Fixed: return full ISO string for frontend parsing
         reportDate: filing.reportDate?.toISOString() || null, // Fixed: return full ISO string
         primaryDocument: filing.filingUrl.split('/').pop(),
-        hasXBRL: true, // Our cron only fetches XBRL filings
+        hasXBRL: hasFinancialData, // Check if filing has actual financial data
         filingUrl: filing.filingUrl,
         // Use SEC's iXBRL viewer for better rendering
         edgarUrl: `https://www.sec.gov/cgi-bin/viewer?action=view&cik=${cikPadded}&accession_number=${filing.accessionNumber}&xbrl_type=v`,
