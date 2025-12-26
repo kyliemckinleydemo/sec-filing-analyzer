@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface CompanySnapshot {
   currentPrice?: number | null;
@@ -28,6 +28,15 @@ interface CompanySnapshotTooltipProps {
 export function CompanySnapshotTooltip({ ticker, companyName, snapshot, children }: CompanySnapshotTooltipProps) {
   const [isVisible, setIsVisible] = useState(false);
 
+  // Close tooltip when clicking outside (for mobile)
+  useEffect(() => {
+    const handleClickOutside = () => setIsVisible(false);
+    if (isVisible) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [isVisible]);
+
   // Format large numbers (billions)
   const formatBillions = (value: number | null | undefined) => {
     if (!value || !isFinite(value)) return 'N/A';
@@ -47,16 +56,28 @@ export function CompanySnapshotTooltip({ ticker, companyName, snapshot, children
     return <>{children}</>;
   }
 
+  const handleToggle = () => {
+    setIsVisible(!isVisible);
+  };
+
   return (
     <div
       className="relative inline-block"
       onMouseEnter={() => setIsVisible(true)}
       onMouseLeave={() => setIsVisible(false)}
+      onClick={handleToggle}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+        setIsVisible(true);
+      }}
     >
       {children}
 
       {isVisible && (
-        <div className="absolute z-50 left-0 top-full mt-2 w-80 bg-white border-2 border-blue-200 rounded-lg shadow-2xl p-4 animate-in fade-in duration-200">
+        <div
+          className="absolute z-50 left-0 top-full mt-2 w-80 max-w-[90vw] bg-white border-2 border-blue-200 rounded-lg shadow-2xl p-4 animate-in fade-in duration-200"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Header */}
           <div className="mb-3 pb-3 border-b border-slate-200">
             <div className="font-bold text-lg text-blue-600">{ticker}</div>
