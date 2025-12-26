@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { safeFormatPrice } from '@/lib/format-utils';
 
 interface Company {
   ticker: string;
