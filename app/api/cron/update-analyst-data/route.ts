@@ -14,8 +14,10 @@ export const maxDuration = 300;
  * Fetches:
  * 1. Analyst consensus (rating, target price, coverage)
  * 2. Analyst activity (upgrades/downgrades in 30 days before filing)
+ * 3. Earnings surprise data
+ * 4. Paper trading operations
  *
- * Runs after daily-filings-rss to update analyst data for newly fetched filings
+ * NOTE: Stock price updates moved to separate /update-stock-prices job
  */
 
 interface AnalystActivity {
@@ -127,6 +129,9 @@ async function getAnalystActivity(ticker: string, filingDate: Date): Promise<Ana
 }
 
 export async function GET(request: Request) {
+  const startTime = Date.now();
+  let currentOperation = 'initialization';
+
   // Verify request is from Vercel cron or has valid auth header
   const authHeader = request.headers.get('authorization');
   const userAgent = request.headers.get('user-agent');
@@ -139,11 +144,10 @@ export async function GET(request: Request) {
   const hasValidAuth = cronSecret && authHeader === `Bearer ${cronSecret}`;
 
   if (!isVercelCron && !hasValidAuth) {
-    console.error('[Cron] Unauthorized request', {
+    console.error('[AnalystCron] ❌ Unauthorized request', {
       userAgent,
       hasAuthHeader: !!authHeader,
-      hasCronSecret: !!cronSecret,
-      allHeaders: Object.fromEntries(request.headers.entries())
+      hasCronSecret: !!cronSecret
     });
     return NextResponse.json(
       { error: 'Unauthorized' },
@@ -151,11 +155,16 @@ export async function GET(request: Request) {
     );
   }
 
+  let updated = 0;
+  let errors = 0;
+  let pendingExecuted = 0;
+  let paperTradingClosed = 0;
+
   try {
-    console.log('[Cron] Starting analyst data update...');
+    console.log('[AnalystCron] 🚀 Starting analyst data update job...');
 
     // Get filings from the past 7 days that need analyst data
-    // (Running daily, we only need to update recent filings)
+    currentOperation = 'database_query';
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -202,26 +211,50 @@ export async function GET(request: Request) {
       return false;
     });
 
-    console.log(`[Cron] Found ${allRecentFilings.length} total filings, ${recentFilings.length} financial filings from past 7 days`);
+    console.log(`[AnalystCron] 📊 Found ${allRecentFilings.length} total filings, ${recentFilings.length} financial filings from past 7 days`);
 
-    let updated = 0;
-    let errors = 0;
+    // Process each filing with comprehensive error handling
+    currentOperation = 'analyst_data_updates';
+    for (let i = 0; i < recentFilings.length; i++) {
+      const filing = recentFilings[i];
 
-    for (const filing of recentFilings) {
       try {
-        const ticker = filing.company?.ticker;
-        if (!ticker) continue;
+        // Check timeout (leave 30s buffer)
+        const elapsedSeconds = (Date.now() - startTime) / 1000;
+        if (elapsedSeconds > 270) {
+          console.log(`[AnalystCron] ⏱️  Approaching timeout at ${elapsedSeconds}s, stopping early`);
+          break;
+        }
 
-        // Fetch analyst consensus and earnings data
-        const quote = await yahooFinance.quoteSummary(ticker, {
+        const ticker = filing.company?.ticker;
+        if (!ticker) {
+          console.log(`[AnalystCron] ⚠️  Skipping filing ${filing.id}: no ticker`);
+          continue;
+        }
+
+        // Log progress every 5 filings
+        if ((i + 1) % 5 === 0) {
+          console.log(`[AnalystCron] 🔄 Progress: ${i + 1}/${recentFilings.length} filings (${updated} updated, ${errors} errors)`);
+        }
+
+        // Fetch analyst consensus and earnings data with timeout
+        currentOperation = `yahoo_finance_${ticker}`;
+        const quotePromise = yahooFinance.quoteSummary(ticker, {
           modules: ['financialData', 'recommendationTrend', 'earnings']
         });
 
+        const quote = await Promise.race([
+          quotePromise,
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Request timeout')), 10000)
+          )
+        ]) as any;
+
         const fd = quote.financialData;
         const trend = quote.recommendationTrend?.trend?.[0];
-        const earnings = quote.earnings;
 
         // Fetch analyst activity
+        currentOperation = `analyst_activity_${ticker}`;
         const activity = await getAnalystActivity(ticker, filing.filingDate);
 
         // Calculate consensus score (0-100 scale, 100 = Strong Buy)
@@ -243,7 +276,8 @@ export async function GET(request: Request) {
           upsidePotential = ((fd.targetMeanPrice - fd.currentPrice) / fd.currentPrice) * 100;
         }
 
-        // Fetch earnings surprise data using yahoo-finance2 (Node.js native, no Python required)
+        // Fetch earnings surprise data
+        currentOperation = `earnings_history_${ticker}`;
         let consensusEPS: number | null = null;
         let actualEPS: number | null = null;
         let epsSurprise: 'beat' | 'miss' | 'inline' | 'unknown' = 'unknown';
@@ -264,7 +298,6 @@ export async function GET(request: Request) {
             const filingTime = filing.filingDate.getTime();
 
             for (const period of history) {
-              // Parse quarter date (e.g., "3Q2024" -> approximate date)
               const quarterFmt = (period.quarter as any)?.fmt;
               if (!quarterFmt) continue;
 
@@ -273,8 +306,7 @@ export async function GET(request: Request) {
 
               const quarter = parseInt(quarterMatch[1]);
               const year = parseInt(quarterMatch[2]);
-              // Approximate: Q1=Jan 31, Q2=Apr 30, Q3=Jul 31, Q4=Oct 31
-              const monthMap = [0, 0, 3, 6, 9]; // Jan, Apr, Jul, Oct
+              const monthMap = [0, 0, 3, 6, 9];
               const earningsDate = new Date(year, monthMap[quarter], [31, 30, 31, 31][quarter - 1]);
 
               const diff = Math.abs(earningsDate.getTime() - filingTime);
@@ -284,24 +316,17 @@ export async function GET(request: Request) {
               }
             }
 
-            // Only use if within 90 days
             const daysDiff = smallestDiff / (1000 * 60 * 60 * 24);
             if (closestEarnings && daysDiff <= 90) {
-              // Extract EPS data using type assertions for yahoo-finance2 response format
               const epsEstimate = (closestEarnings.epsEstimate as any)?.raw ?? closestEarnings.epsEstimate;
               const epsActual = (closestEarnings.epsActual as any)?.raw ?? closestEarnings.epsActual;
               const surprisePercent = (closestEarnings.surprisePercent as any)?.raw ?? closestEarnings.surprisePercent;
 
-              if (typeof epsEstimate === 'number') {
-                consensusEPS = epsEstimate;
-              }
-              if (typeof epsActual === 'number') {
-                actualEPS = epsActual;
-              }
+              if (typeof epsEstimate === 'number') consensusEPS = epsEstimate;
+              if (typeof epsActual === 'number') actualEPS = epsActual;
 
-              // Calculate surprise
               if (typeof surprisePercent === 'number') {
-                epsSurpriseMagnitude = surprisePercent * 100; // Already in decimal, convert to percentage
+                epsSurpriseMagnitude = surprisePercent * 100;
                 if (epsSurpriseMagnitude > 2) epsSurprise = 'beat';
                 else if (epsSurpriseMagnitude < -2) epsSurprise = 'miss';
                 else epsSurprise = 'inline';
@@ -309,11 +334,11 @@ export async function GET(request: Request) {
             }
           }
         } catch (earningsError: any) {
-          // Silently fail - not all tickers have earnings data
-          console.log(`[Cron] No earnings history for ${ticker}: ${earningsError.message}`);
+          // Silently handle - not all tickers have earnings data
         }
 
         // Merge analyst data into analysisData JSON
+        currentOperation = `database_update_${ticker}`;
         let existingData: any = {};
         if (filing.analysisData) {
           try {
@@ -321,6 +346,7 @@ export async function GET(request: Request) {
               ? JSON.parse(filing.analysisData)
               : filing.analysisData;
           } catch (e) {
+            console.error(`[AnalystCron] ⚠️  Failed to parse existing analysisData for filing ${filing.id}`);
             existingData = {};
           }
         }
@@ -356,12 +382,10 @@ export async function GET(request: Request) {
         await prisma.filing.update({
           where: { id: filing.id },
           data: {
-            // Store in dedicated fields for model training
             consensusEPS,
             actualEPS,
             epsSurprise: epsSurpriseMagnitude,
             revenueSurprise: revenueSurpriseMagnitude,
-            // Keep analysisData for backwards compatibility
             analysisData: JSON.stringify(updatedAnalysisData)
           }
         });
@@ -372,105 +396,22 @@ export async function GET(request: Request) {
         await new Promise(resolve => setTimeout(resolve, 100));
 
       } catch (error: any) {
-        console.error(`[Cron] Error updating analyst data for filing ${filing.id}:`, error.message);
         errors++;
+        console.error(`[AnalystCron] ❌ Error updating filing ${filing.id} (${filing.company?.ticker}):`, {
+          operation: currentOperation,
+          error: error.message,
+          stack: error.stack?.split('\n')[0]
+        });
+        // Continue with next filing
+        continue;
       }
     }
 
-    console.log(`[Cron] Analyst data update complete: ${updated} updated, ${errors} errors`);
+    console.log(`[AnalystCron] ✅ Analyst data complete: ${updated} updated, ${errors} errors`);
 
-    // Update stock prices for companies with recent filings (past 7 days)
-    console.log('[Cron] Updating stock prices for recently filed companies...');
-    let stockPriceUpdates = 0;
-    let stockPriceErrors = 0;
-
-    try {
-      // Get companies with recent filings (past 7 days) - these are priority
-      const activeCompanies = await prisma.company.findMany({
-        where: {
-          filings: {
-            some: {
-              filingDate: {
-                gte: sevenDaysAgo
-              }
-            }
-          }
-        },
-        select: { id: true, ticker: true }
-      });
-
-      console.log(`[Cron] Found ${activeCompanies.length} recently filed companies to update (past 7 days)`);
-
-      // Update in batches to avoid rate limits and timeout
-      const BATCH_SIZE = 100;
-      const BATCH_DELAY_MS = 2000; // 2 seconds between batches
-
-      for (let i = 0; i < activeCompanies.length; i += BATCH_SIZE) {
-        const batch = activeCompanies.slice(i, i + BATCH_SIZE);
-        console.log(`[Cron] Processing batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(activeCompanies.length / BATCH_SIZE)}`);
-
-        for (const company of batch) {
-          try {
-            // Fetch latest quote data
-            const quote = await yahooFinance.quoteSummary(company.ticker, {
-              modules: ['price', 'summaryDetail', 'financialData']
-            });
-
-            const price = quote.price;
-            const summaryDetail = quote.summaryDetail;
-            const financialData = quote.financialData;
-
-            if (price || summaryDetail || financialData) {
-              await prisma.company.update({
-                where: { id: company.id },
-                data: {
-                  currentPrice: price?.regularMarketPrice ?? null,
-                  marketCap: price?.marketCap ?? null,
-                  peRatio: summaryDetail?.trailingPE ?? null,
-                  forwardPE: summaryDetail?.forwardPE ?? null,
-                  beta: summaryDetail?.beta ?? null,
-                  dividendYield: summaryDetail?.dividendYield ?? null,
-                  fiftyTwoWeekHigh: summaryDetail?.fiftyTwoWeekHigh ?? null,
-                  fiftyTwoWeekLow: summaryDetail?.fiftyTwoWeekLow ?? null,
-                  volume: price?.regularMarketVolume ? BigInt(price.regularMarketVolume) : null,
-                  averageVolume: summaryDetail?.averageVolume ? BigInt(summaryDetail.averageVolume) : null,
-                  analystTargetPrice: financialData?.targetMeanPrice ?? null,
-                  yahooLastUpdated: new Date()
-                }
-              });
-
-              stockPriceUpdates++;
-            }
-
-            // Rate limit: 100ms delay between requests
-            await new Promise(resolve => setTimeout(resolve, 100));
-
-          } catch (error: any) {
-            // Skip companies with errors (delisted, invalid ticker, etc.)
-            if (!error.message?.includes('Not Found')) {
-              console.error(`[Cron] Error updating stock price for ${company.ticker}:`, error.message);
-            }
-            stockPriceErrors++;
-          }
-        }
-
-        // Delay between batches to avoid rate limits
-        if (i + BATCH_SIZE < activeCompanies.length) {
-          await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
-        }
-      }
-
-      console.log(`[Cron] Stock price updates complete: ${stockPriceUpdates} updated, ${stockPriceErrors} errors`);
-    } catch (error: any) {
-      console.error('[Cron] Error in stock price update:', error.message);
-    }
-
-    // Also handle paper trading operations (since we're limited to 2 cron jobs)
-    // 1. Execute pending trades at market open
-    // 2. Close expired positions (7+ days)
-    console.log('[Cron] Processing paper trading operations...');
-    let pendingExecuted = 0;
-    let paperTradingClosed = 0;
+    // Handle paper trading operations
+    currentOperation = 'paper_trading';
+    console.log('[AnalystCron] 🎮 Processing paper trading operations...');
 
     try {
       const { PaperTradingEngine } = await import('@/lib/paper-trading');
@@ -479,16 +420,18 @@ export async function GET(request: Request) {
         where: { isActive: true }
       });
 
+      console.log(`[AnalystCron] Found ${portfolios.length} active portfolios`);
+
       for (const portfolio of portfolios) {
         try {
           const engine = new PaperTradingEngine(portfolio.id);
 
-          // Execute any PENDING trades at market open (if market is open)
+          // Execute any PENDING trades
           const executed = await engine.executePendingTrades();
           pendingExecuted += executed;
 
           if (executed > 0) {
-            console.log(`[Cron] Portfolio "${portfolio.name}": executed ${executed} pending trades`);
+            console.log(`[AnalystCron] ✅ Portfolio "${portfolio.name}": executed ${executed} pending trades`);
           }
 
           // Close expired positions
@@ -496,47 +439,64 @@ export async function GET(request: Request) {
           paperTradingClosed += closed;
 
           if (closed > 0) {
-            console.log(`[Cron] Portfolio "${portfolio.name}": closed ${closed} positions`);
+            console.log(`[AnalystCron] ✅ Portfolio "${portfolio.name}": closed ${closed} positions`);
           }
 
-          // Update metrics after trading operations
+          // Update metrics
           if (executed > 0 || closed > 0) {
             await engine.updatePortfolioMetrics();
           }
         } catch (error: any) {
-          console.error(`[Cron] Error processing portfolio ${portfolio.id}:`, error.message);
+          console.error(`[AnalystCron] ⚠️  Error processing portfolio ${portfolio.id}:`, error.message);
         }
       }
 
-      console.log(`[Cron] Paper trading: ${pendingExecuted} pending trades executed, ${paperTradingClosed} positions closed`);
+      console.log(`[AnalystCron] ✅ Paper trading complete: ${pendingExecuted} trades executed, ${paperTradingClosed} positions closed`);
     } catch (error: any) {
-      console.error('[Cron] Error in paper trading operations:', error.message);
+      console.error('[AnalystCron] ❌ Error in paper trading:', error.message);
     }
+
+    const elapsedSeconds = Math.round((Date.now() - startTime) / 1000);
+    console.log(`[AnalystCron] 🎉 Job complete in ${elapsedSeconds}s`);
 
     return NextResponse.json({
       success: true,
-      message: `Updated analyst data for ${updated} filings, updated ${stockPriceUpdates} stock prices, executed ${pendingExecuted} pending trades, closed ${paperTradingClosed} paper trading positions`,
+      message: `Updated analyst data for ${updated} filings, executed ${pendingExecuted} pending trades, closed ${paperTradingClosed} paper trading positions`,
       results: {
         analystData: {
           updated,
           errors,
           total: recentFilings.length
         },
-        stockPrices: {
-          updated: stockPriceUpdates,
-          errors: stockPriceErrors
-        },
         paperTrading: {
           pendingExecuted,
           positionsClosed: paperTradingClosed
-        }
+        },
+        elapsedSeconds
       }
     });
 
   } catch (error: any) {
-    console.error('[Cron] Error in analyst data update:', error);
+    const elapsedSeconds = Math.round((Date.now() - startTime) / 1000);
+    console.error('[AnalystCron] ❌ Fatal error:', {
+      operation: currentOperation,
+      error: error.message,
+      stack: error.stack,
+      elapsedSeconds
+    });
+
     return NextResponse.json(
-      { error: error.message },
+      {
+        error: error.message,
+        failedOperation: currentOperation,
+        partialResults: {
+          updated,
+          errors,
+          pendingExecuted,
+          positionsClosed: paperTradingClosed,
+          elapsedSeconds
+        }
+      },
       { status: 500 }
     );
   }
