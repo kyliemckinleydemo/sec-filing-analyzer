@@ -30,18 +30,18 @@ export function CompanySnapshotTooltip({ ticker, companyName, snapshot, children
 
   // Format large numbers (billions)
   const formatBillions = (value: number | null | undefined) => {
-    if (!value) return 'N/A';
+    if (!value || !isFinite(value)) return 'N/A';
     return `$${(value / 1e9).toFixed(2)}B`;
   };
 
   // Format percentage
   const formatPercent = (value: number | null | undefined) => {
-    if (value === null || value === undefined) return 'N/A';
+    if (value === null || value === undefined || !isFinite(value)) return 'N/A';
     return `${value > 0 ? '+' : ''}${value.toFixed(2)}%`;
   };
 
-  // Check if we have any data to show
-  const hasData = Object.values(snapshot).some(val => val !== null && val !== undefined);
+  // Check if we have any data to show - handle undefined/null snapshot
+  const hasData = snapshot && typeof snapshot === 'object' && Object.values(snapshot).some(val => val !== null && val !== undefined);
 
   if (!hasData) {
     return <>{children}</>;
@@ -69,25 +69,25 @@ export function CompanySnapshotTooltip({ ticker, companyName, snapshot, children
             {(snapshot.currentPrice || snapshot.marketCap || snapshot.peRatio) && (
               <div className="space-y-1">
                 <div className="text-xs font-semibold text-slate-500 uppercase">Valuation</div>
-                {snapshot.currentPrice && (
+                {snapshot.currentPrice && isFinite(snapshot.currentPrice) && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">Price (Last Close):</span>
                     <span className="font-semibold text-slate-900">${snapshot.currentPrice.toFixed(2)}</span>
                   </div>
                 )}
-                {snapshot.marketCap && (
+                {snapshot.marketCap && isFinite(snapshot.marketCap) && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">Market Cap:</span>
                     <span className="font-semibold text-slate-900">{formatBillions(snapshot.marketCap)}</span>
                   </div>
                 )}
-                {snapshot.peRatio && (
+                {snapshot.peRatio && isFinite(snapshot.peRatio) && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">P/E Ratio:</span>
                     <span className="font-semibold text-slate-900">{snapshot.peRatio.toFixed(2)}</span>
                   </div>
                 )}
-                {snapshot.analystTargetPrice && (
+                {snapshot.analystTargetPrice && isFinite(snapshot.analystTargetPrice) && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">Analyst Target:</span>
                     <span className="font-semibold text-blue-600">${snapshot.analystTargetPrice.toFixed(2)}</span>
@@ -128,13 +128,13 @@ export function CompanySnapshotTooltip({ ticker, companyName, snapshot, children
                     </span>
                   </div>
                 )}
-                {snapshot.latestGrossMargin && (
+                {snapshot.latestGrossMargin && isFinite(snapshot.latestGrossMargin) && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">Gross Margin:</span>
                     <span className="font-semibold text-slate-900">{snapshot.latestGrossMargin.toFixed(1)}%</span>
                   </div>
                 )}
-                {snapshot.latestOperatingMargin && (
+                {snapshot.latestOperatingMargin && isFinite(snapshot.latestOperatingMargin) && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">Operating Margin:</span>
                     <span className="font-semibold text-slate-900">{snapshot.latestOperatingMargin.toFixed(1)}%</span>
@@ -147,13 +147,13 @@ export function CompanySnapshotTooltip({ ticker, companyName, snapshot, children
             {(snapshot.beta || snapshot.dividendYield) && (
               <div className="space-y-1 pt-2">
                 <div className="text-xs font-semibold text-slate-500 uppercase">Risk & Income</div>
-                {snapshot.beta && (
+                {snapshot.beta && isFinite(snapshot.beta) && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">Beta:</span>
                     <span className="font-semibold text-slate-900">{snapshot.beta.toFixed(2)}</span>
                   </div>
                 )}
-                {snapshot.dividendYield && (
+                {snapshot.dividendYield && isFinite(snapshot.dividendYield) && (
                   <div className="flex justify-between">
                     <span className="text-slate-600">Dividend Yield:</span>
                     <span className="font-semibold text-slate-900">{snapshot.dividendYield.toFixed(2)}%</span>
