@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useRouter } from 'next/navigation';
 import { Navigation } from '@/components/Navigation';
 import { CompanySnapshotTooltip } from '@/components/CompanySnapshotTooltip';
+import { safeFormatPrice, safeFormatPercent } from '@/lib/format-utils';
 
 interface User {
   id: string;
@@ -398,9 +399,9 @@ export default function Home() {
                             </div>
                             {price ? (
                               <div className="text-right mr-3">
-                                <div className="font-semibold text-white">${price.currentPrice.toFixed(2)}</div>
+                                <div className="font-semibold text-white">{safeFormatPrice(price.currentPrice)}</div>
                                 <div className={`text-xs ${price.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                  {price.change >= 0 ? '▲' : '▼'} {Math.abs(price.changePercent).toFixed(2)}%
+                                  {price.change >= 0 ? '▲' : '▼'} {safeFormatPercent(Math.abs(price.changePercent))}
                                 </div>
                               </div>
                             ) : (

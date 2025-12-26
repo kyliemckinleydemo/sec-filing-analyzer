@@ -293,13 +293,13 @@ export default function WatchlistPage() {
                       {item.company && (
                         <div className="flex gap-4 text-xs text-slate-500">
                           {item.company.currentPrice && (
-                            <span>Price: ${item.company.currentPrice.toFixed(2)}</span>
+                            <span>Price: {safeFormatPrice(item.company.currentPrice)}</span>
                           )}
                           {item.company.marketCap && (
                             <span>Market Cap: {formatMarketCap(item.company.marketCap)}</span>
                           )}
                           {item.company.peRatio && (
-                            <span>P/E: {item.company.peRatio.toFixed(2)}</span>
+                            <span>P/E: {item.company.peRatio && isFinite(item.company.peRatio) ? item.company.peRatio.toFixed(2) : 'N/A'}</span>
                           )}
                         </div>
                       )}
