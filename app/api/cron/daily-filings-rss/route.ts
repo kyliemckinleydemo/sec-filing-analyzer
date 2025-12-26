@@ -88,32 +88,54 @@ export async function GET(request: Request) {
 
     let allFilings: Awaited<ReturnType<typeof secRSSClient.fetchRecentFilingsFromRSS>> = [];
 
-    // Determine if we need catch-up mode
-    if (lastSuccessfulRun?.completedAt) {
-      const daysSinceLastRun = Math.floor(
-        (Date.now() - lastSuccessfulRun.completedAt.getTime()) / (1000 * 60 * 60 * 24)
+    // SMARTER CATCH-UP LOGIC: Check for actual gaps in filing dates, not just time since last run
+    let needsCatchup = false;
+    let catchupStartDate: Date | null = null;
+
+    // Find the most recent filing date in database
+    const mostRecentFiling = await prisma.filing.findFirst({
+      orderBy: { filingDate: 'desc' },
+      select: { filingDate: true }
+    });
+
+    if (mostRecentFiling) {
+      const daysSinceMostRecentFiling = Math.floor(
+        (Date.now() - mostRecentFiling.filingDate.getTime()) / (1000 * 60 * 60 * 24)
       );
 
-      if (daysSinceLastRun > 1) {
-        // CATCH-UP MODE: Fetch missed days using daily index files
-        console.log(`[Cron RSS] Catch-up mode: ${daysSinceLastRun} days missed`);
-        results.mode = 'catchup';
-        results.daysProcessed = daysSinceLastRun;
-
-        const startDate = new Date(lastSuccessfulRun.completedAt);
-        startDate.setDate(startDate.getDate() + 1); // Start from day after last run
-        const endDate = new Date();
-        endDate.setDate(endDate.getDate() - 1); // Up to yesterday
-
-        allFilings = await secRSSClient.fetchMissedDays(startDate, endDate);
-      } else {
-        // DAILY MODE: Fetch from RSS feed (real-time)
-        console.log('[Cron RSS] Daily mode: Fetching latest filings from RSS');
-        allFilings = await secRSSClient.fetchRecentFilingsFromRSS();
+      // If our most recent filing is more than 2 days old, we need catch-up
+      // (accounting for weekends where there are no filings)
+      if (daysSinceMostRecentFiling > 2) {
+        needsCatchup = true;
+        catchupStartDate = new Date(mostRecentFiling.filingDate);
+        catchupStartDate.setDate(catchupStartDate.getDate() + 1);
+        console.log(`[Cron RSS] Most recent filing is ${daysSinceMostRecentFiling} days old - triggering catch-up`);
       }
     } else {
-      // First run: Use RSS for recent filings
-      console.log('[Cron RSS] First run: Fetching recent filings from RSS');
+      // No filings in database at all
+      needsCatchup = true;
+      catchupStartDate = new Date();
+      catchupStartDate.setDate(catchupStartDate.getDate() - 30); // Go back 30 days
+      console.log('[Cron RSS] No filings in database - triggering 30-day catch-up');
+    }
+
+    if (needsCatchup && catchupStartDate) {
+      // CATCH-UP MODE: Fetch missed days using daily index files
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() - 1); // Up to yesterday
+
+      const daysMissed = Math.floor(
+        (endDate.getTime() - catchupStartDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      console.log(`[Cron RSS] Catch-up mode: Fetching from ${catchupStartDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]} (${daysMissed} days)`);
+      results.mode = 'catchup';
+      results.daysProcessed = daysMissed;
+
+      allFilings = await secRSSClient.fetchMissedDays(catchupStartDate, endDate);
+    } else {
+      // DAILY MODE: Fetch from RSS feed (real-time)
+      console.log('[Cron RSS] Daily mode: Fetching latest filings from RSS');
       allFilings = await secRSSClient.fetchRecentFilingsFromRSS();
     }
 
