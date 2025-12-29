@@ -160,6 +160,31 @@ export async function GET(request: Request) {
   let pendingExecuted = 0;
   let paperTradingClosed = 0;
 
+  // Clean up stuck jobs (older than 10 minutes and still marked as running)
+  const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+  await prisma.cronJobRun.updateMany({
+    where: {
+      jobName: 'update-analyst-data',
+      status: 'running',
+      startedAt: {
+        lt: tenMinutesAgo,
+      },
+    },
+    data: {
+      status: 'failed',
+      completedAt: new Date(),
+      errorMessage: 'Job timed out - auto-cleaned by next run',
+    },
+  });
+
+  // Create job run record
+  const jobRun = await prisma.cronJobRun.create({
+    data: {
+      jobName: 'update-analyst-data',
+      status: 'running',
+    },
+  });
+
   try {
     console.log('[AnalystCron] 🚀 Starting analyst data update job...');
 
@@ -459,6 +484,18 @@ export async function GET(request: Request) {
     const elapsedSeconds = Math.round((Date.now() - startTime) / 1000);
     console.log(`[AnalystCron] 🎉 Job complete in ${elapsedSeconds}s`);
 
+    // Mark job run as successful
+    await prisma.cronJobRun.update({
+      where: { id: jobRun.id },
+      data: {
+        status: 'success',
+        completedAt: new Date(),
+        filingsFetched: recentFilings.length,
+        filingsStored: updated,
+        companiesProcessed: updated,
+      },
+    });
+
     return NextResponse.json({
       success: true,
       message: `Updated analyst data for ${updated} filings, executed ${pendingExecuted} pending trades, closed ${paperTradingClosed} paper trading positions`,
@@ -483,6 +520,16 @@ export async function GET(request: Request) {
       error: error.message,
       stack: error.stack,
       elapsedSeconds
+    });
+
+    // Mark job run as failed
+    await prisma.cronJobRun.update({
+      where: { id: jobRun.id },
+      data: {
+        status: 'failed',
+        completedAt: new Date(),
+        errorMessage: error.message,
+      },
     });
 
     return NextResponse.json(
