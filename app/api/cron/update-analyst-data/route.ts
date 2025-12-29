@@ -157,8 +157,6 @@ export async function GET(request: Request) {
 
   let updated = 0;
   let errors = 0;
-  let pendingExecuted = 0;
-  let paperTradingClosed = 0;
 
   // Clean up stuck jobs (older than 10 minutes and still marked as running)
   const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
@@ -434,52 +432,9 @@ export async function GET(request: Request) {
 
     console.log(`[AnalystCron] ✅ Analyst data complete: ${updated} updated, ${errors} errors`);
 
-    // Handle paper trading operations
-    currentOperation = 'paper_trading';
-    console.log('[AnalystCron] 🎮 Processing paper trading operations...');
-
-    try {
-      const { PaperTradingEngine } = await import('@/lib/paper-trading');
-
-      const portfolios = await prisma.paperPortfolio.findMany({
-        where: { isActive: true }
-      });
-
-      console.log(`[AnalystCron] Found ${portfolios.length} active portfolios`);
-
-      for (const portfolio of portfolios) {
-        try {
-          const engine = new PaperTradingEngine(portfolio.id);
-
-          // Execute any PENDING trades
-          const executed = await engine.executePendingTrades();
-          pendingExecuted += executed;
-
-          if (executed > 0) {
-            console.log(`[AnalystCron] ✅ Portfolio "${portfolio.name}": executed ${executed} pending trades`);
-          }
-
-          // Close expired positions
-          const closed = await engine.closeExpiredPositions();
-          paperTradingClosed += closed;
-
-          if (closed > 0) {
-            console.log(`[AnalystCron] ✅ Portfolio "${portfolio.name}": closed ${closed} positions`);
-          }
-
-          // Update metrics
-          if (executed > 0 || closed > 0) {
-            await engine.updatePortfolioMetrics();
-          }
-        } catch (error: any) {
-          console.error(`[AnalystCron] ⚠️  Error processing portfolio ${portfolio.id}:`, error.message);
-        }
-      }
-
-      console.log(`[AnalystCron] ✅ Paper trading complete: ${pendingExecuted} trades executed, ${paperTradingClosed} positions closed`);
-    } catch (error: any) {
-      console.error('[AnalystCron] ❌ Error in paper trading:', error.message);
-    }
+    // Paper trading disabled - model needs recalibration
+    // TODO: Re-enable once stock forecasting model is updated
+    console.log('[AnalystCron] ⏸️  Paper trading disabled (model recalibration needed)');
 
     const elapsedSeconds = Math.round((Date.now() - startTime) / 1000);
     console.log(`[AnalystCron] 🎉 Job complete in ${elapsedSeconds}s`);
@@ -498,16 +453,12 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `Updated analyst data for ${updated} filings, executed ${pendingExecuted} pending trades, closed ${paperTradingClosed} paper trading positions`,
+      message: `Updated analyst data for ${updated} filings`,
       results: {
         analystData: {
           updated,
           errors,
           total: recentFilings.length
-        },
-        paperTrading: {
-          pendingExecuted,
-          positionsClosed: paperTradingClosed
         },
         elapsedSeconds
       }
@@ -539,8 +490,6 @@ export async function GET(request: Request) {
         partialResults: {
           updated,
           errors,
-          pendingExecuted,
-          positionsClosed: paperTradingClosed,
           elapsedSeconds
         }
       },
