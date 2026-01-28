@@ -94,74 +94,68 @@ export async function GET(
     }
 
     // If filing doesn't exist or has no analysis, we need to create/analyze it
-    // Get query params to create filing
-    const { searchParams } = new URL(request.url);
-    const ticker = searchParams.get('ticker');
-    const cik = searchParams.get('cik');
-    const filingType = searchParams.get('filingType');
-    const filingDate = searchParams.get('filingDate');
-    const filingUrl = searchParams.get('filingUrl');
-    const companyName = searchParams.get('companyName');
+    let filing = existingFiling;
 
-    if (!ticker || !cik || !filingType || !filingDate || !filingUrl || !companyName) {
-      return NextResponse.json(
-        { error: 'Filing not found in database and missing required parameters. Please provide: ticker, cik, filingType, filingDate, filingUrl, companyName as query parameters to analyze a new filing.' },
-        { status: 404 }
-      );
-    }
+    // If filing already exists (even without analysis), use it directly
+    if (existingFiling) {
+      console.log(`Using existing filing ${normalizedAccession} for analysis (company: ${existingFiling.company?.ticker})`);
+      filing = existingFiling;
+    } else {
+      // Filing doesn't exist - get query params to create it
+      const { searchParams } = new URL(request.url);
+      const ticker = searchParams.get('ticker');
+      const cik = searchParams.get('cik');
+      const filingType = searchParams.get('filingType');
+      const filingDate = searchParams.get('filingDate');
+      const filingUrl = searchParams.get('filingUrl');
+      const companyName = searchParams.get('companyName');
 
-    // Delete existing filing without analysis to regenerate
-    if (existingFiling && !existingFiling.analysisData) {
-      console.log(`Deleting incomplete filing ${normalizedAccession} to regenerate...`);
-      await prisma.prediction.deleteMany({
-        where: { filingId: existingFiling.id },
+      if (!ticker || !cik || !filingType || !filingDate || !filingUrl || !companyName) {
+        return NextResponse.json(
+          { error: 'Filing not found in database and missing required parameters. Please provide: ticker, cik, filingType, filingDate, filingUrl, companyName as query parameters to analyze a new filing.' },
+          { status: 404 }
+        );
+      }
+
+      // Create company if it doesn't exist
+      let company = await prisma.company.findUnique({
+        where: { ticker },
       });
-      await prisma.filing.delete({
-        where: { accessionNumber: normalizedAccession },
-      });
-    }
 
-    // Create filing from URL params
-    let filing = null;
+      if (!company) {
+        company = await prisma.company.create({
+          data: {
+            ticker,
+            name: companyName,
+            cik,
+          },
+        });
+      }
 
-    // Create company if it doesn't exist
-    let company = await prisma.company.findUnique({
-      where: { ticker },
-    });
-
-    if (!company) {
-      company = await prisma.company.create({
+      // Create filing and reload with company relationship
+      await prisma.filing.create({
         data: {
-          ticker,
-          name: companyName,
-          cik,
+          accessionNumber: normalizedAccession,
+          cik: company.cik,
+          filingType,
+          filingDate: new Date(filingDate),
+          filingUrl,
+          companyId: company.id,
         },
       });
-    }
 
-    // Create filing and reload with company relationship
-    const createdFiling = await prisma.filing.create({
-      data: {
-        accessionNumber: normalizedAccession,
-        cik: company.cik,
-        filingType,
-        filingDate: new Date(filingDate),
-        filingUrl,
-        companyId: company.id,
-      },
-    });
+      // Reload with company relationship
+      filing = await prisma.filing.findUnique({
+        where: { accessionNumber: normalizedAccession },
+        include: { company: true },
+      });
 
-    // Reload with company relationship
-    filing = await prisma.filing.findUnique({
-      where: { accessionNumber: normalizedAccession },
-      include: { company: true },
-    });
-
-    if (!filing) {
-      return NextResponse.json(
-        { error: 'Failed to create filing' },
-        { status: 500 }
-      );
+      if (!filing) {
+        return NextResponse.json(
+          { error: 'Failed to create filing' },
+          { status: 500 }
+        );
+      }
     }
 
     // Disabled returning cached analysis - always regenerate
