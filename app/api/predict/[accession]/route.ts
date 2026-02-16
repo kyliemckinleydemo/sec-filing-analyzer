@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { predictAlpha, extractAlphaFeatures } from '@/lib/alpha-model';
 import { predictionEngine } from '@/lib/predictions';
-import { cache } from '@/lib/cache';
 import { accuracyTracker } from '@/lib/accuracy-tracker';
-import { marketMomentumClient } from '@/lib/market-momentum';
-import { macroIndicatorsClient } from '@/lib/macro-indicators';
 import { requireUnauthRateLimit } from '@/lib/api-middleware';
+
+const MAJOR_FIRMS = ['Goldman Sachs', 'Morgan Stanley', 'JP Morgan', 'Bank of America',
+                     'Citi', 'Wells Fargo', 'Barclays', 'UBS'];
 
 export async function GET(
   request: NextRequest,
@@ -25,13 +26,6 @@ export async function GET(
       ? accession
       : `${accession.slice(0, 10)}-${accession.slice(10, 12)}-${accession.slice(12)}`;
 
-    // Caching disabled - always regenerate predictions for fresh accuracy data
-    // const cacheKey = `prediction:${normalizedAccession}`;
-    // const cached = cache.get(cacheKey);
-    // if (cached) {
-    //   return NextResponse.json(cached);
-    // }
-
     // Get filing with analysis
     const filing = await prisma.filing.findUnique({
       where: { accessionNumber: normalizedAccession },
@@ -42,44 +36,30 @@ export async function GET(
       return NextResponse.json({ error: 'Filing not found' }, { status: 404 });
     }
 
-    // DEBUG: Log filing fields to diagnose concernLevel issue
-    console.log(`[Predict API DEBUG] Filing ${normalizedAccession}:`, {
-      concernLevel: filing.concernLevel,
-      sentimentScore: filing.sentimentScore,
-      riskScore: filing.riskScore,
-      predicted7dReturn: filing.predicted7dReturn,
-      hasAnalysisData: !!filing.analysisData
-    });
-
-    // If prediction already exists, check if we can calculate accuracy
-    if (filing.predicted7dReturn !== null) {
-      console.log(`[Predict API] Prediction exists: ${filing.predicted7dReturn}%, filing date: ${filing.filingDate}, ticker: ${filing.company.ticker}`);
+    // If alpha prediction already exists, return cached + accuracy check
+    if ((filing as any).predicted30dAlpha !== null && (filing as any).predicted30dAlpha !== undefined) {
+      console.log(`[Predict API] Alpha prediction exists: alpha=${(filing as any).predicted30dAlpha}%, filing date: ${filing.filingDate}, ticker: ${filing.company.ticker}`);
 
       // Check if we have actual results or can calculate them
       let accuracyResult = null;
-      if (filing.company.ticker) {
-        console.log(`[Predict API] About to check accuracy for ${filing.company.ticker}...`);
+      if (filing.company.ticker && filing.predicted7dReturn !== null) {
         try {
           accuracyResult = await accuracyTracker.checkAccuracy(
             filing.company.ticker,
             filing.filingDate,
-            filing.predicted7dReturn
+            filing.predicted7dReturn!
           );
-          console.log(`[Predict API] Accuracy result:`, JSON.stringify(accuracyResult, null, 2));
+
+          // If we got actual data and haven't stored it yet, update the database
+          if (accuracyResult?.hasData && accuracyResult.actual7dReturn && !filing.actual7dReturn) {
+            await accuracyTracker.updateActualReturn(
+              normalizedAccession,
+              accuracyResult.actual7dReturn
+            );
+          }
         } catch (error) {
           console.error(`[Predict API] Error checking accuracy:`, error);
         }
-
-        // If we got actual data and haven't stored it yet, update the database
-        if (accuracyResult?.hasData && accuracyResult.actual7dReturn && !filing.actual7dReturn) {
-          console.log(`[Predict API] Updating actual return in database: ${accuracyResult.actual7dReturn}%`);
-          await accuracyTracker.updateActualReturn(
-            normalizedAccession,
-            accuracyResult.actual7dReturn
-          );
-        }
-      } else {
-        console.log(`[Predict API] No ticker available for accuracy check`);
       }
 
       // Try to get stored features from prediction record
@@ -96,14 +76,19 @@ export async function GET(
         console.error('Error loading prediction features:', e);
       }
 
+      const confidenceVal = filing.predictionConfidence || 0.5;
       const result = {
         prediction: {
+          signal: (filing as any).predicted30dAlpha > 0 ? 'LONG' : (filing as any).predicted30dAlpha < 0 ? 'SHORT' : 'NEUTRAL',
+          confidence: confidenceVal >= 0.80 ? 'high' : confidenceVal >= 0.60 ? 'medium' : 'low',
+          expectedAlpha: (filing as any).predicted30dAlpha,
+          predicted30dReturn: filing.predicted30dReturn,
           predicted7dReturn: filing.predicted7dReturn,
-          confidence: filing.predictionConfidence || 0.6,
+          featureContributions: storedFeatures,
           actual7dReturn: filing.actual7dReturn || accuracyResult?.actual7dReturn,
           actual7dAlpha: filing.actual7dAlpha,
-          features: storedFeatures,
-          modelVersion: 'v2.0-research-2025',
+          actual30dAlpha: filing.actual30dAlpha,
+          modelVersion: 'alpha-v1.0',
         },
         accuracy: accuracyResult,
         filing: {
@@ -114,139 +99,14 @@ export async function GET(
         },
       };
 
-      // Caching disabled for fresh accuracy checks
-      // cache.set(cacheKey, result, 86400000);
       return NextResponse.json(result);
     }
 
-    // Parse analysis data for enhanced features
-    let eventType = undefined;
-    let hasFinancialMetrics = false;
-    let guidanceDirection = undefined;
-    let guidanceChange = undefined;
-    let epsSurprise = undefined;
-    let epsSurpriseMagnitude = undefined;
-    let revenueSurprise = undefined;
-    let revenueSurpriseMagnitude = undefined;
-    let filingContentSummary = undefined;
-    let peRatio = undefined;
-    let marketCap = undefined;
-    let riskScoreDelta = 0; // Default to 0 if no comparison available
-
-    if (filing.analysisData) {
-      try {
-        const analysis = JSON.parse(filing.analysisData);
-        filingContentSummary = analysis.filingContentSummary;
-
-        // Extract risk score delta from analysis (change from prior period)
-        if (analysis.risks?.riskScore !== undefined && analysis.risks?.priorRiskScore !== undefined) {
-          riskScoreDelta = analysis.risks.riskScore - analysis.risks.priorRiskScore;
-        } else {
-          // No prior period comparison available - default to 0 (no change)
-          riskScoreDelta = 0;
-        }
-
-        // Check if we have financial metrics
-        if (analysis.financialMetrics) {
-          hasFinancialMetrics =
-            analysis.financialMetrics.revenueGrowth ||
-            analysis.financialMetrics.marginTrend ||
-            analysis.financialMetrics.keyMetrics?.length > 0 ||
-            analysis.financialMetrics.structuredData;
-
-          guidanceDirection = analysis.financialMetrics.guidanceDirection;
-
-          // NEW: Guidance comparison vs prior period (MAJOR PRICE DRIVER)
-          if (analysis.financialMetrics.guidanceComparison) {
-            guidanceChange = analysis.financialMetrics.guidanceComparison.change;
-          }
-
-          // NEW: Extract P/E ratio and market cap from structured data (Yahoo Finance)
-          if (analysis.financialMetrics.structuredData) {
-            peRatio = analysis.financialMetrics.structuredData.peRatio;
-            marketCap = analysis.financialMetrics.structuredData.marketCap; // in billions
-          }
-
-          // NEW: Extract earnings surprises from structured data
-          if (analysis.financialMetrics.structuredData) {
-            epsSurprise = analysis.financialMetrics.structuredData.epsSurprise;
-            epsSurpriseMagnitude = analysis.financialMetrics.structuredData.epsSurpriseMagnitude;
-            revenueSurprise = analysis.financialMetrics.structuredData.revenueSurprise;
-            revenueSurpriseMagnitude = analysis.financialMetrics.structuredData.revenueSurpriseMagnitude;
-          }
-
-          // Fallback: Parse from surprises array if structured data missing
-          if (!epsSurprise && analysis.financialMetrics.surprises) {
-            for (const surprise of analysis.financialMetrics.surprises) {
-              if (surprise.toLowerCase().includes('eps')) {
-                if (surprise.toLowerCase().includes('beat')) {
-                  epsSurprise = 'beat';
-                } else if (surprise.toLowerCase().includes('miss')) {
-                  epsSurprise = 'miss';
-                }
-              }
-              if (surprise.toLowerCase().includes('revenue')) {
-                if (surprise.toLowerCase().includes('beat')) {
-                  revenueSurprise = 'beat';
-                } else if (surprise.toLowerCase().includes('miss')) {
-                  revenueSurprise = 'miss';
-                }
-              }
-            }
-          }
-        }
-      } catch (e) {
-        console.error('Error parsing analysis data:', e);
-      }
-    }
-
-    // Classify 8-K event type if this is an 8-K filing
-    if (filing.filingType === '8-K') {
-      eventType = predictionEngine.classify8KEvent(filingContentSummary);
-    }
-
-    // Fetch market momentum, regime, and flight-to-quality indicators
-    let marketMomentum = undefined;
-    let marketRegime = undefined;
-    let marketVolatility = undefined;
-    let flightToQuality = undefined;
-    try {
-      const momentumData = await marketMomentumClient.fetchMomentum(filing.filingDate);
-      if (momentumData && momentumData.success) {
-        marketMomentum = momentumData.marketMomentum;
-        marketRegime = momentumData.regime;
-        marketVolatility = momentumData.volatility;
-        flightToQuality = momentumData.flightToQuality;
-      }
-    } catch (momentumError) {
-      console.error('Error fetching market momentum:', momentumError);
-      // Continue without market data
-    }
-
-    // Fetch macro indicators (DXY dollar index, GDP proxy)
-    let dollarStrength = undefined;
-    let dollar30dChange = undefined;
-    let gdpProxyTrend = undefined;
-    let equityFlowBias = undefined;
-    try {
-      const macroData = await macroIndicatorsClient.fetchIndicators(filing.filingDate);
-      if (macroData && macroData.success) {
-        dollarStrength = macroData.dollarStrength;
-        dollar30dChange = macroData.dollar30dChange;
-        gdpProxyTrend = macroData.gdpProxyTrend;
-        equityFlowBias = macroData.equityFlowBias;
-      }
-    } catch (macroError) {
-      console.error('Error fetching macro indicators:', macroError);
-      // Continue without macro data
-    }
+    // No alpha prediction yet — generate one using the alpha model
 
     // Query analyst activity from AnalystActivity table (30 days before filing)
-    let analystNetUpgrades = undefined;
-    let analystMajorUpgrades = undefined;
-    let analystMajorDowngrades = undefined;
-    let analystConsensus = undefined;
-    let analystUpsidePotential = undefined;
+    let upgradeCount = 0;
+    let majorDowngradeCount = 0;
 
     try {
       const thirtyDaysAgo = new Date(filing.filingDate);
@@ -266,159 +126,93 @@ export async function GET(
         }
       });
 
+      upgradeCount = analystActivities.filter(a => a.actionType === 'upgrade').length;
+      majorDowngradeCount = analystActivities.filter(a =>
+        a.actionType === 'downgrade' && MAJOR_FIRMS.some(firm => a.firm.includes(firm))
+      ).length;
+
       if (analystActivities.length > 0) {
-        const majorFirms = ['Goldman Sachs', 'Morgan Stanley', 'JP Morgan', 'Bank of America', 'Citi', 'Wells Fargo', 'Barclays', 'UBS'];
-
-        const upgrades = analystActivities.filter(a => a.actionType === 'upgrade').length;
-        const downgrades = analystActivities.filter(a => a.actionType === 'downgrade').length;
-
-        analystNetUpgrades = upgrades - downgrades;
-        analystMajorUpgrades = analystActivities.filter(a =>
-          a.actionType === 'upgrade' && majorFirms.some(firm => a.firm.includes(firm))
-        ).length;
-        analystMajorDowngrades = analystActivities.filter(a =>
-          a.actionType === 'downgrade' && majorFirms.some(firm => a.firm.includes(firm))
-        ).length;
-
-        console.log(`[Analyst Activity] ${filing.company.ticker}: ${upgrades} upgrades, ${downgrades} downgrades in 30d before filing`);
-      }
-
-      // Get analyst consensus and upside from Yahoo Finance data (current snapshot)
-      if (filing.company.analystTargetPrice && filing.company.currentPrice) {
-        analystUpsidePotential = ((filing.company.analystTargetPrice - filing.company.currentPrice) / filing.company.currentPrice) * 100;
-      }
-
-      // Calculate consensus score from analyst rating counts if available
-      if (filing.company.analystRating) {
-        // Convert 1-5 scale (1=Strong Buy, 5=Sell) to 0-100 (100=Strong Buy)
-        analystConsensus = (5 - filing.company.analystRating) * 25;
+        console.log(`[Analyst Activity] ${filing.company.ticker}: ${upgradeCount} upgrades, ${majorDowngradeCount} major downgrades in 30d before filing`);
       }
     } catch (analystError) {
       console.error('Error fetching analyst activity:', analystError);
-      // Continue without analyst data
     }
 
-    // TRY BASELINE MODEL FIRST (v3.1) if we have EPS data
-    let prediction;
-    let actualEPS: number | undefined;
-    let estimatedEPS: number | undefined;
+    // Check if we have the minimum required data for the alpha model
+    const hasMinimumData = filing.company.currentPrice && filing.company.currentPrice > 0 &&
+      (filing.company.fiftyTwoWeekLow || filing.concernLevel != null);
 
-    // Try to extract actual and estimated EPS from structured data
-    if (filing.analysisData) {
-      try {
-        const analysis = JSON.parse(filing.analysisData);
-        if (analysis.financialMetrics?.structuredData) {
-          actualEPS = analysis.financialMetrics.structuredData.actualEPS;
-          estimatedEPS = analysis.financialMetrics.structuredData.estimatedEPS;
-        }
-      } catch (e) {
-        console.error('Error extracting EPS data:', e);
-      }
-    }
+    let alphaPrediction;
 
-    // Use baseline model if we have both actual and estimated EPS
-    if (actualEPS !== undefined && estimatedEPS !== undefined &&
-        !isNaN(actualEPS) && !isNaN(estimatedEPS)) {
-      console.log(`[Predict API] Using BASELINE MODEL v3.1 for ${filing.company.ticker}`);
-      console.log(`[Predict API] EPS Data: actual=${actualEPS}, estimated=${estimatedEPS}`);
+    if (hasMinimumData) {
+      console.log(`[Predict API] Using ALPHA MODEL v1.0 for ${filing.company.ticker}`);
 
-      try {
-        const baselinePrediction = await predictionEngine.predictBaseline(actualEPS, estimatedEPS);
+      const alphaFeatures = extractAlphaFeatures(
+        {
+          currentPrice: filing.company.currentPrice || 0,
+          fiftyTwoWeekHigh: filing.company.fiftyTwoWeekHigh || 0,
+          fiftyTwoWeekLow: filing.company.fiftyTwoWeekLow || 0,
+          marketCap: filing.company.marketCap || 0,
+          analystTargetPrice: filing.company.analystTargetPrice,
+        },
+        {
+          concernLevel: filing.concernLevel,
+          sentimentScore: filing.sentimentScore,
+        },
+        { upgradesLast30d: upgradeCount, majorDowngradesLast30d: majorDowngradeCount },
+      );
 
-        prediction = {
-          predicted7dReturn: baselinePrediction.predicted7dReturn,
-          confidence: baselinePrediction.confidence,
-          reasoning: baselinePrediction.reasoning,
-          features: {
-            ...baselinePrediction.features,
-            modelVersion: 'v3.1-baseline',
-            actualEPS,
-            estimatedEPS
-          }
-        };
+      alphaPrediction = predictAlpha(alphaFeatures);
+      console.log(`[Predict API] Alpha prediction: signal=${alphaPrediction.signal} (${alphaPrediction.confidence}), alpha=${alphaPrediction.expectedAlpha}%, 30d return=${alphaPrediction.predicted30dReturn}%`);
+    } else {
+      // Last-resort fallback: use legacy rule-based engine (rare — only if no Yahoo Finance data)
+      console.log(`[Predict API] Insufficient data for alpha model, using LEGACY fallback for ${filing.company.ticker}`);
 
-        console.log(`[Predict API] Baseline prediction: ${prediction.predicted7dReturn.toFixed(2)}% (confidence: ${(prediction.confidence * 100).toFixed(1)}%)`);
-      } catch (error) {
-        console.error('[Predict API] Baseline model failed, falling back to v2.0:', error);
-        // Fall through to legacy model below
-        actualEPS = undefined; // Reset to trigger fallback
-      }
-    }
-
-    // FALLBACK: Use legacy v2.0 model if no EPS data or baseline failed
-    if (!prediction) {
-      console.log(`[Predict API] Using LEGACY MODEL v2.0 for ${filing.company.ticker} (no EPS data available)`);
-
-      // Generate prediction with research-backed enhanced features
-      const features = {
-        riskScoreDelta: riskScoreDelta, // Use calculated delta, not absolute score
+      const legacyPrediction = await predictionEngine.predict({
+        riskScoreDelta: 0,
         sentimentScore: filing.sentimentScore || 0,
-        concernLevel: filing.concernLevel || undefined, // Multi-factor concern assessment
-        riskCountNew: 2, // Mock - would parse from analysisData
+        concernLevel: filing.concernLevel || undefined,
+        riskCountNew: 0,
         filingType: filing.filingType as '10-K' | '10-Q' | '8-K',
-        eventType,
-        hasFinancialMetrics,
-        guidanceDirection,
-        // NEW: Major price drivers
-        guidanceChange: guidanceChange as any,
-        epsSurprise: epsSurprise as any,
-        epsSurpriseMagnitude: epsSurpriseMagnitude,
-        revenueSurprise: revenueSurprise as any,
-        revenueSurpriseMagnitude: revenueSurpriseMagnitude,
-        // NEW: Valuation context (from Yahoo Finance)
-        peRatio: peRatio,
-        marketCap: marketCap, // in billions
-        // NEW: Market context (SPY momentum + regime)
-        marketMomentum: marketMomentum,
-        marketRegime: marketRegime as any,
-        marketVolatility: marketVolatility,
-        flightToQuality: flightToQuality,
-        // NEW: Macro economic context
-        dollarStrength: dollarStrength as any,
-        dollar30dChange: dollar30dChange,
-        gdpProxyTrend: gdpProxyTrend as any,
-        equityFlowBias: equityFlowBias as any,
-        // NEW: Analyst activity & sentiment
-        analystNetUpgrades: analystNetUpgrades,
-        analystMajorUpgrades: analystMajorUpgrades,
-        analystMajorDowngrades: analystMajorDowngrades,
-        analystConsensus: analystConsensus,
-        analystUpsidePotential: analystUpsidePotential,
-        // Company-specific patterns
-        ticker: filing.company.ticker || undefined,
-        avgHistoricalReturn: await predictionEngine.getHistoricalPattern(
-          filing.company.ticker || '',
-          filing.filingType
-        ),
-      };
-
-      // DEBUG: Log key features being passed to prediction engine
-      console.log(`[Predict API DEBUG] Features for prediction:`, {
-        concernLevel: features.concernLevel,
-        sentimentScore: features.sentimentScore,
-        riskScoreDelta: features.riskScoreDelta,
-        analystNetUpgrades: features.analystNetUpgrades
+        avgHistoricalReturn: 0,
       });
 
-      prediction = await predictionEngine.predict(features);
+      // Map legacy prediction to alpha-like result
+      alphaPrediction = {
+        signal: legacyPrediction.predicted7dReturn > 1 ? 'LONG' as const
+          : legacyPrediction.predicted7dReturn < -1 ? 'SHORT' as const : 'NEUTRAL' as const,
+        confidence: legacyPrediction.confidence >= 0.7 ? 'medium' as const : 'low' as const,
+        expectedAlpha: legacyPrediction.predicted7dReturn * (30 / 7),
+        predicted30dReturn: legacyPrediction.predicted7dReturn * (30 / 7) + 0.8,
+        featureContributions: {},
+        percentile: 'unknown',
+        rawScore: 0,
+      };
     }
+
+    // Map confidence to numeric for DB
+    const confidenceNumeric = alphaPrediction.confidence === 'high' ? 0.85
+      : alphaPrediction.confidence === 'medium' ? 0.65 : 0.5;
 
     // Store prediction
     await prisma.filing.update({
       where: { accessionNumber: normalizedAccession },
       data: {
-        predicted7dReturn: prediction.predicted7dReturn,
-        predictionConfidence: prediction.confidence,
+        predicted30dReturn: alphaPrediction.predicted30dReturn,
+        predicted30dAlpha: alphaPrediction.expectedAlpha,
+        predictionConfidence: confidenceNumeric,
+        // Keep predicted7dReturn for backward compat
+        predicted7dReturn: alphaPrediction.predicted30dReturn * (7 / 30),
       },
     });
 
-    const predictionRecord = await prisma.prediction.create({
+    await prisma.prediction.create({
       data: {
         filingId: filing.id,
-        predictedReturn: prediction.predicted7dReturn,
-        confidence: prediction.confidence,
-        features: JSON.stringify(prediction.features),
-        modelVersion: 'v2.0-research-2025', // Updated with 2024-2025 academic research
+        predictedReturn: alphaPrediction.predicted30dReturn,
+        confidence: confidenceNumeric,
+        features: JSON.stringify(alphaPrediction.featureContributions),
+        modelVersion: 'alpha-v1.0',
       },
     });
 
@@ -427,7 +221,6 @@ export async function GET(
     try {
       const { PaperTradingEngine } = await import('@/lib/paper-trading');
 
-      // Get the main portfolio
       const portfolio = await prisma.paperPortfolio.findFirst({
         where: { isActive: true }
       });
@@ -438,9 +231,9 @@ export async function GET(
         const signal = {
           ticker: filing.company.ticker || '',
           filingId: filing.id,
-          predictedReturn: prediction.predicted7dReturn,
-          confidence: prediction.confidence,
-          direction: prediction.predicted7dReturn > 0 ? 'LONG' : 'SHORT' as 'LONG' | 'SHORT',
+          predictedReturn: alphaPrediction.predicted30dReturn,
+          confidence: confidenceNumeric,
+          direction: alphaPrediction.signal === 'SHORT' ? 'SHORT' : 'LONG' as 'LONG' | 'SHORT',
           marketCap: filing.company.marketCap || undefined
         };
 
@@ -455,16 +248,18 @@ export async function GET(
       }
     } catch (error) {
       console.error('[Predict API] Error in paper trading automation:', error);
-      // Don't fail the prediction if paper trading fails
     }
 
     const result = {
       prediction: {
-        predicted7dReturn: prediction.predicted7dReturn,
-        confidence: prediction.confidence,
-        reasoning: prediction.reasoning,
-        features: prediction.features, // Include feature breakdown for transparency
-        modelVersion: 'v2.0-research-2025',
+        signal: alphaPrediction.signal,
+        confidence: alphaPrediction.confidence,
+        expectedAlpha: alphaPrediction.expectedAlpha,
+        predicted30dReturn: alphaPrediction.predicted30dReturn,
+        predicted7dReturn: alphaPrediction.predicted30dReturn * (7 / 30),
+        featureContributions: alphaPrediction.featureContributions,
+        percentile: alphaPrediction.percentile,
+        modelVersion: 'alpha-v1.0',
       },
       filing: {
         accessionNumber: filing.accessionNumber,
@@ -474,8 +269,6 @@ export async function GET(
       paperTrading: paperTradingResult || { evaluated: true, executed: false },
     };
 
-    // Caching disabled
-    // cache.set(cacheKey, result, 86400000);
     return NextResponse.json(result);
   } catch (error: any) {
     console.error('Error generating prediction:', error);

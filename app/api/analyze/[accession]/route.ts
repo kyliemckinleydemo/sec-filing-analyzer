@@ -8,7 +8,7 @@ import { secDataAPI } from '@/lib/sec-data-api';
 import { xbrlParser } from '@/lib/xbrl-parser';
 import { financialDataClient } from '@/lib/yahoo-finance';
 import { yahooFinancePythonClient } from '@/lib/yahoo-finance-python';
-import { generateMLPrediction } from '@/lib/ml-prediction';
+import { predictAlpha, extractAlphaFeatures } from '@/lib/alpha-model';
 import { requireAuthAndAIQuota } from '@/lib/api-middleware';
 
 /**
@@ -79,14 +79,25 @@ export async function GET(
         summary: existingFiling.aiSummary,
         riskScore: existingFiling.riskScore,
         sentimentScore: existingFiling.sentimentScore,
+        prediction: (existingFiling as any).predicted30dAlpha != null ? {
+          signal: (existingFiling as any).predicted30dAlpha > 0 ? 'LONG' : (existingFiling as any).predicted30dAlpha < 0 ? 'SHORT' : 'NEUTRAL',
+          confidence: existingFiling.predictionConfidence && existingFiling.predictionConfidence >= 0.80 ? 'high' :
+                      existingFiling.predictionConfidence && existingFiling.predictionConfidence >= 0.60 ? 'medium' : 'low',
+          expectedAlpha: (existingFiling as any).predicted30dAlpha,
+          predicted30dReturn: existingFiling.predicted30dReturn,
+          modelVersion: 'alpha-v1.0',
+        } : null,
+        // Legacy: keep mlPrediction shape for backward compat
         mlPrediction: existingFiling.predicted7dReturn ? {
           predicted7dReturn: existingFiling.predicted7dReturn,
           predictionConfidence: existingFiling.predictionConfidence,
-          tradingSignal: (existingFiling.predictionConfidence && existingFiling.predictionConfidence >= 0.60 && Math.abs(existingFiling.predicted7dReturn) >= 2.0)
-            ? (existingFiling.predicted7dReturn > 0 ? 'BUY' : 'SELL')
-            : 'HOLD',
+          tradingSignal: (existingFiling as any).predicted30dAlpha != null
+            ? ((existingFiling as any).predicted30dAlpha > 0 ? 'BUY' : (existingFiling as any).predicted30dAlpha < 0 ? 'SELL' : 'HOLD')
+            : (existingFiling.predictionConfidence && existingFiling.predictionConfidence >= 0.60 && Math.abs(existingFiling.predicted7dReturn) >= 2.0)
+              ? (existingFiling.predicted7dReturn > 0 ? 'BUY' : 'SELL')
+              : 'HOLD',
           confidenceLabel: existingFiling.predictionConfidence && existingFiling.predictionConfidence >= 0.80 ? 'HIGH' :
-                          existingFiling.predictionConfidence && existingFiling.predictionConfidence >= 0.70 ? 'MEDIUM' : 'LOW',
+                          existingFiling.predictionConfidence && existingFiling.predictionConfidence >= 0.60 ? 'MEDIUM' : 'LOW',
         } : null,
       };
 
@@ -932,25 +943,62 @@ Note: Base analysis on general knowledge. Do not mention data access limitations
         }
       }
 
-      // Generate ML prediction using the new 80% accuracy model
-      let mlPrediction = null;
+      // Generate alpha prediction using Stepwise+Ridge model (v1.0)
+      let alphaPrediction = null;
       try {
         if (filing.company?.ticker) {
-          console.log(`[ML Prediction] Generating prediction for ${filing.company.ticker}...`);
-          mlPrediction = await generateMLPrediction({
-            filingId: filing.id,
-            ticker: filing.company.ticker,
-            filingType: filing.filingType,
-            filingDate: filing.filingDate
+          console.log(`[Alpha Model] Generating prediction for ${filing.company.ticker}...`);
+
+          // Query analyst activity for 30 days before filing
+          const MAJOR_FIRMS = ['Goldman Sachs', 'Morgan Stanley', 'JP Morgan', 'Bank of America',
+                               'Citi', 'Wells Fargo', 'Barclays', 'UBS'];
+
+          const thirtyDaysAgo = new Date(filing.filingDate);
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+          const analystActivities = await prisma.analystActivity.findMany({
+            where: {
+              companyId: filing.companyId,
+              activityDate: { gte: thirtyDaysAgo, lt: filing.filingDate },
+            },
+            select: { actionType: true, firm: true },
           });
-          console.log(`[ML Prediction] ✅ Prediction generated: ${mlPrediction.predicted7dReturn.toFixed(2)}% (confidence: ${(mlPrediction.predictionConfidence * 100).toFixed(0)}%)`);
+
+          const upgradeCount = analystActivities.filter(a => a.actionType === 'upgrade').length;
+          const majorDowngradeCount = analystActivities.filter(a =>
+            a.actionType === 'downgrade' && MAJOR_FIRMS.some(f => a.firm.includes(f))
+          ).length;
+
+          const alphaFeatures = extractAlphaFeatures(
+            {
+              currentPrice: filing.company.currentPrice || 0,
+              fiftyTwoWeekHigh: filing.company.fiftyTwoWeekHigh || 0,
+              fiftyTwoWeekLow: filing.company.fiftyTwoWeekLow || 0,
+              marketCap: filing.company.marketCap || 0,
+              analystTargetPrice: filing.company.analystTargetPrice,
+            },
+            {
+              concernLevel: analysis.concernAssessment?.concernLevel,
+              sentimentScore: analysis.sentiment.sentimentScore,
+            },
+            { upgradesLast30d: upgradeCount, majorDowngradesLast30d: majorDowngradeCount },
+          );
+
+          alphaPrediction = predictAlpha(alphaFeatures);
+          console.log(`[Alpha Model] ✅ Prediction: signal=${alphaPrediction.signal} (${alphaPrediction.confidence}), alpha=${alphaPrediction.expectedAlpha}%, 30d return=${alphaPrediction.predicted30dReturn}%`);
         }
       } catch (error: any) {
-        console.error('[ML Prediction] Failed to generate ML prediction:', error.message);
-        // Don't fail the entire analysis if ML prediction fails
+        console.error('[Alpha Model] Failed to generate prediction:', error.message);
+        // Don't fail the entire analysis if prediction fails
       }
 
-      // Store analysis in database (including ML predictions)
+      // Map confidence to numeric for DB storage
+      const confidenceNumeric = alphaPrediction
+        ? (alphaPrediction.confidence === 'high' ? 0.85
+          : alphaPrediction.confidence === 'medium' ? 0.65 : 0.5)
+        : undefined;
+
+      // Store analysis in database (including alpha predictions)
       await prisma.filing.update({
         where: { accessionNumber: normalizedAccession },
         data: {
@@ -958,11 +1006,27 @@ Note: Base analysis on general knowledge. Do not mention data access limitations
           aiSummary: analysis.summary,
           riskScore: analysis.risks.riskScore,
           sentimentScore: analysis.sentiment.sentimentScore,
-          concernLevel: analysis.concernAssessment?.concernLevel, // NEW: Champion model feature
-          predicted7dReturn: mlPrediction?.predicted7dReturn,
-          predictionConfidence: mlPrediction?.predictionConfidence,
+          concernLevel: analysis.concernAssessment?.concernLevel,
+          predicted30dReturn: alphaPrediction?.predicted30dReturn,
+          predicted30dAlpha: alphaPrediction?.expectedAlpha,
+          predictionConfidence: confidenceNumeric,
+          // Keep predicted7dReturn for backward compat — rough estimate
+          predicted7dReturn: alphaPrediction ? alphaPrediction.predicted30dReturn * (7 / 30) : undefined,
         },
       });
+
+      // Store prediction record with feature breakdown
+      if (alphaPrediction) {
+        await prisma.prediction.create({
+          data: {
+            filingId: filing.id,
+            predictedReturn: alphaPrediction.predicted30dReturn,
+            confidence: confidenceNumeric!,
+            features: JSON.stringify(alphaPrediction.featureContributions),
+            modelVersion: 'alpha-v1.0',
+          },
+        });
+      }
 
       // Debug: Check if company relationship was loaded
       if (!filing.company) {
@@ -986,14 +1050,23 @@ Note: Base analysis on general knowledge. Do not mention data access limitations
         summary: analysis.summary,
         riskScore: analysis.risks.riskScore,
         sentimentScore: analysis.sentiment.sentimentScore,
-        mlPrediction: mlPrediction ? {
-          predicted7dReturn: mlPrediction.predicted7dReturn,
-          predictionConfidence: mlPrediction.predictionConfidence,
-          tradingSignal: (mlPrediction.predictionConfidence >= 0.60 && Math.abs(mlPrediction.predicted7dReturn) >= 2.0)
-            ? (mlPrediction.predicted7dReturn > 0 ? 'BUY' : 'SELL')
-            : 'HOLD',
-          confidenceLabel: mlPrediction.predictionConfidence >= 0.80 ? 'HIGH' :
-                          mlPrediction.predictionConfidence >= 0.70 ? 'MEDIUM' : 'LOW',
+        prediction: alphaPrediction ? {
+          signal: alphaPrediction.signal,
+          confidence: alphaPrediction.confidence,
+          expectedAlpha: alphaPrediction.expectedAlpha,
+          predicted30dReturn: alphaPrediction.predicted30dReturn,
+          featureContributions: alphaPrediction.featureContributions,
+          percentile: alphaPrediction.percentile,
+          modelVersion: 'alpha-v1.0',
+        } : null,
+        // Legacy: keep mlPrediction shape for backward compat with existing UI
+        mlPrediction: alphaPrediction ? {
+          predicted7dReturn: alphaPrediction.predicted30dReturn * (7 / 30),
+          predictionConfidence: confidenceNumeric!,
+          tradingSignal: alphaPrediction.signal === 'LONG' ? 'BUY'
+            : alphaPrediction.signal === 'SHORT' ? 'SELL' : 'HOLD',
+          confidenceLabel: alphaPrediction.confidence === 'high' ? 'HIGH'
+            : alphaPrediction.confidence === 'medium' ? 'MEDIUM' : 'LOW',
         } : null,
       };
 

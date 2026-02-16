@@ -76,8 +76,9 @@ model Filing {
   concernLevel    Float?    // 0-10 multi-factor concern assessment (NEW)
 
   // Prediction Results
-  predicted7dReturn Float?  // Predicted 7-day return %
+  predicted7dReturn Float?  // Predicted 7-day return % (legacy, kept for backward compat)
   predicted30dReturn Float? // Predicted 30-day return %
+  predicted30dAlpha  Float? // Predicted 30-day alpha (stock return minus S&P 500)
   predictionConfidence Float? // 0-1 confidence score
 
   // Actual returns (backfilled)

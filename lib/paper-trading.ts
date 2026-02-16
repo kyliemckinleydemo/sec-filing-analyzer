@@ -65,9 +65,9 @@ export class PaperTradingEngine {
       return false;
     }
 
-    // Check predicted return magnitude
-    // Only trade if predicted return > 1% (lowered to capture more opportunities)
-    if (Math.abs(signal.predictedReturn) < 1.0) {
+    // Only trade if predicted return magnitude is meaningful
+    // For alpha model: >0.5% expected alpha (30-day horizon captures more signal)
+    if (Math.abs(signal.predictedReturn) < 0.5) {
       console.log(`[Paper Trading] Signal rejected: predicted return ${signal.predictedReturn}% too small`);
       return false;
     }
@@ -372,27 +372,27 @@ export class PaperTradingEngine {
   }
 
   /**
-   * Close all positions that have been open for 7+ days
+   * Close all positions that have been open for 30+ days (alpha model targets 30-day horizon)
    */
   async closeExpiredPositions(): Promise<number> {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const expiredTrades = await prisma.paperTrade.findMany({
       where: {
         portfolioId: this.portfolioId,
         status: 'OPEN',
         entryDate: {
-          lte: sevenDaysAgo
+          lte: thirtyDaysAgo
         }
       }
     });
 
-    console.log(`[Paper Trading] Found ${expiredTrades.length} positions to close (7-day hold complete)`);
+    console.log(`[Paper Trading] Found ${expiredTrades.length} positions to close (30-day hold complete)`);
 
     let closed = 0;
     for (const trade of expiredTrades) {
-      const result = await this.closeTrade(trade.id, '7-day hold period complete');
+      const result = await this.closeTrade(trade.id, '30-day hold period complete');
       if (result.success) {
         closed++;
       }

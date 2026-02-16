@@ -749,33 +749,122 @@ export default function FilingPage() {
           </Card>
         )}
 
-        {/* ML Prediction Card */}
-        {data.mlPrediction && data.filing.hasFinancials && (
+        {/* Alpha Model Prediction Card */}
+        {data.prediction && data.filing.hasFinancials && (
           <Card className="mb-6 border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-blue-50 shadow-lg" data-print-section="prediction">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl">🎯 ML Price Prediction</CardTitle>
+                <CardTitle className="text-2xl">🎯 Alpha Prediction</CardTitle>
                 <span className="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-semibold">
-                  ML Model v2.3
+                  Alpha Model v1.0
                 </span>
               </div>
               <CardDescription>
-                RandomForest ML model trained on 400+ filings with analyst activity, fundamentals, and momentum indicators
+                Stepwise+Ridge regression predicting 30-day market-relative alpha. 62.5% directional accuracy on high-confidence signals.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid md:grid-cols-4 gap-6 mb-4">
                 <div>
-                  <p className="text-sm text-slate-600 mb-1">Predicted 7-Day Return</p>
+                  <p className="text-sm text-slate-600 mb-1">Expected 30-Day Alpha</p>
                   <p
                     className={`text-4xl font-bold ${
-                      data.mlPrediction.predicted7dReturn > 0
+                      data.prediction.expectedAlpha > 0
                         ? 'text-green-600'
-                        : 'text-red-600'
+                        : data.prediction.expectedAlpha < 0
+                        ? 'text-red-600'
+                        : 'text-slate-600'
                     }`}
                   >
-                    {data.mlPrediction.predicted7dReturn > 0 ? '+' : ''}
-                    {data.mlPrediction.predicted7dReturn.toFixed(2)}%
+                    {data.prediction.expectedAlpha > 0 ? '+' : ''}
+                    {data.prediction.expectedAlpha.toFixed(2)}%
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">vs S&P 500</p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Confidence</p>
+                  <p className={`text-4xl font-bold ${
+                    data.prediction.confidence === 'high' ? 'text-emerald-600' :
+                    data.prediction.confidence === 'medium' ? 'text-amber-600' : 'text-slate-500'
+                  }`}>
+                    {data.prediction.confidence === 'high' ? 'HIGH' :
+                     data.prediction.confidence === 'medium' ? 'MEDIUM' : 'LOW'}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {data.prediction.percentile} percentile
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Signal</p>
+                  <p className="text-2xl font-bold">
+                    {data.prediction.signal === 'LONG' && data.prediction.confidence === 'high' && '🟢 STRONG BUY'}
+                    {data.prediction.signal === 'LONG' && data.prediction.confidence !== 'high' && '🟢 BUY'}
+                    {data.prediction.signal === 'SHORT' && data.prediction.confidence === 'high' && '🔴 STRONG SELL'}
+                    {data.prediction.signal === 'SHORT' && data.prediction.confidence !== 'high' && '🔴 SELL'}
+                    {data.prediction.signal === 'NEUTRAL' && '🟡 HOLD'}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {data.prediction.signal === 'LONG' && (data.prediction.confidence === 'high'
+                      ? 'Model expects significant outperformance'
+                      : 'Model expects moderate outperformance')}
+                    {data.prediction.signal === 'SHORT' && (data.prediction.confidence === 'high'
+                      ? 'Model expects significant underperformance'
+                      : 'Model expects moderate underperformance')}
+                    {data.prediction.signal === 'NEUTRAL' && 'No clear signal'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Top Drivers</p>
+                  <p className="text-sm text-slate-700">
+                    {data.prediction.featureContributions && Object.entries(data.prediction.featureContributions)
+                      .sort(([,a]: any, [,b]: any) => Math.abs(b) - Math.abs(a))
+                      .slice(0, 3)
+                      .map(([name, val]: any) => (
+                        `${val > 0 ? '+' : ''}${val.toFixed(2)} ${name}`
+                      ))
+                      .join(', ') || 'N/A'}
+                  </p>
+                </div>
+              </div>
+
+              {data.prediction.predicted30dReturn && (
+                <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                  <span className="text-sm text-slate-600">
+                    Predicted 30-day total return: <strong>{data.prediction.predicted30dReturn > 0 ? '+' : ''}{data.prediction.predicted30dReturn.toFixed(2)}%</strong>
+                    {' '}(alpha {data.prediction.expectedAlpha > 0 ? '+' : ''}{data.prediction.expectedAlpha.toFixed(2)}% + ~0.8% market baseline)
+                  </span>
+                </div>
+              )}
+
+              <div className="bg-white p-4 rounded-lg border border-emerald-200">
+                <h4 className="font-semibold text-slate-800 mb-2">📊 About This Model</h4>
+                <p className="text-sm text-slate-700">
+                  Predicts 30-day market-relative alpha using 8 features selected by forward stepwise selection from 29 candidates.
+                  Top features: price momentum (52W high/low), analyst downgrades (contrarian signal), analyst upside potential, and Claude AI concern level.
+                  <strong className="text-emerald-700"> SHORT signals are strongest: 62.7% accuracy identifying relative losers.</strong>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Legacy ML Prediction Card (backward compat — only show if no alpha prediction) */}
+        {data.mlPrediction && !data.prediction && data.filing.hasFinancials && (
+          <Card className="mb-6 border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-blue-50 shadow-lg" data-print-section="prediction">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-2xl">🎯 ML Price Prediction (Legacy)</CardTitle>
+                <span className="text-xs bg-amber-100 text-amber-700 px-3 py-1 rounded-full font-semibold">
+                  Legacy Model
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-3 gap-6 mb-4">
+                <div>
+                  <p className="text-sm text-slate-600 mb-1">Predicted 7-Day Return</p>
+                  <p className={`text-4xl font-bold ${data.mlPrediction.predicted7dReturn > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {data.mlPrediction.predicted7dReturn > 0 ? '+' : ''}{data.mlPrediction.predicted7dReturn.toFixed(2)}%
                   </p>
                 </div>
                 <div>
@@ -783,9 +872,7 @@ export default function FilingPage() {
                   <p className="text-4xl font-bold text-emerald-600">
                     {(data.mlPrediction.predictionConfidence * 100).toFixed(0)}%
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">
-                    {data.mlPrediction.confidenceLabel}
-                  </p>
+                  <p className="text-xs text-slate-500 mt-1">{data.mlPrediction.confidenceLabel}</p>
                 </div>
                 <div>
                   <p className="text-sm text-slate-600 mb-1">Trading Signal</p>
@@ -794,71 +881,7 @@ export default function FilingPage() {
                     {data.mlPrediction.tradingSignal === 'SELL' && '🔴 SELL'}
                     {data.mlPrediction.tradingSignal === 'HOLD' && '🟡 HOLD'}
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">
-                    {data.mlPrediction.tradingSignal === 'HOLD' && '(Below threshold)'}
-                    {data.mlPrediction.tradingSignal !== 'HOLD' && '(Confidence ≥60%, Return ≥2%)'}
-                  </p>
                 </div>
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">Model Features</p>
-                  <p className="text-sm text-slate-700">
-                    • Analyst upgrades/downgrades (30d)<br/>
-                    • Price momentum & technical indicators<br/>
-                    • Valuation ratios & market context
-                  </p>
-                </div>
-              </div>
-
-              {/* Strong Buy Alpha Display */}
-              {isStrongBuy(data.mlPrediction, data.prediction?.features) && data.prediction?.actual7dAlpha && (
-                <div className="mb-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-500 rounded-lg p-6 shadow-md">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <span className="text-3xl">💪</span>
-                      <div>
-                        <h3 className="text-2xl font-bold text-green-700">STRONG BUY</h3>
-                        <p className="text-sm text-green-600">High-conviction bullish signal</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-green-600 mb-1">7-Day Alpha vs S&P 500</p>
-                      <p className="text-4xl font-bold text-green-700">
-                        {data.prediction.actual7dAlpha > 0 ? '+' : ''}
-                        {data.prediction.actual7dAlpha.toFixed(2)}%
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="bg-white/50 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-green-700 mb-2">Confirmed by:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {getStrongBuySignals(data.prediction?.features || {}).map((signal, idx) => (
-                        <span
-                          key={idx}
-                          className="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium"
-                        >
-                          ✓ {signal}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="bg-white p-4 rounded-lg border border-emerald-200">
-                <h4 className="font-semibold text-slate-800 mb-2">📊 About This Model</h4>
-                <p className="text-sm text-slate-700">
-                  This prediction comes from a RandomForest ML model trained on historical filings. The model uses 40+ features including analyst activity (upgrades/downgrades in last 30 days),
-                  technical indicators (RSI, MACD, moving averages), valuation metrics (P/E ratios), and market context (S&P 500, VIX).
-                  <strong className="text-emerald-700"> Most important feature: Net analyst upgrades in the 30 days before filing.</strong>
-                </p>
-
-                {data.mlPrediction.predictionConfidence < 0.70 && (
-                  <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
-                    <strong>⚠️ Moderate Confidence:</strong> This prediction has moderate confidence ({(data.mlPrediction.predictionConfidence * 100).toFixed(0)}%).
-                    Consider reviewing additional factors before making trading decisions.
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
