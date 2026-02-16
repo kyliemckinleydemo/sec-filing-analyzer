@@ -1,6 +1,6 @@
 # StockHuntr — SEC Filing Analyzer
 
-An AI-powered platform for analyzing SEC filings and predicting stock price movements. Uses Claude AI (Anthropic), Yahoo Finance data, and SEC EDGAR APIs to provide real-time filing analysis, earnings surprise predictions, paper trading, and watchlist alerts.
+An AI-powered platform for analyzing SEC filings and predicting stock price movements. Uses Claude AI (Anthropic), Yahoo Finance data, and SEC EDGAR APIs to provide real-time filing analysis, alpha predictions, paper trading, and watchlist alerts.
 
 **Live at**: [stockhuntr.net](https://stockhuntr.net)
 
@@ -18,18 +18,19 @@ An AI-powered platform for analyzing SEC filings and predicting stock price move
 - **Executive Summaries** — Investor-focused bullet points generated from filing content
 - **8-K Event Classification** — Automated categorization of current event filings
 
-### Stock Price Prediction
-- **Earnings Surprise Model** — 60%+ directional accuracy using EPS surprise signals
-- **Alpha Model** — Multi-feature scoring with percentile-based signal classification
-- **Key Features**: EPS surprise magnitude/direction, beat/miss/inline classification, large surprise detection (>10%)
-- **Paper Trading Validation** — Automated virtual portfolio tracks prediction accuracy
+### Stock Price Prediction (Alpha Model v1.0)
+- **Stepwise+Ridge regression** predicting 30-day market-relative alpha (stock return minus S&P 500)
+- **8 features** selected from 29 candidates via forward stepwise selection: price momentum, analyst activity (contrarian signals), Claude AI concern/sentiment, market cap
+- **Backtested accuracy**: 56.3% directional (62.5% high-confidence), +7.64pp LONG-SHORT spread
+- **Paper Trading** — Automated virtual portfolio validates live performance (30-day hold period)
+- See [`MODEL.md`](MODEL.md) for full model documentation
 
 ### Data Pipeline (10 Automated Cron Jobs)
 - **SEC Filing Ingestion** — Fetches new 10-K, 10-Q, 8-K filings via RSS (3x daily)
 - **Stock Price Updates** — Real-time prices from Yahoo Finance (batch rotation 6x daily)
 - **Analyst Data** — Consensus ratings, target prices, upgrades/downgrades
 - **Macro Indicators** — S&P 500, VIX, Treasury yields, sector ETFs
-- **Paper Trading** — Automated position closure after 7-day hold period
+- **Paper Trading** — Automated position closure after 30-day hold period
 - **Supervisor** — Health monitoring with auto-recovery and email alerts
 
 ### User Features
@@ -171,7 +172,7 @@ The system runs 10 automated jobs via Vercel Cron (see `vercel.json`):
 | `update-stock-prices-batch` | Every 4h (6x/day) | Batch rotation price updates |
 | `update-macro-indicators` | 09:00 | S&P 500, VIX, Treasury, sector ETFs |
 | `watchlist-alerts` | 13:00, 23:00 | Email alerts for watchlist events |
-| `paper-trading-close-positions` | (via supervisor) | Close 7-day expired positions |
+| `paper-trading-close-positions` | (via supervisor) | Close 30-day expired positions |
 | `supervisor` | (via daily-filings) | Health checks, auto-recovery, email alerts |
 
 All cron endpoints require `Authorization: Bearer <CRON_SECRET>` or `vercel-cron` user-agent.
@@ -275,6 +276,7 @@ See [`DEPLOYMENT.md`](DEPLOYMENT.md) for the full deployment guide.
 | [`TEST-PLAN.md`](TEST-PLAN.md) | Test architecture and coverage |
 | [`CRON-JOBS-README.md`](CRON-JOBS-README.md) | Cron job system documentation |
 | [`DEPLOYMENT.md`](DEPLOYMENT.md) | Vercel deployment guide |
+| [`MODEL.md`](MODEL.md) | Alpha Model v1.0 architecture and performance |
 | [`PAPER-TRADING-SYSTEM.md`](PAPER-TRADING-SYSTEM.md) | Paper trading engine docs |
 | [`CRON-SETUP.md`](CRON-SETUP.md) | Email alerts and supervisor setup |
 
