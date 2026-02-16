@@ -98,11 +98,16 @@ interface FilingAnalysisData {
   };
   prediction?: {
     predicted7dReturn: number;
-    confidence: number;
+    predicted30dReturn?: number;
+    expectedAlpha?: number;
+    confidence: any;
+    signal?: string;
     reasoning?: string;
     actual7dReturn?: number;
     actual7dAlpha?: number;
     modelVersion?: string;
+    percentile?: number;
+    featureContributions?: Array<{ feature: string; contribution: number }>;
     features?: {
       riskScoreDelta?: number;
       sentimentScore?: number;
@@ -769,15 +774,15 @@ export default function FilingPage() {
                   <p className="text-sm text-slate-600 mb-1">Expected 30-Day Alpha</p>
                   <p
                     className={`text-4xl font-bold ${
-                      data.prediction.expectedAlpha > 0
+                      (data.prediction.expectedAlpha ?? 0) > 0
                         ? 'text-green-600'
-                        : data.prediction.expectedAlpha < 0
+                        : (data.prediction.expectedAlpha ?? 0) < 0
                         ? 'text-red-600'
                         : 'text-slate-600'
                     }`}
                   >
-                    {data.prediction.expectedAlpha > 0 ? '+' : ''}
-                    {data.prediction.expectedAlpha.toFixed(2)}%
+                    {(data.prediction.expectedAlpha ?? 0) > 0 ? '+' : ''}
+                    {(data.prediction.expectedAlpha ?? 0).toFixed(2)}%
                   </p>
                   <p className="text-xs text-slate-500 mt-1">vs S&P 500</p>
                 </div>
@@ -831,7 +836,7 @@ export default function FilingPage() {
                 <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
                   <span className="text-sm text-slate-600">
                     Predicted 30-day total return: <strong>{data.prediction.predicted30dReturn > 0 ? '+' : ''}{data.prediction.predicted30dReturn.toFixed(2)}%</strong>
-                    {' '}(alpha {data.prediction.expectedAlpha > 0 ? '+' : ''}{data.prediction.expectedAlpha.toFixed(2)}% + ~0.8% market baseline)
+                    {' '}(alpha {(data.prediction.expectedAlpha ?? 0) > 0 ? '+' : ''}{(data.prediction.expectedAlpha ?? 0).toFixed(2)}% + ~0.8% market baseline)
                   </span>
                 </div>
               )}
