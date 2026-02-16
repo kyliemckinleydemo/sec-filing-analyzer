@@ -1,199 +1,149 @@
-# 🚀 Quick Start Guide - SEC Filing Analyzer
+# Quick Start Guide — StockHuntr
 
-## ⚡ Get Started in 5 Minutes
+## Get Started in 5 Minutes
 
-### 1. Get API Keys (2 minutes)
+### 1. Get API Keys
 
 **Required:**
 
-1. **Anthropic Claude API Key** (for AI analysis)
-   - Visit: https://console.anthropic.com/
-   - Sign up and get your API key
-   - Starts with `sk-ant-...`
+- **Anthropic Claude API Key** — for AI filing analysis
+  - Visit: https://console.anthropic.com/
+  - Sign up and get your API key (starts with `sk-ant-...`)
 
-2. **Alpha Vantage API Key** (for stock prices)
-   - Visit: https://www.alphavantage.co/support/#api-key
-   - Free tier: 25 API calls/day
-   - Get instant key by email
+- **Resend API Key** — for email alerts and magic link auth
+  - Visit: https://resend.com
+  - Free tier: 100 emails/day
+  - Get API key (starts with `re_...`)
 
-### 2. Configure Environment (1 minute)
+### 2. Install & Configure
 
-Edit `.env.local`:
-
-```env
-ANTHROPIC_API_KEY="sk-ant-YOUR-ACTUAL-KEY-HERE"
-ALPHA_VANTAGE_API_KEY="YOUR-ACTUAL-KEY-HERE"
+```bash
+git clone https://github.com/kyliemckinleydemo/sec-filing-analyzer.git
+cd sec-filing-analyzer
+npm install
 ```
 
-### 3. Start the Server (1 minute)
+Create `.env.local`:
+
+```bash
+DATABASE_URL="postgresql://user:password@localhost:5432/sec_analyzer"
+ANTHROPIC_API_KEY="sk-ant-your-key-here"
+CRON_SECRET="any-random-secret-string"
+RESEND_API_KEY="re_your-key-here"
+ALERT_EMAIL="you@example.com"
+JWT_SECRET="any-random-secret"
+MAGIC_LINK_SECRET="any-random-secret"
+```
+
+### 3. Set Up Database
+
+```bash
+npx prisma generate
+npx prisma db push
+```
+
+### 4. Start the Server
 
 ```bash
 npm run dev
 ```
 
-Server will start at: http://localhost:3000 (or :3001 if 3000 is taken)
+Open http://localhost:3000
 
-### 4. Try It Out (1 minute)
+## What You Can Do
 
-1. Open http://localhost:3001 in your browser
-2. Type a ticker symbol: **AAPL**
-3. Click "Analyze Filing"
-4. View recent SEC filings
-5. Click on any filing to see:
-   - 🤖 AI analysis
-   - 📈 Price prediction
-   - ⚠️ Risk assessment
-   - 💭 Sentiment analysis
+### Browse Latest Filings
+Visit `/latest-filings` to see recent SEC filings (10-K, 10-Q, 8-K) with:
+- Company name, ticker, filing date
+- XBRL financial data availability
+- Links to SEC EDGAR viewer
+- Snapshot of company fundamentals (hover)
 
----
+### Analyze a Filing
+1. Search for a company by ticker (e.g., AAPL)
+2. Click on any filing
+3. Click "Analyze" to run AI-powered analysis
+4. Review:
+   - Executive summary with key takeaways
+   - Risk factor changes with severity scoring
+   - Management sentiment analysis (-1 to +1)
+   - Price prediction with alpha model scoring
+   - Earnings surprise data (EPS beat/miss/inline)
 
-## 🎯 What You Can Do
+### Set Up Watchlist Alerts
+1. Sign in via magic link (email)
+2. Add tickers to your watchlist at `/watchlist`
+3. Receive email alerts for:
+   - New high-concern filings
+   - Significant price movements
+   - Analyst upgrades/downgrades
 
-### Search Companies
-- Type any US public company ticker: AAPL, TSLA, MSFT, GOOGL, AMZN, etc.
-- View last 20 SEC filings (10-K, 10-Q, 8-K)
+### Paper Trading
+Visit `/paper-trading` to view the automated paper portfolio:
+- Virtual $100k portfolio trades based on model predictions
+- Positions auto-close after 7-day hold period
+- Tracks win rate, P&L, model accuracy
 
-### Analyze Filings
-- Click on any filing to run AI analysis
-- Get risk factor scoring (0-10 scale)
-- See sentiment analysis (-1 to +1)
-- Read plain-English executive summary
+### AI Chat
+Visit `/chat` to ask questions about filings and companies using natural language.
 
-### Get Predictions
-- 7-day stock price return prediction
-- Confidence score (0-100%)
-- Buy/Hold/Sell signal
-- Detailed reasoning
+## Running Tests
 
----
+```bash
+npm test              # 170 Vitest tests (unit + integration)
+npm run test:e2e      # 45+ Playwright browser tests
+```
 
-## 📖 How It Works
+## Deploying to Vercel
 
-1. **You search:** Enter ticker like "AAPL"
-2. **SEC data:** Fetches filings from SEC EDGAR API
-3. **AI analyzes:** Claude reads risk factors and management discussion
-4. **Predictions:** ML model predicts 7-day price movement
-5. **Results:** Beautiful UI shows insights
+```bash
+npm run deploy        # vercel --prod --force + alias
+```
 
----
+See `DEPLOYMENT.md` for the full guide.
 
-## 🔧 Troubleshooting
+## Key Pages
+
+| Page | URL | Description |
+|------|-----|-------------|
+| Home | `/` | Landing page with features overview |
+| Latest Filings | `/latest-filings` | Live filing feed with filters |
+| Company | `/company/{ticker}` | Company filings and data |
+| Filing Detail | `/filing/{accession}` | AI analysis + prediction |
+| Paper Trading | `/paper-trading` | Virtual portfolio dashboard |
+| Watchlist | `/watchlist` | Tracked tickers + alert config |
+| Chat | `/chat` | AI chat about filings |
+| Query | `/query` | Natural language query interface |
+
+## Troubleshooting
 
 ### "Company not found"
 - Check ticker spelling (must be uppercase)
 - Try well-known tickers: AAPL, MSFT, GOOGL
 
-### "API rate limit exceeded"
-- Alpha Vantage free tier: 25 calls/day
-- Wait or upgrade to premium ($50/month)
-
 ### "AI analysis unavailable"
-- Check ANTHROPIC_API_KEY in .env.local
+- Check `ANTHROPIC_API_KEY` in `.env.local`
 - Ensure key starts with `sk-ant-`
-- Restart dev server after changing .env
+- Restart dev server after changing `.env.local`
+
+### Database errors
+- Ensure PostgreSQL is running
+- Check `DATABASE_URL` in `.env.local`
+- Run `npx prisma db push` to sync schema
 
 ### Port 3000 in use
-- Server will auto-select port 3001
+- Server auto-selects port 3001
 - Check terminal output for correct port
 
----
+## More Documentation
 
-## 📊 Example Workflows
+- **Full README**: [`README.md`](README.md)
+- **Test Plan**: [`TEST-PLAN.md`](TEST-PLAN.md)
+- **Cron Jobs**: [`CRON-JOBS-README.md`](CRON-JOBS-README.md)
+- **Deployment**: [`DEPLOYMENT.md`](DEPLOYMENT.md)
+- **Paper Trading**: [`PAPER-TRADING-SYSTEM.md`](PAPER-TRADING-SYSTEM.md)
+- **Database Schema**: `prisma/schema.prisma`
 
-### Workflow 1: Analyze Recent Earnings
-```
-1. Search "AAPL"
-2. Find latest 10-Q filing
-3. Click to analyze
-4. Review sentiment score
-5. Check 7-day prediction
-```
+## Disclaimer
 
-### Workflow 2: Compare Risk Trends
-```
-1. Search "TSLA"
-2. Open most recent 10-K
-3. Note risk score (e.g., 7.2/10)
-4. Open prior year 10-K
-5. Compare risk trends
-```
-
-### Workflow 3: Quick Sentiment Check
-```
-1. Search "MSFT"
-2. Open latest filing
-3. Scroll to sentiment section
-4. Check tone: optimistic/cautious/negative
-5. Read key phrases
-```
-
----
-
-## 💡 Pro Tips
-
-1. **Bookmark filings:** Copy URL to save specific analyses
-2. **Compare companies:** Open multiple tabs for side-by-side
-3. **Focus on changes:** New risks matter more than existing ones
-4. **Check confidence:** High confidence predictions are more reliable
-5. **Read reasoning:** Understand why predictions were made
-
----
-
-## 🎓 Understanding the Analysis
-
-### Risk Score (0-10)
-- **0-3:** Low risk, stable business
-- **4-6:** Moderate risk, normal
-- **7-8:** Elevated risk, watch carefully
-- **9-10:** High risk, potential issues
-
-### Sentiment Score (-1 to +1)
-- **-1.0 to -0.5:** Very negative/pessimistic
-- **-0.5 to 0:** Cautious/uncertain
-- **0 to +0.5:** Cautiously optimistic
-- **+0.5 to +1.0:** Very positive/bullish
-
-### Confidence Score (0-100%)
-- **90-100%:** Very high confidence
-- **70-89%:** High confidence
-- **50-69%:** Moderate confidence
-- **Below 50%:** Low confidence (use caution)
-
-### Prediction Signals
-- **🟢 Strong Buy:** +1% or more predicted
-- **🟢 Buy:** 0% to +1% predicted
-- **🟡 Hold:** -1% to 0% predicted
-- **🔴 Sell:** Below -1% predicted
-
----
-
-## 🚀 Ready to Deploy?
-
-See `README.md` for full deployment guide to Vercel.
-
----
-
-## ⚠️ Important Disclaimer
-
-**This tool is for educational and informational purposes only.**
-
-- Not financial advice
-- Past performance ≠ future results
-- AI predictions are not guaranteed
-- Always do your own research
-- Consult financial advisor before investing
-
----
-
-## 📚 More Resources
-
-- **Full Documentation:** See README.md
-- **Build Report:** See BUILD_REPORT.md
-- **API Details:** See code comments in `/lib` folder
-- **Database Schema:** See `prisma/schema.prisma`
-
----
-
-**Ready? Let's analyze some filings!** 🎉
-
-Open http://localhost:3001 and start exploring!
+This tool is for educational and research purposes only. Not financial advice. Always consult a qualified financial advisor before making investment decisions.

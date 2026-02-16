@@ -3,7 +3,7 @@
 ## Running Tests
 
 ```bash
-# Run all unit + integration tests
+# Run all unit + integration tests (170 tests)
 npm test
 
 # Watch mode (re-runs on file changes)
@@ -30,64 +30,133 @@ npm run test:e2e:ui        # interactive Playwright UI
 
 Fast, isolated tests for pure logic — no network, no database.
 
-| File | What it tests |
-|------|---------------|
-| `lib/alpha-model.test.ts` | `predictAlpha()` scoring, signal classification, percentile thresholds, feature contributions; `extractAlphaFeatures()` ratio calculations and fallback behavior |
-| `lib/auth.test.ts` | JWT create/verify round-trip, tampered-token rejection, magic link token generation |
-| `lib/rate-limit.test.ts` | Fingerprint generation (SHA-256), 20-request unauth limit, 100-request auth quota |
+| File | Tests | What it tests |
+|------|-------|---------------|
+| `lib/alpha-model.test.ts` | ~20 | `predictAlpha()` scoring, signal classification, percentile thresholds, feature contributions; `extractAlphaFeatures()` ratio calculations and fallback behavior |
+| `lib/auth.test.ts` | ~8 | JWT create/verify round-trip, tampered-token rejection, magic link token generation |
+| `lib/rate-limit.test.ts` | ~7 | Fingerprint generation (SHA-256), 20-request unauth limit, 100-request auth quota |
 
-### Integration Tests (`__tests__/integration/`)
+### Integration Tests — Cron Jobs (`__tests__/integration/api/cron/`)
 
-Test API route handlers and service-layer modules with mocked Prisma and external APIs.
+Test all 10 cron job API route handlers with mocked Prisma and external APIs. Every test file verifies auth (401 without CRON_SECRET), success paths, edge cases, and error handling.
 
-| File | What it tests |
-|------|---------------|
-| `api/predict.test.ts` | Predict API: 404 for missing filing, alpha model scoring, cached prediction path, accession normalization, DB writes, legacy fallback |
-| `api/auth-send-magic-link.test.ts` | Email validation, token creation, email normalization |
-| `lib/paper-trading.test.ts` | Signal evaluation (confidence, existing positions, return threshold), LONG/SHORT P&L calculation, trade closure error cases |
+| File | Tests | What it tests |
+|------|-------|---------------|
+| `daily-filings-rss.test.ts` | 16 | SEC RSS ingestion, Yahoo Finance company updates, snapshot creation, prediction cache flush, stuck job cleanup, supervisor health checks, catch-up mode, error handling |
+| `update-analyst-data.test.ts` | 15 | Analyst consensus fetching, earnings data, 8-K filtering, per-company error handling, data merging into analysisData JSON |
+| `update-stock-prices.test.ts` | 11 | Price/volume/PE updates, BigInt volume handling, per-ticker errors, 404 delisted ticker handling |
+| `update-stock-prices-batch.test.ts` | 9 | 6-batch rotation based on UTC hour (`vi.setSystemTime`), correct batch slice selection, per-ticker errors |
+| `watchlist-alerts.test.ts` | 18 | Email alerts for high-concern filings, price changes, analyst activity; concern color coding; action formatting; user grouping (one email per user); Resend API error handling |
+| `watchlist-alerts-scheduler.test.ts` | 6 | Morning/evening routing based on UTC hour, fetch to watchlist-alerts endpoint with auth |
+| `paper-trading-close-positions.test.ts` | 10 | PaperTradingEngine construction, position closure, portfolio metrics update, multi-portfolio processing, per-portfolio error isolation |
+| `supervisor-route.test.ts` | 7 | Supervisor HTTP endpoint, `autoTriggerMissing=true` flag, healthy/alerts status, error handling |
+
+### Integration Tests — Services (`__tests__/integration/lib/`)
+
+| File | Tests | What it tests |
+|------|-------|---------------|
+| `supervisor.test.ts` | 18 | `runSupervisorChecks()`: healthy state, stuck job detection (>10min), missing daily filings (>30h), missing analyst data (>48h, weekday-only), high failure rate (>50%), auto-trigger missing jobs, email alerts via Resend, weekend analyst check skip, error handling |
+| `paper-trading.test.ts` | ~10 | `PaperTradingEngine`: signal evaluation (confidence, existing positions, return threshold), LONG/SHORT P&L calculation, trade closure error cases |
+
+### Integration Tests — API Routes (`__tests__/integration/api/`)
+
+| File | Tests | What it tests |
+|------|-------|---------------|
+| `predict.test.ts` | ~12 | Predict API: 404 for missing filing, alpha model scoring, cached prediction path, accession normalization, DB writes, legacy fallback |
+| `auth-send-magic-link.test.ts` | ~5 | Email validation, token creation, email normalization |
 
 ### E2E Tests (`__tests__/e2e/`)
 
-Comprehensive browser-based tests via Playwright against the running dev server (~45+ tests across 8 spec files).
+Browser-based tests via Playwright against the running dev server (~45+ tests).
 
 | File | Tests | What it covers |
 |------|-------|----------------|
-| `homepage.spec.ts` | 8 | Hero section, CTAs (Start Free, View Live Filings Feed), features section, How It Works steps, footer nav, navbar, search |
-| `latest-filings.spec.ts` | 9 | Filing cards with ticker/company/type/date, search input, filing type filter, Analyze button navigation, SEC.gov link, filing count, refresh |
-| `filing-analysis.spec.ts` | 5 | Filing detail page load, company info/auth prompt, analysis progress/results, unknown accession error handling, navigation |
-| `query.spec.ts` | 9 | NLP query input, Natural Language Query title, example queries, click-to-populate, search button state, loading/results, queryable data section |
-| `chat.spec.ts` | 9 | Chat title, ticker input, message input/send button, question categories, available data, example click-to-populate, ticker URL auto-fill, message submission |
-| `company.spec.ts` | 5 | Company page load (AAPL), company name/ticker display, filing history/sections, unknown ticker error handling, no Application error |
-| `paper-trading.spec.ts` | 6 | Page load, portfolio title/subtitle, key metrics (Total Value, Win Rate, Cash Available), open positions, recent trades |
-| `authentication.spec.ts` | 3 | Sign-in modal with email input, unauthenticated profile redirect, FAQ page with expandable sections |
+| `homepage.spec.ts` | 8 | Hero section, CTAs, features section, How It Works, footer, navbar, search |
+| `latest-filings.spec.ts` | 9 | Filing cards, search, filing type filter, Analyze navigation, SEC.gov links |
+| `filing-analysis.spec.ts` | 5 | Filing detail page, company info, analysis progress/results, error handling |
+| `query.spec.ts` | 9 | NLP query input, example queries, click-to-populate, search results |
+| `chat.spec.ts` | 9 | Chat interface, ticker input, message submission, question categories |
+| `company.spec.ts` | 5 | Company page, filing history, unknown ticker error handling |
+| `paper-trading.spec.ts` | 6 | Portfolio dashboard, metrics, open positions, recent trades |
+| `authentication.spec.ts` | 3 | Sign-in modal, unauthenticated redirect, FAQ page |
 
 ## Mocking Strategy
 
-- **Prisma**: Fully mocked via `__tests__/mocks/prisma.ts` — every model method is a `vi.fn()`. Imported via `vi.mock('@/lib/prisma')`. No test database needed.
-- **External APIs**: `yahoo-finance2`, `resend` mocked at module level in integration tests.
-- **Auth/Middleware**: Mocked in integration tests to bypass rate limiting and session checks.
-- **Fixtures**: Shared test data in `__tests__/fixtures/` for consistent, reusable mock objects.
+### Prisma Mock (`__tests__/mocks/prisma.ts`)
+Centralized mock for all Prisma models. Every model method (`findMany`, `create`, `update`, `upsert`, `count`, `deleteMany`, etc.) is a `vi.fn()`. Imported via `vi.mock('@/lib/prisma')`. Includes models: `company`, `filing`, `prediction`, `analystActivity`, `cronJobRun`, `companySnapshot`, `macroIndicators`, `paperPortfolio`, `paperTrade`, `portfolioSnapshot`, `user`, `watchlistItem`, `alert`.
 
-## How to Add New Tests
+### External API Mocking
+- **`yahoo-finance2`** — Module-level mock via `vi.mock('yahoo-finance2')`
+- **`resend`** — Constructor mock using named `function` (not arrow function) to support `new Resend()`
+- **`@/lib/sec-rss-client`** — Mock `secRSSClient.fetchFilings()`
+- **`@/lib/yahoo-finance-client`** — Mock `yahooFinanceClient` methods
+- **`@/lib/supervisor`** — Mock `runSupervisorChecks()`
+- **`@/lib/paper-trading`** — Mock `PaperTradingEngine` class with `engineConstructorCalls` tracking array
+- **`global.fetch`** — Mocked via `vi.fn()` for Resend API calls and auto-trigger endpoints
 
-1. **Unit test**: Create `__tests__/unit/<path>/<module>.test.ts`. Import the module directly. No mocks needed for pure functions.
+### Key Vitest Patterns
 
-2. **Integration test**: Create `__tests__/integration/<path>/<module>.test.ts`. Import the prisma mock at top: `import { prismaMock } from '../../mocks/prisma';`. Add `vi.mock()` calls for any external dependencies before importing the module under test.
+**vi.hoisted() for mock function references:**
+```typescript
+// vi.mock() factories are hoisted above const declarations
+// Use vi.hoisted() for mock fns referenced inside vi.mock() factories
+const { mockFn } = vi.hoisted(() => ({ mockFn: vi.fn() }));
+vi.mock('module', () => ({ thing: mockFn }));
+```
 
-3. **E2E test**: Create `__tests__/e2e/<name>.spec.ts`. Use Playwright's `test` and `expect`. Tests run against `localhost:3000`.
+**Named function for constructor mocks:**
+```typescript
+// vi.fn().mockImplementation(() => ...) does NOT work as constructor
+// Use a named function declaration instead
+vi.mock('resend', () => {
+  return { Resend: function () { return { emails: { send: mockSend } }; } };
+});
+```
 
-## Coverage Targets
+**Constructor call tracking:**
+```typescript
+// Track constructor args with a manual array (not vi.fn())
+const { mockMethod, constructorCalls } = vi.hoisted(() => ({
+  mockMethod: vi.fn(),
+  constructorCalls: [] as string[],
+}));
+vi.mock('@/lib/paper-trading', () => {
+  function PaperTradingEngine(id: string) {
+    constructorCalls.push(id);
+    return { method: mockMethod };
+  }
+  return { PaperTradingEngine };
+});
+```
 
-| Category | Target |
-|----------|--------|
-| Alpha model (`lib/alpha-model.ts`) | 95%+ |
-| Auth (`lib/auth.ts`) | 80%+ |
-| Rate limiting (`lib/rate-limit.ts`) | 80%+ |
-| Predict API route | 70%+ |
-| Overall | 60%+ |
+**Auth test pattern:**
+```typescript
+new NextRequest(url, { headers: { authorization: 'Bearer test-cron-secret' } })
+```
+
+## Fixtures (`__tests__/fixtures/`)
+
+| File | Contents |
+|------|----------|
+| `cron-data.ts` | Mock cron job runs, RSS filings, companies (AAPL full), Yahoo Finance responses, analyst activities, paper portfolios, users with watchlists, macro indicators |
+| `alpha-features.ts` | Alpha model feature sets for prediction testing |
+| `company-data.ts` | Company records for API tests |
+| `filing-data.ts` | Filing records with analysis data for prediction tests |
 
 ## Configuration Files
 
 - `vitest.config.ts` — Vitest runner config with `vite-tsconfig-paths` for `@/*` alias resolution
 - `playwright.config.ts` — Playwright config targeting `localhost:3000` with auto-start dev server
-- `__tests__/setup.ts` — Global setup: mock env vars, `vi.clearAllMocks()` in `beforeEach`
+- `__tests__/setup.ts` — Global setup: mock env vars (`CRON_SECRET`, `ALERT_EMAIL`, `VERCEL_URL`, `ANTHROPIC_API_KEY`, `JWT_SECRET`, `MAGIC_LINK_SECRET`), `vi.clearAllMocks()` in `beforeEach`
+
+## Coverage Summary
+
+| Category | Files | Tests |
+|----------|-------|-------|
+| Unit | 3 | ~35 |
+| Integration — Cron | 9 | ~110 |
+| Integration — Services | 2 | ~28 |
+| Integration — API | 2 | ~17 |
+| **Vitest Total** | **16** | **~170** |
+| E2E (Playwright) | 8 | ~45 |
+| **Grand Total** | **24** | **~215** |

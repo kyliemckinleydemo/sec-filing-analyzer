@@ -1,189 +1,201 @@
-# Vercel Deployment Guide
+# Deployment Guide — StockHuntr
+
+## Overview
+
+StockHuntr is deployed to Vercel via CLI (not GitHub auto-deploy). The production site is at [stockhuntr.net](https://stockhuntr.net).
 
 ## Prerequisites
-- GitHub account with repository access
-- Vercel account (sign up at https://vercel.com)
-- Anthropic API key
-- PostgreSQL database (recommended: Vercel Postgres or Supabase)
 
-## Step 1: Set Up Database
+- Vercel account (https://vercel.com) with Pro plan ($20/month for cron jobs)
+- Vercel CLI installed (`npm i -g vercel`)
+- PostgreSQL database (Vercel Postgres, Supabase, or any provider)
+- API keys: Anthropic, Resend
 
-### Option A: Vercel Postgres (Recommended)
-1. Go to https://vercel.com/dashboard
-2. Click "Storage" → "Create Database" → "Postgres"
-3. Name it "sec-filing-analyzer-db"
-4. Copy the `DATABASE_URL` connection string
+## Quick Deploy
 
-### Option B: Supabase
-1. Go to https://supabase.com
-2. Create a new project
-3. Go to Project Settings → Database
-4. Copy the "Connection string" (Direct connection)
-5. Replace `[YOUR-PASSWORD]` with your actual password
-
-## Step 2: Deploy to Vercel
-
-### Using Vercel Dashboard (Easiest)
-1. Go to https://vercel.com/new
-2. Import your GitHub repository: `kyliemckinleydemo/sec-filing-analyzer`
-3. Configure project:
-   - **Framework Preset**: Next.js
-   - **Root Directory**: `./`
-   - **Build Command**: (leave default)
-   - **Install Command**: (leave default)
-
-4. Add Environment Variables:
-   ```
-   ANTHROPIC_API_KEY=sk-ant-your-key-here
-   DATABASE_URL=postgresql://user:pass@host:5432/database
-   ```
-
-5. Click "Deploy"
-
-### Using Vercel CLI
 ```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Login to Vercel
-vercel login
-
-# Deploy
-vercel
-
-# Follow prompts:
-# - Link to existing project? No
-# - Project name: sec-filing-analyzer
-# - Directory: ./
-# - Override settings? No
-
-# Set environment variables
-vercel env add ANTHROPIC_API_KEY
-vercel env add DATABASE_URL
-
-# Deploy to production (using npm script with --force)
-npm run deploy
-```
-
-## Using --force Flag (Default)
-
-**All deployments now use the `--force` flag by default** to skip build cache and ensure fresh builds.
-
-### Quick Commands
-```bash
-# Production deployment (recommended)
+# Production deploy with force (skip build cache) + set domain alias
 npm run deploy
 
-# Preview deployment
+# Preview deployment (for testing)
 npm run deploy:preview
 ```
 
-These scripts automatically use `--force` to:
-- Skip Vercel's build cache
-- Ensure all code changes are included
-- Prevent stale cache issues
-- Only adds 10-30 seconds to build time
+The `deploy` script runs: `vercel --prod --force && vercel alias set stockhuntr.net`
 
-### Manual Deployment (Advanced)
-If you need to deploy without npm scripts:
-```bash
-# Production with force
-vercel --prod --force
+## Environment Variables
 
-# Preview with force
-vercel --force
-```
-
-## Step 3: Initialize Database
-
-After first deployment:
-1. Go to your Vercel deployment URL
-2. The app will automatically run Prisma migrations on first API call
-3. Or manually run: `vercel env pull && npx prisma db push`
-
-## Step 4: Verify Deployment
-
-Visit your deployment URL and test:
-1. Homepage loads
-2. Search for a ticker (e.g., "AAPL")
-3. View latest filings
-4. Analyze a filing (this will test Claude AI integration)
-
-## Environment Variables Reference
+Set these in Vercel dashboard (Settings > Environment Variables) or via CLI:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `ANTHROPIC_API_KEY` | ✅ Yes | Your Anthropic Claude API key |
-| `DATABASE_URL` | ✅ Yes | PostgreSQL connection string |
-| `NODE_ENV` | Auto-set | Set to `production` by Vercel |
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `ANTHROPIC_API_KEY` | Yes | Anthropic API key for Claude AI analysis |
+| `CRON_SECRET` | Yes | Authentication token for cron job endpoints |
+| `RESEND_API_KEY` | Yes | Resend API key for email alerts |
+| `ALERT_EMAIL` | Yes | Recipient for supervisor health alerts |
+| `JWT_SECRET` | Yes | Secret for JWT token signing |
+| `MAGIC_LINK_SECRET` | Yes | Secret for magic link authentication |
+| `VERCEL_URL` | Auto | Set automatically by Vercel |
+
+```bash
+# Set via CLI
+vercel env add DATABASE_URL production
+vercel env add ANTHROPIC_API_KEY production
+vercel env add CRON_SECRET production
+vercel env add RESEND_API_KEY production
+vercel env add ALERT_EMAIL production
+vercel env add JWT_SECRET production
+vercel env add MAGIC_LINK_SECRET production
+```
+
+## Database Setup
+
+### Initial Setup
+
+After first deploy, push the Prisma schema to production:
+
+```bash
+# Pull production env vars
+vercel env pull .env.prod
+
+# Push schema to production database
+DATABASE_URL=$(grep DATABASE_URL .env.prod | cut -d= -f2-) npx prisma db push
+
+# Clean up (don't keep production credentials locally)
+rm .env.prod
+```
+
+### After Schema Changes
+
+When `prisma/schema.prisma` is modified, sync production:
+
+```bash
+vercel env pull .env.prod
+DATABASE_URL=$(grep DATABASE_URL .env.prod | cut -d= -f2-) npx prisma db push
+rm .env.prod
+npm run deploy
+```
+
+## Build Configuration
+
+The build is configured in `package.json`:
+
+```json
+{
+  "build": "prisma generate && next build"
+}
+```
+
+**Important**: `next build` requires `ANTHROPIC_API_KEY` to be set at build time (used during page data collection). This works on Vercel where env vars are available. Local builds will fail at the collect-page-data phase — this is expected.
+
+## Vercel Configuration
+
+`vercel.json` configures function timeouts and cron schedules:
+
+```json
+{
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "functions": {
+    "app/api/analyze/**/*.ts": { "maxDuration": 300 },
+    "app/api/cron/**/*.ts": { "maxDuration": 300 },
+    "app/api/**/*.ts": { "maxDuration": 60 }
+  },
+  "crons": [...]
+}
+```
+
+- **Region**: `iad1` (US East, close to SEC EDGAR servers)
+- **Cron routes**: 300s max duration (5 minutes)
+- **Analysis routes**: 300s max (Claude API can be slow)
+- **Other API routes**: 60s max
+
+## Cron Jobs
+
+14 cron executions across 10 distinct jobs run daily. See [`CRON-JOBS-README.md`](CRON-JOBS-README.md) for the full schedule and details.
+
+Cron jobs require Vercel Pro plan ($20/month). On the free/hobby plan, cron jobs will not execute.
+
+## Deploy Process
+
+### Standard Deploy
+
+```bash
+# 1. Ensure tests pass
+npm test
+
+# 2. Deploy
+npm run deploy
+```
+
+### After Breaking Changes
+
+If the deploy fails due to TypeScript errors:
+
+```bash
+# Check type errors locally
+npx tsc --noEmit
+
+# Fix errors, then deploy
+npm run deploy
+```
+
+### Database Schema Changes
+
+```bash
+# 1. Modify prisma/schema.prisma
+# 2. Generate client locally
+npx prisma generate
+# 3. Push schema to production
+vercel env pull .env.prod
+DATABASE_URL=$(grep DATABASE_URL .env.prod | cut -d= -f2-) npx prisma db push
+rm .env.prod
+# 4. Deploy new code
+npm run deploy
+```
+
+## Verification
+
+After deploying, verify these endpoints:
+
+```bash
+DOMAIN="https://stockhuntr.net"
+
+# Public pages
+curl -s -o /dev/null -w "%{http_code}" "$DOMAIN"                    # 200
+curl -s -o /dev/null -w "%{http_code}" "$DOMAIN/latest-filings"     # 200
+
+# API endpoints
+curl -s -o /dev/null -w "%{http_code}" "$DOMAIN/api/filings/latest" # 200
+
+# Cron endpoints (should return 401 without auth)
+curl -s -o /dev/null -w "%{http_code}" "$DOMAIN/api/cron/daily-filings-rss"  # 401
+```
 
 ## Troubleshooting
 
-### Build Errors
-- **Prisma errors**: Ensure `DATABASE_URL` is set in environment variables
-- **API timeout**: API routes have 60s timeout configured in `vercel.json`
+### Build Fails with TypeScript Error
+- Run `npx tsc --noEmit` locally to identify errors
+- Fix errors before deploying
+- Common issue: Prisma schema changes that add fields used in page.tsx
 
-### Runtime Errors
-- **500 errors**: Check Vercel logs for database connection issues
-- **Claude API errors**: Verify `ANTHROPIC_API_KEY` is correct
-- **Python errors**: Vercel supports Python execution, but complex scripts may timeout
+### 500 Errors on API Routes
+- Check Vercel function logs in the dashboard
+- Common cause: database schema out of sync (run `prisma db push`)
+- Check that all required env vars are set
 
-### Database Issues
-- **Connection pool exhausted**: Consider upgrading database plan
-- **Slow queries**: Add indexes via Prisma schema updates
+### Cron Jobs Not Running
+- Verify Vercel Pro plan is active
+- Check `CRON_SECRET` is set in env vars
+- View cron execution logs in Vercel dashboard > Deployments > Functions
 
-## Performance Optimization
-
-1. **Database**: Use connection pooling (already configured in `DATABASE_URL`)
-2. **API Routes**: Implement caching for repeated requests
-3. **Static Generation**: Consider ISR for frequently accessed pages
-
-## Cost Optimization
-
-- Vercel free tier: 100GB bandwidth, unlimited hobby projects
-- Database: Use Vercel Postgres (free tier: 256MB) or Supabase (free tier: 500MB)
-- Claude API: Monitor usage at https://console.anthropic.com
-
-## Custom Domain (Optional)
-
-1. Go to Vercel project settings → "Domains"
-2. Add your domain (e.g., `sec-analyzer.com`)
-3. Follow DNS configuration instructions
-4. Vercel automatically provisions SSL certificate
+### Stale Build Cache
+- The `--force` flag in `npm run deploy` already skips cache
+- If issues persist, try `vercel --prod --force --no-wait`
 
 ## Monitoring
 
-- **Vercel Analytics**: Auto-enabled, view at project dashboard
-- **Error Tracking**: Check Vercel logs for 500 errors
-- **Claude API Usage**: Monitor at Anthropic console
-
-## Updating Deployment
-
-### Option 1: Automatic (Recommended)
-```bash
-# Commit and push your changes
-git add .
-git commit -m "Update feature"
-git push origin main
-
-# Vercel automatically deploys on push to main
-# (but may use cached builds)
-```
-
-### Option 2: Manual with --force (Guaranteed Fresh Build)
-```bash
-# Commit your changes
-git add .
-git commit -m "Update feature"
-
-# Deploy directly with force flag
-npm run deploy
-
-# This ensures no cached builds are used
-```
-
-## Support
-
-- Vercel Docs: https://vercel.com/docs
-- Next.js Docs: https://nextjs.org/docs
-- Prisma Docs: https://www.prisma.io/docs
+- **Vercel Dashboard**: Function logs, deployment status, analytics
+- **Supervisor Alerts**: Automatic email alerts for cron job failures (requires `RESEND_API_KEY` and `ALERT_EMAIL`)
+- **Database**: Query `CronJobRun` table for job history
