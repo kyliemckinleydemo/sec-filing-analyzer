@@ -201,10 +201,10 @@ export async function GET(request: Request) {
         'Vercel-CDN-Cache-Control': 'no-store'
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching latest filings:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch latest filings' },
+      { error: 'Failed to fetch latest filings', details: error?.message || String(error) },
       { status: 500 }
     );
   }
