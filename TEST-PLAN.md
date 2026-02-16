@@ -48,13 +48,18 @@ Test API route handlers and service-layer modules with mocked Prisma and externa
 
 ### E2E Tests (`__tests__/e2e/`)
 
-Browser-based smoke tests via Playwright against the running dev server.
+Comprehensive browser-based tests via Playwright against the running dev server (~45+ tests across 8 spec files).
 
-| File | What it tests |
-|------|---------------|
-| `navigation.spec.ts` | All main routes load without "Application error" |
-| `filing-analysis.spec.ts` | Homepage content, latest filings page, filing detail page |
-| `authentication.spec.ts` | Sign-in modal, unauthenticated profile redirect |
+| File | Tests | What it covers |
+|------|-------|----------------|
+| `homepage.spec.ts` | 8 | Hero section, CTAs (Start Free, View Live Filings Feed), features section, How It Works steps, footer nav, navbar, search |
+| `latest-filings.spec.ts` | 9 | Filing cards with ticker/company/type/date, search input, filing type filter, Analyze button navigation, SEC.gov link, filing count, refresh |
+| `filing-analysis.spec.ts` | 5 | Filing detail page load, company info/auth prompt, analysis progress/results, unknown accession error handling, navigation |
+| `query.spec.ts` | 9 | NLP query input, Natural Language Query title, example queries, click-to-populate, search button state, loading/results, queryable data section |
+| `chat.spec.ts` | 9 | Chat title, ticker input, message input/send button, question categories, available data, example click-to-populate, ticker URL auto-fill, message submission |
+| `company.spec.ts` | 5 | Company page load (AAPL), company name/ticker display, filing history/sections, unknown ticker error handling, no Application error |
+| `paper-trading.spec.ts` | 6 | Page load, portfolio title/subtitle, key metrics (Total Value, Win Rate, Cash Available), open positions, recent trades |
+| `authentication.spec.ts` | 3 | Sign-in modal with email input, unauthenticated profile redirect, FAQ page with expandable sections |
 
 ## Mocking Strategy
 
