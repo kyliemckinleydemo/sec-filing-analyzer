@@ -106,7 +106,7 @@ What it does:
 What it does:
 1. Fetches macro indicator data (S&P 500, VIX, Treasury yields, sector ETFs)
 2. Stores in MacroIndicators table
-3. Used by alpha model for market context features
+3. Used for market context display and legacy prediction features
 
 ### 6. watchlist-alerts
 
@@ -137,7 +137,7 @@ Routes alert checks to the correct time slot (morning vs evening) based on UTC h
 What it does:
 1. Finds all active paper portfolios
 2. Creates a PaperTradingEngine instance for each portfolio
-3. Closes positions that have been open for 7+ days
+3. Closes positions that have been open for 30+ days
 4. Updates portfolio metrics (total value, win rate, etc.)
 5. Continues processing remaining portfolios if one errors
 
