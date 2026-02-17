@@ -157,6 +157,6 @@ new NextRequest(url, { headers: { authorization: 'Bearer test-cron-secret' } })
 | Integration — Cron | 9 | ~110 |
 | Integration — Services | 2 | ~28 |
 | Integration — API | 2 | ~17 |
-| **Vitest Total** | **16** | **~170** |
+| **Vitest Total** | **15** | **~170** |
 | E2E (Playwright) | 8 | ~45 |
-| **Grand Total** | **24** | **~215** |
+| **Grand Total** | **23** | **~215** |
