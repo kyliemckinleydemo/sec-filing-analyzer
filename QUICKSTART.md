@@ -81,7 +81,7 @@ Visit `/latest-filings` to see recent SEC filings (10-K, 10-Q, 8-K) with:
 ### Paper Trading
 Visit `/paper-trading` to view the automated paper portfolio:
 - Virtual $100k portfolio trades based on model predictions
-- Positions auto-close after 7-day hold period
+- Positions auto-close after 30-day hold period
 - Tracks win rate, P&L, model accuracy
 
 ### AI Chat
@@ -141,6 +141,7 @@ See `DEPLOYMENT.md` for the full guide.
 - **Test Plan**: [`TEST-PLAN.md`](TEST-PLAN.md)
 - **Cron Jobs**: [`CRON-JOBS-README.md`](CRON-JOBS-README.md)
 - **Deployment**: [`DEPLOYMENT.md`](DEPLOYMENT.md)
+- **Alpha Model**: [`MODEL.md`](MODEL.md)
 - **Paper Trading**: [`PAPER-TRADING-SYSTEM.md`](PAPER-TRADING-SYSTEM.md)
 - **Database Schema**: `prisma/schema.prisma`
 
