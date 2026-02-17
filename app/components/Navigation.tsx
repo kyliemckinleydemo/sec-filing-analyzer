@@ -11,16 +11,22 @@ export default function Navigation() {
           Home
         </Link>
         <Link
-          href="/query"
-          className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-        >
-          Query
-        </Link>
-        <Link
           href="/latest-filings"
           className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
         >
           Latest Filings
+        </Link>
+        <Link
+          href="/watchlist"
+          className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+        >
+          Watchlist
+        </Link>
+        <Link
+          href="/query"
+          className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+        >
+          Query
         </Link>
         <Link
           href="/faq"

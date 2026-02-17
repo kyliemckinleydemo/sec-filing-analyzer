@@ -3,12 +3,25 @@
 import { useState, useRef, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Navigation } from '@/components/Navigation';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
+
+const VALID_SECTORS = [
+  'Basic Materials',
+  'Communication Services',
+  'Consumer Cyclical',
+  'Consumer Defensive',
+  'Energy',
+  'Financial Services',
+  'Healthcare',
+  'Industrials',
+  'Real Estate',
+  'Technology',
+  'Utilities',
+];
 
 function ChatPageContent() {
   const searchParams = useSearchParams();
@@ -16,6 +29,7 @@ function ChatPageContent() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [ticker, setTicker] = useState('');
+  const [sector, setSector] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-fill ticker from URL parameter
@@ -23,6 +37,7 @@ function ChatPageContent() {
     const tickerParam = searchParams.get('ticker');
     if (tickerParam) {
       setTicker(tickerParam.toUpperCase());
+      setSector('');
     }
   }, [searchParams]);
 
@@ -51,6 +66,7 @@ function ChatPageContent() {
         body: JSON.stringify({
           message: input,
           ticker: ticker || undefined,
+          sector: sector || undefined,
         }),
       });
 
@@ -113,6 +129,13 @@ function ChatPageContent() {
     }
   };
 
+  const sectorExampleQueries = [
+    'Which companies have the highest concern levels?',
+    'Compare revenue growth across this sector',
+    'What are the top-performing stocks in this sector?',
+    'Which companies have the best operating margins?',
+  ];
+
   const exampleQueries = [
     'What business segments does this company report?',
     'What percentage of revenue comes from international markets?',
@@ -126,45 +149,75 @@ function ChatPageContent() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navigation />
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-5xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                💬 Analyze a Company's Filings
+                💬 Analyze a Company's Filings & Fundamentals
               </h1>
               <p className="text-sm text-gray-600 mt-1">
-                Deep dive into a specific company's SEC filings and financial disclosures
+                Ask questions about any company's SEC filings, financials, and risk — or explore an entire sector
               </p>
             </div>
           </div>
 
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Select a company to analyze:
-            </label>
-            <input
-              type="text"
-              value={ticker}
-              onChange={(e) => setTicker(e.target.value.toUpperCase())}
-              placeholder="Enter ticker (e.g., AAPL, MSFT, TSLA)"
-              className="w-80 px-4 py-2 border-2 border-gray-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            {ticker && (
-              <button
-                onClick={() => setTicker('')}
-                className="ml-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
+          <div className="mt-4 flex flex-wrap items-end gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Select a company to analyze:
+              </label>
+              <input
+                type="text"
+                value={ticker}
+                onChange={(e) => {
+                  setTicker(e.target.value.toUpperCase());
+                  if (e.target.value) setSector('');
+                }}
+                placeholder="Enter ticker (e.g., AAPL, MSFT, TSLA)"
+                className="w-80 px-4 py-2 border-2 border-gray-300 rounded-lg text-sm text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              {ticker && (
+                <button
+                  onClick={() => setTicker('')}
+                  className="ml-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Or explore a sector:
+              </label>
+              <select
+                value={sector}
+                onChange={(e) => {
+                  setSector(e.target.value);
+                  if (e.target.value) setTicker('');
+                }}
+                className="w-64 px-4 py-2 border-2 border-gray-300 rounded-lg text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                Clear
-              </button>
-            )}
-            {!ticker && (
-              <p className="text-xs text-gray-500 mt-1">
-                Enter a ticker to start asking questions about that company
-              </p>
-            )}
+                <option value="">All sectors</option>
+                {VALID_SECTORS.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+              {sector && (
+                <button
+                  onClick={() => setSector('')}
+                  className="ml-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
           </div>
+          {!ticker && !sector && (
+            <p className="text-xs text-gray-500 mt-2">
+              Enter a ticker or select a sector to start asking questions
+            </p>
+          )}
         </div>
       </header>
 
@@ -305,6 +358,26 @@ function ChatPageContent() {
                     </button>
                   </div>
                 </div>
+
+                {/* Sector Analysis */}
+                {sector && (
+                  <div>
+                    <h3 className="font-semibold text-indigo-600 mb-2 text-sm uppercase tracking-wide">
+                      🏢 Sector Analysis — {sector}
+                    </h3>
+                    <div className="space-y-2">
+                      {sectorExampleQueries.map((q, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setInput(q)}
+                          className="block w-full text-left px-4 py-2 bg-gray-50 hover:bg-indigo-50 rounded text-gray-700 text-sm transition-colors border border-transparent hover:border-indigo-200"
+                        >
+                          {q}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -349,7 +422,7 @@ function ChatPageContent() {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a question about SEC filings..."
+              placeholder="Ask about a company, compare sectors, or explore filings..."
               disabled={isLoading}
               className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100"
             />

@@ -7,7 +7,7 @@ test.describe('Chat page — AI chat', () => {
   });
 
   test('page loads with title', async ({ page }) => {
-    await expect(page.locator('h1')).toContainText("Analyze a Company's Filings");
+    await expect(page.locator('h1')).toContainText("Analyze a Company's Filings & Fundamentals");
   });
 
   test('ticker input field is present', async ({ page }) => {
@@ -20,7 +20,7 @@ test.describe('Chat page — AI chat', () => {
   });
 
   test('message input and send button are present', async ({ page }) => {
-    const messageInput = page.locator('input[placeholder*="Ask a question about SEC filings"]');
+    const messageInput = page.locator('input[placeholder*="Ask about a company"]');
     await expect(messageInput).toBeVisible({ timeout: 10000 });
 
     const sendButton = page.getByRole('button', { name: 'Send' });
@@ -46,7 +46,7 @@ test.describe('Chat page — AI chat', () => {
     const exampleButton = page.locator('text=/biggest stock price jump/').first();
     await exampleButton.click();
 
-    const messageInput = page.locator('input[placeholder*="Ask a question about SEC filings"]');
+    const messageInput = page.locator('input[placeholder*="Ask about a company"]');
     const inputValue = await messageInput.inputValue();
     expect(inputValue.length).toBeGreaterThan(0);
   });
@@ -59,8 +59,40 @@ test.describe('Chat page — AI chat', () => {
     await expect(tickerInput).toHaveValue('AAPL', { timeout: 5000 });
   });
 
+  test('sector dropdown is visible with options', async ({ page }) => {
+    const sectorSelect = page.locator('select');
+    await expect(sectorSelect).toBeVisible({ timeout: 10000 });
+
+    // Check that known sectors are available as options
+    await expect(sectorSelect.locator('option[value="Technology"]')).toBeAttached();
+    await expect(sectorSelect.locator('option[value="Healthcare"]')).toBeAttached();
+    await expect(sectorSelect.locator('option[value="Energy"]')).toBeAttached();
+  });
+
+  test('selecting a sector clears ticker input', async ({ page }) => {
+    const tickerInput = page.locator('input[placeholder*="Enter ticker"]');
+    await tickerInput.fill('AAPL');
+    await expect(tickerInput).toHaveValue('AAPL');
+
+    const sectorSelect = page.locator('select');
+    await sectorSelect.selectOption('Technology');
+
+    await expect(tickerInput).toHaveValue('', { timeout: 3000 });
+  });
+
+  test('entering a ticker clears sector dropdown', async ({ page }) => {
+    const sectorSelect = page.locator('select');
+    await sectorSelect.selectOption('Healthcare');
+    await expect(sectorSelect).toHaveValue('Healthcare');
+
+    const tickerInput = page.locator('input[placeholder*="Enter ticker"]');
+    await tickerInput.fill('MSFT');
+
+    await expect(sectorSelect).toHaveValue('', { timeout: 3000 });
+  });
+
   test('sending a message shows it in the chat or shows auth error', async ({ page }) => {
-    const messageInput = page.locator('input[placeholder*="Ask a question about SEC filings"]');
+    const messageInput = page.locator('input[placeholder*="Ask about a company"]');
     await messageInput.fill('What are the latest filings?');
 
     const sendButton = page.getByRole('button', { name: 'Send' });

@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useRouter } from 'next/navigation';
 import { Search, Sparkles, TrendingUp, Calendar, Building2, FileText } from 'lucide-react';
 import { CompanySnapshotTooltip } from '@/components/CompanySnapshotTooltip';
-import { Navigation } from '@/components/Navigation';
 
 interface QueryResult {
   filings?: any[];
@@ -116,7 +115,6 @@ export default function QueryPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100">
-      <Navigation />
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-12">
         <div className="text-center space-y-4 mb-8">

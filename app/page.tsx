@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
-import { Navigation } from '@/components/Navigation';
 import { CompanySnapshotTooltip } from '@/components/CompanySnapshotTooltip';
 import { safeFormatPrice, safeFormatPercent } from '@/lib/format-utils';
 
@@ -49,6 +48,19 @@ interface RecentFiling {
   accessionNumber: string;
   filed_at?: string;
   companySnapshot?: CompanySnapshot;
+  predicted30dAlpha?: number | null;
+  predictionConfidence?: number | null;
+  concernLevel?: number | null;
+}
+
+interface TopSignal {
+  ticker: string;
+  companyName: string;
+  formType: string;
+  filingDate: string;
+  accessionNumber: string;
+  predicted30dAlpha: number;
+  predictionConfidence: number;
 }
 
 interface StockPrice {
@@ -70,6 +82,7 @@ export default function Home() {
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
   const [recentFilings, setRecentFilings] = useState<RecentFiling[]>([]);
   const [stockPrices, setStockPrices] = useState<Record<string, StockPrice>>({});
+  const [topSignals, setTopSignals] = useState<TopSignal[]>([]);
   const [searchInput, setSearchInput] = useState('');
   const [suggestions, setSuggestions] = useState<CompanySuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -83,6 +96,7 @@ export default function Home() {
     if (user) {
       fetchWatchlist();
       fetchRecentFilings();
+      fetchTopSignals();
     }
   }, [user]);
 
@@ -154,6 +168,18 @@ export default function Home() {
     }
   };
 
+  const fetchTopSignals = async () => {
+    try {
+      const response = await fetch('/api/filings/top-signals');
+      const data = await response.json();
+      if (data.signals) {
+        setTopSignals(data.signals);
+      }
+    } catch (error) {
+      console.error('Error fetching top signals:', error);
+    }
+  };
+
   const fetchStockPrices = async () => {
     try {
       const tickers = watchlist.map(item => item.ticker).join(',');
@@ -174,7 +200,6 @@ export default function Home() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#0f172a_0%,#020617_50%)] text-foreground">
-        <Navigation />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>
@@ -186,7 +211,6 @@ export default function Home() {
   if (user) {
     return (
       <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#0f172a_0%,#020617_50%)] text-foreground">
-        <Navigation />
 
         <main className="container mx-auto px-6 py-8">
           {/* Welcome Section */}
@@ -429,6 +453,82 @@ export default function Home() {
             </Card>
           </div>
 
+          {/* Top Signals */}
+          {topSignals.length > 0 && (
+            <Card className="bg-[rgba(15,23,42,0.96)] border-white/[0.18] mb-8">
+              <CardHeader>
+                <CardTitle className="text-xl text-white">Top Signals</CardTitle>
+                <CardDescription>Strongest LONG/SHORT signals from the last 30 days</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* LONG signals */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-green-400 uppercase tracking-wider mb-3">LONG</h3>
+                    <div className="space-y-2">
+                      {topSignals
+                        .filter((s) => s.predicted30dAlpha > 0)
+                        .map((signal) => (
+                          <button
+                            key={signal.accessionNumber}
+                            onClick={() => router.push(`/filing/${signal.accessionNumber}`)}
+                            className="w-full text-left p-3 rounded-lg bg-green-500/5 border border-green-500/20 hover:border-green-500/40 transition-colors"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <span className="font-semibold text-primary">{signal.ticker}</span>
+                                <span className="text-xs text-muted-foreground ml-2">{signal.formType}</span>
+                              </div>
+                              <span className="text-sm font-bold text-green-400">
+                                +{signal.predicted30dAlpha.toFixed(1)}%
+                              </span>
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {signal.companyName} · {new Date(signal.filingDate).toLocaleDateString()}
+                            </div>
+                          </button>
+                        ))}
+                      {topSignals.filter((s) => s.predicted30dAlpha > 0).length === 0 && (
+                        <p className="text-sm text-muted-foreground">No LONG signals</p>
+                      )}
+                    </div>
+                  </div>
+                  {/* SHORT signals */}
+                  <div>
+                    <h3 className="text-sm font-semibold text-red-400 uppercase tracking-wider mb-3">SHORT</h3>
+                    <div className="space-y-2">
+                      {topSignals
+                        .filter((s) => s.predicted30dAlpha < 0)
+                        .map((signal) => (
+                          <button
+                            key={signal.accessionNumber}
+                            onClick={() => router.push(`/filing/${signal.accessionNumber}`)}
+                            className="w-full text-left p-3 rounded-lg bg-red-500/5 border border-red-500/20 hover:border-red-500/40 transition-colors"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <span className="font-semibold text-primary">{signal.ticker}</span>
+                                <span className="text-xs text-muted-foreground ml-2">{signal.formType}</span>
+                              </div>
+                              <span className="text-sm font-bold text-red-400">
+                                {signal.predicted30dAlpha.toFixed(1)}%
+                              </span>
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {signal.companyName} · {new Date(signal.filingDate).toLocaleDateString()}
+                            </div>
+                          </button>
+                        ))}
+                      {topSignals.filter((s) => s.predicted30dAlpha < 0).length === 0 && (
+                        <p className="text-sm text-muted-foreground">No SHORT signals</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Recent Filings */}
           <Card className="bg-[rgba(15,23,42,0.96)] border-white/[0.18]">
             <CardHeader>
@@ -474,9 +574,33 @@ export default function Home() {
                             </CompanySnapshotTooltip>
                             <div className="text-sm text-muted-foreground">{filing.companyName}</div>
                           </div>
-                          <span className="text-xs px-2 py-1 rounded-full bg-primary/20 border border-primary text-primary">
-                            {filing.formType}
-                          </span>
+                          <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                            <span className="text-xs px-2 py-1 rounded-full bg-primary/20 border border-primary text-primary">
+                              {filing.formType}
+                            </span>
+                            {filing.predicted30dAlpha != null && filing.predictionConfidence != null && filing.predictionConfidence > 0 && (
+                              filing.predictionConfidence > 0.6 ? (
+                                filing.predicted30dAlpha > 0 ? (
+                                  <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 border border-green-500 text-green-400">
+                                    LONG +{filing.predicted30dAlpha.toFixed(1)}%
+                                  </span>
+                                ) : (
+                                  <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 border border-red-500 text-red-400">
+                                    SHORT {filing.predicted30dAlpha.toFixed(1)}%
+                                  </span>
+                                )
+                              ) : (
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 border border-white/20 text-muted-foreground">
+                                  NEUTRAL
+                                </span>
+                              )
+                            )}
+                            {filing.concernLevel != null && filing.concernLevel > 6 && (
+                              <span className={`text-xs px-2 py-0.5 rounded-full ${filing.concernLevel > 8 ? 'bg-red-500/20 border border-red-500 text-red-400' : 'bg-orange-500/20 border border-orange-500 text-orange-400'}`}>
+                                Concern: {filing.concernLevel.toFixed(1)}
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <div className="text-xs text-muted-foreground">
                           {isValidDate ? `Filed ${dateObj.toLocaleDateString()}` : 'Recently filed'}
@@ -496,7 +620,6 @@ export default function Home() {
   // Show marketing page for non-authenticated users
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#0f172a_0%,#020617_50%)] text-foreground">
-      <Navigation />
 
       <main className="container mx-auto px-6 py-12 pb-16">
         {/* Hero Section */}
@@ -508,12 +631,12 @@ export default function Home() {
             </div>
 
             <h1 className="text-5xl font-bold tracking-tight mb-3">
-              Chat with SEC filings. Get risk scores. See 7-day predictions.
+              Chat with SEC filings. Get risk scores. See 30-day alpha predictions.
             </h1>
 
             <p className="text-muted-foreground mb-5 max-w-xl">
               Analyze <strong className="text-gray-200">10-K, 10-Q, and 8-K</strong> filings in plain English. Get
-              AI-powered risk analysis, watchlist alerts, and 7-day stock performance
+              AI-powered risk analysis, watchlist alerts, and 30-day alpha
               predictions across <strong className="text-gray-200">640+ US companies</strong>.
             </p>
 
@@ -525,16 +648,17 @@ export default function Home() {
                 💬 AI Chat with Filings
               </span>
               <span className="text-xs px-2.5 py-1.5 rounded-full bg-[rgba(15,23,42,0.9)] border border-gray-600 text-gray-200">
-                📈 7-day Stock Predictions
+                📈 30-Day Alpha Predictions
               </span>
             </div>
 
             <div className="flex flex-wrap gap-3 mb-4">
               <Button
                 onClick={() => router.push('/profile')}
-                className="bg-gradient-to-br from-primary to-secondary text-[#0b1120] font-semibold shadow-[0_14px_30px_rgba(34,197,94,0.36)] hover:brightness-110"
+                size="lg"
+                className="bg-gradient-to-br from-primary to-secondary text-[#0b1120] font-semibold shadow-[0_14px_30px_rgba(34,197,94,0.36)] hover:brightness-110 text-base px-8"
               >
-                Start Free
+                Join now - it's free!
               </Button>
               <Button
                 onClick={() => router.push('/latest-filings')}
@@ -625,13 +749,13 @@ export default function Home() {
 
                   <div className="mt-2 p-2 rounded-lg border border-gray-700 bg-[rgba(15,23,42,0.96)]">
                     <div className="flex justify-between text-[0.7rem] text-muted-foreground mb-1">
-                      <span>7-day return prediction</span>
-                      <span>+3.2% expected</span>
+                      <span>30-day alpha prediction</span>
+                      <span>+2.1% alpha expected</span>
                     </div>
                     <div className="h-8 rounded-lg bg-gradient-to-r from-secondary to-primary opacity-85"></div>
                     <div className="flex justify-between items-center text-[0.7rem] text-muted-foreground mt-1">
                       <span>Predicted vs actual tracked over time</span>
-                      <span className="px-2 py-0.5 rounded-full bg-green-900/20 border border-green-600 text-green-300">Signal: Buy / Watch</span>
+                      <span className="px-2 py-0.5 rounded-full bg-green-900/20 border border-green-600 text-green-300">Signal: LONG</span>
                     </div>
                   </div>
                 </div>
@@ -645,7 +769,7 @@ export default function Home() {
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold tracking-tight mb-3">Everything you need to analyze SEC filings</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              AI-powered analysis, natural-language chat, smart alerts, and 7-day predictions.
+              AI-powered analysis, natural-language chat, smart alerts, and 30-day alpha predictions.
             </p>
           </div>
 
@@ -679,9 +803,9 @@ export default function Home() {
                 <div className="w-12 h-12 rounded-full bg-primary/20 border border-primary flex items-center justify-center mb-3 text-2xl">
                   📈
                 </div>
-                <CardTitle className="text-white">7-Day Predictions</CardTitle>
+                <CardTitle className="text-white">30-Day Alpha Predictions</CardTitle>
                 <CardDescription>
-                  ML-powered stock performance predictions with transparent reasoning
+                  Alpha model predictions — stock return minus S&P 500 — with transparent reasoning
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -691,9 +815,9 @@ export default function Home() {
             <Button
               onClick={() => router.push('/profile')}
               size="lg"
-              className="bg-gradient-to-br from-primary to-secondary text-[#0b1120] font-semibold shadow-[0_14px_30px_rgba(34,197,94,0.36)] hover:brightness-110"
+              className="bg-gradient-to-br from-primary to-secondary text-[#0b1120] font-semibold shadow-[0_14px_30px_rgba(34,197,94,0.36)] hover:brightness-110 text-base px-8"
             >
-              Get Started Free
+              Join now - it's free!
             </Button>
           </div>
         </section>
@@ -744,13 +868,13 @@ export default function Home() {
                 <div className="w-7 h-7 rounded-full bg-[rgba(15,23,42,0.9)] border border-gray-700 flex items-center justify-center mb-2">📈</div>
                 <h3 className="font-semibold mb-2">Stock Predictions</h3>
                 <p className="text-sm text-muted-foreground mb-2">
-                  Data-driven predictions of 7-day forward stock performance, with transparent model reasoning.
+                  Data-driven predictions of 30-day forward alpha (stock return vs S&P 500), with transparent model reasoning.
                 </p>
                 <ul className="text-sm text-muted-foreground space-y-1 list-disc pl-4">
-                  <li>7-day return predictions with confidence scores</li>
+                  <li>30-day alpha predictions with confidence scores</li>
                   <li>Transparent model reasoning & feature breakdown</li>
                   <li>Prediction vs actual comparison charts</li>
-                  <li>Buy/Sell/Hold signals based on magnitude</li>
+                  <li>LONG/SHORT/NEUTRAL signals based on magnitude</li>
                 </ul>
               </div>
             </div>
@@ -809,7 +933,7 @@ export default function Home() {
               <div className="w-5 h-5 rounded-full bg-primary/20 border border-primary flex items-center justify-center text-xs mb-2">3</div>
               <h3 className="font-semibold mb-1">Track signals & get alerts</h3>
               <p className="text-sm text-muted-foreground">
-                Add names to your watchlist, monitor 7-day predictions and risk
+                Add names to your watchlist, monitor alpha predictions and risk
                 scores, and receive email digests when something important changes.
               </p>
             </div>
@@ -864,7 +988,7 @@ export default function Home() {
                     <td className="text-white/70">–</td>
                   </tr>
                   <tr className="border-b border-[rgba(31,41,55,0.9)]">
-                    <td className="py-2">7-day ML predictions</td>
+                    <td className="py-2">30-day alpha predictions</td>
                     <td className="text-primary">✓</td>
                     <td className="text-white/70">–</td>
                     <td className="text-white/70">–</td>
@@ -949,7 +1073,7 @@ export default function Home() {
               <h3 className="text-xl font-semibold mb-1">Ready to see AI-powered SEC analysis in action?</h3>
               <p className="text-sm text-muted-foreground">
                 Analyze a live filing, ask questions in plain English, and compare
-                our 7-day predictions to what actually happens in the market.
+                our 30-day alpha predictions to what actually happens in the market.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">

@@ -13,11 +13,13 @@ export const dynamic = 'force-dynamic';
  * filing data to answer questions about risk trends, concern levels, and more.
  */
 
-async function fetchRelevantFilings(ticker?: string, limit: number = 10) {
+async function fetchRelevantFilings(ticker?: string, sector?: string, limit: number = 10) {
   const where: any = {};
 
   if (ticker) {
     where.company = { ticker: ticker.toUpperCase() };
+  } else if (sector) {
+    where.company = { sector: { contains: sector, mode: 'insensitive' } };
   }
 
   return await prisma.filing.findMany({
@@ -27,6 +29,7 @@ async function fetchRelevantFilings(ticker?: string, limit: number = 10) {
         select: {
           ticker: true,
           name: true,
+          sector: true,
           currentPrice: true,
           marketCap: true,
           peRatio: true,
@@ -70,6 +73,7 @@ function buildFilingContext(filings: any[]) {
     const filingData = {
       ticker: f.company.ticker,
       companyName: f.company.name,
+      sector: f.company.sector,
       filingType: f.filingType,
       filingDate: f.filingDate.toISOString().split('T')[0],
       quarter: `Q${quarter}`,
@@ -157,7 +161,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { message, ticker } = await request.json();
+    const { message, ticker, sector } = await request.json();
 
     if (!message || typeof message !== 'string') {
       return new Response(
@@ -166,10 +170,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`[Chat API] Query: "${message}"${ticker ? ` (ticker: ${ticker})` : ''}`);
+    console.log(`[Chat API] Query: "${message}"${ticker ? ` (ticker: ${ticker})` : ''}${sector ? ` (sector: ${sector})` : ''}`);
 
     // Fetch relevant filings based on context
-    const filings = await fetchRelevantFilings(ticker, ticker ? 20 : 10);
+    const filings = await fetchRelevantFilings(ticker, sector, (ticker || sector) ? 20 : 10);
 
     if (filings.length === 0) {
       return new Response(
@@ -185,12 +189,13 @@ export async function POST(request: NextRequest) {
     const filingContext = buildFilingContext(filings);
 
     // Build prompt for Claude
-    const prompt = `You are a financial analyst assistant specialized in SEC filing analysis. Answer the user's question based on the filing data provided.
+    const prompt = `You are a financial analyst assistant specialized in SEC filing analysis. Answer the user's question based on the filing data provided. When data spans multiple companies (e.g., a sector query), compare and rank companies to surface cross-company insights.
 
 FILING DATA:
 ${JSON.stringify(filingContext, null, 2)}
 
 DATA FIELDS EXPLAINED:
+- sector: Company sector (e.g., "Technology", "Healthcare")
 - quarter/year: Filing period (e.g., "Q2" 2025)
 - revenue/revenueYoY: Revenue and year-over-year growth rate (e.g., "+15.3%")
 - netIncome/netIncomeYoY: Net income and YoY growth
