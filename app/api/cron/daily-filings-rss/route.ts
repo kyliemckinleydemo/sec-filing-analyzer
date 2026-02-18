@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { secRSSClient } from '@/lib/sec-rss-client';
-import { yahooFinanceClient } from '@/lib/yahoo-finance-client';
 import { runSupervisorChecks } from '@/lib/supervisor';
 
 // Mark route as dynamic to prevent static generation at build time
@@ -122,17 +121,25 @@ export async function GET(request: Request) {
     if (needsCatchup && catchupStartDate) {
       // CATCH-UP MODE: Fetch missed days using daily index files
       const endDate = new Date();
-      endDate.setDate(endDate.getDate() - 1); // Up to yesterday
+      endDate.setDate(endDate.getDate() - 1); // Index files available through yesterday
 
       const daysMissed = Math.floor(
         (endDate.getTime() - catchupStartDate.getTime()) / (1000 * 60 * 60 * 24)
       );
 
-      console.log(`[Cron RSS] Catch-up mode: Fetching from ${catchupStartDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]} (${daysMissed} days)`);
-      results.mode = 'catchup';
-      results.daysProcessed = daysMissed;
+      if (daysMissed > 0) {
+        console.log(`[Cron RSS] Catch-up mode: Fetching from ${catchupStartDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]} (${daysMissed} days)`);
+        results.mode = 'catchup';
+        results.daysProcessed = daysMissed;
 
-      allFilings = await secRSSClient.fetchMissedDays(catchupStartDate, endDate);
+        const catchupFilings = await secRSSClient.fetchMissedDays(catchupStartDate, endDate);
+        allFilings.push(...catchupFilings);
+      }
+
+      // ALSO fetch today's filings via RSS (index files don't cover today)
+      console.log('[Cron RSS] Also fetching today\'s filings from RSS feed...');
+      const todayFilings = await secRSSClient.fetchRecentFilingsFromRSS();
+      allFilings.push(...todayFilings);
     } else {
       // DAILY MODE: Fetch from RSS feed (real-time)
       console.log('[Cron RSS] Daily mode: Fetching latest filings from RSS');
@@ -189,84 +196,13 @@ export async function GET(request: Request) {
 
     console.log('[Cron RSS] Filings fetch complete:', results);
 
-    // Fetch Yahoo Finance data for companies with new filings
-    console.log('[Cron RSS] Fetching Yahoo Finance data for companies with new filings...');
-    let yahooFinanceUpdates = 0;
-    let yahooFinanceErrors = 0;
-
-    for (const ticker of uniqueCompanies) {
-      try {
-        const financials = await yahooFinanceClient.getCompanyFinancials(ticker);
-
-        if (financials) {
-          const company = await prisma.company.findUnique({
-            where: { ticker },
-            select: { id: true }
-          });
-
-          if (company) {
-            // Update current snapshot in Company table
-            await prisma.company.update({
-              where: { ticker },
-              data: {
-                marketCap: financials.marketCap,
-                peRatio: financials.peRatio,
-                forwardPE: financials.forwardPE,
-                currentPrice: financials.currentPrice,
-                fiftyTwoWeekHigh: financials.fiftyTwoWeekHigh,
-                fiftyTwoWeekLow: financials.fiftyTwoWeekLow,
-                analystTargetPrice: financials.analystTargetPrice,
-                earningsDate: financials.earningsDate,
-                // Yahoo returns dividendYield as percentage (3.5 = 3.5%), convert to decimal (0.035)
-                dividendYield: financials.dividendYield ? financials.dividendYield / 100 : null,
-                beta: financials.beta,
-                volume: financials.volume ? BigInt(financials.volume) : null,
-                averageVolume: financials.averageVolume ? BigInt(financials.averageVolume) : null,
-                yahooFinanceData: JSON.stringify(financials.additionalData),
-                yahooLastUpdated: new Date()
-              }
-            });
-
-            // Create historical snapshot
-            await prisma.companySnapshot.create({
-              data: {
-                companyId: company.id,
-                triggerType: 'daily_cron',
-                marketCap: financials.marketCap,
-                currentPrice: financials.currentPrice,
-                peRatio: financials.peRatio,
-                forwardPE: financials.forwardPE,
-                fiftyTwoWeekHigh: financials.fiftyTwoWeekHigh,
-                fiftyTwoWeekLow: financials.fiftyTwoWeekLow,
-                analystTargetPrice: financials.analystTargetPrice,
-                analystRatingCount: financials.analystRatingCount,
-                epsActual: financials.epsActual,
-                epsEstimateCurrentQ: financials.epsEstimateCurrentQ,
-                epsEstimateNextQ: financials.epsEstimateNextQ,
-                epsEstimateCurrentY: financials.epsEstimateCurrentY,
-                epsEstimateNextY: financials.epsEstimateNextY,
-                // Yahoo returns dividendYield as percentage (3.5 = 3.5%), convert to decimal (0.035)
-                dividendYield: financials.dividendYield ? financials.dividendYield / 100 : null,
-                beta: financials.beta,
-                volume: financials.volume,
-                averageVolume: financials.averageVolume,
-              }
-            });
-
-            yahooFinanceUpdates++;
-          }
-        }
-
-        // Rate limit: small delay between requests (100ms = 10 req/sec, well within limits)
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-      } catch (error: any) {
-        console.error(`[Cron RSS] Error fetching Yahoo Finance data for ${ticker}:`, error.message);
-        yahooFinanceErrors++;
-      }
-    }
-
-    console.log(`[Cron RSS] Yahoo Finance updates: ${yahooFinanceUpdates} success, ${yahooFinanceErrors} errors`);
+    // Skip Yahoo Finance data fetching here - the dedicated update-stock-prices-batch
+    // cron job handles this on a schedule with proper rate limiting.
+    // Calling Yahoo Finance for every new filing ticker was causing rate limiting
+    // (1,200+ calls/day across all cron jobs).
+    const yahooFinanceUpdates = 0;
+    const yahooFinanceErrors = 0;
+    console.log(`[Cron RSS] Skipping Yahoo Finance updates (handled by update-stock-prices-batch cron)`);
 
     // Flush prediction cache to ensure all predictions use latest model
     console.log('[Cron RSS] Flushing prediction cache...');

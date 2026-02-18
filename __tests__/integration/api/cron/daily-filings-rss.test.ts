@@ -1,18 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { prismaMock } from '../../../mocks/prisma';
-import { MOCK_RSS_FILING, MOCK_RSS_FILING_2, MOCK_YAHOO_FINANCIALS } from '../../../fixtures/cron-data';
+import { MOCK_RSS_FILING, MOCK_RSS_FILING_2 } from '../../../fixtures/cron-data';
 
 // Mock external dependencies
 vi.mock('@/lib/sec-rss-client', () => ({
   secRSSClient: {
     fetchRecentFilingsFromRSS: vi.fn().mockResolvedValue([]),
     fetchMissedDays: vi.fn().mockResolvedValue([]),
-  },
-}));
-
-vi.mock('@/lib/yahoo-finance-client', () => ({
-  yahooFinanceClient: {
-    getCompanyFinancials: vi.fn().mockResolvedValue(null),
   },
 }));
 
@@ -30,7 +24,6 @@ vi.mock('@/lib/supervisor', () => ({
 
 import { GET } from '@/app/api/cron/daily-filings-rss/route';
 import { secRSSClient } from '@/lib/sec-rss-client';
-import { yahooFinanceClient } from '@/lib/yahoo-finance-client';
 import { runSupervisorChecks } from '@/lib/supervisor';
 import { NextRequest } from 'next/server';
 
@@ -122,66 +115,62 @@ describe('GET /api/cron/daily-filings-rss', () => {
     );
   });
 
-  it('fetches stock prices via yahooFinanceClient for new filings', async () => {
+  it('skips Yahoo Finance calls (handled by dedicated cron)', async () => {
     vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([MOCK_RSS_FILING] as any);
-    vi.mocked(yahooFinanceClient.getCompanyFinancials).mockResolvedValue(MOCK_YAHOO_FINANCIALS as any);
 
     prismaMock.company.upsert.mockResolvedValue({ id: 'company-001' });
     prismaMock.filing.upsert.mockResolvedValue({});
-    prismaMock.company.findUnique.mockResolvedValue({ id: 'company-001' });
-    prismaMock.company.update.mockResolvedValue({});
-    prismaMock.companySnapshot.create.mockResolvedValue({});
 
     const res = await GET(makeAuthRequest());
     const body = await res.json();
 
-    expect(yahooFinanceClient.getCompanyFinancials).toHaveBeenCalledWith('AAPL');
-    expect(body.results.yahooFinanceUpdates).toBe(1);
+    // Yahoo Finance updates should be 0 since we removed them from this cron
+    expect(body.results.yahooFinanceUpdates).toBe(0);
+    expect(body.results.yahooFinanceErrors).toBe(0);
   });
 
-  it('updates company records with latest price data', async () => {
-    vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([MOCK_RSS_FILING] as any);
-    vi.mocked(yahooFinanceClient.getCompanyFinancials).mockResolvedValue(MOCK_YAHOO_FINANCIALS as any);
+  // --- Catch-up mode ---
+
+  it('triggers catch-up mode when most recent filing is >2 days old', async () => {
+    const fiveDaysAgo = new Date();
+    fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+    prismaMock.filing.findFirst.mockResolvedValue({ filingDate: fiveDaysAgo });
+
+    vi.mocked(secRSSClient.fetchMissedDays).mockResolvedValue([MOCK_RSS_FILING] as any);
+    vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([MOCK_RSS_FILING_2] as any);
 
     prismaMock.company.upsert.mockResolvedValue({ id: 'company-001' });
     prismaMock.filing.upsert.mockResolvedValue({});
-    prismaMock.company.findUnique.mockResolvedValue({ id: 'company-001' });
-    prismaMock.company.update.mockResolvedValue({});
-    prismaMock.companySnapshot.create.mockResolvedValue({});
 
-    await GET(makeAuthRequest());
+    const res = await GET(makeAuthRequest());
+    const body = await res.json();
 
-    expect(prismaMock.company.update).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { ticker: 'AAPL' },
-        data: expect.objectContaining({
-          currentPrice: 195.0,
-          marketCap: 3_000_000_000_000,
-        }),
-      })
-    );
+    expect(body.success).toBe(true);
+    expect(body.results.mode).toBe('catchup');
+    // Should fetch both catch-up filings AND today's RSS filings
+    expect(secRSSClient.fetchMissedDays).toHaveBeenCalled();
+    expect(secRSSClient.fetchRecentFilingsFromRSS).toHaveBeenCalled();
+    expect(body.results.fetched).toBe(2); // 1 from catch-up + 1 from RSS
   });
 
-  it('creates historical company snapshot', async () => {
+  it('always fetches today RSS filings even in catch-up mode', async () => {
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    prismaMock.filing.findFirst.mockResolvedValue({ filingDate: threeDaysAgo });
+
+    vi.mocked(secRSSClient.fetchMissedDays).mockResolvedValue([]);
     vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([MOCK_RSS_FILING] as any);
-    vi.mocked(yahooFinanceClient.getCompanyFinancials).mockResolvedValue(MOCK_YAHOO_FINANCIALS as any);
 
     prismaMock.company.upsert.mockResolvedValue({ id: 'company-001' });
     prismaMock.filing.upsert.mockResolvedValue({});
-    prismaMock.company.findUnique.mockResolvedValue({ id: 'company-001' });
-    prismaMock.company.update.mockResolvedValue({});
-    prismaMock.companySnapshot.create.mockResolvedValue({});
 
-    await GET(makeAuthRequest());
+    const res = await GET(makeAuthRequest());
+    const body = await res.json();
 
-    expect(prismaMock.companySnapshot.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({
-          companyId: 'company-001',
-          triggerType: 'daily_cron',
-        }),
-      })
-    );
+    expect(body.success).toBe(true);
+    // Even though catch-up returned nothing, today's RSS filings should still be fetched
+    expect(secRSSClient.fetchRecentFilingsFromRSS).toHaveBeenCalled();
+    expect(body.results.fetched).toBe(1);
   });
 
   // --- Job tracking ---
@@ -236,29 +225,6 @@ describe('GET /api/cron/daily-filings-rss', () => {
     expect(body.success).toBe(true);
     expect(body.results.fetched).toBe(0);
     expect(body.results.stored).toBe(0);
-  });
-
-  it('handles Yahoo Finance errors for individual tickers (continues processing)', async () => {
-    vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([
-      MOCK_RSS_FILING,
-      MOCK_RSS_FILING_2,
-    ] as any);
-    vi.mocked(yahooFinanceClient.getCompanyFinancials)
-      .mockRejectedValueOnce(new Error('Yahoo rate limit'))
-      .mockResolvedValueOnce(MOCK_YAHOO_FINANCIALS as any);
-
-    prismaMock.company.upsert.mockResolvedValue({ id: 'company-001' });
-    prismaMock.filing.upsert.mockResolvedValue({});
-    prismaMock.company.findUnique.mockResolvedValue({ id: 'company-001' });
-    prismaMock.company.update.mockResolvedValue({});
-    prismaMock.companySnapshot.create.mockResolvedValue({});
-
-    const res = await GET(makeAuthRequest());
-    const body = await res.json();
-
-    expect(body.success).toBe(true);
-    expect(body.results.yahooFinanceErrors).toBe(1);
-    expect(body.results.yahooFinanceUpdates).toBe(1);
   });
 
   it('handles Prisma errors for individual filings gracefully', async () => {

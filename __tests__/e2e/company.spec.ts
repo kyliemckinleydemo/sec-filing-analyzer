@@ -42,6 +42,19 @@ test.describe('Company page', () => {
     expect(hasSections || hasError).toBe(true);
   });
 
+  test('company page shows 180-day performance chart or market data', async ({ page }) => {
+    await page.goto('/company/AAPL');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(5000);
+
+    const body = await page.textContent('body');
+    // Should show the performance chart title or market data metrics
+    const hasChart = /180-Day Performance|S&P 500/i.test(body || '');
+    const hasMarketData = /Market Cap|P\/E Ratio|52-Week/i.test(body || '');
+    const hasError = /error|not found/i.test(body || '');
+    expect(hasChart || hasMarketData || hasError).toBe(true);
+  });
+
   test('unknown ticker shows error or suggestion (no crash)', async ({ page }) => {
     const response = await page.goto('/company/ZZZZZZZ');
     // Should not crash

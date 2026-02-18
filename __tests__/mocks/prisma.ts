@@ -119,6 +119,16 @@ export const prismaMock = {
     delete: vi.fn(),
     count: vi.fn(),
   },
+  stockPrice: {
+    findUnique: vi.fn(),
+    findFirst: vi.fn(),
+    findMany: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    upsert: vi.fn(),
+    delete: vi.fn(),
+    count: vi.fn(),
+  },
 };
 
 vi.mock('@/lib/prisma', () => ({
