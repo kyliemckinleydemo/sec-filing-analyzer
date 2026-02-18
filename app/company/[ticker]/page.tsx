@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, ReferenceDot, Legend } from 'recharts';
 
 interface NewsArticle {
   title: string;
@@ -66,6 +66,10 @@ interface SnapshotData {
     high?: number | null;
     low?: number | null;
     volume?: number | null;
+  }>;
+  spxHistory?: Array<{
+    date: string;
+    price: number;
   }>;
   filings: Array<{
     accessionNumber: string;
@@ -190,7 +194,7 @@ export default function CompanySnapshotPage() {
     );
   }
 
-  const { company, liveData, priceHistory, fundamentals, filings, analystActivity, news } = data;
+  const { company, liveData, priceHistory, spxHistory, fundamentals, filings, analystActivity, news } = data;
 
   // Calculate price change
   const priceChange = liveData.currentPrice && liveData.previousClose
@@ -414,95 +418,180 @@ export default function CompanySnapshotPage() {
           </Card>
         )}
 
-        {/* Stock Price History Chart */}
-        {priceHistory && priceHistory.length > 0 && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Stock Price History (6 Months)</CardTitle>
-              <CardDescription>${company.ticker} daily closing prices</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={priceHistory}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                    <XAxis
-                      dataKey="date"
-                      tick={{ fill: '#64748b', fontSize: 12 }}
-                      tickFormatter={(value) => {
-                        const date = new Date(value);
-                        return `${date.getMonth() + 1}/${date.getDate()}`;
-                      }}
-                    />
-                    <YAxis
-                      tick={{ fill: '#64748b', fontSize: 12 }}
-                      tickFormatter={(value) => `$${value.toFixed(0)}`}
-                      domain={['dataMin - 5', 'dataMax + 5']}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '8px',
-                        padding: '12px'
-                      }}
-                      content={({ active, payload }) => {
-                        if (active && payload && payload.length) {
-                          const data = payload[0].payload;
-                          return (
-                            <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-lg">
-                              <p className="font-semibold text-gray-900 mb-2">
-                                {new Date(data.date).toLocaleDateString()}
-                              </p>
-                              <div className="space-y-1 text-sm">
-                                <p className="text-blue-600 font-medium">
-                                  Close: ${data.price.toFixed(2)}
+        {/* 180-Day Performance vs S&P 500 */}
+        {priceHistory && priceHistory.length > 0 && (() => {
+          // Build normalized comparison data (% change from start)
+          const spxMap = new Map((spxHistory || []).map(s => [s.date, s.price]));
+          const basePrice = priceHistory[0].price;
+          const firstSpxDate = priceHistory.find(p => spxMap.has(p.date))?.date;
+          const baseSpx = firstSpxDate ? spxMap.get(firstSpxDate)! : null;
+
+          // Build filing date set for markers
+          const filingDates = new Set(filings.map(f => f.filingDate.split('T')[0]));
+
+          const chartData = priceHistory.map(p => {
+            const stockPct = ((p.price - basePrice) / basePrice) * 100;
+            const spxPrice = spxMap.get(p.date);
+            const spxPct = baseSpx && spxPrice ? ((spxPrice - baseSpx) / baseSpx) * 100 : null;
+            return {
+              date: p.date,
+              stock: Math.round(stockPct * 100) / 100,
+              spx: spxPct !== null ? Math.round(spxPct * 100) / 100 : null,
+              stockPrice: p.price,
+              spxPrice: spxPrice || null,
+              hasFiling: filingDates.has(p.date),
+              volume: p.volume,
+            };
+          });
+
+          // Find filing data points for markers
+          const filingPoints = chartData.filter(d => d.hasFiling);
+
+          const lastStock = chartData[chartData.length - 1]?.stock ?? 0;
+          const lastSpx = chartData[chartData.length - 1]?.spx ?? 0;
+
+          return (
+            <Card className="mb-8">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>180-Day Performance vs S&P 500</CardTitle>
+                    <CardDescription>
+                      {company.ticker}{' '}
+                      <span className={lastStock >= 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>
+                        {lastStock >= 0 ? '+' : ''}{lastStock.toFixed(1)}%
+                      </span>
+                      {baseSpx !== null && (
+                        <>
+                          {' vs S&P 500 '}
+                          <span className="text-orange-500 font-semibold">
+                            {lastSpx >= 0 ? '+' : ''}{lastSpx.toFixed(1)}%
+                          </span>
+                        </>
+                      )}
+                    </CardDescription>
+                  </div>
+                  {filingPoints.length > 0 && (
+                    <div className="flex items-center gap-1 text-xs text-slate-500">
+                      <span className="inline-block w-2 h-2 rounded-full bg-purple-500"></span>
+                      SEC Filing
+                    </div>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart
+                      data={chartData}
+                      margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fill: '#64748b', fontSize: 12 }}
+                        tickFormatter={(value) => {
+                          const date = new Date(value + 'T00:00:00');
+                          return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+                        }}
+                        interval="preserveStartEnd"
+                        minTickGap={40}
+                      />
+                      <YAxis
+                        tick={{ fill: '#64748b', fontSize: 12 }}
+                        tickFormatter={(value) => `${value > 0 ? '+' : ''}${value.toFixed(0)}%`}
+                      />
+                      <ReferenceLine y={0} stroke="#94a3b8" strokeDasharray="3 3" />
+                      {/* Filing date markers */}
+                      {filingPoints.map((fp, i) => (
+                        <ReferenceLine
+                          key={`filing-${i}`}
+                          x={fp.date}
+                          stroke="#a855f7"
+                          strokeDasharray="4 4"
+                          strokeWidth={1.5}
+                        />
+                      ))}
+                      <Tooltip
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const d = payload[0].payload;
+                            const filing = d.hasFiling ? filings.find(f => f.filingDate.split('T')[0] === d.date) : null;
+                            return (
+                              <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-lg">
+                                <p className="font-semibold text-gray-900 mb-2">
+                                  {new Date(d.date + 'T00:00:00').toLocaleDateString()}
                                 </p>
-                                {data.high && (
-                                  <p className="text-green-600">
-                                    High: ${data.high.toFixed(2)}
+                                <div className="space-y-1 text-sm">
+                                  <p className="text-blue-600 font-medium">
+                                    {company.ticker}: {d.stock >= 0 ? '+' : ''}{d.stock.toFixed(2)}%
+                                    <span className="text-gray-500 ml-1">(${d.stockPrice.toFixed(2)})</span>
                                   </p>
-                                )}
-                                {data.low && (
-                                  <p className="text-red-600">
-                                    Low: ${data.low.toFixed(2)}
-                                  </p>
-                                )}
-                                {data.volume && (
-                                  <p className="text-gray-600">
-                                    Volume: {(data.volume / 1000000).toFixed(2)}M
-                                  </p>
-                                )}
+                                  {d.spx !== null && (
+                                    <p className="text-orange-500 font-medium">
+                                      S&P 500: {d.spx >= 0 ? '+' : ''}{d.spx.toFixed(2)}%
+                                      {d.spxPrice && <span className="text-gray-500 ml-1">({d.spxPrice.toFixed(0)})</span>}
+                                    </p>
+                                  )}
+                                  {filing && (
+                                    <p className="text-purple-600 font-medium mt-1 pt-1 border-t">
+                                      Filing: {filing.filingType}
+                                      {filing.concernLevel != null && ` (Concern: ${filing.concernLevel.toFixed(1)})`}
+                                    </p>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          );
-                        }
-                        return null;
-                      }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="price"
-                      stroke="#2563eb"
-                      strokeWidth={2}
-                      fillOpacity={1}
-                      fill="url(#colorPrice)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                            );
+                          }
+                          return null;
+                        }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="stock"
+                        stroke="#2563eb"
+                        strokeWidth={2}
+                        dot={false}
+                        name={company.ticker}
+                      />
+                      {baseSpx !== null && (
+                        <Line
+                          type="monotone"
+                          dataKey="spx"
+                          stroke="#f97316"
+                          strokeWidth={2}
+                          dot={false}
+                          strokeDasharray="6 3"
+                          name="S&P 500"
+                          connectNulls
+                        />
+                      )}
+                      {/* Filing marker dots on the stock line */}
+                      {filingPoints.map((fp, i) => (
+                        <ReferenceDot
+                          key={`dot-${i}`}
+                          x={fp.date}
+                          y={fp.stock}
+                          r={5}
+                          fill="#a855f7"
+                          stroke="#fff"
+                          strokeWidth={2}
+                        />
+                      ))}
+                      <Legend
+                        verticalAlign="top"
+                        height={36}
+                        formatter={(value: string) => (
+                          <span className="text-sm text-slate-600">{value}</span>
+                        )}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })()}
 
         {/* Analyst Activity */}
         {analystActivity.length > 0 && (

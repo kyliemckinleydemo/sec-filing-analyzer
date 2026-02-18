@@ -54,13 +54,15 @@ export async function GET(
     let liveData: any = {};
     let newsArticles: any[] = [];
     let priceHistory: any[] = [];
+    let spxHistory: any[] = [];
     try {
-      // Calculate date range for price history (6 months)
+      // Calculate date range for price history (180 days)
       const endDate = new Date();
       const startDate = new Date();
-      startDate.setMonth(startDate.getMonth() - 6);
+      startDate.setDate(startDate.getDate() - 180);
 
-      const [quote, summary, historical] = await Promise.all([
+      // Use allSettled so a single Yahoo Finance failure doesn't kill all data
+      const results = await Promise.allSettled([
         yahooFinance.quote(tickerUpper),
         yahooFinance.quoteSummary(tickerUpper, {
           modules: [
@@ -75,8 +77,24 @@ export async function GET(
           period1: startDate.toISOString().split('T')[0],
           period2: endDate.toISOString().split('T')[0],
           interval: '1d'
+        }),
+        yahooFinance.historical('^GSPC', {
+          period1: startDate.toISOString().split('T')[0],
+          period2: endDate.toISOString().split('T')[0],
+          interval: '1d'
         })
       ]);
+
+      const quote = results[0].status === 'fulfilled' ? results[0].value : null;
+      const summary = results[1].status === 'fulfilled' ? results[1].value : null;
+      const historical = results[2].status === 'fulfilled' ? results[2].value : [];
+      const spxHistorical = results[3].status === 'fulfilled' ? results[3].value : [];
+
+      for (const [i, r] of results.entries()) {
+        if (r.status === 'rejected') {
+          console.warn(`[Snapshot] Yahoo Finance call ${i} failed for ${tickerUpper}:`, r.reason?.message || r.reason);
+        }
+      }
 
       // Fetch news from Google News RSS feed (stable and reliable)
       try {
@@ -130,31 +148,33 @@ export async function GET(
         }
       }
 
-      liveData = {
-        currentPrice: quote.regularMarketPrice,
-        previousClose: quote.regularMarketPreviousClose,
-        marketCap: quote.marketCap,
-        volume: quote.regularMarketVolume,
-        averageVolume: (quote as any).averageVolume,
-        fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh,
-        fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
+      if (quote) {
+        liveData = {
+          currentPrice: quote.regularMarketPrice,
+          previousClose: quote.regularMarketPreviousClose,
+          marketCap: quote.marketCap,
+          volume: quote.regularMarketVolume,
+          averageVolume: (quote as any).averageVolume,
+          fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh,
+          fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
+        };
+      }
 
-        // From summary
-        peRatio: summary.summaryDetail?.trailingPE,
-        forwardPE: summary.summaryDetail?.forwardPE,
-        dividendYield: summary.summaryDetail?.dividendYield,
-        beta: summary.summaryDetail?.beta,
-        analystTargetPrice: summary.financialData?.targetMeanPrice,
-
-        // Recommendation trend (analyst ratings)
-        recommendations: summary.recommendationTrend?.trend?.[0],
-
-        // Additional metrics
-        profitMargins: summary.financialData?.profitMargins,
-        revenueGrowth: summary.financialData?.revenueGrowth,
-        returnOnEquity: summary.financialData?.returnOnEquity,
-        freeCashflow: summary.financialData?.freeCashflow,
-      };
+      if (summary) {
+        liveData = {
+          ...liveData,
+          peRatio: summary.summaryDetail?.trailingPE,
+          forwardPE: summary.summaryDetail?.forwardPE,
+          dividendYield: summary.summaryDetail?.dividendYield,
+          beta: summary.summaryDetail?.beta,
+          analystTargetPrice: summary.financialData?.targetMeanPrice,
+          recommendations: summary.recommendationTrend?.trend?.[0],
+          profitMargins: summary.financialData?.profitMargins,
+          revenueGrowth: summary.financialData?.revenueGrowth,
+          returnOnEquity: summary.financialData?.returnOnEquity,
+          freeCashflow: summary.financialData?.freeCashflow,
+        };
+      }
 
       // Extract price history with additional data for tooltips
       if (historical && historical.length > 0) {
@@ -166,9 +186,76 @@ export async function GET(
           volume: point.volume || null,
         }));
       }
+
+      // Extract S&P 500 price history
+      if (spxHistorical && spxHistorical.length > 0) {
+        spxHistory = spxHistorical.map((point: any) => ({
+          date: point.date.toISOString().split('T')[0],
+          price: Math.round(point.close * 100) / 100,
+        }));
+      }
     } catch (error: any) {
       console.error(`[Snapshot] Error fetching Yahoo Finance data for ${tickerUpper}:`, error.message);
       // Continue with database data if Yahoo Finance fails
+    }
+
+    // Fallback to database-stored data if Yahoo Finance failed
+    if (!liveData.currentPrice && company.currentPrice) {
+      liveData = {
+        currentPrice: company.currentPrice,
+        marketCap: company.marketCap,
+        peRatio: company.peRatio,
+        forwardPE: company.forwardPE,
+        fiftyTwoWeekHigh: company.fiftyTwoWeekHigh,
+        fiftyTwoWeekLow: company.fiftyTwoWeekLow,
+        analystTargetPrice: company.analystTargetPrice,
+        dividendYield: company.dividendYield,
+        beta: company.beta,
+        volume: company.volume ? Number(company.volume) : undefined,
+        averageVolume: company.averageVolume ? Number(company.averageVolume) : undefined,
+      };
+    }
+
+    // Fallback price history from StockPrice table if Yahoo Finance failed
+    if (priceHistory.length === 0) {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 180);
+      const dbPrices = await prisma.stockPrice.findMany({
+        where: {
+          ticker: tickerUpper,
+          date: { gte: startDate },
+        },
+        orderBy: { date: 'asc' },
+      });
+      if (dbPrices.length > 0) {
+        priceHistory = dbPrices.map(p => ({
+          date: p.date.toISOString().split('T')[0],
+          price: Math.round(p.close * 100) / 100,
+          high: p.high ? Math.round(p.high * 100) / 100 : null,
+          low: p.low ? Math.round(p.low * 100) / 100 : null,
+          volume: p.volume ? Number(p.volume) : null,
+        }));
+      }
+    }
+
+    // Fallback S&P 500 history from MacroIndicators if Yahoo Finance failed
+    if (spxHistory.length === 0) {
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 180);
+      const macroData = await prisma.macroIndicators.findMany({
+        where: {
+          date: { gte: startDate },
+          spxClose: { not: null },
+        },
+        orderBy: { date: 'asc' },
+        select: { date: true, spxClose: true },
+      });
+      if (macroData.length > 0) {
+        spxHistory = macroData.map(m => ({
+          date: m.date.toISOString().split('T')[0],
+          price: Math.round(m.spxClose! * 100) / 100,
+        }));
+      }
     }
 
     // Fetch recent analyst activity from our database
@@ -189,6 +276,7 @@ export async function GET(
       },
       liveData,
       priceHistory,
+      spxHistory,
       news: newsArticles,
       fundamentals: {
         // Latest financials from our database (from most recent filing)
