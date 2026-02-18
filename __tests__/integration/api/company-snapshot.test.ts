@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { prismaMock } from '../../mocks/prisma';
+import { cache } from '@/lib/cache';
 
 // Mock dependencies before importing the route
 vi.mock('@/lib/api-middleware', () => ({
@@ -96,6 +97,7 @@ const MOCK_COMPANY = {
 describe('GET /api/company/[ticker]/snapshot', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    cache.clear(); // Clear snapshot cache between tests
     prismaMock.analystActivity.findMany.mockResolvedValue([]);
   });
 

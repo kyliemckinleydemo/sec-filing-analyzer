@@ -153,7 +153,8 @@ export async function GET(request: Request) {
     const uniqueCompanies = new Set(allFilings.map(f => f.ticker));
     results.companiesProcessed = uniqueCompanies.size;
 
-    // Store companies and filings in database
+    // Store companies and filings in database, tracking affected company IDs
+    const affectedCompanyIds = new Set<string>();
     for (const filing of allFilings) {
       try {
         // Upsert company
@@ -188,6 +189,7 @@ export async function GET(request: Request) {
           },
         });
 
+        affectedCompanyIds.add(company.id);
         results.stored++;
       } catch (error: any) {
         results.errors.push(`${filing.ticker}: ${error.message}`);
@@ -204,28 +206,40 @@ export async function GET(request: Request) {
     const yahooFinanceErrors = 0;
     console.log(`[Cron RSS] Skipping Yahoo Finance updates (handled by update-stock-prices-batch cron)`);
 
-    // Flush prediction cache to ensure all predictions use latest model
-    console.log('[Cron RSS] Flushing prediction cache...');
+    // Flush prediction cache only for companies that received new filings
     let cacheFlushCount = 0;
-    try {
-      const clearResult = await prisma.filing.updateMany({
-        where: {
-          predicted7dReturn: { not: null }
-        },
-        data: {
-          predicted7dReturn: null,
-          predictionConfidence: null
-        }
-      });
-      cacheFlushCount = clearResult.count;
+    const companyIdArray = Array.from(affectedCompanyIds);
+    if (companyIdArray.length > 0) {
+      console.log(`[Cron RSS] Flushing predictions for ${companyIdArray.length} affected companies...`);
+      try {
+        const clearResult = await prisma.filing.updateMany({
+          where: {
+            companyId: { in: companyIdArray },
+            predicted7dReturn: { not: null }
+          },
+          data: {
+            predicted7dReturn: null,
+            predictionConfidence: null
+          }
+        });
+        cacheFlushCount = clearResult.count;
 
-      // Also delete prediction records
-      await prisma.prediction.deleteMany({});
+        // Also delete prediction records for affected companies
+        await prisma.prediction.deleteMany({
+          where: {
+            filing: {
+              companyId: { in: companyIdArray }
+            }
+          }
+        });
 
-      console.log(`[Cron RSS] Cache flushed: ${cacheFlushCount} predictions cleared`);
-    } catch (flushError: any) {
-      console.error(`[Cron RSS] Warning: Cache flush failed: ${flushError.message}`);
-      // Don't fail the whole job if cache flush fails
+        console.log(`[Cron RSS] Cache flushed: ${cacheFlushCount} predictions cleared for ${companyIdArray.length} companies`);
+      } catch (flushError: any) {
+        console.error(`[Cron RSS] Warning: Cache flush failed: ${flushError.message}`);
+        // Don't fail the whole job if cache flush fails
+      }
+    } else {
+      console.log('[Cron RSS] No new filings stored, skipping prediction flush');
     }
 
     // Mark job run as successful

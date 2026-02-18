@@ -29,6 +29,7 @@ function makeAuthRequest() {
 describe('GET /api/cron/update-analyst-data', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockQuoteSummary.mockReset(); // Clear once-value queue from previous tests
     prismaMock.cronJobRun.updateMany.mockResolvedValue({ count: 0 });
     prismaMock.cronJobRun.create.mockResolvedValue({ id: 'job-001', jobName: 'update-analyst-data', status: 'running' });
     prismaMock.cronJobRun.update.mockResolvedValue({});
@@ -84,22 +85,21 @@ describe('GET /api/cron/update-analyst-data', () => {
     prismaMock.filing.findMany.mockResolvedValue([MOCK_FILING_RECENT]);
     prismaMock.filing.update.mockResolvedValue({});
 
-    // Second quoteSummary call is for upgradeDowngradeHistory
-    mockQuoteSummary
-      .mockResolvedValueOnce(MOCK_YAHOO_QUOTE_SUMMARY) // financial data + recommendations
-      .mockResolvedValueOnce({ // upgrade/downgrade history
-        upgradeDowngradeHistory: {
-          history: [
-            {
-              epochGradeDate: new Date(MOCK_FILING_RECENT.filingDate.getTime() - 5 * 86400000).getTime() / 1000,
-              firm: 'Goldman Sachs',
-              fromGrade: 'Hold',
-              toGrade: 'Buy',
-            },
-          ],
-        },
-      })
-      .mockResolvedValueOnce({ earningsHistory: { history: [] } }); // earnings
+    // Single consolidated call with all modules
+    mockQuoteSummary.mockResolvedValueOnce({
+      ...MOCK_YAHOO_QUOTE_SUMMARY,
+      upgradeDowngradeHistory: {
+        history: [
+          {
+            epochGradeDate: new Date(MOCK_FILING_RECENT.filingDate.getTime() - 5 * 86400000).getTime() / 1000,
+            firm: 'Goldman Sachs',
+            fromGrade: 'Hold',
+            toGrade: 'Buy',
+          },
+        ],
+      },
+      earningsHistory: { history: [] },
+    });
 
     await GET(makeAuthRequest());
 
@@ -112,21 +112,21 @@ describe('GET /api/cron/update-analyst-data', () => {
     prismaMock.filing.findMany.mockResolvedValue([MOCK_FILING_RECENT]);
     prismaMock.filing.update.mockResolvedValue({});
 
-    mockQuoteSummary
-      .mockResolvedValueOnce(MOCK_YAHOO_QUOTE_SUMMARY)
-      .mockResolvedValueOnce({
-        upgradeDowngradeHistory: {
-          history: [
-            {
-              epochGradeDate: new Date(MOCK_FILING_RECENT.filingDate.getTime() - 5 * 86400000).getTime() / 1000,
-              firm: 'Morgan Stanley',
-              fromGrade: 'Overweight',
-              toGrade: 'Equal Weight',
-            },
-          ],
-        },
-      })
-      .mockResolvedValueOnce({ earningsHistory: { history: [] } });
+    // Single consolidated call with all modules
+    mockQuoteSummary.mockResolvedValueOnce({
+      ...MOCK_YAHOO_QUOTE_SUMMARY,
+      upgradeDowngradeHistory: {
+        history: [
+          {
+            epochGradeDate: new Date(MOCK_FILING_RECENT.filingDate.getTime() - 5 * 86400000).getTime() / 1000,
+            firm: 'Morgan Stanley',
+            fromGrade: 'Overweight',
+            toGrade: 'Equal Weight',
+          },
+        ],
+      },
+      earningsHistory: { history: [] },
+    });
 
     await GET(makeAuthRequest());
 
@@ -184,11 +184,10 @@ describe('GET /api/cron/update-analyst-data', () => {
     prismaMock.filing.findMany.mockResolvedValue([MOCK_FILING_RECENT, filing2]);
     prismaMock.filing.update.mockResolvedValue({});
 
+    // Consolidated calls: 1 per ticker
     mockQuoteSummary
-      .mockRejectedValueOnce(new Error('Yahoo API error')) // AAPL fails
-      .mockResolvedValueOnce(MOCK_YAHOO_QUOTE_SUMMARY)    // MSFT - financial data
-      .mockResolvedValueOnce({ upgradeDowngradeHistory: { history: [] } }) // MSFT - analyst
-      .mockResolvedValueOnce({ earningsHistory: { history: [] } });        // MSFT - earnings
+      .mockRejectedValueOnce(new Error('Yahoo API error'))  // AAPL fails (single call)
+      .mockResolvedValueOnce(MOCK_YAHOO_QUOTE_SUMMARY);    // MSFT succeeds (single call with all modules)
 
     const res = await GET(makeAuthRequest());
     const body = await res.json();

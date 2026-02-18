@@ -71,20 +71,16 @@ function isMajorFirm(firm: string): boolean {
          majorFirms.has(firm.replace(' Capital Markets', ''));
 }
 
-async function getAnalystActivity(ticker: string, filingDate: Date): Promise<AnalystActivity> {
+function getAnalystActivityFromData(data: any, filingDate: Date): AnalystActivity {
   try {
-    const quote = await yahooFinance.quoteSummary(ticker, {
-      modules: ['upgradeDowngradeHistory']
-    });
-
-    const history = quote.upgradeDowngradeHistory?.history || [];
+    const history = data.upgradeDowngradeHistory?.history || [];
 
     // Calculate date 30 days before filing
     const thirtyDaysBefore = new Date(filingDate);
     thirtyDaysBefore.setDate(thirtyDaysBefore.getDate() - 30);
 
     // Filter events in the 30 days before filing
-    const recentEvents = history.filter(event => {
+    const recentEvents = history.filter((event: any) => {
       if (!event.epochGradeDate) return false;
       const eventDate = new Date(event.epochGradeDate);
       return eventDate >= thirtyDaysBefore && eventDate <= filingDate;
@@ -260,10 +256,10 @@ export async function GET(request: Request) {
           console.log(`[AnalystCron] 🔄 Progress: ${i + 1}/${recentFilings.length} filings (${updated} updated, ${errors} errors)`);
         }
 
-        // Fetch analyst consensus and earnings data with timeout
+        // Fetch all analyst data in a single Yahoo Finance call (5 modules)
         currentOperation = `yahoo_finance_${ticker}`;
         const quotePromise = yahooFinance.quoteSummary(ticker, {
-          modules: ['financialData', 'recommendationTrend', 'earnings']
+          modules: ['financialData', 'recommendationTrend', 'earnings', 'earningsHistory', 'upgradeDowngradeHistory']
         });
 
         const quote = await Promise.race([
@@ -276,9 +272,8 @@ export async function GET(request: Request) {
         const fd = quote.financialData;
         const trend = quote.recommendationTrend?.trend?.[0];
 
-        // Fetch analyst activity
-        currentOperation = `analyst_activity_${ticker}`;
-        const activity = await getAnalystActivity(ticker, filing.filingDate);
+        // Extract analyst activity from the same response (no extra call)
+        const activity = getAnalystActivityFromData(quote, filing.filingDate);
 
         // Calculate consensus score (0-100 scale, 100 = Strong Buy)
         let consensusScore = null;
@@ -299,7 +294,7 @@ export async function GET(request: Request) {
           upsidePotential = ((fd.targetMeanPrice - fd.currentPrice) / fd.currentPrice) * 100;
         }
 
-        // Fetch earnings surprise data
+        // Extract earnings surprise data from the same response (no extra call)
         currentOperation = `earnings_history_${ticker}`;
         let consensusEPS: number | null = null;
         let actualEPS: number | null = null;
@@ -309,11 +304,7 @@ export async function GET(request: Request) {
         let revenueSurpriseMagnitude: number | null = null;
 
         try {
-          const earningsQuote = await yahooFinance.quoteSummary(ticker, {
-            modules: ['earningsHistory']
-          });
-
-          const history = earningsQuote.earningsHistory?.history;
+          const history = quote.earningsHistory?.history;
           if (history && history.length > 0) {
             // Find earnings report closest to filing date (within 90 days)
             let closestEarnings = null;
@@ -415,8 +406,8 @@ export async function GET(request: Request) {
 
         updated++;
 
-        // Rate limit: 100ms delay between requests
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Rate limit: 250ms delay between requests (~4 req/sec to stay under Yahoo's ~2,500/hr limit)
+        await new Promise(resolve => setTimeout(resolve, 250));
 
       } catch (error: any) {
         errors++;

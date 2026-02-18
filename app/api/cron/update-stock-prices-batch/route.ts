@@ -95,8 +95,8 @@ export async function GET(request: Request) {
           updated++;
         }
 
-        // Rate limit: 100ms delay between requests
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Rate limit: 250ms delay between requests (~4 req/sec to stay under Yahoo's ~2,500/hr limit)
+        await new Promise(resolve => setTimeout(resolve, 250));
 
       } catch (error: any) {
         // Skip companies with errors (delisted, invalid ticker, etc.)

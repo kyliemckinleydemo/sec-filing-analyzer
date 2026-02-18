@@ -4,6 +4,7 @@ import yahooFinance from 'yahoo-finance2';
 import Parser from 'rss-parser';
 import { requireUnauthRateLimit, addRateLimitHeaders } from '@/lib/api-middleware';
 import { generateFingerprint, checkUnauthRateLimit } from '@/lib/rate-limit';
+import { cache, cacheKeys } from '@/lib/cache';
 
 export async function GET(
   request: NextRequest,
@@ -50,153 +51,169 @@ export async function GET(
       );
     }
 
-    // Fetch LIVE data from Yahoo Finance
+    // Fetch LIVE data from Yahoo Finance (cached for 5 minutes)
     let liveData: any = {};
     let newsArticles: any[] = [];
     let priceHistory: any[] = [];
     let spxHistory: any[] = [];
-    try {
-      // Calculate date range for price history (180 days)
-      const endDate = new Date();
-      const startDate = new Date();
-      startDate.setDate(startDate.getDate() - 180);
 
-      // Use allSettled so a single Yahoo Finance failure doesn't kill all data
-      const results = await Promise.allSettled([
-        yahooFinance.quote(tickerUpper),
-        yahooFinance.quoteSummary(tickerUpper, {
-          modules: [
-            'price',
-            'summaryDetail',
-            'financialData',
-            'defaultKeyStatistics',
-            'recommendationTrend'
-          ]
-        }),
-        yahooFinance.historical(tickerUpper, {
-          period1: startDate.toISOString().split('T')[0],
-          period2: endDate.toISOString().split('T')[0],
-          interval: '1d'
-        }),
-        yahooFinance.historical('^GSPC', {
-          period1: startDate.toISOString().split('T')[0],
-          period2: endDate.toISOString().split('T')[0],
-          interval: '1d'
-        })
-      ]);
+    const cacheKey = cacheKeys.snapshotData(tickerUpper);
+    const cached = cache.get<{ liveData: any; priceHistory: any[]; spxHistory: any[] }>(cacheKey);
 
-      const quote = results[0].status === 'fulfilled' ? results[0].value : null;
-      const summary = results[1].status === 'fulfilled' ? results[1].value : null;
-      const historical = results[2].status === 'fulfilled' ? results[2].value : [];
-      const spxHistorical = results[3].status === 'fulfilled' ? results[3].value : [];
-
-      for (const [i, r] of results.entries()) {
-        if (r.status === 'rejected') {
-          console.warn(`[Snapshot] Yahoo Finance call ${i} failed for ${tickerUpper}:`, r.reason?.message || r.reason);
-        }
-      }
-
-      // Fetch news from Google News RSS feed (stable and reliable)
+    if (cached) {
+      console.log(`[Snapshot] Cache hit for ${tickerUpper}`);
+      liveData = cached.liveData;
+      priceHistory = cached.priceHistory;
+      spxHistory = cached.spxHistory;
+    } else {
       try {
-        const parser = new Parser();
-        const newsQuery = `${company.name} stock`;
-        const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(newsQuery)}`;
+        // Calculate date range for price history (180 days)
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(startDate.getDate() - 180);
 
-        const feed = await parser.parseURL(rssUrl);
+        // Use allSettled so a single Yahoo Finance failure doesn't kill all data
+        const results = await Promise.allSettled([
+          yahooFinance.quote(tickerUpper),
+          yahooFinance.quoteSummary(tickerUpper, {
+            modules: [
+              'price',
+              'summaryDetail',
+              'financialData',
+              'defaultKeyStatistics',
+              'recommendationTrend'
+            ]
+          }),
+          yahooFinance.historical(tickerUpper, {
+            period1: startDate.toISOString().split('T')[0],
+            period2: endDate.toISOString().split('T')[0],
+            interval: '1d'
+          }),
+          yahooFinance.historical('^GSPC', {
+            period1: startDate.toISOString().split('T')[0],
+            period2: endDate.toISOString().split('T')[0],
+            interval: '1d'
+          })
+        ]);
 
-        if (feed.items && feed.items.length > 0) {
-          newsArticles = feed.items.slice(0, 10).map((item: any) => {
-            // Google News RSS embeds source in title like "Title - Source Name"
-            let title = item.title || 'Unknown';
-            let publisher = 'Unknown';
+        const quote = results[0].status === 'fulfilled' ? results[0].value : null;
+        const summary = results[1].status === 'fulfilled' ? results[1].value : null;
+        const historical = results[2].status === 'fulfilled' ? results[2].value : [];
+        const spxHistorical = results[3].status === 'fulfilled' ? results[3].value : [];
 
-            // Try to extract source from title
-            const titleMatch = title.match(/^(.+?)\s*-\s*(.+?)$/);
-            if (titleMatch && titleMatch.length === 3) {
-              title = titleMatch[1].trim();
-              publisher = titleMatch[2].trim();
-            } else {
-              // Fallback to other fields
-              publisher = item.source?.name || item.creator || item['dc:source'] || 'Unknown';
-            }
+        for (const [i, r] of results.entries()) {
+          if (r.status === 'rejected') {
+            console.warn(`[Snapshot] Yahoo Finance call ${i} failed for ${tickerUpper}:`, r.reason?.message || r.reason);
+          }
+        }
 
-            return {
-              title,
-              publisher,
-              link: item.link || '',
-              publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : null,
-              thumbnail: null,
-            };
-          });
+        if (quote) {
+          liveData = {
+            currentPrice: quote.regularMarketPrice,
+            previousClose: quote.regularMarketPreviousClose,
+            marketCap: quote.marketCap,
+            volume: quote.regularMarketVolume,
+            averageVolume: (quote as any).averageVolume,
+            fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh,
+            fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
+          };
+        }
+
+        if (summary) {
+          liveData = {
+            ...liveData,
+            peRatio: summary.summaryDetail?.trailingPE,
+            forwardPE: summary.summaryDetail?.forwardPE,
+            dividendYield: summary.summaryDetail?.dividendYield,
+            beta: summary.summaryDetail?.beta,
+            analystTargetPrice: summary.financialData?.targetMeanPrice,
+            recommendations: summary.recommendationTrend?.trend?.[0],
+            profitMargins: summary.financialData?.profitMargins,
+            revenueGrowth: summary.financialData?.revenueGrowth,
+            returnOnEquity: summary.financialData?.returnOnEquity,
+            freeCashflow: summary.financialData?.freeCashflow,
+          };
+        }
+
+        // Extract price history with additional data for tooltips
+        if (historical && historical.length > 0) {
+          priceHistory = historical.map((point: any) => ({
+            date: point.date.toISOString().split('T')[0],
+            price: Math.round(point.close * 100) / 100,
+            high: point.high ? Math.round(point.high * 100) / 100 : null,
+            low: point.low ? Math.round(point.low * 100) / 100 : null,
+            volume: point.volume || null,
+          }));
+        }
+
+        // Extract S&P 500 price history
+        if (spxHistorical && spxHistorical.length > 0) {
+          spxHistory = spxHistorical.map((point: any) => ({
+            date: point.date.toISOString().split('T')[0],
+            price: Math.round(point.close * 100) / 100,
+          }));
+        }
+
+        // Cache the processed Yahoo data for 5 minutes
+        if (liveData.currentPrice || priceHistory.length > 0) {
+          cache.set(cacheKey, { liveData, priceHistory, spxHistory }, 5 * 60 * 1000);
         }
       } catch (error: any) {
-        console.error(`[Snapshot] Error fetching Google News RSS for ${tickerUpper}:`, error.message);
-        // Fall back to Yahoo Finance news if RSS fails
-        try {
-          const yahooNews = await yahooFinance.search(tickerUpper, { newsCount: 10 });
-          if (yahooNews.news && yahooNews.news.length > 0) {
-            newsArticles = yahooNews.news.map((article: any) => ({
-              title: article.title,
-              publisher: article.publisher,
-              link: article.link,
-              publishedAt: article.providerPublishTime ? new Date(article.providerPublishTime * 1000).toISOString() : null,
-              thumbnail: article.thumbnail?.resolutions?.[0]?.url,
-            }));
+        console.error(`[Snapshot] Error fetching Yahoo Finance data for ${tickerUpper}:`, error.message);
+        // Continue with database data if Yahoo Finance fails
+      }
+    }
+
+    // Fetch news separately (not cached with Yahoo data since it comes from Google RSS)
+    try {
+      const parser = new Parser();
+      const newsQuery = `${company.name} stock`;
+      const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(newsQuery)}`;
+
+      const feed = await parser.parseURL(rssUrl);
+
+      if (feed.items && feed.items.length > 0) {
+        newsArticles = feed.items.slice(0, 10).map((item: any) => {
+          // Google News RSS embeds source in title like "Title - Source Name"
+          let title = item.title || 'Unknown';
+          let publisher = 'Unknown';
+
+          // Try to extract source from title
+          const titleMatch = title.match(/^(.+?)\s*-\s*(.+?)$/);
+          if (titleMatch && titleMatch.length === 3) {
+            title = titleMatch[1].trim();
+            publisher = titleMatch[2].trim();
+          } else {
+            // Fallback to other fields
+            publisher = item.source?.name || item.creator || item['dc:source'] || 'Unknown';
           }
-        } catch (yahooError: any) {
-          console.error(`[Snapshot] Error fetching Yahoo Finance news for ${tickerUpper}:`, yahooError.message);
-        }
-      }
 
-      if (quote) {
-        liveData = {
-          currentPrice: quote.regularMarketPrice,
-          previousClose: quote.regularMarketPreviousClose,
-          marketCap: quote.marketCap,
-          volume: quote.regularMarketVolume,
-          averageVolume: (quote as any).averageVolume,
-          fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh,
-          fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
-        };
-      }
-
-      if (summary) {
-        liveData = {
-          ...liveData,
-          peRatio: summary.summaryDetail?.trailingPE,
-          forwardPE: summary.summaryDetail?.forwardPE,
-          dividendYield: summary.summaryDetail?.dividendYield,
-          beta: summary.summaryDetail?.beta,
-          analystTargetPrice: summary.financialData?.targetMeanPrice,
-          recommendations: summary.recommendationTrend?.trend?.[0],
-          profitMargins: summary.financialData?.profitMargins,
-          revenueGrowth: summary.financialData?.revenueGrowth,
-          returnOnEquity: summary.financialData?.returnOnEquity,
-          freeCashflow: summary.financialData?.freeCashflow,
-        };
-      }
-
-      // Extract price history with additional data for tooltips
-      if (historical && historical.length > 0) {
-        priceHistory = historical.map((point: any) => ({
-          date: point.date.toISOString().split('T')[0],
-          price: Math.round(point.close * 100) / 100,
-          high: point.high ? Math.round(point.high * 100) / 100 : null,
-          low: point.low ? Math.round(point.low * 100) / 100 : null,
-          volume: point.volume || null,
-        }));
-      }
-
-      // Extract S&P 500 price history
-      if (spxHistorical && spxHistorical.length > 0) {
-        spxHistory = spxHistorical.map((point: any) => ({
-          date: point.date.toISOString().split('T')[0],
-          price: Math.round(point.close * 100) / 100,
-        }));
+          return {
+            title,
+            publisher,
+            link: item.link || '',
+            publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : null,
+            thumbnail: null,
+          };
+        });
       }
     } catch (error: any) {
-      console.error(`[Snapshot] Error fetching Yahoo Finance data for ${tickerUpper}:`, error.message);
-      // Continue with database data if Yahoo Finance fails
+      console.error(`[Snapshot] Error fetching Google News RSS for ${tickerUpper}:`, error.message);
+      // Fall back to Yahoo Finance news if RSS fails
+      try {
+        const yahooNews = await yahooFinance.search(tickerUpper, { newsCount: 10 });
+        if (yahooNews.news && yahooNews.news.length > 0) {
+          newsArticles = yahooNews.news.map((article: any) => ({
+            title: article.title,
+            publisher: article.publisher,
+            link: article.link,
+            publishedAt: article.providerPublishTime ? new Date(article.providerPublishTime * 1000).toISOString() : null,
+            thumbnail: article.thumbnail?.resolutions?.[0]?.url,
+          }));
+        }
+      } catch (yahooError: any) {
+        console.error(`[Snapshot] Error fetching Yahoo Finance news for ${tickerUpper}:`, yahooError.message);
+      }
     }
 
     // Fallback to database-stored data if Yahoo Finance failed

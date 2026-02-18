@@ -26,6 +26,12 @@ yarn-error.log*
 .env*.local
 .env
 
+# Env backups
+.env.backup-*
+.env.*.bak
+.env.bak
+*.env.check
+
 # Vercel
 .vercel
 
@@ -46,3 +52,36 @@ prisma/*.db-journal
 
 # SEC bulk data
 data/sec-bulk/
+
+# Logs
+*.log
+
+# Data files (root level)
+/*.csv
+/*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!vercel.json
+!playwright.config.json
+
+# Model files
+*.pkl
+
+# Generated docs & reports (root level)
+/*.md
+!README.md
+!CLAUDE.md
+
+# AI/ML outputs
+ai-discovery-outputs/
+
+# Python
+__pycache__/
+*.pyc
+requirements-ml.txt
+
+# One-off scripts (keep scripts/ dir but ignore one-offs at root)
+/check-*.ts
+/clean-*.py
+/clean-*.sql

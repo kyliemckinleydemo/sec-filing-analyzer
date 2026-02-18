@@ -247,19 +247,45 @@ describe('GET /api/cron/daily-filings-rss', () => {
     expect(body.results.stored).toBe(1);
   });
 
-  it('flushes prediction cache after processing', async () => {
+  it('flushes prediction cache only for affected companies', async () => {
+    vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([
+      MOCK_RSS_FILING,
+    ] as any);
+    prismaMock.company.upsert.mockResolvedValue({ id: 'company-001' });
+    prismaMock.filing.upsert.mockResolvedValue({});
+
     await GET(makeAuthRequest());
 
+    // Should scope prediction flush to only the affected company
     expect(prismaMock.filing.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { predicted7dReturn: { not: null } },
+        where: {
+          companyId: { in: ['company-001'] },
+          predicted7dReturn: { not: null },
+        },
         data: expect.objectContaining({
           predicted7dReturn: null,
           predictionConfidence: null,
         }),
       })
     );
-    expect(prismaMock.prediction.deleteMany).toHaveBeenCalledWith({});
+    expect(prismaMock.prediction.deleteMany).toHaveBeenCalledWith({
+      where: {
+        filing: {
+          companyId: { in: ['company-001'] },
+        },
+      },
+    });
+  });
+
+  it('skips prediction flush when no new filings are stored', async () => {
+    vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([]);
+
+    await GET(makeAuthRequest());
+
+    // Should NOT flush predictions when no filings were stored
+    expect(prismaMock.filing.updateMany).not.toHaveBeenCalled();
+    expect(prismaMock.prediction.deleteMany).not.toHaveBeenCalled();
   });
 
   it('cleans up stuck jobs before starting', async () => {

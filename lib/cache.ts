@@ -68,4 +68,5 @@ export const cacheKeys = {
   filingContent: (accession: string) => `filing:${accession}:content`,
   stockPrices: (ticker: string) => `stock:${ticker}:prices`,
   stockQuote: (ticker: string) => `stock:${ticker}:quote`,
+  snapshotData: (ticker: string) => `snapshot:${ticker}:data`,
 };
