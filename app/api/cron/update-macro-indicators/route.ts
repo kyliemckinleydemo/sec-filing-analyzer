@@ -1,12 +1,12 @@
 /**
  * Daily Macro Indicators Update Cron Job
  *
- * Fetches and stores comprehensive macro data using yahoo-finance2:
+ * Fetches and stores comprehensive macro data using FMP API:
  * - Market momentum (SPY: 7d, 14d, 21d, 30d returns)
  * - Volatility (VIX close + 30-day MA)
  * - Sector performance (XLK, XLF, XLE, XLV 30d returns)
  *
- * Treasury rates are not available via Yahoo Finance.
+ * Treasury rates are not available via FMP free tier.
  * TODO: Add FRED API or Treasury.gov XML feed for interest rate data.
  *
  * Runs daily at 9 AM UTC (after market close)
@@ -14,10 +14,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import yahooFinance from 'yahoo-finance2';
-
-// Suppress yahoo-finance2 survey notice
-yahooFinance.suppressNotices(['yahooSurvey']);
+import fmpClient from '@/lib/fmp-client';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -49,18 +46,20 @@ async function fetchHistoricalReturns(
   startDate.setDate(startDate.getDate() - daysBack);
 
   try {
-    const historical = await yahooFinance.historical(ticker, {
-      period1: startDate.toISOString().split('T')[0],
-      period2: endDate.toISOString().split('T')[0],
-      interval: '1d',
-    });
+    const historical = await fmpClient.getHistoricalPrices(
+      ticker,
+      startDate.toISOString().split('T')[0],
+      endDate.toISOString().split('T')[0]
+    );
 
     if (!historical || historical.length === 0) {
       return { close: null, returns: {} };
     }
 
-    // Sort by date descending to get most recent first
-    const sorted = [...historical].sort((a, b) => b.date.getTime() - a.date.getTime());
+    // FMP returns most recent first; sort by date descending to be safe
+    const sorted = [...historical].sort((a, b) =>
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
     const latestClose = sorted[0]?.close ?? null;
 
     if (!latestClose) {
@@ -74,10 +73,10 @@ async function fetchHistoricalReturns(
       targetDate.setDate(targetDate.getDate() - days);
 
       // Find the closest trading day to the target date
-      let closest = null;
+      let closest: (typeof sorted)[0] | null = null;
       let smallestDiff = Infinity;
       for (const point of sorted) {
-        const diff = Math.abs(point.date.getTime() - targetDate.getTime());
+        const diff = Math.abs(new Date(point.date).getTime() - targetDate.getTime());
         if (diff < smallestDiff) {
           smallestDiff = diff;
           closest = point;
@@ -106,16 +105,18 @@ async function fetchVixMA30(endDate: Date): Promise<number | null> {
   startDate.setDate(startDate.getDate() - 45); // Extra days to ensure 30 trading days
 
   try {
-    const historical = await yahooFinance.historical('^VIX', {
-      period1: startDate.toISOString().split('T')[0],
-      period2: endDate.toISOString().split('T')[0],
-      interval: '1d',
-    });
+    const historical = await fmpClient.getHistoricalPrices(
+      'VIXY',
+      startDate.toISOString().split('T')[0],
+      endDate.toISOString().split('T')[0]
+    );
 
     if (!historical || historical.length < 20) return null;
 
-    // Take last 30 trading days
-    const sorted = [...historical].sort((a, b) => b.date.getTime() - a.date.getTime());
+    // Sort by date descending
+    const sorted = [...historical].sort((a, b) =>
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
     const last30 = sorted.slice(0, 30);
     const sum = last30.reduce((acc, p) => acc + (p.close ?? 0), 0);
     return sum / last30.length;
@@ -174,11 +175,11 @@ export async function GET(req: NextRequest) {
     const dates = [today, yesterday];
     const results = [];
 
-    // Fetch SPY and VIX historical data once (covers both dates)
-    const [spyData, vixQuote, vixMA30, ...sectorResults] = await Promise.all([
+    // Fetch SPY historical, VIX current price, VIX MA30, and sector ETFs
+    const [spyData, vixProfile, vixMA30, ...sectorResults] = await Promise.all([
       fetchHistoricalReturns('SPY', today, 45),
-      yahooFinance.quote('^VIX').catch((e: any) => {
-        console.error('[MacroCron] VIX quote error:', e.message);
+      fmpClient.getProfile('VIXY').catch((e: any) => {
+        console.error('[MacroCron] VIX profile error:', e.message);
         return null;
       }),
       fetchVixMA30(today),
@@ -194,7 +195,7 @@ export async function GET(req: NextRequest) {
       sectorReturns[sectorKeys[i]] = sectorResults[i]?.returns?.['30d'] ?? null;
     }
 
-    const vixClose = vixQuote?.regularMarketPrice ?? null;
+    const vixClose = vixProfile?.price ?? null;
 
     for (const date of dates) {
       const dateStr = date.toISOString().split('T')[0];
@@ -211,7 +212,7 @@ export async function GET(req: NextRequest) {
           spxReturn30d: spyData.returns['30d'] ?? null,
           vixClose,
           vixMA30,
-          // Treasury rates not available via Yahoo Finance
+          // Treasury rates not available via FMP free tier
           // TODO: Implement FRED API or Treasury.gov XML feed
           fedFundsRate: null,
           treasury3m: null,

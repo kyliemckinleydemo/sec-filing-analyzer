@@ -1,14 +1,21 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { prismaMock } from '../../../mocks/prisma';
-import { MOCK_YAHOO_QUOTE_SUMMARY } from '../../../fixtures/cron-data';
+import { MOCK_FMP_PROFILE } from '../../../fixtures/cron-data';
 
-const { mockQuoteSummary } = vi.hoisted(() => ({
-  mockQuoteSummary: vi.fn(),
+const { mockGetProfile } = vi.hoisted(() => ({
+  mockGetProfile: vi.fn(),
 }));
-vi.mock('yahoo-finance2', () => ({
+vi.mock('@/lib/fmp-client', () => ({
   default: {
-    quoteSummary: mockQuoteSummary,
-    suppressNotices: vi.fn(),
+    getProfile: mockGetProfile,
+  },
+  parseRange: (range: string) => {
+    if (!range) return null;
+    const parts = range.split('-').map((s: string) => parseFloat(s.trim()));
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      return { low: Math.min(parts[0], parts[1]), high: Math.max(parts[0], parts[1]) };
+    }
+    return null;
   },
 }));
 
@@ -30,7 +37,7 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
     vi.clearAllMocks();
     prismaMock.company.findMany.mockResolvedValue([]);
     prismaMock.company.update.mockResolvedValue({});
-    mockQuoteSummary.mockResolvedValue(MOCK_YAHOO_QUOTE_SUMMARY);
+    mockGetProfile.mockResolvedValue(MOCK_FMP_PROFILE);
   });
 
   afterEach(() => {
@@ -46,8 +53,9 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
 
   // --- Batch selection ---
 
-  it('selects correct batch based on UTC hour (batch 0 for hours 0-3)', async () => {
-    vi.setSystemTime(new Date('2024-12-01T02:00:00Z')); // UTC hour 2 → batch 0
+  it('selects batch based on day of year', async () => {
+    // 2024-12-01 = day 336 of year, 336 % 6 = 0 → batch 0
+    vi.setSystemTime(new Date('2024-12-01T05:00:00Z'));
 
     const companies = Array.from({ length: 12 }, (_, i) => ({
       id: `c-${i}`,
@@ -58,27 +66,33 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
     const res = await GET(makeAuthRequest());
     const body = await res.json();
 
-    expect(body.batch).toBe(1); // batch 0 displayed as 1
     expect(body.totalBatches).toBe(6);
+    // Batch number rotates by day
+    expect(body.batch).toBeGreaterThanOrEqual(1);
+    expect(body.batch).toBeLessThanOrEqual(6);
   });
 
-  it('selects batch 3 for UTC hour 12-15', async () => {
-    vi.setSystemTime(new Date('2024-12-01T14:00:00Z')); // UTC hour 14 → batch 3
-
+  it('rotates to different batch on different days', async () => {
     const companies = Array.from({ length: 18 }, (_, i) => ({
       id: `c-${i}`,
       ticker: `TICK${i}`,
     }));
     prismaMock.company.findMany.mockResolvedValue(companies);
 
-    const res = await GET(makeAuthRequest());
-    const body = await res.json();
+    vi.setSystemTime(new Date('2024-12-01T05:00:00Z'));
+    const res1 = await GET(makeAuthRequest());
+    const body1 = await res1.json();
 
-    expect(body.batch).toBe(4); // batch 3 displayed as 4
+    vi.setSystemTime(new Date('2024-12-02T05:00:00Z'));
+    const res2 = await GET(makeAuthRequest());
+    const body2 = await res2.json();
+
+    // Different days should pick different batches
+    expect(body1.batch).not.toBe(body2.batch);
   });
 
   it('only updates companies in the current batch slice', async () => {
-    vi.setSystemTime(new Date('2024-12-01T02:00:00Z')); // batch 0
+    vi.setSystemTime(new Date('2024-12-01T05:00:00Z'));
 
     // 12 companies, 6 batches → 2 per batch
     const companies = Array.from({ length: 12 }, (_, i) => ({
@@ -97,8 +111,9 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
 
   // --- Updates ---
 
-  it('updates price, change %, volume on company records', async () => {
-    vi.setSystemTime(new Date('2024-12-01T02:00:00Z'));
+  it('updates price, market cap, volume on company records', async () => {
+    // Day 336, 336 % 6 = 0 → batch 0 (first company included)
+    vi.setSystemTime(new Date('2024-12-01T05:00:00Z'));
 
     prismaMock.company.findMany.mockResolvedValue([{ id: 'c1', ticker: 'AAPL' }]);
 
@@ -118,7 +133,7 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
   // --- Error handling ---
 
   it('handles errors per-ticker gracefully', async () => {
-    vi.setSystemTime(new Date('2024-12-01T02:00:00Z')); // batch 0
+    vi.setSystemTime(new Date('2024-12-01T05:00:00Z'));
 
     // Need 12+ companies so batch 0 gets 2 companies (ceil(12/6)=2)
     const companies = Array.from({ length: 12 }, (_, i) => ({
@@ -128,9 +143,9 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
     // batch 0 will process companies[0] and companies[1]
     prismaMock.company.findMany.mockResolvedValue(companies);
 
-    mockQuoteSummary
-      .mockResolvedValueOnce(MOCK_YAHOO_QUOTE_SUMMARY)
-      .mockRejectedValueOnce(new Error('Yahoo error'));
+    mockGetProfile
+      .mockResolvedValueOnce(MOCK_FMP_PROFILE)
+      .mockRejectedValueOnce(new Error('FMP error'));
 
     const res = await GET(makeAuthRequest());
     const body = await res.json();
@@ -161,10 +176,11 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
   });
 
   it('handles 404 delisted tickers gracefully', async () => {
-    vi.setSystemTime(new Date('2024-12-01T02:00:00Z'));
+    // Day 336, 336 % 6 = 0 → batch 0 (first company included)
+    vi.setSystemTime(new Date('2024-12-01T05:00:00Z'));
 
     prismaMock.company.findMany.mockResolvedValue([{ id: 'c1', ticker: 'DEAD' }]);
-    mockQuoteSummary.mockRejectedValue(new Error('Not Found'));
+    mockGetProfile.mockRejectedValue(new Error('Not Found'));
 
     const res = await GET(makeAuthRequest());
     const body = await res.json();

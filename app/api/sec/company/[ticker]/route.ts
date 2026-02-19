@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { secClient } from '@/lib/sec-client';
 import { cache, cacheKeys } from '@/lib/cache';
 import { prisma } from '@/lib/prisma';
-import yahooFinance from 'yahoo-finance2';
+import fmpClient from '@/lib/fmp-client';
 import { requireUnauthRateLimit, addRateLimitHeaders } from '@/lib/api-middleware';
 import { generateFingerprint, checkUnauthRateLimit } from '@/lib/rate-limit';
 
@@ -132,14 +132,12 @@ export async function GET(
       let suggestions: Array<{ ticker: string; name: string; sector?: string }> = [];
 
       try {
-        // Try to get sector from Yahoo Finance for the searched ticker
-        const summary = await yahooFinance.quoteSummary(ticker.toUpperCase(), {
-          modules: ['assetProfile']
-        });
-        console.log(`[${ticker}] Yahoo assetProfile sector:`, summary.assetProfile?.sector);
+        // Try to get sector from FMP for the searched ticker
+        const profile = await fmpClient.getProfile(ticker.toUpperCase());
+        console.log(`[${ticker}] FMP profile sector:`, profile?.sector);
 
-        if (summary.assetProfile?.sector) {
-          const tickerSector = summary.assetProfile.sector;
+        if (profile?.sector) {
+          const tickerSector = profile.sector;
           console.log(`[${ticker}] Found sector: ${tickerSector}`);
 
           // Query Company model (which has sector field) for companies in same sector
@@ -167,10 +165,10 @@ export async function GET(
             sector: c.sector ?? undefined
           }));
         } else {
-          console.log(`[${ticker}] No sector found in Yahoo quote`);
+          console.log(`[${ticker}] No sector found in FMP profile`);
         }
       } catch (error) {
-        console.log(`[${ticker}] Error getting sector:`, error);
+        console.log(`[${ticker}] Error getting sector from FMP:`, error);
       }
 
       // Fall back to top companies by market cap if no sector suggestions

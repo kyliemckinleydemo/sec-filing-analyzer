@@ -13,13 +13,23 @@ vi.mock('@/lib/rate-limit', () => ({
   checkUnauthRateLimit: vi.fn().mockReturnValue({ limit: 20, remaining: 19, resetAt: Date.now() + 86400000 }),
 }));
 
-// Mock yahoo-finance2 - all calls go through Promise.allSettled
-vi.mock('yahoo-finance2', () => ({
+// Mock FMP client - all calls go through Promise.allSettled
+const { mockGetProfile, mockGetHistoricalPrices } = vi.hoisted(() => ({
+  mockGetProfile: vi.fn(),
+  mockGetHistoricalPrices: vi.fn(),
+}));
+vi.mock('@/lib/fmp-client', () => ({
   default: {
-    quote: vi.fn(),
-    quoteSummary: vi.fn(),
-    historical: vi.fn(),
-    search: vi.fn(),
+    getProfile: mockGetProfile,
+    getHistoricalPrices: mockGetHistoricalPrices,
+  },
+  parseRange: (range: string) => {
+    if (!range) return null;
+    const parts = range.split('-').map((s: string) => parseFloat(s.trim()));
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+      return { low: Math.min(parts[0], parts[1]), high: Math.max(parts[0], parts[1]) };
+    }
+    return null;
   },
 }));
 
@@ -32,9 +42,6 @@ vi.mock('rss-parser', () => ({
 
 import { GET } from '@/app/api/company/[ticker]/snapshot/route';
 import { NextRequest } from 'next/server';
-import yahooFinance from 'yahoo-finance2';
-
-const yahooMock = vi.mocked(yahooFinance);
 
 function makeRequest(ticker: string) {
   return new NextRequest(`http://localhost:3000/api/company/${ticker}/snapshot`);
@@ -94,11 +101,35 @@ const MOCK_COMPANY = {
   ],
 };
 
+const MOCK_FMP_PROFILE = {
+  symbol: 'FMC',
+  companyName: 'FMC CORP',
+  price: 15.0,
+  mktCap: 1_900_000_000,
+  beta: 0.66,
+  volAvg: 5_000_000,
+  volume: 3_000_000,
+  lastDiv: 1.95,
+  range: '12.17-57.00',
+  sector: 'Basic Materials',
+  industry: 'Agricultural Chemicals',
+  exchangeShortName: 'NYSE',
+  currency: 'USD',
+  pe: 18.5,
+  targetMeanPrice: 22.0,
+  dividendYield: 0.13,
+  previousClose: 14.8,
+};
+
 describe('GET /api/company/[ticker]/snapshot', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     cache.clear(); // Clear snapshot cache between tests
     prismaMock.analystActivity.findMany.mockResolvedValue([]);
+    mockGetProfile.mockReset();
+    mockGetHistoricalPrices.mockReset();
+    mockGetProfile.mockResolvedValue(null);
+    mockGetHistoricalPrices.mockResolvedValue([]);
   });
 
   it('returns 404 when company is not tracked', async () => {
@@ -113,27 +144,13 @@ describe('GET /api/company/[ticker]/snapshot', () => {
     expect(body.error).toContain("don't track");
   });
 
-  it('returns live data from Yahoo Finance when available', async () => {
+  it('returns live data from FMP when available', async () => {
     prismaMock.company.findUnique.mockResolvedValue(MOCK_COMPANY);
     prismaMock.stockPrice.findMany.mockResolvedValue([]);
     prismaMock.macroIndicators.findMany.mockResolvedValue([]);
 
-    yahooMock.quote.mockResolvedValue({
-      regularMarketPrice: 15.0,
-      regularMarketPreviousClose: 14.8,
-      marketCap: 1_900_000_000,
-      regularMarketVolume: 3_000_000,
-      fiftyTwoWeekHigh: 57,
-      fiftyTwoWeekLow: 12.17,
-    } as any);
-
-    yahooMock.quoteSummary.mockResolvedValue({
-      summaryDetail: { trailingPE: 18.5, forwardPE: 5.68, dividendYield: 0.13, beta: 0.66 },
-      financialData: { targetMeanPrice: 22.0, profitMargins: 0.1, revenueGrowth: 0.05 },
-      recommendationTrend: { trend: [{ strongBuy: 2, buy: 5, hold: 8, sell: 1, strongSell: 0 }] },
-    } as any);
-
-    yahooMock.historical.mockResolvedValue([]);
+    mockGetProfile.mockResolvedValue(MOCK_FMP_PROFILE);
+    mockGetHistoricalPrices.mockResolvedValue([]);
 
     const res = await GET(makeRequest('FMC'), {
       params: Promise.resolve({ ticker: 'FMC' }),
@@ -150,15 +167,14 @@ describe('GET /api/company/[ticker]/snapshot', () => {
     expect(body.company.name).toBe('FMC CORP');
   });
 
-  it('falls back to DB data when Yahoo Finance fails completely', async () => {
+  it('falls back to DB data when FMP fails completely', async () => {
     prismaMock.company.findUnique.mockResolvedValue(MOCK_COMPANY);
     prismaMock.stockPrice.findMany.mockResolvedValue([]);
     prismaMock.macroIndicators.findMany.mockResolvedValue([]);
 
-    // All Yahoo Finance calls fail
-    yahooMock.quote.mockRejectedValue(new Error('Too Many Requests'));
-    yahooMock.quoteSummary.mockRejectedValue(new Error('Too Many Requests'));
-    yahooMock.historical.mockRejectedValue(new Error('Too Many Requests'));
+    // All FMP calls return null/empty
+    mockGetProfile.mockResolvedValue(null);
+    mockGetHistoricalPrices.mockResolvedValue([]);
 
     const res = await GET(makeRequest('FMC'), {
       params: Promise.resolve({ ticker: 'FMC' }),
@@ -175,58 +191,24 @@ describe('GET /api/company/[ticker]/snapshot', () => {
     expect(body.liveData.volume).toBe(2_000_000);
   });
 
-  it('uses partial Yahoo data when some calls fail (allSettled resilience)', async () => {
-    prismaMock.company.findUnique.mockResolvedValue({
-      ...MOCK_COMPANY,
-      currentPrice: null, // No DB fallback data either, to test partial Yahoo
-    });
-    prismaMock.stockPrice.findMany.mockResolvedValue([]);
-    prismaMock.macroIndicators.findMany.mockResolvedValue([]);
-
-    // Quote succeeds, summary fails, historical fails
-    yahooMock.quote.mockResolvedValue({
-      regularMarketPrice: 15.5,
-      regularMarketPreviousClose: 15.0,
-      marketCap: 1_950_000_000,
-      regularMarketVolume: 2_500_000,
-      fiftyTwoWeekHigh: 57,
-      fiftyTwoWeekLow: 12.17,
-    } as any);
-    yahooMock.quoteSummary.mockRejectedValue(new Error('Too Many Requests'));
-    yahooMock.historical.mockRejectedValue(new Error('Too Many Requests'));
-
-    const res = await GET(makeRequest('FMC'), {
-      params: Promise.resolve({ ticker: 'FMC' }),
-    });
-
-    expect(res.status).toBe(200);
-    const body = await res.json();
-
-    // Quote data should be present
-    expect(body.liveData.currentPrice).toBe(15.5);
-    expect(body.liveData.marketCap).toBe(1_950_000_000);
-    // Summary data should be absent (not from DB fallback since quote succeeded)
-    expect(body.liveData.peRatio).toBeUndefined();
-  });
-
   it('returns spxHistory in the response', async () => {
     prismaMock.company.findUnique.mockResolvedValue(MOCK_COMPANY);
     prismaMock.stockPrice.findMany.mockResolvedValue([]);
     prismaMock.macroIndicators.findMany.mockResolvedValue([]);
 
-    yahooMock.quote.mockResolvedValue({ regularMarketPrice: 15.0 } as any);
-    yahooMock.quoteSummary.mockResolvedValue({} as any);
+    mockGetProfile.mockResolvedValue(MOCK_FMP_PROFILE);
 
-    // Stock historical
-    yahooMock.historical.mockResolvedValueOnce([
-      { date: new Date('2025-09-01'), close: 30, high: 31, low: 29, volume: 1000000 },
-      { date: new Date('2025-09-02'), close: 31, high: 32, low: 30, volume: 1100000 },
-    ]);
-    // S&P 500 historical
-    yahooMock.historical.mockResolvedValueOnce([
-      { date: new Date('2025-09-01'), close: 5500, high: 5520, low: 5480, volume: 3000000000 },
-      { date: new Date('2025-09-02'), close: 5550, high: 5560, low: 5530, volume: 3100000000 },
-    ]);
+    // Stock historical (first call)
+    mockGetHistoricalPrices
+      .mockResolvedValueOnce([
+        { date: '2025-09-02', open: 30.5, high: 32, low: 30, close: 31, volume: 1100000 },
+        { date: '2025-09-01', open: 29.5, high: 31, low: 29, close: 30, volume: 1000000 },
+      ])
+      // S&P 500 historical (second call)
+      .mockResolvedValueOnce([
+        { date: '2025-09-02', open: 5530, high: 5560, low: 5530, close: 5550, volume: 3100000000 },
+        { date: '2025-09-01', open: 5480, high: 5520, low: 5480, close: 5500, volume: 3000000000 },
+      ]);
 
     const res = await GET(makeRequest('FMC'), {
       params: Promise.resolve({ ticker: 'FMC' }),
@@ -244,10 +226,9 @@ describe('GET /api/company/[ticker]/snapshot', () => {
   it('falls back to StockPrice and MacroIndicators DB tables for price history', async () => {
     prismaMock.company.findUnique.mockResolvedValue(MOCK_COMPANY);
 
-    // Yahoo Finance completely fails
-    yahooMock.quote.mockRejectedValue(new Error('Timeout'));
-    yahooMock.quoteSummary.mockRejectedValue(new Error('Timeout'));
-    yahooMock.historical.mockRejectedValue(new Error('Timeout'));
+    // FMP returns no data
+    mockGetProfile.mockResolvedValue(null);
+    mockGetHistoricalPrices.mockResolvedValue([]);
 
     // DB fallback data
     prismaMock.stockPrice.findMany.mockResolvedValue([
@@ -276,9 +257,8 @@ describe('GET /api/company/[ticker]/snapshot', () => {
     prismaMock.company.findUnique.mockResolvedValue(MOCK_COMPANY);
     prismaMock.stockPrice.findMany.mockResolvedValue([]);
     prismaMock.macroIndicators.findMany.mockResolvedValue([]);
-    yahooMock.quote.mockResolvedValue({ regularMarketPrice: 15 } as any);
-    yahooMock.quoteSummary.mockResolvedValue({} as any);
-    yahooMock.historical.mockResolvedValue([]);
+    mockGetProfile.mockResolvedValue(MOCK_FMP_PROFILE);
+    mockGetHistoricalPrices.mockResolvedValue([]);
 
     const res = await GET(makeRequest('FMC'), {
       params: Promise.resolve({ ticker: 'FMC' }),

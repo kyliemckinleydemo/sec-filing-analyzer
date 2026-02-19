@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import yahooFinance from 'yahoo-finance2';
+import fmpClient, { parseRange } from '@/lib/fmp-client';
 import Parser from 'rss-parser';
 import { requireUnauthRateLimit, addRateLimitHeaders } from '@/lib/api-middleware';
 import { generateFingerprint, checkUnauthRateLimit } from '@/lib/rate-limit';
@@ -51,7 +51,7 @@ export async function GET(
       );
     }
 
-    // Fetch LIVE data from Yahoo Finance (cached for 5 minutes)
+    // Fetch LIVE data from FMP API (cached for 5 minutes)
     let liveData: any = {};
     let newsArticles: any[] = [];
     let priceHistory: any[] = [];
@@ -72,73 +72,52 @@ export async function GET(
         const startDate = new Date();
         startDate.setDate(startDate.getDate() - 180);
 
-        // Use allSettled so a single Yahoo Finance failure doesn't kill all data
+        const startStr = startDate.toISOString().split('T')[0];
+        const endStr = endDate.toISOString().split('T')[0];
+
+        // Use allSettled so a single FMP failure doesn't kill all data
         const results = await Promise.allSettled([
-          yahooFinance.quote(tickerUpper),
-          yahooFinance.quoteSummary(tickerUpper, {
-            modules: [
-              'price',
-              'summaryDetail',
-              'financialData',
-              'defaultKeyStatistics',
-              'recommendationTrend'
-            ]
-          }),
-          yahooFinance.historical(tickerUpper, {
-            period1: startDate.toISOString().split('T')[0],
-            period2: endDate.toISOString().split('T')[0],
-            interval: '1d'
-          }),
-          yahooFinance.historical('^GSPC', {
-            period1: startDate.toISOString().split('T')[0],
-            period2: endDate.toISOString().split('T')[0],
-            interval: '1d'
-          })
+          fmpClient.getProfile(tickerUpper),
+          fmpClient.getHistoricalPrices(tickerUpper, startStr, endStr),
+          fmpClient.getHistoricalPrices('SPY', startStr, endStr),
         ]);
 
-        const quote = results[0].status === 'fulfilled' ? results[0].value : null;
-        const summary = results[1].status === 'fulfilled' ? results[1].value : null;
-        const historical = results[2].status === 'fulfilled' ? results[2].value : [];
-        const spxHistorical = results[3].status === 'fulfilled' ? results[3].value : [];
+        const profile = results[0].status === 'fulfilled' ? results[0].value : null;
+        const historical = results[1].status === 'fulfilled' ? results[1].value : [];
+        const spxHistorical = results[2].status === 'fulfilled' ? results[2].value : [];
 
         for (const [i, r] of results.entries()) {
           if (r.status === 'rejected') {
-            console.warn(`[Snapshot] Yahoo Finance call ${i} failed for ${tickerUpper}:`, r.reason?.message || r.reason);
+            console.warn(`[Snapshot] FMP call ${i} failed for ${tickerUpper}:`, r.reason?.message || r.reason);
           }
         }
 
-        if (quote) {
+        if (profile) {
+          const range = parseRange(profile.range);
+
           liveData = {
-            currentPrice: quote.regularMarketPrice,
-            previousClose: quote.regularMarketPreviousClose,
-            marketCap: quote.marketCap,
-            volume: quote.regularMarketVolume,
-            averageVolume: (quote as any).averageVolume,
-            fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh,
-            fiftyTwoWeekLow: quote.fiftyTwoWeekLow,
+            currentPrice: profile.price,
+            previousClose: profile.previousClose ?? null,
+            marketCap: profile.mktCap,
+            volume: profile.volume,
+            averageVolume: profile.volAvg,
+            fiftyTwoWeekHigh: range?.high ?? null,
+            fiftyTwoWeekLow: range?.low ?? null,
+            peRatio: profile.pe ?? null,
+            dividendYield: profile.lastDiv ? profile.lastDiv / (profile.price || 1) : null,
+            beta: profile.beta ?? null,
+            analystTargetPrice: profile.targetMeanPrice ?? null,
           };
         }
 
-        if (summary) {
-          liveData = {
-            ...liveData,
-            peRatio: summary.summaryDetail?.trailingPE,
-            forwardPE: summary.summaryDetail?.forwardPE,
-            dividendYield: summary.summaryDetail?.dividendYield,
-            beta: summary.summaryDetail?.beta,
-            analystTargetPrice: summary.financialData?.targetMeanPrice,
-            recommendations: summary.recommendationTrend?.trend?.[0],
-            profitMargins: summary.financialData?.profitMargins,
-            revenueGrowth: summary.financialData?.revenueGrowth,
-            returnOnEquity: summary.financialData?.returnOnEquity,
-            freeCashflow: summary.financialData?.freeCashflow,
-          };
-        }
-
-        // Extract price history with additional data for tooltips
+        // Extract price history
         if (historical && historical.length > 0) {
-          priceHistory = historical.map((point: any) => ({
-            date: point.date.toISOString().split('T')[0],
+          // FMP returns most recent first; sort ascending for chart display
+          const sorted = [...historical].sort((a, b) =>
+            new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+          priceHistory = sorted.map((point) => ({
+            date: point.date,
             price: Math.round(point.close * 100) / 100,
             high: point.high ? Math.round(point.high * 100) / 100 : null,
             low: point.low ? Math.round(point.low * 100) / 100 : null,
@@ -148,23 +127,26 @@ export async function GET(
 
         // Extract S&P 500 price history
         if (spxHistorical && spxHistorical.length > 0) {
-          spxHistory = spxHistorical.map((point: any) => ({
-            date: point.date.toISOString().split('T')[0],
+          const sorted = [...spxHistorical].sort((a, b) =>
+            new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+          spxHistory = sorted.map((point) => ({
+            date: point.date,
             price: Math.round(point.close * 100) / 100,
           }));
         }
 
-        // Cache the processed Yahoo data for 5 minutes
+        // Cache the processed data for 5 minutes
         if (liveData.currentPrice || priceHistory.length > 0) {
           cache.set(cacheKey, { liveData, priceHistory, spxHistory }, 5 * 60 * 1000);
         }
       } catch (error: any) {
-        console.error(`[Snapshot] Error fetching Yahoo Finance data for ${tickerUpper}:`, error.message);
-        // Continue with database data if Yahoo Finance fails
+        console.error(`[Snapshot] Error fetching FMP data for ${tickerUpper}:`, error.message);
+        // Continue with database data if FMP fails
       }
     }
 
-    // Fetch news separately (not cached with Yahoo data since it comes from Google RSS)
+    // Fetch news from Google RSS (independent of FMP)
     try {
       const parser = new Parser();
       const newsQuery = `${company.name} stock`;
@@ -199,24 +181,10 @@ export async function GET(
       }
     } catch (error: any) {
       console.error(`[Snapshot] Error fetching Google News RSS for ${tickerUpper}:`, error.message);
-      // Fall back to Yahoo Finance news if RSS fails
-      try {
-        const yahooNews = await yahooFinance.search(tickerUpper, { newsCount: 10 });
-        if (yahooNews.news && yahooNews.news.length > 0) {
-          newsArticles = yahooNews.news.map((article: any) => ({
-            title: article.title,
-            publisher: article.publisher,
-            link: article.link,
-            publishedAt: article.providerPublishTime ? new Date(article.providerPublishTime * 1000).toISOString() : null,
-            thumbnail: article.thumbnail?.resolutions?.[0]?.url,
-          }));
-        }
-      } catch (yahooError: any) {
-        console.error(`[Snapshot] Error fetching Yahoo Finance news for ${tickerUpper}:`, yahooError.message);
-      }
+      // No fallback needed - news is optional
     }
 
-    // Fallback to database-stored data if Yahoo Finance failed
+    // Fallback to database-stored data if FMP failed
     if (!liveData.currentPrice && company.currentPrice) {
       liveData = {
         currentPrice: company.currentPrice,
@@ -233,7 +201,7 @@ export async function GET(
       };
     }
 
-    // Fallback price history from StockPrice table if Yahoo Finance failed
+    // Fallback price history from StockPrice table if FMP failed
     if (priceHistory.length === 0) {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 180);
@@ -255,7 +223,7 @@ export async function GET(
       }
     }
 
-    // Fallback S&P 500 history from MacroIndicators if Yahoo Finance failed
+    // Fallback S&P 500 history from MacroIndicators if FMP failed
     if (spxHistory.length === 0) {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - 180);

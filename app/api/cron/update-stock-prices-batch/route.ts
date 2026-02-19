@@ -1,9 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import yahooFinance from 'yahoo-finance2';
-
-// Suppress yahoo-finance2 survey notice
-yahooFinance.suppressNotices(['yahooSurvey']);
+import fmpClient, { parseRange } from '@/lib/fmp-client';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -14,6 +11,8 @@ export const maxDuration = 300;
  * Updates stock prices for a rotating batch of companies throughout the day.
  * Designed to run every 4 hours, updating ~107 companies per run.
  * All 640+ companies get updated daily through 6 runs.
+ *
+ * Uses FMP API instead of yahoo-finance2 (which is blocked on Vercel).
  */
 
 export async function GET(request: Request) {
@@ -36,13 +35,15 @@ export async function GET(request: Request) {
   try {
     console.log('[Cron] Starting batch stock price update...');
 
-    // Determine which batch to process based on current hour
-    // Run every 4 hours: 0-3, 4-7, 8-11, 12-15, 16-19, 20-23
-    const currentHour = new Date().getUTCHours();
-    const batchNumber = Math.floor(currentHour / 4); // 0-5 (6 batches per day)
+    // Determine which batch to process based on day of year
+    // Runs once/day, cycling through 6 batches over 6 days
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / 86400000);
     const totalBatches = 6;
+    const batchNumber = dayOfYear % totalBatches; // 0-5, rotates daily
 
-    console.log(`[Cron] Processing batch ${batchNumber + 1}/${totalBatches} (hour ${currentHour})`);
+    console.log(`[Cron] Processing batch ${batchNumber + 1}/${totalBatches} (day ${dayOfYear})`);
 
     // Get all companies, ordered by ID for consistent batching
     const allCompanies = await prisma.company.findMany({
@@ -64,40 +65,30 @@ export async function GET(request: Request) {
 
     for (const company of batchCompanies) {
       try {
-        // Fetch latest quote data
-        const quote = await yahooFinance.quoteSummary(company.ticker, {
-          modules: ['price', 'summaryDetail', 'financialData']
-        });
+        const profile = await fmpClient.getProfile(company.ticker);
 
-        const price = quote.price;
-        const summaryDetail = quote.summaryDetail;
-        const financialData = quote.financialData;
+        if (profile) {
+          const range = parseRange(profile.range);
 
-        if (price || summaryDetail || financialData) {
           await prisma.company.update({
             where: { id: company.id },
             data: {
-              currentPrice: price?.regularMarketPrice ?? null,
-              marketCap: price?.marketCap ?? null,
-              peRatio: summaryDetail?.trailingPE ?? null,
-              forwardPE: summaryDetail?.forwardPE ?? null,
-              beta: summaryDetail?.beta ?? null,
-              dividendYield: summaryDetail?.dividendYield ?? null,
-              fiftyTwoWeekHigh: summaryDetail?.fiftyTwoWeekHigh ?? null,
-              fiftyTwoWeekLow: summaryDetail?.fiftyTwoWeekLow ?? null,
-              volume: price?.regularMarketVolume ? BigInt(price.regularMarketVolume) : null,
-              averageVolume: summaryDetail?.averageVolume ? BigInt(summaryDetail.averageVolume) : null,
-              analystTargetPrice: financialData?.targetMeanPrice ?? null,
+              currentPrice: profile.price ?? null,
+              marketCap: profile.mktCap ?? null,
+              peRatio: profile.pe ?? null,
+              beta: profile.beta ?? null,
+              dividendYield: profile.lastDiv ? profile.lastDiv / (profile.price || 1) : null,
+              fiftyTwoWeekHigh: range?.high ?? null,
+              fiftyTwoWeekLow: range?.low ?? null,
+              volume: profile.volume ? BigInt(profile.volume) : null,
+              averageVolume: profile.volAvg ? BigInt(profile.volAvg) : null,
+              analystTargetPrice: profile.targetMeanPrice ?? null,
               yahooLastUpdated: new Date()
             }
           });
 
           updated++;
         }
-
-        // Rate limit: 250ms delay between requests (~4 req/sec to stay under Yahoo's ~2,500/hr limit)
-        await new Promise(resolve => setTimeout(resolve, 250));
-
       } catch (error: any) {
         // Skip companies with errors (delisted, invalid ticker, etc.)
         if (!error.message?.includes('Not Found')) {

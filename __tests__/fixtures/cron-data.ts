@@ -324,6 +324,89 @@ export const MOCK_USER_WITH_WATCHLIST = {
   ],
 };
 
+// FMP API mock responses
+export const MOCK_FMP_PROFILE = {
+  symbol: 'AAPL',
+  companyName: 'Apple Inc.',
+  price: 195.0,
+  mktCap: 3_000_000_000_000,
+  beta: 1.2,
+  volAvg: 60000000,
+  volume: 55000000,
+  lastDiv: 0.975,
+  range: '164.08-199.62',
+  sector: 'Technology',
+  industry: 'Consumer Electronics',
+  exchangeShortName: 'NASDAQ',
+  currency: 'USD',
+  pe: 31.5,
+  targetMeanPrice: 210.0,
+  dividendYield: 0.005,
+  previousClose: 194.0,
+};
+
+export const MOCK_FMP_PROFILE_NO_DATA = null;
+
+export const MOCK_FMP_HISTORICAL_PRICES = [
+  { date: '2025-09-02', open: 30.5, high: 32, low: 30, close: 31, volume: 1100000 },
+  { date: '2025-09-01', open: 29.5, high: 31, low: 29, close: 30, volume: 1000000 },
+];
+
+export const MOCK_FMP_SPX_HISTORICAL = [
+  { date: '2025-09-02', open: 5530, high: 5560, low: 5530, close: 5550, volume: 3100000000 },
+  { date: '2025-09-01', open: 5480, high: 5520, low: 5480, close: 5500, volume: 3000000000 },
+];
+
+export const MOCK_FMP_UPGRADES_DOWNGRADES = [
+  {
+    symbol: 'AAPL',
+    publishedDate: new Date(Date.now() - 5 * 86400000).toISOString(),
+    newsURL: 'https://example.com/news1',
+    newsTitle: 'Goldman Sachs upgrades Apple',
+    newsBaseURL: 'example.com',
+    newsPublisher: 'Bloomberg',
+    newGrade: 'Buy',
+    previousGrade: 'Hold',
+    gradingCompany: 'Goldman Sachs',
+    action: 'upgrade',
+    priceWhenPosted: 190.0,
+  },
+  {
+    symbol: 'AAPL',
+    publishedDate: new Date(Date.now() - 3 * 86400000).toISOString(),
+    newsURL: 'https://example.com/news2',
+    newsTitle: 'Morgan Stanley reiterates Overweight',
+    newsBaseURL: 'example.com',
+    newsPublisher: 'Reuters',
+    newGrade: 'Overweight',
+    previousGrade: 'Overweight',
+    gradingCompany: 'Morgan Stanley',
+    action: 'reiterated',
+    priceWhenPosted: 192.0,
+  },
+];
+
+export const MOCK_FMP_ANALYST_RECOMMENDATION = {
+  symbol: 'AAPL',
+  date: '2024-12-01',
+  analystRatingsStrongBuy: 10,
+  analystRatingsbuy: 15,
+  analystRatingsHold: 10,
+  analystRatingsSell: 2,
+  analystRatingsStrongSell: 1,
+};
+
+export const MOCK_FMP_EARNINGS = [
+  {
+    symbol: 'AAPL',
+    date: '2024-10-31',
+    epsActual: 1.56,
+    epsEstimated: 1.50,
+    revenueActual: 94_930_000_000,
+    revenueEstimated: 94_200_000_000,
+  },
+];
+
 export const MOCK_MACRO_INDICATORS = {
   id: 'macro-001',
   date: new Date('2024-12-01'),

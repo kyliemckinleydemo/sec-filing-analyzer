@@ -1,15 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { prismaMock } from '../../../mocks/prisma';
-import { MOCK_FILING_RECENT, MOCK_FILING_8K_EARNINGS, MOCK_YAHOO_QUOTE_SUMMARY } from '../../../fixtures/cron-data';
+import {
+  MOCK_FILING_RECENT,
+  MOCK_FILING_8K_EARNINGS,
+  MOCK_FMP_PROFILE,
+  MOCK_FMP_UPGRADES_DOWNGRADES,
+  MOCK_FMP_ANALYST_RECOMMENDATION,
+  MOCK_FMP_EARNINGS,
+} from '../../../fixtures/cron-data';
 
-// Mock yahoo-finance2 before import
-const { mockQuoteSummary } = vi.hoisted(() => ({
-  mockQuoteSummary: vi.fn(),
+// Mock FMP client before import
+const { mockGetProfile, mockGetUpgradesDowngrades, mockGetAnalystRecommendation, mockGetEarnings } = vi.hoisted(() => ({
+  mockGetProfile: vi.fn(),
+  mockGetUpgradesDowngrades: vi.fn(),
+  mockGetAnalystRecommendation: vi.fn(),
+  mockGetEarnings: vi.fn(),
 }));
-vi.mock('yahoo-finance2', () => ({
+vi.mock('@/lib/fmp-client', () => ({
   default: {
-    quoteSummary: mockQuoteSummary,
-    suppressNotices: vi.fn(),
+    getProfile: mockGetProfile,
+    getUpgradesDowngrades: mockGetUpgradesDowngrades,
+    getAnalystRecommendation: mockGetAnalystRecommendation,
+    getEarnings: mockGetEarnings,
   },
 }));
 
@@ -29,12 +41,18 @@ function makeAuthRequest() {
 describe('GET /api/cron/update-analyst-data', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockQuoteSummary.mockReset(); // Clear once-value queue from previous tests
+    mockGetProfile.mockReset();
+    mockGetUpgradesDowngrades.mockReset();
+    mockGetAnalystRecommendation.mockReset();
+    mockGetEarnings.mockReset();
     prismaMock.cronJobRun.updateMany.mockResolvedValue({ count: 0 });
     prismaMock.cronJobRun.create.mockResolvedValue({ id: 'job-001', jobName: 'update-analyst-data', status: 'running' });
     prismaMock.cronJobRun.update.mockResolvedValue({});
     prismaMock.filing.findMany.mockResolvedValue([]);
-    mockQuoteSummary.mockResolvedValue(MOCK_YAHOO_QUOTE_SUMMARY);
+    mockGetProfile.mockResolvedValue(MOCK_FMP_PROFILE);
+    mockGetUpgradesDowngrades.mockResolvedValue(MOCK_FMP_UPGRADES_DOWNGRADES);
+    mockGetAnalystRecommendation.mockResolvedValue(MOCK_FMP_ANALYST_RECOMMENDATION);
+    mockGetEarnings.mockResolvedValue(MOCK_FMP_EARNINGS);
   });
 
   // --- Auth ---
@@ -85,21 +103,21 @@ describe('GET /api/cron/update-analyst-data', () => {
     prismaMock.filing.findMany.mockResolvedValue([MOCK_FILING_RECENT]);
     prismaMock.filing.update.mockResolvedValue({});
 
-    // Single consolidated call with all modules
-    mockQuoteSummary.mockResolvedValueOnce({
-      ...MOCK_YAHOO_QUOTE_SUMMARY,
-      upgradeDowngradeHistory: {
-        history: [
-          {
-            epochGradeDate: new Date(MOCK_FILING_RECENT.filingDate.getTime() - 5 * 86400000).getTime() / 1000,
-            firm: 'Goldman Sachs',
-            fromGrade: 'Hold',
-            toGrade: 'Buy',
-          },
-        ],
+    mockGetUpgradesDowngrades.mockResolvedValueOnce([
+      {
+        symbol: 'AAPL',
+        publishedDate: new Date(MOCK_FILING_RECENT.filingDate.getTime() - 5 * 86400000).toISOString(),
+        newsURL: '',
+        newsTitle: '',
+        newsBaseURL: '',
+        newsPublisher: '',
+        newGrade: 'Buy',
+        previousGrade: 'Hold',
+        gradingCompany: 'Goldman Sachs',
+        action: 'upgrade',
+        priceWhenPosted: 190,
       },
-      earningsHistory: { history: [] },
-    });
+    ]);
 
     await GET(makeAuthRequest());
 
@@ -112,21 +130,21 @@ describe('GET /api/cron/update-analyst-data', () => {
     prismaMock.filing.findMany.mockResolvedValue([MOCK_FILING_RECENT]);
     prismaMock.filing.update.mockResolvedValue({});
 
-    // Single consolidated call with all modules
-    mockQuoteSummary.mockResolvedValueOnce({
-      ...MOCK_YAHOO_QUOTE_SUMMARY,
-      upgradeDowngradeHistory: {
-        history: [
-          {
-            epochGradeDate: new Date(MOCK_FILING_RECENT.filingDate.getTime() - 5 * 86400000).getTime() / 1000,
-            firm: 'Morgan Stanley',
-            fromGrade: 'Overweight',
-            toGrade: 'Equal Weight',
-          },
-        ],
+    mockGetUpgradesDowngrades.mockResolvedValueOnce([
+      {
+        symbol: 'AAPL',
+        publishedDate: new Date(MOCK_FILING_RECENT.filingDate.getTime() - 5 * 86400000).toISOString(),
+        newsURL: '',
+        newsTitle: '',
+        newsBaseURL: '',
+        newsPublisher: '',
+        newGrade: 'Equal Weight',
+        previousGrade: 'Overweight',
+        gradingCompany: 'Morgan Stanley',
+        action: 'downgrade',
+        priceWhenPosted: 192,
       },
-      earningsHistory: { history: [] },
-    });
+    ]);
 
     await GET(makeAuthRequest());
 
@@ -174,7 +192,7 @@ describe('GET /api/cron/update-analyst-data', () => {
 
   // --- Error handling ---
 
-  it('handles yahoo-finance2 errors per-company (continues to next)', async () => {
+  it('handles FMP errors per-company (continues to next)', async () => {
     const filing2 = {
       ...MOCK_FILING_RECENT,
       id: 'filing-102',
@@ -184,10 +202,10 @@ describe('GET /api/cron/update-analyst-data', () => {
     prismaMock.filing.findMany.mockResolvedValue([MOCK_FILING_RECENT, filing2]);
     prismaMock.filing.update.mockResolvedValue({});
 
-    // Consolidated calls: 1 per ticker
-    mockQuoteSummary
-      .mockRejectedValueOnce(new Error('Yahoo API error'))  // AAPL fails (single call)
-      .mockResolvedValueOnce(MOCK_YAHOO_QUOTE_SUMMARY);    // MSFT succeeds (single call with all modules)
+    // First ticker fails (getProfile rejects), second succeeds
+    mockGetProfile
+      .mockRejectedValueOnce(new Error('FMP API error'))
+      .mockResolvedValueOnce(MOCK_FMP_PROFILE);
 
     const res = await GET(makeAuthRequest());
     const body = await res.json();
@@ -283,7 +301,7 @@ describe('GET /api/cron/update-analyst-data', () => {
 
     const updateCall = prismaMock.filing.update.mock.calls[0];
     const analysisData = JSON.parse(updateCall[0].data.analysisData);
-    // targetMeanPrice: 210, currentPrice: 195 -> ~7.69% upside
+    // targetMeanPrice: 210, price: 195 -> ~7.69% upside
     expect(analysisData.analyst.upsidePotential).toBeCloseTo(7.69, 0);
   });
 });
