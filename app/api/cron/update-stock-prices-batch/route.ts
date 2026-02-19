@@ -1,3 +1,36 @@
+/**
+ * @module app/api/cron/update-stock-prices-batch/route
+ * @description Cron endpoint that rotates through batches of companies to update their stock prices from FMP API once every 4 hours, completing all 640+ companies over 6 batches daily
+ *
+ * PURPOSE:
+ * - Authenticate incoming requests via Vercel cron user-agent or CRON_SECRET bearer token
+ * - Calculate which batch (0-5) to process based on day of year modulo 6 for daily rotation
+ * - Fetch company profiles from FMP API and update price, market cap, P/E ratio, beta, dividend yield, 52-week range, volume metrics, and analyst target price
+ * - Return summary JSON with batch number, companies updated count, error count, and total companies in batch
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextResponse for API route responses
+ * - @/lib/prisma - Database client for querying Company records and updating stock metrics
+ * - @/lib/fmp-client - FMP API client with getProfile() for fetching stock data and parseRange() for extracting 52-week high/low
+ *
+ * EXPORTS:
+ * - dynamic (const) - Forces route to always run dynamically, never cached
+ * - maxDuration (const) - Sets 300 second (5 minute) timeout for cron execution
+ * - GET (function) - Cron handler that validates auth, determines batch via dayOfYear % 6, fetches ~107 company profiles, updates database, and returns batch statistics
+ *
+ * PATTERNS:
+ * - Configure vercel.json with cron schedule running every 4 hours and set CRON_SECRET environment variable
+ * - Route auto-fails unauthorized requests that lack 'vercel-cron/' user-agent and valid Bearer token
+ * - Batch selection uses dayOfYear % 6 so batch 0 runs day 0, 6, 12... ensuring all companies update within 6 days
+ * - Non-fatal errors (404 Not Found for delisted tickers) skip silently while other errors log to console
+ *
+ * CLAUDE NOTES:
+ * - Designed for FMP API after yahoo-finance2 library blocked on Vercel hosting platform
+ * - Uses Math.ceil(totalCompanies / 6) for batch size to handle uneven division - last batch may be smaller
+ * - Volume fields cast to BigInt to handle large integer values exceeding JavaScript's safe integer limit
+ * - Updates yahooLastUpdated timestamp despite using FMP API (legacy field name from previous implementation)
+ * - Batch rotation via modulo ensures consistent company assignment - ticker X always in same batch number across days
+ */
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import fmpClient, { parseRange } from '@/lib/fmp-client';
