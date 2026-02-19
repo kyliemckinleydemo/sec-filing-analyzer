@@ -1,13 +1,11 @@
 /**
  * Daily Macro Indicators Update Cron Job
  *
- * Fetches and stores comprehensive macro data using FMP API:
- * - Market momentum (SPY: 7d, 14d, 21d, 30d returns)
- * - Volatility (VIX close + 30-day MA)
- * - Sector performance (XLK, XLF, XLE, XLV 30d returns)
- *
- * Treasury rates are not available via FMP free tier.
- * TODO: Add FRED API or Treasury.gov XML feed for interest rate data.
+ * Fetches and stores comprehensive macro data:
+ * - Market momentum (SPY: 7d, 14d, 21d, 30d returns) via FMP
+ * - Volatility (VIX close + 30-day MA) via FMP
+ * - Sector performance (XLK, XLF, XLE, XLV 30d returns) via FMP
+ * - Treasury rates (fed funds, 3m, 2y, 10y, yield curve) via FRED
  *
  * Runs daily at 9 AM UTC (after market close)
  */
@@ -15,6 +13,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import fmpClient from '@/lib/fmp-client';
+import fredClient from '@/lib/fred-client';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -175,14 +174,28 @@ export async function GET(req: NextRequest) {
     const dates = [today, yesterday];
     const results = [];
 
-    // Fetch SPY historical, VIX current price, VIX MA30, and sector ETFs
-    const [spyData, vixProfile, vixMA30, ...sectorResults] = await Promise.all([
+    // Fetch SPY historical, VIX current price, VIX MA30, sector ETFs, and FRED treasury rates
+    const todayStr = today.toISOString().split('T')[0];
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
+
+    const [spyData, vixProfile, vixMA30, treasuryRatesToday, treasuryRates30dAgo, ...sectorResults] = await Promise.all([
       fetchHistoricalReturns('SPY', today, 45),
       fmpClient.getProfile('VIXY').catch((e: any) => {
         console.error('[MacroCron] VIX profile error:', e.message);
         return null;
       }),
       fetchVixMA30(today),
+      fredClient.getTreasuryRates(todayStr).catch((e: any) => {
+        console.error('[MacroCron] FRED treasury rates error:', e.message);
+        return null;
+      }),
+      fredClient.getTreasuryRates(thirtyDaysAgoStr).catch((e: any) => {
+        console.error('[MacroCron] FRED 30d-ago treasury error:', e.message);
+        return null;
+      }),
       ...Object.entries(SECTOR_ETFS).map(([, ticker]) =>
         fetchHistoricalReturns(ticker, today, 45)
       ),
@@ -196,6 +209,12 @@ export async function GET(req: NextRequest) {
     }
 
     const vixClose = vixProfile?.price ?? null;
+
+    // Calculate treasury 10y 30-day change
+    const treasury10yChange30d =
+      treasuryRatesToday?.treasury10y != null && treasuryRates30dAgo?.treasury10y != null
+        ? Math.round((treasuryRatesToday.treasury10y - treasuryRates30dAgo.treasury10y) * 1000) / 1000
+        : null;
 
     for (const date of dates) {
       const dateStr = date.toISOString().split('T')[0];
@@ -212,14 +231,12 @@ export async function GET(req: NextRequest) {
           spxReturn30d: spyData.returns['30d'] ?? null,
           vixClose,
           vixMA30,
-          // Treasury rates not available via FMP free tier
-          // TODO: Implement FRED API or Treasury.gov XML feed
-          fedFundsRate: null,
-          treasury3m: null,
-          treasury2y: null,
-          treasury10y: null,
-          yieldCurve2y10y: null,
-          treasury10yChange30d: null,
+          fedFundsRate: treasuryRatesToday?.fedFundsRate ?? null,
+          treasury3m: treasuryRatesToday?.treasury3m ?? null,
+          treasury2y: treasuryRatesToday?.treasury2y ?? null,
+          treasury10y: treasuryRatesToday?.treasury10y ?? null,
+          yieldCurve2y10y: treasuryRatesToday?.yieldCurve2y10y ?? null,
+          treasury10yChange30d,
           techSectorReturn30d: sectorReturns.tech ?? null,
           financialSectorReturn30d: sectorReturns.financial ?? null,
           energySectorReturn30d: sectorReturns.energy ?? null,
@@ -236,7 +253,9 @@ export async function GET(req: NextRequest) {
           `[MacroCron] ${dateStr}: Stored - ` +
           `SPX: ${macroData.spxClose?.toFixed(2)}, ` +
           `SPY 7d: ${macroData.spxReturn7d?.toFixed(2)}%, ` +
-          `VIX: ${macroData.vixClose?.toFixed(1)}`
+          `VIX: ${macroData.vixClose?.toFixed(1)}, ` +
+          `10Y: ${macroData.treasury10y ?? 'n/a'}, ` +
+          `2Y: ${macroData.treasury2y ?? 'n/a'}`
         );
 
         results.push({

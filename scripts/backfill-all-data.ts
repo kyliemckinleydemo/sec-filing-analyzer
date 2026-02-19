@@ -262,10 +262,76 @@ async function backfillStockPrices() {
   }
 }
 
-// ─── MACRO INDICATORS (Yahoo v8 — saves FMP budget) ────────────────────────
+// ─── FRED API (for treasury rates) ──────────────────────────────────────────
+
+const FRED_BASE_URL = 'https://api.stlouisfed.org/fred/series/observations';
+const FRED_RATE_LIMIT_MS = 100;
+let fredLastRequest = 0;
+
+const FRED_SERIES = {
+  fedFundsRate: 'DFF',
+  treasury3m: 'DGS3MO',
+  treasury2y: 'DGS2',
+  treasury10y: 'DGS10',
+} as const;
+
+async function fredFetchSeries(seriesId: string, startDate: string, endDate: string): Promise<Array<{ date: string; value: number }>> {
+  const apiKey = process.env.FRED_API_KEY;
+  if (!apiKey) return [];
+
+  const elapsed = Date.now() - fredLastRequest;
+  if (elapsed < FRED_RATE_LIMIT_MS) await sleep(FRED_RATE_LIMIT_MS - elapsed);
+  fredLastRequest = Date.now();
+
+  const url = new URL(FRED_BASE_URL);
+  url.searchParams.set('series_id', seriesId);
+  url.searchParams.set('api_key', apiKey);
+  url.searchParams.set('file_type', 'json');
+  url.searchParams.set('observation_start', startDate);
+  url.searchParams.set('observation_end', endDate);
+
+  try {
+    const res = await fetch(url.toString());
+    if (!res.ok) {
+      console.error(`  [FRED] HTTP ${res.status} for ${seriesId}`);
+      return [];
+    }
+    const data = await res.json();
+    const results: Array<{ date: string; value: number }> = [];
+    for (const obs of data.observations || []) {
+      if (obs.value && obs.value !== '.') {
+        const val = parseFloat(obs.value);
+        if (!isNaN(val)) results.push({ date: obs.date, value: val });
+      }
+    }
+    return results;
+  } catch (e: any) {
+    console.error(`  [FRED] Error fetching ${seriesId}: ${e.message}`);
+    return [];
+  }
+}
+
+function buildFredMap(obs: Array<{ date: string; value: number }>): Map<string, number> {
+  const map = new Map<string, number>();
+  for (const o of obs) map.set(o.date, o.value);
+  return map;
+}
+
+function findFredValue(map: Map<string, number>, dateStr: string): number | null {
+  if (map.has(dateStr)) return map.get(dateStr)!;
+  const d = new Date(dateStr);
+  for (let i = 1; i <= 5; i++) {
+    d.setDate(d.getDate() - 1);
+    const key = d.toISOString().split('T')[0];
+    if (map.has(key)) return map.get(key)!;
+  }
+  return null;
+}
+
+// ─── MACRO INDICATORS (Yahoo v8 + FRED — saves FMP budget) ─────────────────
 
 async function backfillMacroIndicators() {
-  console.log('\n═══ MACRO INDICATORS (Yahoo v8) ═══');
+  console.log('\n═══ MACRO INDICATORS (Yahoo v8 + FRED) ═══');
 
   const lastReal = await prisma.macroIndicators.findFirst({
     where: { spxClose: { not: null } },
@@ -332,6 +398,32 @@ async function backfillMacroIndicators() {
     return filtered.reduce((sum, d) => sum + d.close, 0) / filtered.length;
   }
 
+  // Fetch FRED treasury rates for the same date range
+  const fredStartStr = new Date(startDate.getTime() - 45 * 86400000).toISOString().split('T')[0];
+  const fredEndStr = endDate.toISOString().split('T')[0];
+
+  let ffMap = new Map<string, number>();
+  let t3mMap = new Map<string, number>();
+  let t2yMap = new Map<string, number>();
+  let t10yMap = new Map<string, number>();
+
+  if (process.env.FRED_API_KEY) {
+    console.log('  Fetching FRED treasury rates...');
+    const [ffObs, t3mObs, t2yObs, t10yObs] = await Promise.all([
+      fredFetchSeries(FRED_SERIES.fedFundsRate, fredStartStr, fredEndStr),
+      fredFetchSeries(FRED_SERIES.treasury3m, fredStartStr, fredEndStr),
+      fredFetchSeries(FRED_SERIES.treasury2y, fredStartStr, fredEndStr),
+      fredFetchSeries(FRED_SERIES.treasury10y, fredStartStr, fredEndStr),
+    ]);
+    ffMap = buildFredMap(ffObs);
+    t3mMap = buildFredMap(t3mObs);
+    t2yMap = buildFredMap(t2yObs);
+    t10yMap = buildFredMap(t10yObs);
+    console.log(`  FRED data: FF=${ffObs.length}, 3M=${t3mObs.length}, 2Y=${t2yObs.length}, 10Y=${t10yObs.length} observations`);
+  } else {
+    console.log('  No FRED_API_KEY — treasury rates will be null');
+  }
+
   const spyData = historicalData['SPY'] || [];
   const spyDates = new Set(spyData.map(d => d.date));
   const vixData = historicalData['^VIX'] || [];
@@ -344,6 +436,23 @@ async function backfillMacroIndicators() {
     const spxClose = findClose(spyData, dateStr);
     const vixClose = findClose(vixData, dateStr);
 
+    // Treasury rates from FRED
+    const fedFundsRate = findFredValue(ffMap, dateStr);
+    const treasury3m = findFredValue(t3mMap, dateStr);
+    const treasury2y = findFredValue(t2yMap, dateStr);
+    const treasury10y = findFredValue(t10yMap, dateStr);
+    const yieldCurve2y10y = treasury10y !== null && treasury2y !== null
+      ? Math.round((treasury10y - treasury2y) * 1000) / 1000
+      : null;
+
+    // 10Y change over 30 days
+    const thirtyDaysAgoDate = new Date(dateStr);
+    thirtyDaysAgoDate.setDate(thirtyDaysAgoDate.getDate() - 30);
+    const t10y30dAgo = findFredValue(t10yMap, thirtyDaysAgoDate.toISOString().split('T')[0]);
+    const treasury10yChange30d = treasury10y !== null && t10y30dAgo !== null
+      ? Math.round((treasury10y - t10y30dAgo) * 1000) / 1000
+      : null;
+
     const macroData = {
       spxClose,
       spxReturn7d: calcReturn(spyData, dateStr, 7),
@@ -352,12 +461,12 @@ async function backfillMacroIndicators() {
       spxReturn30d: calcReturn(spyData, dateStr, 30),
       vixClose,
       vixMA30: vixMA30(vixData, dateStr),
-      fedFundsRate: null,
-      treasury3m: null,
-      treasury2y: null,
-      treasury10y: null,
-      yieldCurve2y10y: null,
-      treasury10yChange30d: null,
+      fedFundsRate,
+      treasury3m,
+      treasury2y,
+      treasury10y,
+      yieldCurve2y10y,
+      treasury10yChange30d,
       techSectorReturn30d: calcReturn(historicalData['XLK'] || [], dateStr, 30),
       financialSectorReturn30d: calcReturn(historicalData['XLF'] || [], dateStr, 30),
       energySectorReturn30d: calcReturn(historicalData['XLE'] || [], dateStr, 30),
