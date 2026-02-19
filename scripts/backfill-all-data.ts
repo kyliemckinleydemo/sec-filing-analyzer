@@ -11,6 +11,12 @@
  *   npx tsx scripts/backfill-all-data.ts --skip-macro      # Skip macro indicators
  *   npx tsx scripts/backfill-all-data.ts --skip-analyst    # Skip analyst data
  *   npx tsx scripts/backfill-all-data.ts --max-prices=100  # Limit price updates (default 200)
+ *   npx tsx scripts/backfill-all-data.ts --yahoo-fallback  # Use Yahoo v8 for prices (no FMP needed)
+ *
+ * --yahoo-fallback: Uses Yahoo v8 chart API for stock prices instead of FMP.
+ *   Covers: currentPrice, volume, fiftyTwoWeekHigh/Low (4 fields).
+ *   Missing: marketCap, peRatio, beta, dividendYield, averageVolume, analystTargetPrice.
+ *   No daily API limit — useful when FMP quota is exhausted.
  *
  * FMP free tier: 250 API calls/day. Budget:
  *   - Macro: 0 FMP calls (uses Yahoo v8)
@@ -28,8 +34,9 @@ const args = process.argv.slice(2);
 const skipPrices = args.includes('--skip-prices');
 const skipMacro = args.includes('--skip-macro');
 const skipAnalyst = args.includes('--skip-analyst');
+const yahooFallback = args.includes('--yahoo-fallback');
 const maxPricesArg = args.find(a => a.startsWith('--max-prices='));
-const maxPrices = maxPricesArg ? parseInt(maxPricesArg.split('=')[1]) : 200;
+const maxPrices = maxPricesArg ? parseInt(maxPricesArg.split('=')[1]) : (yahooFallback ? 828 : 200);
 
 // ─── SHARED UTILS ──────────────────────────────────────────────────────────
 
@@ -139,29 +146,9 @@ function parseRange(range: string): { low: number; high: number } | null {
   return null;
 }
 
-// ─── STOCK PRICES (FMP — matches Vercel cron exactly) ──────────────────────
+// ─── STOCK PRICES ──────────────────────────────────────────────────────────
 
-async function backfillStockPrices() {
-  console.log('\n═══ STOCK PRICES (FMP) ═══');
-
-  if (!process.env.FMP_API_KEY) {
-    console.error('Skipping stock prices: no FMP_API_KEY');
-    return;
-  }
-
-  // Fetch companies ordered by oldest update first
-  const companies = await prisma.company.findMany({
-    orderBy: { yahooLastUpdated: 'asc' },
-    select: { id: true, ticker: true, yahooLastUpdated: true },
-  });
-
-  const batch = companies.slice(0, maxPrices);
-  console.log(`Found ${companies.length} companies, updating ${batch.length} (oldest first, --max-prices=${maxPrices})`);
-
-  if (batch.length > 0 && batch[0].yahooLastUpdated) {
-    console.log(`  Oldest update: ${batch[0].ticker} @ ${batch[0].yahooLastUpdated.toISOString()}`);
-  }
-
+async function backfillStockPricesFMP(batch: { id: string; ticker: string; yahooLastUpdated: Date | null }[]) {
   let updated = 0, errors = 0, skipped = 0;
   for (let i = 0; i < batch.length; i++) {
     const c = batch[i];
@@ -204,6 +191,75 @@ async function backfillStockPrices() {
   }
   console.log(`Stock prices done: ${updated} updated, ${errors} errors, ${skipped} skipped`);
   console.log(`  FMP API calls so far: ${fmpCallCount}`);
+}
+
+async function backfillStockPricesYahoo(batch: { id: string; ticker: string; yahooLastUpdated: Date | null }[]) {
+  console.log('  (Yahoo v8 fallback — basic fields only: price, volume, 52wk range)');
+  let updated = 0, errors = 0, skipped = 0;
+  for (let i = 0; i < batch.length; i++) {
+    const c = batch[i];
+    try {
+      if ((i + 1) % 50 === 0) {
+        console.log(`  Progress: ${i + 1}/${batch.length} (${updated} updated, ${errors} errors, ${skipped} skipped)`);
+      }
+
+      const url = `${YAHOO_BASE}/chart/${c.ticker}?interval=1d&range=5d`;
+      const data = await yahooFetch(url);
+      const meta = data?.chart?.result?.[0]?.meta;
+      if (!meta?.regularMarketPrice) {
+        skipped++;
+        continue;
+      }
+
+      await prisma.company.update({
+        where: { id: c.id },
+        data: {
+          currentPrice: meta.regularMarketPrice ?? null,
+          fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh ?? null,
+          fiftyTwoWeekLow: meta.fiftyTwoWeekLow ?? null,
+          volume: meta.regularMarketVolume ? BigInt(meta.regularMarketVolume) : null,
+          yahooLastUpdated: new Date(),
+        },
+      });
+      updated++;
+      await sleep(300);
+    } catch (e: any) {
+      errors++;
+      if (!e.message?.includes('Not Found') && !e.message?.includes('HTTP 404')) {
+        console.error(`  Error ${c.ticker}: ${e.message}`);
+      }
+    }
+  }
+  console.log(`Stock prices done: ${updated} updated, ${errors} errors, ${skipped} skipped`);
+}
+
+async function backfillStockPrices() {
+  const source = yahooFallback ? 'Yahoo v8' : 'FMP';
+  console.log(`\n═══ STOCK PRICES (${source}) ═══`);
+
+  if (!yahooFallback && !process.env.FMP_API_KEY) {
+    console.error('Skipping stock prices: no FMP_API_KEY (use --yahoo-fallback to use Yahoo instead)');
+    return;
+  }
+
+  // Fetch companies ordered by oldest update first
+  const companies = await prisma.company.findMany({
+    orderBy: { yahooLastUpdated: 'asc' },
+    select: { id: true, ticker: true, yahooLastUpdated: true },
+  });
+
+  const batch = companies.slice(0, maxPrices);
+  console.log(`Found ${companies.length} companies, updating ${batch.length} (oldest first, --max-prices=${maxPrices})`);
+
+  if (batch.length > 0 && batch[0].yahooLastUpdated) {
+    console.log(`  Oldest update: ${batch[0].ticker} @ ${batch[0].yahooLastUpdated.toISOString()}`);
+  }
+
+  if (yahooFallback) {
+    await backfillStockPricesYahoo(batch);
+  } else {
+    await backfillStockPricesFMP(batch);
+  }
 }
 
 // ─── MACRO INDICATORS (Yahoo v8 — saves FMP budget) ────────────────────────
@@ -595,7 +651,7 @@ async function main() {
   console.log('Starting comprehensive data backfill...');
   console.log(`Time: ${new Date().toISOString()}`);
   console.log(`FMP API key: ${process.env.FMP_API_KEY ? 'configured' : 'MISSING'}`);
-  console.log(`Options: maxPrices=${maxPrices}, skipPrices=${skipPrices}, skipMacro=${skipMacro}, skipAnalyst=${skipAnalyst}\n`);
+  console.log(`Options: maxPrices=${maxPrices}, skipPrices=${skipPrices}, skipMacro=${skipMacro}, skipAnalyst=${skipAnalyst}, yahooFallback=${yahooFallback}\n`);
 
   try {
     if (!skipMacro) {
