@@ -833,6 +833,7 @@ export default function Home() {
                 { q: "What did NVIDIA say about AI chip demand in their earnings filing?", icon: "🤖" },
                 { q: "Are there any executive compensation changes in Amazon's proxy?", icon: "💰" },
                 { q: "Compare JPMorgan's loan loss provisions quarter over quarter", icon: "🏦" },
+                { q: "Which healthcare companies flagged supply chain risks in recent filings?", icon: "🏥" },
               ].map((item, idx) => (
                 <button
                   key={idx}
