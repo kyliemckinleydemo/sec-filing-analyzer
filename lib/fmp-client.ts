@@ -1,35 +1,34 @@
-```typescript
 /**
  * @module fmp-client
- * @description Financial Modeling Prep (FMP) API client for stock market data retrieval
+ * @description FMP (Financial Modeling Prep) API client for financial data retrieval
  *
  * PURPOSE:
- * - Provides a reliable alternative to yahoo-finance2 for Vercel serverless deployments
- * - Implements FMP API integration with simple API key authentication that bypasses
- *   the cookie/crumb authentication issues encountered with Yahoo Finance on Vercel
- * - Delivers essential stock data: profiles, historical prices, analyst ratings,
- *   upgrades/downgrades, and earnings information
- * - Handles rate limiting (150ms between requests) and retry logic (max 2 retries
- *   with exponential backoff) to ensure reliable API consumption
+ * - Provides a TypeScript client for the Financial Modeling Prep API
+ * - Replaces yahoo-finance2 for Vercel-deployed serverless routes
+ * - Implements API key authentication that works in serverless environments
+ * - Handles rate limiting (150ms between requests) and retry logic (max 2 retries)
+ * - Fetches stock profiles, historical prices, analyst ratings, upgrades/downgrades, and earnings data
+ * - Processes FMP-specific error responses (200 status with error messages)
  *
  * EXPORTS:
- * - Types: FMPProfile, FMPHistoricalPrice, FMPUpgradeDowngrade, 
- *   FMPAnalystRecommendation, FMPEarning
- * - Functions: getProfile(), getHistoricalPrices(), getUpgradesDowngrades(),
- *   getAnalystRecommendation(), getEarnings(), parseRange()
- * - Default: fmpClient object containing all public methods
+ * - getProfile(symbol): Fetch company profile and current market data
+ * - getHistoricalPrices(symbol, from, to): Retrieve historical OHLCV data
+ * - getUpgradesDowngrades(symbol): Get analyst upgrades/downgrades
+ * - getAnalystRecommendation(symbol): Fetch most recent analyst recommendation summary
+ * - getEarnings(symbol, limit): Retrieve earnings history (actual vs. estimated)
+ * - parseRange(range): Parse FMP range string "123.45-234.56" into {low, high}
+ * - FMPProfile, FMPHistoricalPrice, FMPUpgradeDowngrade, FMPAnalystRecommendation, FMPEarning (TypeScript interfaces)
+ * - default: Object containing all exported functions
  *
  * CLAUDE NOTES:
- * - Requires FMP_API_KEY environment variable; gracefully returns null when missing
- * - Rate limiting implemented via lastRequestTime tracking and 150ms delay enforcement
- * - Handles FMP's unusual error format: 200 OK responses with {"Error Message": "..."}
- * - Retry logic specifically handles 429 rate limit responses with backoff
- * - All fetch operations include User-Agent header and comprehensive error logging
- * - parseRange() utility handles FMP's "low-high" range string format
- * - API responses are typed interfaces matching FMP's data structure
- * - Null-safe: all functions return null or empty arrays on failure rather than throwing
+ * - Requires FMP_API_KEY environment variable
+ * - All fetch functions return null on error (except array-returning functions which return [])
+ * - Rate limiting enforced at 150ms minimum between requests
+ * - Retries on 429 (rate limit) with exponential backoff (1s, 2s)
+ * - FMP API docs: https://site.financialmodelingprep.com/developer/docs
+ * - Base URL: https://financialmodelingprep.com
+ * - User-Agent set to "SEC Filing Analyzer"
  */
-```
 
 /**
  * FMP (Financial Modeling Prep) API Client

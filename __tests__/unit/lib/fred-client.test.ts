@@ -1,37 +1,28 @@
-```typescript
 /**
  * @module fred-client.test
- * 
- * @description
- * Unit tests for the FRED (Federal Reserve Economic Data) API client module.
- * Tests the retrieval and parsing of treasury rates, yield curves, and historical
- * economic data from the St. Louis Federal Reserve's FRED API.
- * 
+ * @description Test suite for FRED (Federal Reserve Economic Data) API client functions
+ *
  * PURPOSE:
- * - Verify correct fetching and parsing of treasury rates (Fed Funds, 3M, 2Y, 10Y)
- * - Test yield curve calculation (2Y-10Y spread) with proper decimal precision
- * - Validate handling of missing data markers ("." values from FRED)
- * - Ensure graceful error handling for network failures and API errors
- * - Verify weekend/holiday data backfill logic using most recent business day
- * - Test historical data retrieval and date range processing
- * - Confirm proper handling of missing API keys and authentication
- * 
+ * - Validates treasury rate fetching from FRED API (getTreasuryRates)
+ * - Tests historical treasury data retrieval and date range handling (getTreasuryHistory)
+ * - Verifies lookback logic for extracting specific historical rates (getTreasury10yFromHistory)
+ * - Ensures proper error handling for missing API keys, network failures, and malformed responses
+ * - Validates weekend/holiday data backfilling using nearest prior business day values
+ * - Tests yield curve calculation and decimal precision handling
+ *
  * EXPORTS:
- * - Test suites for getTreasuryRates() function
- * - Test suites for getTreasuryHistory() function
- * - Test suites for getTreasury10yFromHistory() function
- * - Mock utilities for FRED API responses
- * 
+ * None (test file)
+ *
  * CLAUDE NOTES:
- * - Uses Vitest's global fetch mocking via vi.stubGlobal()
- * - Mock must be established before importing the module under test
- * - Tests validate 3 decimal precision for yield curve calculations
- * - Lookback window of up to 5 days handles weekend/holiday gaps
- * - FRED returns "." string to indicate missing/unavailable data points
- * - All functions gracefully degrade to null values on errors
- * - Test coverage includes edge cases: empty responses, null values, network errors
+ * - Uses Vitest for test framework with global fetch mocking via vi.stubGlobal
+ * - Mock must be defined before importing fred-client module to intercept fetch calls
+ * - Tests cover FRED API's "." notation for missing data points (weekends/holidays)
+ * - Validates lookback window logic (up to 5 days) for finding valid historical data
+ * - Helper function makeFredResponse() constructs mock FRED API observation responses
+ * - All tests verify graceful degradation (returns null) for error conditions
+ * - Test data uses future dates (2026) to avoid conflicts with real historical data
+ * - Yield curve calculation tested with 3 decimal precision (10y - 2y spread)
  */
-```
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 

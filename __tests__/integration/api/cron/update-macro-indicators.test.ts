@@ -1,38 +1,36 @@
-```typescript
 /**
  * @module update-macro-indicators.test
- * @description Test suite for the update-macro-indicators cron job API route
+ * @description Test suite for the update-macro-indicators cron job API endpoint
  *
  * PURPOSE:
- * - Validates authentication mechanisms (Bearer token and Vercel cron user-agent)
- * - Tests successful macro indicator data fetching from FMP (SPY, VIXY, sector ETFs)
- * - Tests successful treasury rates fetching from FRED API
- * - Verifies database upsert operations for macro indicators
- * - Tests calculation of derived metrics (returns, changes, yield curve)
- * - Validates error handling for FMP and FRED API failures
- * - Tests cron job tracking lifecycle (creation, completion, failure states)
- * - Verifies cleanup of stuck/stale running jobs
- * - Tests graceful degradation when partial data is unavailable
+ * - Validates authentication and authorization for the macro indicators cron job
+ * - Tests fetching and calculation of market data (SPX, VIX, sector ETFs)
+ * - Tests integration with FRED API for treasury rates and yield curve data
+ * - Tests integration with FMP API for historical price and profile data
+ * - Verifies database persistence of macro indicators with treasury fields
+ * - Tests error handling for external API failures (FRED, FMP)
+ * - Validates cron job tracking lifecycle (create, update, cleanup)
+ * - Tests calculation of derived metrics (30-day treasury rate changes, returns)
  *
  * EXPORTS:
- * - None (test suite only)
+ * - Test suite: 'GET /api/cron/update-macro-indicators'
+ * - Helper function: makeRequest() - Creates NextRequest with optional headers
+ * - Helper function: makeAuthRequest() - Creates authenticated NextRequest
+ * - Helper function: makeMockHistory() - Generates mock historical price data
+ * - Mock data: MOCK_TREASURY_RATES - Current treasury rate fixture
+ * - Mock data: MOCK_TREASURY_RATES_30D_AGO - Historical treasury rate fixture
  *
  * CLAUDE NOTES:
- * - Uses vitest mocking with vi.hoisted() to hoist mocks before imports
- * - Mocks both FMP client (getProfile, getHistoricalPrices) and FRED client (getTreasuryRates)
- * - Mocks Prisma client using prismaMock for database operations
- * - Tests two authentication methods: Bearer token and vercel-cron user-agent
- * - Generates 45 days of mock historical price data for calculating returns
- * - Tests parallel fetching of FMP and FRED data sources
- * - Validates treasury rate change calculations (treasury10yChange30d = current - 30d ago)
- * - Tests sector ETF data fetching (XLK, XLF, XLE, XLV) in addition to SPY/VIXY
- * - Verifies null handling when external APIs fail (graceful degradation)
- * - Tests both per-date error handling and overall job failure scenarios
- * - Validates job tracking with status transitions (running → success/failed)
- * - Uses beforeEach to reset all mocks and set up default successful responses
- * - Tests edge cases like partial FRED failures (today succeeds, 30d ago fails)
+ * - Uses vi.hoisted() to ensure mocks are initialized before imports
+ * - Mocks both @/lib/fmp-client and @/lib/fred-client for isolated testing
+ * - Tests parallel data fetching from multiple external APIs
+ * - Validates graceful degradation when external APIs fail
+ * - Tests both complete failures and partial failures (e.g., today succeeds, 30d-ago fails)
+ * - Covers edge cases: missing data, rate limiting, DB write failures
+ * - Verifies job tracking cleanup of stuck jobs from previous runs
+ * - Tests processing of 2 dates (today + yesterday) as per route implementation
+ * - Mock history generator creates 45 days of data for return calculations
  */
-```
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { prismaMock } from '../../../mocks/prisma';
