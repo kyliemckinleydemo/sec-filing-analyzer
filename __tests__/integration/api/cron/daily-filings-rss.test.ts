@@ -1,3 +1,42 @@
+```typescript
+/**
+ * @module daily-filings-rss.test
+ * @description Test suite for the daily filings RSS cron job API endpoint
+ *
+ * PURPOSE:
+ * Validates the /api/cron/daily-filings-rss endpoint which:
+ * - Fetches recent SEC filings from RSS feeds
+ * - Stores new filings and company data in the database
+ * - Handles catch-up mode for missed filings (>2 days gap)
+ * - Supplements RSS data with SEC daily index files
+ * - Manages job execution tracking and supervisor checks
+ * - Flushes prediction cache for affected companies
+ *
+ * EXPORTS:
+ * - Test suite with 24 test cases covering:
+ *   * Authentication and authorization (CRON_SECRET, Vercel cron agent)
+ *   * Successful filing ingestion from RSS feeds
+ *   * Database operations (company/filing upserts)
+ *   * Catch-up mode triggering and execution
+ *   * Daily index supplementation and deduplication
+ *   * Job tracking (cronJobRun lifecycle)
+ *   * Supervisor integration
+ *   * Error handling and edge cases
+ *   * Prediction cache invalidation
+ *   * Weekend/weekday logic
+ *
+ * CLAUDE NOTES:
+ * - Uses Vitest with mocked Prisma client and external dependencies
+ * - Tests both "daily mode" (normal RSS polling) and "catch-up mode" (backfilling missed days)
+ * - Validates that Yahoo Finance updates have been removed from this cron job
+ * - Ensures daily index files supplement RSS data only on weekdays in daily mode
+ * - Verifies deduplication logic between RSS and daily index sources
+ * - Confirms prediction cache is flushed only for companies with new filings
+ * - Tests stuck job cleanup, supervisor checks, and cronJobRun status tracking
+ * - Mock fixtures (MOCK_RSS_FILING, MOCK_RSS_FILING_2) simulate SEC filing data
+ */
+```
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { prismaMock } from '../../../mocks/prisma';
 import { MOCK_RSS_FILING, MOCK_RSS_FILING_2 } from '../../../fixtures/cron-data';
@@ -7,6 +46,7 @@ vi.mock('@/lib/sec-rss-client', () => ({
   secRSSClient: {
     fetchRecentFilingsFromRSS: vi.fn().mockResolvedValue([]),
     fetchMissedDays: vi.fn().mockResolvedValue([]),
+    fetchFromDailyIndex: vi.fn().mockResolvedValue([]),
   },
 }));
 
@@ -299,5 +339,104 @@ describe('GET /api/cron/daily-filings-rss', () => {
         }),
       })
     );
+  });
+
+  // --- Daily index supplement ---
+
+  it('supplements RSS with yesterday daily index in daily mode', async () => {
+    // Set to a weekday so yesterday is also a weekday
+    const wednesday = new Date('2026-02-18T15:00:00Z'); // Wednesday
+    vi.setSystemTime(wednesday);
+
+    vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([MOCK_RSS_FILING] as any);
+    vi.mocked(secRSSClient.fetchFromDailyIndex).mockResolvedValue([MOCK_RSS_FILING_2] as any);
+
+    prismaMock.company.upsert.mockResolvedValue({ id: 'company-001' });
+    prismaMock.filing.upsert.mockResolvedValue({});
+
+    const res = await GET(makeAuthRequest());
+    const body = await res.json();
+
+    expect(body.success).toBe(true);
+    // RSS returned 1, daily index returned 1 (different accession) = 2 total
+    expect(body.results.fetched).toBe(2);
+    expect(secRSSClient.fetchFromDailyIndex).toHaveBeenCalled();
+
+    vi.useRealTimers();
+  });
+
+  it('deduplicates filings from RSS and daily index', async () => {
+    const wednesday = new Date('2026-02-18T15:00:00Z');
+    vi.setSystemTime(wednesday);
+
+    // Same filing in both RSS and daily index
+    vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([MOCK_RSS_FILING] as any);
+    vi.mocked(secRSSClient.fetchFromDailyIndex).mockResolvedValue([MOCK_RSS_FILING] as any);
+
+    prismaMock.company.upsert.mockResolvedValue({ id: 'company-001' });
+    prismaMock.filing.upsert.mockResolvedValue({});
+
+    const res = await GET(makeAuthRequest());
+    const body = await res.json();
+
+    expect(body.success).toBe(true);
+    // Should deduplicate by accessionNumber — only 1 unique filing
+    expect(body.results.fetched).toBe(1);
+
+    vi.useRealTimers();
+  });
+
+  it('handles daily index failure gracefully', async () => {
+    const wednesday = new Date('2026-02-18T15:00:00Z');
+    vi.setSystemTime(wednesday);
+
+    vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([MOCK_RSS_FILING] as any);
+    vi.mocked(secRSSClient.fetchFromDailyIndex).mockRejectedValue(new Error('SEC server error'));
+
+    prismaMock.company.upsert.mockResolvedValue({ id: 'company-001' });
+    prismaMock.filing.upsert.mockResolvedValue({});
+
+    const res = await GET(makeAuthRequest());
+    const body = await res.json();
+
+    // Should still succeed with just RSS filings
+    expect(body.success).toBe(true);
+    expect(body.results.fetched).toBe(1);
+
+    vi.useRealTimers();
+  });
+
+  it('skips daily index on weekends (Saturday yesterday)', async () => {
+    // Set to Sunday so yesterday is Saturday
+    const sunday = new Date('2026-02-22T15:00:00Z'); // Sunday
+    vi.setSystemTime(sunday);
+
+    vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([]);
+
+    const res = await GET(makeAuthRequest());
+    const body = await res.json();
+
+    expect(body.success).toBe(true);
+    // Should NOT call daily index on weekends
+    expect(secRSSClient.fetchFromDailyIndex).not.toHaveBeenCalled();
+
+    vi.useRealTimers();
+  });
+
+  it('does not call daily index in catch-up mode', async () => {
+    const fiveDaysAgo = new Date();
+    fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+    prismaMock.filing.findFirst.mockResolvedValue({ filingDate: fiveDaysAgo });
+
+    vi.mocked(secRSSClient.fetchMissedDays).mockResolvedValue([MOCK_RSS_FILING] as any);
+    vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([]);
+
+    prismaMock.company.upsert.mockResolvedValue({ id: 'company-001' });
+    prismaMock.filing.upsert.mockResolvedValue({});
+
+    await GET(makeAuthRequest());
+
+    // Daily index supplement only runs in daily mode, not catch-up
+    expect(secRSSClient.fetchFromDailyIndex).not.toHaveBeenCalled();
   });
 });
