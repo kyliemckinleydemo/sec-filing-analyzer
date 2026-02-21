@@ -1,39 +1,41 @@
 ```typescript
 /**
  * @module daily-filings-rss.test
- * @description Test suite for the daily filings RSS cron job API endpoint
- *
+ * @description Test suite for the daily filings RSS feed cron job API endpoint.
+ * 
  * PURPOSE:
- * Validates the /api/cron/daily-filings-rss endpoint which:
- * - Fetches recent SEC filings from RSS feeds
- * - Stores new filings and company data in the database
- * - Handles catch-up mode for missed filings (>2 days gap)
- * - Supplements RSS data with SEC daily index files
- * - Manages job execution tracking and supervisor checks
- * - Flushes prediction cache for affected companies
- *
+ * - Validates authentication and authorization for the cron endpoint
+ * - Tests daily filings ingestion from SEC RSS feeds
+ * - Verifies catch-up mode triggering when filings are stale (>2 days old)
+ * - Ensures proper job tracking (cronJobRun creation, updates, error handling)
+ * - Tests supervisor checks integration after job completion
+ * - Validates prediction cache flushing for affected companies
+ * - Tests daily index supplementation to fill RSS feed gaps
+ * - Verifies deduplication between RSS and daily index sources
+ * - Tests weekend and holiday handling for daily index fetching
+ * - Validates graceful error handling for individual filing failures
+ * - Tests stuck job cleanup before job execution
+ * 
  * EXPORTS:
- * - Test suite with 24 test cases covering:
- *   * Authentication and authorization (CRON_SECRET, Vercel cron agent)
- *   * Successful filing ingestion from RSS feeds
- *   * Database operations (company/filing upserts)
- *   * Catch-up mode triggering and execution
- *   * Daily index supplementation and deduplication
- *   * Job tracking (cronJobRun lifecycle)
- *   * Supervisor integration
- *   * Error handling and edge cases
- *   * Prediction cache invalidation
- *   * Weekend/weekday logic
- *
+ * - Test suite: GET /api/cron/daily-filings-rss
+ *   - Auth: Unauthorized access, CRON_SECRET validation, Vercel cron user agent
+ *   - Success: RSS feed processing, filing storage, multiple sources
+ *   - Catch-up: Stale filing detection, missed days backfill, hybrid mode
+ *   - Job tracking: cronJobRun lifecycle, success/failure logging
+ *   - Prediction cache: Selective flushing for affected companies
+ *   - Daily index: Yesterday's supplement, deduplication, error handling
+ *   - Edge cases: Empty feeds, Prisma errors, weekend handling
+ * 
  * CLAUDE NOTES:
- * - Uses Vitest with mocked Prisma client and external dependencies
- * - Tests both "daily mode" (normal RSS polling) and "catch-up mode" (backfilling missed days)
- * - Validates that Yahoo Finance updates have been removed from this cron job
- * - Ensures daily index files supplement RSS data only on weekdays in daily mode
- * - Verifies deduplication logic between RSS and daily index sources
- * - Confirms prediction cache is flushed only for companies with new filings
- * - Tests stuck job cleanup, supervisor checks, and cronJobRun status tracking
- * - Mock fixtures (MOCK_RSS_FILING, MOCK_RSS_FILING_2) simulate SEC filing data
+ * - Comprehensive mocking setup for Prisma, SEC RSS client, and supervisor
+ * - Uses vitest for test framework with beforeEach cleanup
+ * - Tests both "daily mode" (recent filings exist) and "catch-up mode" (stale data)
+ * - Validates that Yahoo Finance updates are skipped (handled by separate cron)
+ * - Daily index supplementation only runs on weekdays in daily mode
+ * - Prediction cache flush is scoped to only companies with new filings
+ * - Time-based tests use vi.setSystemTime() for deterministic weekday/weekend testing
+ * - Tests verify individual filing errors don't fail entire job
+ * - Validates supervisor integration runs after successful completion
  */
 ```
 

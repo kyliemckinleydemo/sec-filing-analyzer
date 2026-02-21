@@ -1,3 +1,36 @@
+```typescript
+/**
+ * @module fmp-client
+ * @description Financial Modeling Prep (FMP) API client for stock market data retrieval
+ *
+ * PURPOSE:
+ * - Provides a reliable alternative to yahoo-finance2 for Vercel serverless deployments
+ * - Implements FMP API integration with simple API key authentication that bypasses
+ *   the cookie/crumb authentication issues encountered with Yahoo Finance on Vercel
+ * - Delivers essential stock data: profiles, historical prices, analyst ratings,
+ *   upgrades/downgrades, and earnings information
+ * - Handles rate limiting (150ms between requests) and retry logic (max 2 retries
+ *   with exponential backoff) to ensure reliable API consumption
+ *
+ * EXPORTS:
+ * - Types: FMPProfile, FMPHistoricalPrice, FMPUpgradeDowngrade, 
+ *   FMPAnalystRecommendation, FMPEarning
+ * - Functions: getProfile(), getHistoricalPrices(), getUpgradesDowngrades(),
+ *   getAnalystRecommendation(), getEarnings(), parseRange()
+ * - Default: fmpClient object containing all public methods
+ *
+ * CLAUDE NOTES:
+ * - Requires FMP_API_KEY environment variable; gracefully returns null when missing
+ * - Rate limiting implemented via lastRequestTime tracking and 150ms delay enforcement
+ * - Handles FMP's unusual error format: 200 OK responses with {"Error Message": "..."}
+ * - Retry logic specifically handles 429 rate limit responses with backoff
+ * - All fetch operations include User-Agent header and comprehensive error logging
+ * - parseRange() utility handles FMP's "low-high" range string format
+ * - API responses are typed interfaces matching FMP's data structure
+ * - Null-safe: all functions return null or empty arrays on failure rather than throwing
+ */
+```
+
 /**
  * FMP (Financial Modeling Prep) API Client
  *
@@ -154,7 +187,7 @@ export async function getHistoricalPrices(
   from: string,
   to: string
 ): Promise<FMPHistoricalPrice[]> {
-  const data = await fmpFetch<FMPHistoricalPrice[]>('/stable/historical-price-eod/light', {
+  const data = await fmpFetch<FMPHistoricalPrice[]>('/stable/historical-price-eod/full', {
     symbol,
     from,
     to,

@@ -4,29 +4,33 @@
  * @description Test suite for the update-macro-indicators cron job API route
  *
  * PURPOSE:
- * - Validates the update-macro-indicators cron endpoint authentication and authorization
- * - Tests fetching and processing of macro market data from FMP (Financial Modeling Prep) API
- * - Tests fetching and processing of treasury rate data from FRED (Federal Reserve Economic Data) API
- * - Verifies correct calculation of market indicators (SPX, VIX, sector ETFs, treasury rates)
- * - Ensures proper error handling for external API failures (FMP, FRED)
- * - Validates database persistence of macro indicators for current and previous day
- * - Tests cron job tracking and cleanup of stuck jobs
- * - Verifies parallel data fetching and proper null handling for missing data
+ * - Validates authentication mechanisms (Bearer token and Vercel cron user-agent)
+ * - Tests successful macro indicator data fetching from FMP (SPY, VIXY, sector ETFs)
+ * - Tests successful treasury rates fetching from FRED API
+ * - Verifies database upsert operations for macro indicators
+ * - Tests calculation of derived metrics (returns, changes, yield curve)
+ * - Validates error handling for FMP and FRED API failures
+ * - Tests cron job tracking lifecycle (creation, completion, failure states)
+ * - Verifies cleanup of stuck/stale running jobs
+ * - Tests graceful degradation when partial data is unavailable
  *
  * EXPORTS:
- * - None (Vitest test suite)
+ * - None (test suite only)
  *
  * CLAUDE NOTES:
- * - Uses vi.hoisted() to mock external API clients (FMP, FRED) before imports
- * - Mocks Prisma client for database operations (upsert, job tracking)
- * - Tests both FMP and FRED data integration in the macro indicators pipeline
- * - Validates treasury rate change calculations (e.g., treasury10yChange30d)
- * - Tests graceful degradation when external APIs fail (stores null values)
- * - Includes auth tests for both bearer token and Vercel cron user-agent
- * - Helper functions generate realistic mock historical price data
- * - Tests process 2 dates (today + yesterday) as per route implementation
- * - Validates sector ETF data fetching (XLK, XLF, XLE, XLV)
- * - beforeEach resets all mocks and sets up default successful responses
+ * - Uses vitest mocking with vi.hoisted() to hoist mocks before imports
+ * - Mocks both FMP client (getProfile, getHistoricalPrices) and FRED client (getTreasuryRates)
+ * - Mocks Prisma client using prismaMock for database operations
+ * - Tests two authentication methods: Bearer token and vercel-cron user-agent
+ * - Generates 45 days of mock historical price data for calculating returns
+ * - Tests parallel fetching of FMP and FRED data sources
+ * - Validates treasury rate change calculations (treasury10yChange30d = current - 30d ago)
+ * - Tests sector ETF data fetching (XLK, XLF, XLE, XLV) in addition to SPY/VIXY
+ * - Verifies null handling when external APIs fail (graceful degradation)
+ * - Tests both per-date error handling and overall job failure scenarios
+ * - Validates job tracking with status transitions (running → success/failed)
+ * - Uses beforeEach to reset all mocks and set up default successful responses
+ * - Tests edge cases like partial FRED failures (today succeeds, 30d ago fails)
  */
 ```
 

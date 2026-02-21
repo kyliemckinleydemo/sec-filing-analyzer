@@ -1,30 +1,35 @@
 ```typescript
 /**
  * @module fred-client.test
- * @description Unit tests for the FRED API client that fetches Treasury rates and Federal Reserve economic data
- *
+ * 
+ * @description
+ * Unit tests for the FRED (Federal Reserve Economic Data) API client module.
+ * Tests the retrieval and parsing of treasury rates, yield curves, and historical
+ * economic data from the St. Louis Federal Reserve's FRED API.
+ * 
  * PURPOSE:
- * - Verify correct fetching and parsing of Treasury rates from FRED API
- * - Test handling of missing data ("." values) and empty responses
- * - Validate yield curve calculation (2y-10y spread) with proper precision
- * - Ensure graceful error handling for network failures and HTTP errors
- * - Test historical data retrieval and date range handling
- * - Verify weekend/holiday date filling using lookback logic
- * - Test API key validation and missing environment variable handling
- *
+ * - Verify correct fetching and parsing of treasury rates (Fed Funds, 3M, 2Y, 10Y)
+ * - Test yield curve calculation (2Y-10Y spread) with proper decimal precision
+ * - Validate handling of missing data markers ("." values from FRED)
+ * - Ensure graceful error handling for network failures and API errors
+ * - Verify weekend/holiday data backfill logic using most recent business day
+ * - Test historical data retrieval and date range processing
+ * - Confirm proper handling of missing API keys and authentication
+ * 
  * EXPORTS:
- * - No exports (test suite only)
- *
+ * - Test suites for getTreasuryRates() function
+ * - Test suites for getTreasuryHistory() function
+ * - Test suites for getTreasury10yFromHistory() function
+ * - Mock utilities for FRED API responses
+ * 
  * CLAUDE NOTES:
- * - Uses Vitest framework with mocked global fetch
- * - Mock must be configured BEFORE importing the module under test
- * - Tests cover four FRED series: DFF (Fed Funds), DGS3MO (3-month), DGS2 (2-year), DGS10 (10-year)
- * - FRED returns "." for missing/weekend data - tests verify conversion to null
- * - Yield curve calculation uses 3 decimal precision (10y - 2y)
- * - Historical data includes 5-day lookback window for weekend/holiday gaps
- * - Helper function makeFredResponse() creates mock FRED API response structure
- * - Each test suite section resets mocks and sets test API key in beforeEach
- * - Tests verify both happy path and error scenarios (network, HTTP, missing data)
+ * - Uses Vitest's global fetch mocking via vi.stubGlobal()
+ * - Mock must be established before importing the module under test
+ * - Tests validate 3 decimal precision for yield curve calculations
+ * - Lookback window of up to 5 days handles weekend/holiday gaps
+ * - FRED returns "." string to indicate missing/unavailable data points
+ * - All functions gracefully degrade to null values on errors
+ * - Test coverage includes edge cases: empty responses, null values, network errors
  */
 ```
 
