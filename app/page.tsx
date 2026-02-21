@@ -1,3 +1,32 @@
+/**
+ * @module page
+ * @description Main home/landing page component for the StockHuntr application
+ * 
+ * PURPOSE:
+ * - Serves dual purpose as authenticated user dashboard and marketing landing page
+ * - Provides quick access to key features: watchlist, recent filings, top signals, and search
+ * - Displays personalized content for logged-in users (dashboard view)
+ * - Shows comprehensive marketing content for non-authenticated visitors (landing view)
+ * - Acts as the primary entry point and navigation hub for the application
+ * 
+ * EXPORTS:
+ * - default: Home - Main page component that conditionally renders dashboard or marketing content
+ * 
+ * CLAUDE NOTES:
+ * - Client component using Next.js 13+ App Router ('use client' directive)
+ * - Implements conditional rendering based on authentication state
+ * - Dashboard view includes: user stats, watchlist with real-time prices, recent filings feed, top trading signals
+ * - Marketing view includes: hero section, feature highlights, AI chat showcase, comparison tables, legal disclaimers
+ * - Integrates multiple API endpoints: /api/auth/me, /api/watchlist, /api/filings/latest, /api/filings/top-signals, /api/stock-prices
+ * - Features autocomplete search with debounced API calls to /api/companies/search
+ * - Uses custom components: Button, Card variants, CompanySnapshotTooltip
+ * - Implements real-time stock price updates and filing status indicators
+ * - Contains extensive TypeScript interfaces for type safety across API responses
+ * - Responsive design with grid layouts optimized for mobile and desktop
+ * - Includes alpha predictions, concern levels, and analyst tracking features
+ * - Marketing content emphasizes AI-powered analysis, 30-day alpha predictions, and chat functionality
+ */
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -764,8 +793,64 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Features - Compact Version for Marketing Page */}
+        {/* AI Chat Showcase */}
         <section className="mt-16 pt-14 pb-14 border-t border-[rgba(31,41,55,0.85)]">
+          <div className="grid md:grid-cols-[1fr_1.1fr] gap-10 items-start">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgba(15,23,42,0.85)] border border-white/40 text-muted-foreground text-xs uppercase tracking-[0.12em] mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                AI Chat
+              </div>
+              <h2 className="text-3xl font-bold tracking-tight mb-3">Ask anything about any filing.</h2>
+              <p className="text-muted-foreground mb-5 max-w-md">
+                No jargon. No digging through 200-page documents. Just ask a question in plain English and get a clear, cited answer from the actual SEC filing.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  onClick={() => router.push('/chat')}
+                  size="lg"
+                  className="bg-gradient-to-br from-cyan-500 to-blue-600 text-white font-semibold shadow-[0_14px_30px_rgba(34,211,238,0.25)] hover:brightness-110"
+                >
+                  Try AI Chat
+                </Button>
+                <Button
+                  onClick={() => router.push('/query')}
+                  variant="outline"
+                  className="border-white/45"
+                >
+                  Screen Stocks with NL Query
+                </Button>
+              </div>
+            </div>
+
+            {/* Example Questions */}
+            <div className="space-y-3">
+              <div className="text-xs text-muted-foreground uppercase tracking-wider mb-2 font-medium">Try asking questions like these:</div>
+              {[
+                { q: "What were Apple's key risk factors in their latest 10-K?", icon: "🔍" },
+                { q: "Did Tesla mention any new factory plans in their 8-K?", icon: "🏭" },
+                { q: "Summarize Microsoft's revenue growth from their last 10-Q", icon: "📊" },
+                { q: "What did NVIDIA say about AI chip demand in their earnings filing?", icon: "🤖" },
+                { q: "Are there any executive compensation changes in Amazon's proxy?", icon: "💰" },
+                { q: "Compare JPMorgan's loan loss provisions quarter over quarter", icon: "🏦" },
+              ].map((item, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => router.push('/chat')}
+                  className="w-full text-left p-3 rounded-lg bg-[rgba(15,23,42,0.8)] border border-white/10 hover:border-cyan-500/40 transition-all group"
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-lg mt-0.5">{item.icon}</span>
+                    <span className="text-sm text-gray-300 group-hover:text-white transition-colors">"{item.q}"</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Features - Compact Version for Marketing Page */}
+        <section className="mt-0 pt-14 pb-14 border-t border-[rgba(31,41,55,0.85)]">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold tracking-tight mb-3">Everything you need to analyze SEC filings</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -793,7 +878,7 @@ export default function Home() {
                 </div>
                 <CardTitle className="text-white">Chat with Filings</CardTitle>
                 <CardDescription>
-                  Ask questions in plain English and get instant answers from SEC documents
+                  Ask questions in plain English and get instant, cited answers from 10-K, 10-Q, and 8-K documents
                 </CardDescription>
               </CardHeader>
             </Card>
