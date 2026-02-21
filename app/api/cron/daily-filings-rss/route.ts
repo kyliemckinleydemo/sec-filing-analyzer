@@ -1,3 +1,37 @@
+/**
+ * @module app/api/cron/daily-filings-rss/route
+ * @description Next.js API route handling scheduled daily fetches of SEC filings via RSS feed with intelligent catch-up for missed days
+ *
+ * PURPOSE:
+ * - Authenticate requests from Vercel Cron or Bearer token against CRON_SECRET environment variable
+ * - Fetch recent SEC filings using RSS feed for today and daily index files for missed days exceeding 2-day gap
+ * - Upsert company and filing records to database with accessionNumber as unique identifier
+ * - Flush cached predictions only for companies receiving new filings to trigger ML model recalculation
+ * - Track execution in cronJobRun table with status, counts, and auto-cleanup of stuck jobs older than 10 minutes
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextResponse for JSON API responses with status codes
+ * - @/lib/prisma - Database client for cronJobRun, company, filing, and prediction table operations
+ * - @/lib/sec-rss-client - Exposes fetchRecentFilingsFromRSS() and fetchMissedDays() for SEC data retrieval
+ * - @/lib/supervisor - Runs runSupervisorChecks() health monitoring after successful completion
+ *
+ * EXPORTS:
+ * - dynamic (const) - Set to 'force-dynamic' to prevent Next.js static generation at build time
+ * - GET (function) - Async handler returning NextResponse with filings fetched/stored counts and supervisor report
+ *
+ * PATTERNS:
+ * - Configure vercel.json cron trigger to call this route on schedule with appropriate headers
+ * - Set CRON_SECRET environment variable for Bearer token authentication outside Vercel Cron
+ * - Route automatically switches to catch-up mode when mostRecentFiling.filingDate exceeds 2 days old
+ * - Handles cold database starts with 30-day lookback when no filings exist in database
+ *
+ * CLAUDE NOTES:
+ * - Intentionally skips Yahoo Finance price updates to avoid rate limiting - delegates to separate update-stock-prices-batch cron job
+ * - Catch-up logic uses actual filing date gaps instead of cronJobRun timestamps to handle weekends without false positives
+ * - Prediction cache flush targets only affected companies (Set of companyIds from new filings) rather than full table scan
+ * - Stuck job cleanup uses 10-minute threshold to prevent phantom 'running' records from blocking subsequent executions
+ * - Returns 401 for missing auth but proceeds if user-agent contains 'vercel-cron/' string for platform integration
+ */
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { secRSSClient } from '@/lib/sec-rss-client';
@@ -141,9 +175,27 @@ export async function GET(request: Request) {
       const todayFilings = await secRSSClient.fetchRecentFilingsFromRSS();
       allFilings.push(...todayFilings);
     } else {
-      // DAILY MODE: Fetch from RSS feed (real-time)
+      // DAILY MODE: Fetch from RSS feed (real-time, but limited to 100 per form type)
       console.log('[Cron RSS] Daily mode: Fetching latest filings from RSS');
       allFilings = await secRSSClient.fetchRecentFilingsFromRSS();
+
+      // ALWAYS supplement with yesterday's daily index file to catch filings
+      // the RSS feed missed (RSS only returns 100 per form type, which isn't
+      // enough on busy filing days like earnings season)
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      if (yesterday.getDay() !== 0 && yesterday.getDay() !== 6) {
+        console.log('[Cron RSS] Supplementing with yesterday\'s daily index...');
+        try {
+          const indexFilings = await secRSSClient.fetchFromDailyIndex(yesterday);
+          const existingAccessions = new Set(allFilings.map(f => f.accessionNumber));
+          const newFromIndex = indexFilings.filter(f => !existingAccessions.has(f.accessionNumber));
+          allFilings.push(...newFromIndex);
+          console.log(`[Cron RSS] Daily index added ${newFromIndex.length} filings not in RSS feed`);
+        } catch (indexError: any) {
+          console.error(`[Cron RSS] Daily index fetch failed (non-fatal): ${indexError.message}`);
+        }
+      }
     }
 
     console.log(`[Cron RSS] Found ${allFilings.length} total filings`);
