@@ -1,3 +1,28 @@
+/**
+ * @module Navigation
+ * @description Main navigation header component for the StockHuntr application
+ * 
+ * PURPOSE:
+ * - Provides consistent site-wide navigation with branding and primary menu links
+ * - Displays user authentication state and profile access via UserMenu component
+ * - Offers quick access to core features: Query, Latest Filings, Watchlist, Alerts, AI Chat, and FAQ
+ * - Implements sticky header with glassmorphism styling for modern UI aesthetic
+ * - Routes users to various application sections via Next.js navigation
+ * 
+ * EXPORTS:
+ * - Navigation: Main navigation header component with responsive layout and interactive menu
+ * 
+ * CLAUDE NOTES:
+ * - Client-side component using Next.js 13+ App Router ('use client' directive)
+ * - Styled with Tailwind CSS featuring custom gradient effects and backdrop blur
+ * - Contains inline JSX styles for hover animations on navigation links
+ * - Logo includes radial gradient with cyan-to-green color scheme and shadow effects
+ * - Navigation items include title tooltips describing each section's functionality
+ * - Responsive design: full navigation hidden on mobile (<md breakpoint)
+ * - Tracks 640+ companies per badge label; may need updating if count changes
+ * - CTA button ("Start Free") directs to profile page for user onboarding
+ */
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -26,6 +51,9 @@ export function Navigation() {
         </div>
 
         <nav className="hidden md:flex items-center gap-5 text-sm text-muted-foreground">
+          <button onClick={() => router.push('/query')} className="hover-underline" title="Search and filter through all 640+ tracked companies">
+            Query
+          </button>
           <button onClick={() => router.push('/latest-filings')} className="hover-underline" title="Browse the most recent SEC filings from all tracked companies">
             Latest Filings
           </button>
@@ -34,9 +62,6 @@ export function Navigation() {
           </button>
           <button onClick={() => router.push('/alerts')} className="hover-underline" title="Manage your alert preferences and notification settings (requires signup)">
             Alerts
-          </button>
-          <button onClick={() => router.push('/query')} className="hover-underline" title="Search and filter through all 640+ tracked companies">
-            Companies
           </button>
           <button onClick={() => router.push('/chat')} className="hover-underline" title="Ask questions about company filings in plain English using AI">
             AI Chat

@@ -1,3 +1,36 @@
+/**
+ * @module page
+ * @description Natural Language Query Interface for Financial Data Screening
+ * 
+ * PURPOSE:
+ * Provides a conversational query interface for screening stocks and analyzing financial data
+ * across 640+ companies. Users can execute natural language queries to filter companies by
+ * fundamental metrics (dividends, P/E ratios, growth rates, beta), retrieve SEC filings,
+ * track analyst target price changes, and compare financial snapshots before/after key events.
+ * Supports advanced screening with pagination and multi-criteria filtering.
+ * 
+ * EXPORTS:
+ * - default: QueryPage - Main page component with search interface, example queries,
+ *   dynamic results rendering (companies, filings, snapshots, before/after comparisons),
+ *   pagination controls, and comprehensive data availability documentation
+ * 
+ * CLAUDE NOTES:
+ * - QueryResult interface handles 5+ result types: companies list, individual company,
+ *   filings, historical snapshots, and before/after comparisons with pagination metadata
+ * - Example queries demonstrate capabilities: dividend screening, growth filtering, valuation
+ *   analysis, sector-specific searches, and filing-based comparisons
+ * - Results section uses conditional rendering for different response types with specialized
+ *   layouts for each (company cards, filing lists, snapshot timelines, comparison views)
+ * - CompanySnapshotTooltip integration provides hover previews with real-time financial data
+ * - Pagination implemented for large result sets with page navigation UI
+ * - Available data section documents queryable fields across price/valuation, fundamentals,
+ *   dividends/risk, and SEC filings categories
+ * - Hero section emphasizes 640+ company coverage and advanced screening capabilities
+ * - Client-side component uses Next.js App Router with useRouter for navigation
+ * - API integration at /api/query endpoint handles natural language processing
+ * - Gradient-based design system with Lucide icons for visual categorization
+ */
+
 'use client';
 
 import { useState } from 'react';
@@ -21,8 +54,6 @@ interface QueryResult {
   pageSize?: number;
   currentPage?: number;
   totalPages?: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
 }
 
 export default function QueryPage() {
@@ -31,15 +62,6 @@ export default function QueryPage() {
   const [results, setResults] = useState<QueryResult | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const router = useRouter();
-
-  // Helper function to get sort indicator for a field
-  const getSortIndicator = (fieldName: string) => {
-    if (!results?.sortBy) return '';
-    if (results.sortBy === fieldName) {
-      return results.sortOrder === 'desc' ? ' ↓' : ' ↑';
-    }
-    return '';
-  };
 
   const exampleQueries = [
     {
@@ -493,39 +515,39 @@ export default function QueryPage() {
                             </div>
                               <div className="flex gap-4 text-sm flex-wrap">
                               {company.currentPrice && (
-                                <span className="text-slate-600">Price{getSortIndicator('currentPrice')}: <strong>${company.currentPrice.toFixed(2)}</strong></span>
+                                <span className="text-slate-600">Price: <strong>${company.currentPrice.toFixed(2)}</strong></span>
                               )}
                               {company.peRatio && (
-                                <span className="text-slate-600">P/E{getSortIndicator('peRatio')}: <strong>{company.peRatio.toFixed(2)}</strong></span>
+                                <span className="text-slate-600">P/E: <strong>{company.peRatio.toFixed(2)}</strong></span>
                               )}
                               {company.marketCap && (
                                 <span className="text-slate-600">
-                                  Market Cap{getSortIndicator('marketCap')}: <strong>${(company.marketCap / 1e9).toFixed(2)}B</strong>
+                                  Market Cap: <strong>${(company.marketCap / 1e9).toFixed(2)}B</strong>
                                 </span>
                               )}
                               {company.dividendYield != null && (
                                 <span className="text-slate-600">
-                                  Dividend Yield{getSortIndicator('dividendYield')}: <strong>{(company.dividendYield * 100).toFixed(2)}%</strong>
+                                  Dividend Yield: <strong>{(company.dividendYield * 100).toFixed(2)}%</strong>
                                 </span>
                               )}
                               {company.beta != null && (
                                 <span className="text-slate-600">
-                                  Beta{getSortIndicator('beta')}: <strong>{company.beta.toFixed(2)}</strong>
+                                  Beta: <strong>{company.beta.toFixed(2)}</strong>
                                 </span>
                               )}
                               {(company.revenueGrowth != null || company.latestRevenueYoY != null) && (
                                 <span className="text-slate-600">
-                                  Revenue Growth{getSortIndicator('latestRevenueYoY')}: <strong>{(company.revenueGrowth ?? company.latestRevenueYoY).toFixed(1)}%</strong>
+                                  Revenue Growth: <strong>{(company.revenueGrowth ?? company.latestRevenueYoY).toFixed(1)}%</strong>
                                 </span>
                               )}
                               {company.latestNetIncome != null && (
                                 <span className="text-slate-600">
-                                  Net Income{getSortIndicator('latestNetIncome')}: <strong>${(company.latestNetIncome / 1e9).toFixed(2)}B</strong>
+                                  Net Income: <strong>${(company.latestNetIncome / 1e9).toFixed(2)}B</strong>
                                 </span>
                               )}
                               {company.latestOperatingMargin != null && (
                                 <span className="text-slate-600">
-                                  Operating Margin{getSortIndicator('latestOperatingMargin')}: <strong>{company.latestOperatingMargin.toFixed(1)}%</strong>
+                                  Operating Margin: <strong>{company.latestOperatingMargin.toFixed(1)}%</strong>
                                 </span>
                               )}
                               {company.fiftyTwoWeekHigh != null && (
@@ -535,17 +557,17 @@ export default function QueryPage() {
                               )}
                               {company.upside != null && (
                                 <span className="text-green-600">
-                                  Upside{getSortIndicator('upsideValue')}: <strong>{company.upside}%</strong>
+                                  Upside: <strong>{company.upside}%</strong>
                                 </span>
                               )}
                               {company.analystTargetPrice != null && (
                                 <span className="text-slate-600">
-                                  Target{getSortIndicator('analystTargetPrice')}: <strong>${company.analystTargetPrice.toFixed(2)}</strong>
+                                  Target: <strong>${company.analystTargetPrice.toFixed(2)}</strong>
                                 </span>
                               )}
                               {company.previousTarget != null && company.latestTarget != null && company.changePercent != null && (
                                 <span className={company.change > 0 ? 'text-green-600' : 'text-red-600'}>
-                                  Target{getSortIndicator('changePercent')}: <strong>${company.previousTarget.toFixed(2)}</strong> → <strong>${company.latestTarget.toFixed(2)}</strong>
+                                  Target: <strong>${company.previousTarget.toFixed(2)}</strong> → <strong>${company.latestTarget.toFixed(2)}</strong>
                                   <span className="ml-1">({company.change > 0 ? '+' : ''}{company.changePercent.toFixed(1)}%)</span>
                                 </span>
                               )}
@@ -671,7 +693,7 @@ export default function QueryPage() {
       {/* Available Data Section */}
       <section className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-8">📊 Queryable Financial Data</h2>
+          <h2 className="text-2xl font-bold text-center mb-8 text-blue-900">Queryable Financial Data</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
               <CardHeader className="pb-3">
