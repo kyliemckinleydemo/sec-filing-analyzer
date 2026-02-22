@@ -64,7 +64,7 @@ export function Navigation() {
             Alerts
           </button>
           <button onClick={() => router.push('/chat')} className="hover-underline" title="Ask questions about company filings in plain English using AI">
-            AI Chat
+            Ask the Market
           </button>
           <button onClick={() => router.push('/faq')} className="hover-underline" title="Frequently asked questions and documentation">
             FAQ

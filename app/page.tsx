@@ -380,7 +380,7 @@ export default function Home() {
                 >
                   <span className="mr-2">💬</span>
                   <div>
-                    <div className="font-semibold">AI Chat</div>
+                    <div className="font-semibold">Ask the Market</div>
                     <div className="text-xs text-muted-foreground">Ask questions about filings in plain English</div>
                   </div>
                 </Button>
@@ -674,7 +674,7 @@ export default function Home() {
                 ⚠️ Analyst Tracking & Risk Scoring
               </span>
               <span className="text-xs px-2.5 py-1.5 rounded-full bg-[rgba(15,23,42,0.9)] border border-gray-600 text-gray-200">
-                💬 AI Chat with Filings
+                💬 Ask the Market
               </span>
               <span className="text-xs px-2.5 py-1.5 rounded-full bg-[rgba(15,23,42,0.9)] border border-gray-600 text-gray-200">
                 📈 30-Day Alpha Predictions
@@ -793,13 +793,13 @@ export default function Home() {
           </div>
         </section>
 
-        {/* AI Chat Showcase */}
+        {/* Ask the Market Showcase */}
         <section className="mt-16 pt-14 pb-14 border-t border-[rgba(31,41,55,0.85)]">
           <div className="grid md:grid-cols-[1fr_1.1fr] gap-10 items-start">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[rgba(15,23,42,0.85)] border border-white/40 text-muted-foreground text-xs uppercase tracking-[0.12em] mb-4">
                 <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-                AI Chat
+                Ask the Market
               </div>
               <h2 className="text-3xl font-bold tracking-tight mb-3">Ask anything about any filing.</h2>
               <p className="text-muted-foreground mb-5 max-w-md">
@@ -811,7 +811,7 @@ export default function Home() {
                   size="lg"
                   className="bg-gradient-to-br from-cyan-500 to-blue-600 text-white font-semibold shadow-[0_14px_30px_rgba(34,211,238,0.25)] hover:brightness-110"
                 >
-                  Try AI Chat
+                  Ask the Market
                 </Button>
                 <Button
                   onClick={() => router.push('/query')}
@@ -877,7 +877,7 @@ export default function Home() {
                 <div className="w-12 h-12 rounded-full bg-primary/20 border border-primary flex items-center justify-center mb-3 text-2xl">
                   💬
                 </div>
-                <CardTitle className="text-white">Chat with Filings</CardTitle>
+                <CardTitle className="text-white">Ask the Market</CardTitle>
                 <CardDescription>
                   Ask questions in plain English and get instant, cited answers from 10-K, 10-Q, and 8-K documents
                 </CardDescription>
@@ -1080,7 +1080,7 @@ export default function Home() {
                     <td className="text-white/70">–</td>
                   </tr>
                   <tr className="border-b border-[rgba(31,41,55,0.9)]">
-                    <td className="py-2">Chat with filings</td>
+                    <td className="py-2">Ask the Market (AI chat)</td>
                     <td className="text-primary">✓</td>
                     <td className="text-white/70">–</td>
                     <td className="text-white/70">–</td>

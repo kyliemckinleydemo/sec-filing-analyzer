@@ -1,6 +1,42 @@
+/**
+ * @module app/chat/page
+ * @description Next.js client component providing an AI-powered chat interface for analyzing company SEC filings, financial metrics, and sector-level data with streaming responses
+ *
+ * PURPOSE:
+ * - Render interactive chat UI allowing users to query company financials, SEC filings, and risk factors via natural language
+ * - Accept ticker symbols from URL parameters (?ticker=AAPL) to pre-populate company selection
+ * - Stream AI responses incrementally from /api/chat endpoint using ReadableStream decoder
+ * - Handle authentication errors by displaying friendly signup prompts with links to /profile
+ * - Provide sector-level analysis by allowing users to select from 11 predefined industry sectors
+ * - Auto-scroll to newest messages and maintain conversation history in component state
+ *
+ * DEPENDENCIES:
+ * - react - Provides useState for messages/input/loading state, useRef for scroll target, useEffect for URL param reading and auto-scroll
+ * - next/link - Renders navigation links to /profile in authentication error messages
+ * - next/navigation - useSearchParams reads ?ticker= URL parameter to auto-fill company selection
+ *
+ * EXPORTS:
+ * - ChatPage (component) - Default export wrapping ChatPageContent in Suspense boundary for Next.js app router compatibility
+ *
+ * PATTERNS:
+ * - Navigate to /chat?ticker=AAPL to pre-fill ticker input and start company-specific conversation
+ * - Enter ticker in input OR select sector from dropdown - setting one clears the other automatically
+ * - Submit question via form - streams response chunks by reading response.body with TextDecoder
+ * - Click example query buttons to auto-populate input field with pre-written questions
+ * - Authentication errors return JSON with requiresAuth:true or 401 status, displaying markdown signup prompt
+ *
+ * CLAUDE NOTES:
+ * - Uses optimistic UI updates - user message appears immediately before API call completes
+ * - Streaming response updates last message in array progressively as chunks arrive, creating typewriter effect
+ * - VALID_SECTORS hardcoded array must match backend sector validation to prevent errors
+ * - Ticker and sector are mutually exclusive - onChange handlers clear opposite field when either is set
+ * - messagesEndRef.current scrollIntoView triggers after every messages state update via useEffect dependency
+ * - Empty messages state shows comprehensive data availability guide with 4 categories (Financial, Stock, Risk, Company)
+ * - Error handling distinguishes between auth errors (friendly signup prompt) and other failures (generic error message)
+ */
 'use client';
 
-import { useState, useRef, useEffect, Suspense } from 'react';
+import { useState, useRef, useEffect, Suspense, useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
@@ -147,6 +183,13 @@ function ChatPageContent() {
     'How does the company describe their competitive advantages?',
   ];
 
+  // Memoize sector options to avoid re-rendering select options in a loop
+  const sectorOptions = useMemo(() => {
+    return VALID_SECTORS.map((s) => (
+      <option key={s} value={s}>{s}</option>
+    ));
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b border-gray-200">
@@ -154,7 +197,7 @@ function ChatPageContent() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                💬 Analyze a Company's Filings & Fundamentals
+                💬 Ask the Market
               </h1>
               <p className="text-sm text-gray-600 mt-1">
                 Ask questions about any company's SEC filings, financials, and risk — or explore an entire sector
@@ -199,9 +242,7 @@ function ChatPageContent() {
                 className="w-64 px-4 py-2 border-2 border-gray-300 rounded-lg text-sm text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">All sectors</option>
-                {VALID_SECTORS.map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
+                {sectorOptions}
               </select>
               {sector && (
                 <button
