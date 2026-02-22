@@ -31,7 +31,6 @@
  * - Authentication required for AI mode (free tier: 100 queries/day)
  * - Valid sectors restricted to 11 predefined categories matching database schema
  */
-</budget:token_budget>
 
 'use client';
 
