@@ -44,6 +44,12 @@ export default function Navigation() {
           Query
         </Link>
         <Link
+          href="/chat"
+          className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+        >
+          Ask the Market
+        </Link>
+        <Link
           href="/latest-filings"
           className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
         >
