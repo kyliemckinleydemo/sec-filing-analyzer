@@ -1,3 +1,32 @@
+/**
+ * @module homepage.spec.ts
+ * @description End-to-end test suite for the StockHuntr homepage using Playwright.
+ * 
+ * PURPOSE:
+ * - Validates the unauthenticated homepage renders correctly with all hero, feature, and navigation sections
+ * - Ensures proper branding and messaging (30-day alpha predictions, LONG/SHORT/NEUTRAL signals)
+ * - Verifies CTAs (Start Free, View Live Filings Feed) are visible and navigate correctly
+ * - Tests navigation bar and footer links for presence and functionality
+ * - Confirms no legacy terminology (7-day predictions, Buy/Sell/Hold signals) appears on the page
+ * - Validates feature sections (AI Risk Analysis, Ask the Market, 30-Day Alpha Predictions)
+ * - Checks comparison table and "How It Works" sections render properly
+ * - Ensures search functionality presence and page stability
+ * 
+ * EXPORTS:
+ * - Two test.describe blocks:
+ *   1. "Homepage — unauthenticated view": Core rendering and navigation tests
+ *   2. "Homepage — search functionality": Search input visibility test
+ * 
+ * CLAUDE NOTES:
+ * - Tests wait for auth check completion (loading spinner disappears) before assertions
+ * - Uses scoped locators (main, nav, footer) to avoid matching duplicate elements
+ * - CTAs should navigate to /profile and /latest-filings respectively
+ * - All references must use "30-day alpha" not "7-day" and "LONG/SHORT/NEUTRAL" not "Buy/Sell/Hold"
+ * - Tests include negative assertions to ensure deprecated terminology is removed
+ * - Footer and navbar tests validate complete navigation structure
+ * - Extended timeouts (10-15s) accommodate auth checks and dynamic content loading
+ */
+
 import { test, expect } from '@playwright/test';
 
 test.describe('Homepage — unauthenticated view', () => {
@@ -40,10 +69,10 @@ test.describe('Homepage — unauthenticated view', () => {
     await expect(page).toHaveURL(/\/profile/);
   });
 
-  test('features section shows AI Risk Analysis, Chat with Filings, 30-Day Alpha Predictions', async ({ page }) => {
+  test('features section shows AI Risk Analysis, Ask the Market, 30-Day Alpha Predictions', async ({ page }) => {
     // Use feature card headings to avoid matching badges/table cells
     await expect(page.getByRole('heading', { name: 'AI Risk Analysis' })).toBeVisible({ timeout: 15000 });
-    await expect(page.getByRole('heading', { name: 'Chat with Filings' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Ask the Market' })).toBeVisible();
     await expect(page.getByRole('heading', { name: '30-Day Alpha Predictions', exact: true })).toBeVisible();
   });
 
@@ -86,14 +115,13 @@ test.describe('Homepage — unauthenticated view', () => {
     await expect(footer.locator('text=FAQ')).toBeVisible();
   });
 
-  test('navbar contains all expected links: Latest Filings, Watchlist, Alerts, Companies, AI Chat, FAQ', async ({ page }) => {
+  test('navbar contains all expected links: Ask the Market, Latest Filings, Watchlist, Alerts, FAQ', async ({ page }) => {
     const nav = page.locator('nav').first();
     await expect(nav).toBeVisible({ timeout: 10000 });
+    await expect(nav.locator('text=Ask the Market')).toBeVisible();
     await expect(nav.locator('text=Latest Filings')).toBeVisible();
     await expect(nav.locator('text=Watchlist')).toBeVisible();
     await expect(nav.locator('text=Alerts')).toBeVisible();
-    await expect(nav.locator('text=Companies')).toBeVisible();
-    await expect(nav.locator('text=AI Chat')).toBeVisible();
     await expect(nav.locator('text=FAQ')).toBeVisible();
   });
 

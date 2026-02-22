@@ -374,14 +374,14 @@ export default function Home() {
                   </div>
                 </Button>
                 <Button
-                  onClick={() => router.push('/chat')}
+                  onClick={() => router.push('/query')}
                   variant="outline"
                   className="w-full justify-start border-white/45 text-left"
                 >
                   <span className="mr-2">💬</span>
                   <div>
                     <div className="font-semibold">Ask the Market</div>
-                    <div className="text-xs text-muted-foreground">Ask questions about filings in plain English</div>
+                    <div className="text-xs text-muted-foreground">Screen stocks or ask AI about filings</div>
                   </div>
                 </Button>
                 <Button
@@ -807,18 +807,11 @@ export default function Home() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button
-                  onClick={() => router.push('/chat')}
+                  onClick={() => router.push('/query')}
                   size="lg"
                   className="bg-gradient-to-br from-cyan-500 to-blue-600 text-white font-semibold shadow-[0_14px_30px_rgba(34,211,238,0.25)] hover:brightness-110"
                 >
                   Ask the Market
-                </Button>
-                <Button
-                  onClick={() => router.push('/query')}
-                  variant="outline"
-                  className="border-white/45"
-                >
-                  Screen Stocks with NL Query
                 </Button>
               </div>
             </div>
@@ -837,7 +830,7 @@ export default function Home() {
               ].map((item, idx) => (
                 <button
                   key={idx}
-                  onClick={() => router.push('/chat')}
+                  onClick={() => router.push('/query')}
                   className="w-full text-left p-3 rounded-lg bg-[rgba(15,23,42,0.8)] border border-white/10 hover:border-cyan-500/40 transition-all group"
                 >
                   <div className="flex items-start gap-3">

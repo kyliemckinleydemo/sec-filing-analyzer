@@ -51,8 +51,8 @@ export function Navigation() {
         </div>
 
         <nav className="hidden md:flex items-center gap-5 text-sm text-muted-foreground">
-          <button onClick={() => router.push('/query')} className="hover-underline" title="Search and filter through all 640+ tracked companies">
-            Query
+          <button onClick={() => router.push('/query')} className="hover-underline" title="Screen stocks, query financials, or ask AI about any filing">
+            Ask the Market
           </button>
           <button onClick={() => router.push('/latest-filings')} className="hover-underline" title="Browse the most recent SEC filings from all tracked companies">
             Latest Filings
@@ -62,9 +62,6 @@ export function Navigation() {
           </button>
           <button onClick={() => router.push('/alerts')} className="hover-underline" title="Manage your alert preferences and notification settings (requires signup)">
             Alerts
-          </button>
-          <button onClick={() => router.push('/chat')} className="hover-underline" title="Ask questions about company filings in plain English using AI">
-            Ask the Market
           </button>
           <button onClick={() => router.push('/faq')} className="hover-underline" title="Frequently asked questions and documentation">
             FAQ

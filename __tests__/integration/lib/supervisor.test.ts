@@ -1,3 +1,32 @@
+/**
+ * @module supervisor.test
+ * @description Unit tests for the supervisor health check system that monitors and manages cron jobs
+ *
+ * PURPOSE:
+ * - Verify supervisor correctly detects stuck jobs (running >10 minutes)
+ * - Test automatic retry mechanism for failed/stuck jobs
+ * - Validate detection of missing job executions (daily-filings-rss, update-analyst-data)
+ * - Ensure high failure rate alerts are triggered when >50% of recent runs fail
+ * - Test email notification system via Resend API integration
+ * - Verify weekend/weekday logic for analyst data checks
+ * - Ensure graceful error handling for database and network failures
+ *
+ * EXPORTS:
+ * - No exports (test suite only)
+ *
+ * CLAUDE NOTES:
+ * - Uses Vitest framework with Prisma mocking for database interactions
+ * - Tests cover both passive monitoring (autoTriggerMissing=false) and active intervention (true)
+ * - Validates that stuck jobs are marked as failed in DB before retry attempts
+ * - Weekend detection tests use vi.setSystemTime() to force specific days
+ * - Email alerts are sent via fetch to Resend API - tests mock both success and failure paths
+ * - Failure rate calculation uses last 10 runs from CronJobRun table
+ * - Auto-trigger functionality uses custom User-Agent header for identification
+ * - Job retry mapping (jobName -> API path) must exist for auto-retry to work
+ * - Email alert suppression when system is healthy prevents alert fatigue
+ * - Error handling ensures supervisor failures themselves trigger alert emails
+ */
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { prismaMock } from '../../mocks/prisma';
 
@@ -342,7 +371,7 @@ describe('runSupervisorChecks()', () => {
     // Should have captured the error gracefully
     expect(report.actions).toEqual(
       expect.arrayContaining([
-        expect.stringContaining('Error retrying daily-filings-rss'),
+        expect.stringContaining('Failed to retry daily-filings-rss'),
       ])
     );
   });

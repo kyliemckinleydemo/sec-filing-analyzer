@@ -1,65 +1,62 @@
+/**
+ * @module chat.spec.ts
+ * @description End-to-end tests for chat and query page functionality using Playwright
+ * 
+ * PURPOSE:
+ * - Tests redirect behavior from legacy /chat routes to /query routes
+ * - Validates AI-powered query interface features and interactions
+ * - Verifies ticker and sector filtering functionality
+ * - Ensures proper handling of URL parameters and state management
+ * - Tests AI mode query submission and response handling
+ * - Validates example query interactions and input population
+ * 
+ * EXPORTS:
+ * - None (test suite file)
+ * 
+ * CLAUDE NOTES:
+ * - Uses Playwright test framework for browser automation
+ * - Tests cover both authenticated and unauthenticated user flows
+ * - AI response tests account for potential authentication errors
+ * - Mutual exclusivity between ticker and sector filters is validated
+ * - Network idle state used to ensure page stability before interactions
+ * - Timeout values set to accommodate potential API delays (5-10 seconds)
+ */
+
 import { test, expect } from '@playwright/test';
 
-test.describe('Chat page — AI chat', () => {
-  test.beforeEach(async ({ page }) => {
+test.describe('Chat page — redirects to Ask the Market', () => {
+  test('/chat redirects to /query', async ({ page }) => {
     await page.goto('/chat');
+    await page.waitForURL(/\/query/, { timeout: 10000 });
+    await expect(page).toHaveURL(/\/query/);
+  });
+
+  test('/chat?ticker=AAPL redirects to /query?ticker=AAPL', async ({ page }) => {
+    await page.goto('/chat?ticker=AAPL');
+    await page.waitForURL(/\/query\?ticker=AAPL/, { timeout: 10000 });
+    await expect(page).toHaveURL(/\/query\?ticker=AAPL/);
+  });
+});
+
+test.describe('Ask the Market page — AI features', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/query');
     await page.waitForLoadState('networkidle');
-  });
-
-  test('page loads with title', async ({ page }) => {
-    await expect(page.locator('h1')).toContainText("Analyze a Company's Filings & Fundamentals");
-  });
-
-  test('ticker input field is present', async ({ page }) => {
-    const tickerInput = page.locator('input[placeholder*="Enter ticker"]');
-    await expect(tickerInput).toBeVisible({ timeout: 10000 });
-  });
-
-  test('label for company selection is visible', async ({ page }) => {
-    await expect(page.locator('text=Select a company to analyze:')).toBeVisible({ timeout: 10000 });
-  });
-
-  test('message input and send button are present', async ({ page }) => {
-    const messageInput = page.locator('input[placeholder*="Ask about a company"]');
-    await expect(messageInput).toBeVisible({ timeout: 10000 });
-
-    const sendButton = page.getByRole('button', { name: 'Send' });
-    await expect(sendButton).toBeVisible();
-  });
-
-  test('question categories are visible', async ({ page }) => {
-    await expect(page.locator('text=Question Categories')).toBeVisible({ timeout: 10000 });
-    // Categories have emoji prefixes — match the exact category headings
-    await expect(page.getByRole('heading', { name: '📈 Stock Performance' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: '💰 Financial Analysis' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: '🤖 ML Model Performance' })).toBeVisible();
-  });
-
-  test('available data section is displayed', async ({ page }) => {
-    await expect(page.locator('text=Available Data')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('text=Financial Metrics')).toBeVisible();
-    await expect(page.locator('text=Risk Analysis')).toBeVisible();
-  });
-
-  test('clicking an example question populates the input', async ({ page }) => {
-    // Click one of the example question buttons
-    const exampleButton = page.locator('text=/biggest stock price jump/').first();
-    await exampleButton.click();
-
-    const messageInput = page.locator('input[placeholder*="Ask about a company"]');
-    const inputValue = await messageInput.inputValue();
-    expect(inputValue.length).toBeGreaterThan(0);
   });
 
   test('ticker auto-fills from URL parameter', async ({ page }) => {
-    await page.goto('/chat?ticker=AAPL');
+    await page.goto('/query?ticker=AAPL');
     await page.waitForLoadState('networkidle');
 
-    const tickerInput = page.locator('input[placeholder*="Enter ticker"]');
+    // Filters should be visible when ticker is in URL
+    const tickerInput = page.locator('input[placeholder*="AAPL"]');
     await expect(tickerInput).toHaveValue('AAPL', { timeout: 5000 });
   });
 
-  test('sector dropdown is visible with options', async ({ page }) => {
+  test('sector dropdown is visible after expanding filters', async ({ page }) => {
+    // Click filter toggle to expand
+    await page.locator('text=Add ticker or sector filter').click();
+
     const sectorSelect = page.locator('select');
     await expect(sectorSelect).toBeVisible({ timeout: 10000 });
 
@@ -70,7 +67,10 @@ test.describe('Chat page — AI chat', () => {
   });
 
   test('selecting a sector clears ticker input', async ({ page }) => {
-    const tickerInput = page.locator('input[placeholder*="Enter ticker"]');
+    // Expand filters
+    await page.locator('text=Add ticker or sector filter').click();
+
+    const tickerInput = page.locator('input[placeholder*="AAPL"]');
     await tickerInput.fill('AAPL');
     await expect(tickerInput).toHaveValue('AAPL');
 
@@ -81,28 +81,43 @@ test.describe('Chat page — AI chat', () => {
   });
 
   test('entering a ticker clears sector dropdown', async ({ page }) => {
+    // Expand filters
+    await page.locator('text=Add ticker or sector filter').click();
+
     const sectorSelect = page.locator('select');
     await sectorSelect.selectOption('Healthcare');
     await expect(sectorSelect).toHaveValue('Healthcare');
 
-    const tickerInput = page.locator('input[placeholder*="Enter ticker"]');
+    const tickerInput = page.locator('input[placeholder*="AAPL"]');
     await tickerInput.fill('MSFT');
 
     await expect(sectorSelect).toHaveValue('', { timeout: 3000 });
   });
 
-  test('sending a message shows it in the chat or shows auth error', async ({ page }) => {
-    const messageInput = page.locator('input[placeholder*="Ask about a company"]');
-    await messageInput.fill('What are the latest filings?');
+  test('AI mode sends query and shows response or auth error', async ({ page }) => {
+    // Switch to AI mode
+    await page.locator('button:has-text("AI")').click();
 
-    const sendButton = page.getByRole('button', { name: 'Send' });
-    await sendButton.click();
+    const searchInput = page.locator('input[type="text"]').first();
+    await searchInput.fill('What are the latest filings?');
 
-    // Should either show the user message in chat, show loading, or show auth error
+    const askAIButton = page.getByRole('button', { name: 'Ask AI' });
+    await askAIButton.click();
+
+    // Should either show the user message, loading, or auth error
     const hasUserMessage = await page.locator('text=What are the latest filings?').isVisible({ timeout: 5000 }).catch(() => false);
     const hasThinking = await page.locator('text=Thinking...').isVisible({ timeout: 3000 }).catch(() => false);
-    const hasAuthError = await page.locator('text=/sign.?up|authentication|log.?in/i').first().isVisible({ timeout: 10000 }).catch(() => false);
+    const hasAnalyzing = await page.locator('text=Analyzing...').isVisible({ timeout: 3000 }).catch(() => false);
+    const hasAuthError = await page.locator('text=/sign.?up|authentication|free account/i').first().isVisible({ timeout: 10000 }).catch(() => false);
 
-    expect(hasUserMessage || hasThinking || hasAuthError).toBe(true);
+    expect(hasUserMessage || hasThinking || hasAnalyzing || hasAuthError).toBe(true);
+  });
+
+  test('clicking an AI example sets input and mode', async ({ page }) => {
+    const aiExample = page.locator('text=What are AAPL\'s biggest risk factors from recent filings?');
+    await aiExample.click();
+
+    const searchInput = page.locator('input[type="text"]').first();
+    await expect(searchInput).toHaveValue("What are AAPL's biggest risk factors from recent filings?");
   });
 });

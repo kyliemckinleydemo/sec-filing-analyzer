@@ -84,6 +84,7 @@ describe('GET /api/cron/daily-filings-rss', () => {
     });
     prismaMock.filing.updateMany.mockResolvedValue({ count: 0 });
     prismaMock.prediction.deleteMany.mockResolvedValue({ count: 0 });
+    prismaMock.company.findMany.mockResolvedValue([]);
     vi.mocked(secRSSClient.fetchRecentFilingsFromRSS).mockResolvedValue([]);
   });
 

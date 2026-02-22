@@ -1,3 +1,42 @@
+/**
+ * @module api/chat/query/route
+ * 
+ * @description
+ * Natural Language Query API endpoint for converting natural language queries into 
+ * database operations. Supports pattern matching for company financials, SEC filings, 
+ * analyst estimates, and complex multi-condition screening queries.
+ * 
+ * PURPOSE:
+ * - Process natural language queries and convert them to Prisma database queries
+ * - Support compound queries with AND/OR operators for complex financial screening
+ * - Enable time-series analysis of analyst estimates and company metrics
+ * - Provide SEC filing search and filtering capabilities
+ * - Handle pagination for large result sets
+ * - Return structured data compatible with frontend visualization components
+ * 
+ * EXPORTS:
+ * - POST: Processes natural language query and returns matching companies/filings
+ * - dynamic: Force-dynamic Next.js route configuration
+ * 
+ * CLAUDE NOTES:
+ * - Pattern matching uses RegExp hierarchy (most specific patterns first)
+ * - Compound query parser supports nested AND/OR logic with field mappings
+ * - BigInt serialization required for marketCap and other large numeric values
+ * - Date objects converted to ISO strings for JSON compatibility
+ * - Pagination implemented with skip/take pattern (page size: 50)
+ * - COMPANY_SELECT_FIELDS optimized for hover tooltip data requirements
+ * - Sector mappings handle common variations (tech->Technology, finance->Financial)
+ * - Unit conversions support B/M/K/T suffixes and percentage formatting
+ * - Snapshot queries enable before/after filing comparison analysis
+ * - Target price history tracks analyst estimate changes over time
+ * - Undervalued stock queries calculate upside percentage dynamically
+ * - 52-week high proximity filter uses 5% threshold
+ * - Market cap filters support multiple unit formats ($100B, $1M, etc.)
+ * - Query result includes pagination metadata (totalCount, totalPages, currentPage)
+ * - Fallback pattern ensures graceful handling of unmatched queries
+ * - Error responses include helpful query syntax suggestions
+ */
+
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -1198,23 +1237,13 @@ export async function POST(request: Request) {
         }
       },
 
-      // Fallback: Just show recent filings
+      // Fallback: Signal to frontend that no pattern matched
       {
         pattern: /./,
         handler: async () => {
-          const filings = await prisma.filing.findMany({
-            include: {
-              company: true
-            },
-            orderBy: {
-              filingDate: 'desc'
-            },
-            take: 20
-          });
-
           return {
-            filings,
-            message: "Showing recent filings (couldn't parse specific query)"
+            fallback: true,
+            message: "Query not matched"
           };
         }
       }
