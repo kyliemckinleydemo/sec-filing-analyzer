@@ -20,7 +20,9 @@
     "deploy": "vercel --prod --force && npm run set-alias",
     "deploy:preview": "vercel --force",
     "set-alias": "vercel alias set stockhuntr.net",
-    "trigger-cron": "npx tsx scripts/manual-cron-trigger.ts"
+    "trigger-cron": "npx tsx scripts/manual-cron-trigger.ts",
+    "test:count": "bash scripts/count-tests.sh",
+    "test:count:run": "bash scripts/count-tests.sh --run"
   },
   "keywords": [],
   "author": "",
@@ -43,6 +45,7 @@
     "clsx": "^2.1.1",
     "csv-parse": "^6.1.0",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.3",
     "framer-motion": "^12.23.22",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^0.545.0",
