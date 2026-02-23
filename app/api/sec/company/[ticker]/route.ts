@@ -14,7 +14,7 @@
  * - @/lib/sec-client - Fetches company info and filings from SEC EDGAR API when not in database
  * - @/lib/cache - In-memory cache with 1-hour TTL to reduce database and API calls
  * - @/lib/prisma - Database client for querying Company, Filing, AnalystActivity, and CompanySnapshot tables
- * - @/lib/fmp-client - Financial Modeling Prep API client to fetch company sector for suggestions
+ * - @/lib/yahoo-finance-singleton - Yahoo Finance API client to fetch company sector for suggestions
  * - @/lib/api-middleware - Provides addRateLimitHeaders to attach rate limit info to responses
  * - @/lib/rate-limit - Generates fingerprints and enforces 20 requests/day limit for unauthenticated users
  *
@@ -31,7 +31,7 @@
  * CLAUDE NOTES:
  * - Three-tier data strategy: cache → database (fast path) → SEC API (slow path with persistence)
  * - Rate limiting only applies to unauthenticated users; session presence bypasses limits entirely
- * - Untracked company suggestions prioritize same-sector companies from FMP profile, falling back to top 5 by market cap
+ * - Untracked company suggestions prioritize same-sector companies from Yahoo Finance profile, falling back to top 5 by market cap
  * - Only stores last 12 months of filings when fetching from SEC to limit database growth
  * - Returns extensive market metrics (PE ratios, 52-week ranges, volume, analyst ratings) when company tracked
  * - Volume/averageVolume converted to Number from BigInt for JSON serialization compatibility

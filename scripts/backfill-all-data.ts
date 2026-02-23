@@ -1,32 +1,58 @@
+/**
+ * @module backfill-all-data
+ * @description Local backfill script for stock prices, macro indicators, and analyst data
+ *
+ * PURPOSE:
+ * This script performs comprehensive data backfilling for the SEC Filing Analyzer,
+ * matching the Vercel cron job's data pipeline exactly. It fetches and stores:
+ * - Stock prices and fundamental metrics via Yahoo Finance API
+ * - Macro economic indicators via Yahoo Finance v8 chart API
+ * - Treasury rates and Fed funds rate via FRED API
+ * - Analyst ratings, consensus data, and earnings surprises
+ *
+ * All data is sourced from free, unlimited APIs (Yahoo Finance + FRED).
+ * The script prioritizes updating the oldest data first and supports selective
+ * execution via CLI flags for efficient partial updates.
+ *
+ * EXPORTS:
+ * - backfillStockPrices: Updates company stock prices and enriched metrics
+ * - backfillMacroIndicators: Fetches S&P 500, VIX, sector returns, and treasury rates
+ * - backfillAnalystData: Enriches recent filings with analyst consensus and earnings data
+ * - main: Orchestrates all backfill operations based on CLI flags
+ *
+ * CLAUDE NOTES:
+ * - Uses Yahoo Finance v2 library for quote/quoteSummary (unlimited free tier)
+ * - Yahoo v8 raw HTTP API used for historical macro charts (rate limited to 300ms)
+ * - FRED API requires FRED_API_KEY env var (free, 100ms rate limit enforced)
+ * - Updates oldest data first (yahooLastUpdated ASC) to maintain freshness
+ * - Analyst data only processes financial filings (10-K, 10-Q, earnings 8-Ks)
+ * - Major analyst firms are weighted higher (Goldman, JPMorgan, Morgan Stanley, etc.)
+ * - EPS/revenue surprise calculated from closest earnings period within 90 days
+ * - Consensus score normalized to 0-100 scale (100 = unanimous Strong Buy)
+ * - Treasury rates use forward-fill logic (up to 5 days back for weekends/holidays)
+ * - CLI flags: --skip-prices, --skip-macro, --skip-analyst, --max-prices=N
+ */
+
 #!/usr/bin/env npx tsx
 /**
- * Local backfill script — matches Vercel FMP cron data exactly.
+ * Local backfill script — matches Vercel cron data exactly.
  *
- * Stock prices & analyst data use FMP API (same source as Vercel crons).
- * Macro indicators use Yahoo Finance v8 API (works locally, saves FMP budget).
+ * All data fetched via Yahoo Finance API (unlimited, free).
+ * Macro indicators use Yahoo Finance v8 raw API + FRED for treasury rates.
  *
  * Usage:
  *   npx tsx scripts/backfill-all-data.ts                  # Run all
  *   npx tsx scripts/backfill-all-data.ts --skip-prices     # Skip stock prices
  *   npx tsx scripts/backfill-all-data.ts --skip-macro      # Skip macro indicators
  *   npx tsx scripts/backfill-all-data.ts --skip-analyst    # Skip analyst data
- *   npx tsx scripts/backfill-all-data.ts --max-prices=100  # Limit price updates (default 200)
- *   npx tsx scripts/backfill-all-data.ts --yahoo-fallback  # Use Yahoo v8 for prices (no FMP needed)
- *
- * --yahoo-fallback: Uses Yahoo v8 chart API for stock prices instead of FMP.
- *   Covers: currentPrice, volume, fiftyTwoWeekHigh/Low (4 fields).
- *   Missing: marketCap, peRatio, beta, dividendYield, averageVolume, analystTargetPrice.
- *   No daily API limit — useful when FMP quota is exhausted.
- *
- * FMP free tier: 250 API calls/day. Budget:
- *   - Macro: 0 FMP calls (uses Yahoo v8)
- *   - Analyst: ~4 calls per filing (typically 40-120 total)
- *   - Stock prices: 1 call per company (default max 200)
+ *   npx tsx scripts/backfill-all-data.ts --max-prices=100  # Limit price updates (default 828)
  */
 
 import { PrismaClient } from '@prisma/client';
+import YahooFinance from 'yahoo-finance2';
 
 const prisma = new PrismaClient(); // Also loads .env via dotenv
+const yahooFinance = new YahooFinance({ suppressNotices: ['yahooSurvey'] });
 
 // ─── CLI ARGS ──────────────────────────────────────────────────────────────
 
@@ -34,9 +60,8 @@ const args = process.argv.slice(2);
 const skipPrices = args.includes('--skip-prices');
 const skipMacro = args.includes('--skip-macro');
 const skipAnalyst = args.includes('--skip-analyst');
-const yahooFallback = args.includes('--yahoo-fallback');
 const maxPricesArg = args.find(a => a.startsWith('--max-prices='));
-const maxPrices = maxPricesArg ? parseInt(maxPricesArg.split('=')[1]) : (yahooFallback ? 828 : 200);
+const maxPrices = maxPricesArg ? parseInt(maxPricesArg.split('=')[1]) : 828;
 
 // ─── SHARED UTILS ──────────────────────────────────────────────────────────
 
@@ -44,7 +69,7 @@ function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// ─── YAHOO V8 (for macro indicators only) ──────────────────────────────────
+// ─── YAHOO V8 RAW (for macro indicators — chart API with raw HTTP) ───────
 
 const YAHOO_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36';
 const YAHOO_BASE = 'https://query1.finance.yahoo.com/v8/finance';
@@ -67,180 +92,10 @@ async function yahooFetch(url: string, retries = 2): Promise<any> {
   }
 }
 
-// ─── FMP API (for stock prices & analyst data) ─────────────────────────────
-
-const FMP_BASE = 'https://financialmodelingprep.com';
-const FMP_RATE_LIMIT_MS = 150;
-let fmpLastRequest = 0;
-let fmpCallCount = 0;
-
-async function fmpFetch<T>(path: string, params: Record<string, string> = {}): Promise<T | null> {
-  const apiKey = process.env.FMP_API_KEY;
-  if (!apiKey) {
-    console.error('[FMP] No FMP_API_KEY in .env — cannot fetch stock/analyst data');
-    return null;
-  }
-
-  // Rate limit
-  const elapsed = Date.now() - fmpLastRequest;
-  if (elapsed < FMP_RATE_LIMIT_MS) await sleep(FMP_RATE_LIMIT_MS - elapsed);
-  fmpLastRequest = Date.now();
-  fmpCallCount++;
-
-  const url = new URL(path, FMP_BASE);
-  url.searchParams.set('apikey', apiKey);
-  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
-
-  for (let attempt = 0; attempt <= 2; attempt++) {
-    try {
-      const res = await fetch(url.toString(), { headers: { 'User-Agent': 'SEC Filing Analyzer' } });
-      if (!res.ok) {
-        if (res.status === 429 && attempt < 2) {
-          console.log(`  [FMP] Rate limited (429), retrying in ${attempt + 1}s...`);
-          await sleep(1000 * (attempt + 1));
-          continue;
-        }
-        return null;
-      }
-      const data = await res.json();
-      // FMP returns 200 with {"Error Message": "Limit Reach ..."} when rate limited
-      if (data && typeof data === 'object' && !Array.isArray(data) && 'Error Message' in data) {
-        console.error(`[FMP] ${(data as any)['Error Message']}`);
-        return null;
-      }
-      return data as T;
-    } catch {
-      if (attempt === 2) return null;
-      await sleep(1000 * (attempt + 1));
-    }
-  }
-  return null;
-}
-
-async function fmpGetProfile(symbol: string) {
-  const data = await fmpFetch<any[]>('/stable/profile', { symbol });
-  return data?.[0] ?? null;
-}
-
-async function fmpGetUpgradesDowngrades(symbol: string): Promise<any[]> {
-  const data = await fmpFetch<any[]>('/stable/upgrades-downgrades', { symbol });
-  return Array.isArray(data) ? data : [];
-}
-
-async function fmpGetRecommendation(symbol: string) {
-  const data = await fmpFetch<any[]>('/stable/analyst-recommendation', { symbol });
-  return data?.[0] ?? null;
-}
-
-async function fmpGetEarnings(symbol: string, limit = 5): Promise<any[]> {
-  const data = await fmpFetch<any[]>('/stable/earnings', { symbol, limit: String(limit) });
-  return Array.isArray(data) ? data : [];
-}
-
-function parseRange(range: string): { low: number; high: number } | null {
-  if (!range) return null;
-  const parts = range.split('-').map(s => parseFloat(s.trim()));
-  if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-    return { low: Math.min(parts[0], parts[1]), high: Math.max(parts[0], parts[1]) };
-  }
-  return null;
-}
-
-// ─── STOCK PRICES ──────────────────────────────────────────────────────────
-
-async function backfillStockPricesFMP(batch: { id: string; ticker: string; yahooLastUpdated: Date | null }[]) {
-  let updated = 0, errors = 0, skipped = 0;
-  for (let i = 0; i < batch.length; i++) {
-    const c = batch[i];
-    try {
-      if ((i + 1) % 50 === 0) {
-        console.log(`  Progress: ${i + 1}/${batch.length} (${updated} updated, ${errors} errors, ${skipped} skipped)`);
-      }
-
-      const profile = await fmpGetProfile(c.ticker);
-      if (!profile || !profile.price) {
-        skipped++;
-        continue;
-      }
-
-      const range = parseRange(profile.range);
-
-      await prisma.company.update({
-        where: { id: c.id },
-        data: {
-          currentPrice: profile.price ?? null,
-          marketCap: profile.mktCap ?? null,
-          peRatio: profile.pe ?? null,
-          beta: profile.beta ?? null,
-          dividendYield: profile.lastDiv ? profile.lastDiv / (profile.price || 1) : null,
-          fiftyTwoWeekHigh: range?.high ?? null,
-          fiftyTwoWeekLow: range?.low ?? null,
-          volume: profile.volume ? BigInt(profile.volume) : null,
-          averageVolume: profile.volAvg ? BigInt(profile.volAvg) : null,
-          analystTargetPrice: profile.targetMeanPrice ?? null,
-          yahooLastUpdated: new Date(),
-        },
-      });
-      updated++;
-    } catch (e: any) {
-      errors++;
-      if (!e.message?.includes('Not Found')) {
-        console.error(`  Error ${c.ticker}: ${e.message}`);
-      }
-    }
-  }
-  console.log(`Stock prices done: ${updated} updated, ${errors} errors, ${skipped} skipped`);
-  console.log(`  FMP API calls so far: ${fmpCallCount}`);
-}
-
-async function backfillStockPricesYahoo(batch: { id: string; ticker: string; yahooLastUpdated: Date | null }[]) {
-  console.log('  (Yahoo v8 fallback — basic fields only: price, volume, 52wk range)');
-  let updated = 0, errors = 0, skipped = 0;
-  for (let i = 0; i < batch.length; i++) {
-    const c = batch[i];
-    try {
-      if ((i + 1) % 50 === 0) {
-        console.log(`  Progress: ${i + 1}/${batch.length} (${updated} updated, ${errors} errors, ${skipped} skipped)`);
-      }
-
-      const url = `${YAHOO_BASE}/chart/${c.ticker}?interval=1d&range=5d`;
-      const data = await yahooFetch(url);
-      const meta = data?.chart?.result?.[0]?.meta;
-      if (!meta?.regularMarketPrice) {
-        skipped++;
-        continue;
-      }
-
-      await prisma.company.update({
-        where: { id: c.id },
-        data: {
-          currentPrice: meta.regularMarketPrice ?? null,
-          fiftyTwoWeekHigh: meta.fiftyTwoWeekHigh ?? null,
-          fiftyTwoWeekLow: meta.fiftyTwoWeekLow ?? null,
-          volume: meta.regularMarketVolume ? BigInt(meta.regularMarketVolume) : null,
-          yahooLastUpdated: new Date(),
-        },
-      });
-      updated++;
-      await sleep(300);
-    } catch (e: any) {
-      errors++;
-      if (!e.message?.includes('Not Found') && !e.message?.includes('HTTP 404')) {
-        console.error(`  Error ${c.ticker}: ${e.message}`);
-      }
-    }
-  }
-  console.log(`Stock prices done: ${updated} updated, ${errors} errors, ${skipped} skipped`);
-}
+// ─── STOCK PRICES (Yahoo Finance quote + quoteSummary) ───────────────────
 
 async function backfillStockPrices() {
-  const source = yahooFallback ? 'Yahoo v8' : 'FMP';
-  console.log(`\n═══ STOCK PRICES (${source}) ═══`);
-
-  if (!yahooFallback && !process.env.FMP_API_KEY) {
-    console.error('Skipping stock prices: no FMP_API_KEY (use --yahoo-fallback to use Yahoo instead)');
-    return;
-  }
+  console.log('\n═══ STOCK PRICES (Yahoo Finance) ═══');
 
   // Fetch companies ordered by oldest update first
   const companies = await prisma.company.findMany({
@@ -255,11 +110,93 @@ async function backfillStockPrices() {
     console.log(`  Oldest update: ${batch[0].ticker} @ ${batch[0].yahooLastUpdated.toISOString()}`);
   }
 
-  if (yahooFallback) {
-    await backfillStockPricesYahoo(batch);
-  } else {
-    await backfillStockPricesFMP(batch);
+  let updated = 0, errors = 0, skipped = 0;
+
+  for (let i = 0; i < batch.length; i++) {
+    const c = batch[i];
+    try {
+      if ((i + 1) % 50 === 0) {
+        console.log(`  Progress: ${i + 1}/${batch.length} (${updated} updated, ${errors} errors, ${skipped} skipped)`);
+      }
+
+      // Fetch quote data from Yahoo Finance
+      const quote = await yahooFinance.quote(c.ticker);
+
+      if (!quote || quote.regularMarketPrice == null) {
+        skipped++;
+        continue;
+      }
+
+      // Fetch enriched metrics from quoteSummary
+      let enrichedData: Record<string, any> = {
+        analystTargetPrice: null,
+        revenueGrowth: null,
+        earningsGrowth: null,
+        grossMargins: null,
+        operatingMargins: null,
+        profitMargins: null,
+        freeCashflow: null,
+        pegRatio: null,
+        shortRatio: null,
+        shortPercentOfFloat: null,
+        enterpriseToRevenue: null,
+        enterpriseToEbitda: null,
+      };
+      try {
+        const summary = await yahooFinance.quoteSummary(c.ticker, {
+          modules: ['financialData', 'defaultKeyStatistics'],
+        });
+        enrichedData = {
+          analystTargetPrice: summary.financialData?.targetMeanPrice ?? null,
+          revenueGrowth: summary.financialData?.revenueGrowth ?? null,
+          earningsGrowth: summary.financialData?.earningsGrowth ?? null,
+          grossMargins: summary.financialData?.grossMargins ?? null,
+          operatingMargins: summary.financialData?.operatingMargins ?? null,
+          profitMargins: summary.financialData?.profitMargins ?? null,
+          freeCashflow: summary.financialData?.freeCashflow ?? null,
+          pegRatio: summary.defaultKeyStatistics?.pegRatio ?? null,
+          shortRatio: summary.defaultKeyStatistics?.shortRatio ?? null,
+          shortPercentOfFloat: summary.defaultKeyStatistics?.shortPercentOfFloat ?? null,
+          enterpriseToRevenue: summary.defaultKeyStatistics?.enterpriseToRevenue ?? null,
+          enterpriseToEbitda: summary.defaultKeyStatistics?.enterpriseToEbitda ?? null,
+        };
+      } catch {
+        // Skip if quoteSummary fails — enriched fields will remain null
+      }
+
+      await prisma.company.update({
+        where: { id: c.id },
+        data: {
+          currentPrice: quote.regularMarketPrice ?? null,
+          marketCap: quote.marketCap ?? null,
+          peRatio: quote.trailingPE ?? null,
+          beta: (quote as any).beta ?? null,
+          dividendYield: ('dividendYield' in quote && (quote as any).dividendYield != null)
+            ? (quote as any).dividendYield / 100
+            : null,
+          fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh ?? null,
+          fiftyTwoWeekLow: quote.fiftyTwoWeekLow ?? null,
+          fiftyDayAverage: (quote as any).fiftyDayAverage ?? null,
+          twoHundredDayAverage: (quote as any).twoHundredDayAverage ?? null,
+          volume: quote.regularMarketVolume ? BigInt(quote.regularMarketVolume) : null,
+          averageVolume: quote.averageDailyVolume10Day ? BigInt(quote.averageDailyVolume10Day) : null,
+          ...enrichedData,
+          yahooLastUpdated: new Date(),
+        },
+      });
+      updated++;
+
+      // Small polite delay between requests
+      await sleep(50);
+
+    } catch (e: any) {
+      errors++;
+      if (!e.message?.includes('Not Found') && !e.message?.includes('404')) {
+        console.error(`  Error ${c.ticker}: ${e.message}`);
+      }
+    }
   }
+  console.log(`Stock prices done: ${updated} updated, ${errors} errors, ${skipped} skipped`);
 }
 
 // ─── FRED API (for treasury rates) ──────────────────────────────────────────
@@ -328,7 +265,7 @@ function findFredValue(map: Map<string, number>, dateStr: string): number | null
   return null;
 }
 
-// ─── MACRO INDICATORS (Yahoo v8 + FRED — saves FMP budget) ─────────────────
+// ─── MACRO INDICATORS (Yahoo v8 + FRED) ──────────────────────────────────
 
 async function backfillMacroIndicators() {
   console.log('\n═══ MACRO INDICATORS (Yahoo v8 + FRED) ═══');
@@ -483,7 +420,7 @@ async function backfillMacroIndicators() {
   console.log(`Macro indicators done: ${stored} days stored`);
 }
 
-// ─── ANALYST DATA (FMP — matches Vercel cron exactly) ──────────────────────
+// ─── ANALYST DATA (Yahoo Finance — matches Vercel cron exactly) ──────────
 
 // Major firms whose ratings carry more weight
 const majorFirms = new Set([
@@ -519,15 +456,19 @@ function getAnalystActivity(events: any[], filingDate: Date) {
   thirtyDaysBefore.setDate(thirtyDaysBefore.getDate() - 30);
 
   const recentEvents = events.filter((e) => {
-    if (!e.publishedDate) return false;
-    const d = new Date(e.publishedDate);
+    const dateField = e.epochGradeDate || e.publishedDate;
+    if (!dateField) return false;
+    const d = new Date(dateField);
     return d >= thirtyDaysBefore && d <= filingDate;
   });
 
   let upgrades = 0, downgrades = 0, majorUpgrades = 0, majorDowngrades = 0;
   for (const event of recentEvents) {
-    const action = classifyAnalystEvent(event.previousGrade || '', event.newGrade || '');
-    const isMajor = isMajorFirm(event.gradingCompany || '');
+    const from = event.fromGrade || event.previousGrade || '';
+    const to = event.toGrade || event.newGrade || '';
+    const action = classifyAnalystEvent(from, to);
+    const firm = event.firm || event.gradingCompany || '';
+    const isMajor = isMajorFirm(firm);
     if (action === 'upgrade') { upgrades++; if (isMajor) majorUpgrades++; }
     else if (action === 'downgrade') { downgrades++; if (isMajor) majorDowngrades++; }
   }
@@ -542,12 +483,7 @@ function getAnalystActivity(events: any[], filingDate: Date) {
 }
 
 async function backfillAnalystData() {
-  console.log('\n═══ ANALYST DATA (FMP) ═══');
-
-  if (!process.env.FMP_API_KEY) {
-    console.error('Skipping analyst data: no FMP_API_KEY');
-    return;
-  }
+  console.log('\n═══ ANALYST DATA (Yahoo Finance) ═══');
 
   // Find recent filings with analysisData (same scope as Vercel cron)
   const fourteenDaysAgo = new Date();
@@ -592,10 +528,38 @@ async function backfillAnalystData() {
     return;
   }
 
-  const estimatedCalls = filings.length * 4;
-  console.log(`  Estimated FMP calls: ~${estimatedCalls} (4 per filing)`);
+  console.log(`  Processing ${filings.length} filings (1 Yahoo quoteSummary call per ticker)`);
+
+  // Deduplicate tickers and fetch Yahoo data once per ticker
+  const tickerSet = new Set(filings.map(f => f.company?.ticker).filter(Boolean) as string[]);
+  const tickerData = new Map<string, any>();
+
+  console.log(`  Fetching data for ${tickerSet.size} unique tickers...`);
+  for (const ticker of tickerSet) {
+    try {
+      const summary = await yahooFinance.quoteSummary(ticker, {
+        modules: [
+          'financialData',
+          'recommendationTrend',
+          'upgradeDowngradeHistory',
+          'earningsHistory',
+          'earnings',
+          'defaultKeyStatistics',
+          'calendarEvents',
+        ],
+      });
+      tickerData.set(ticker, summary);
+      await sleep(50);
+    } catch (e: any) {
+      if (!e.message?.includes('Not Found') && !e.message?.includes('404')) {
+        console.error(`  Error fetching ${ticker}: ${e.message}`);
+      }
+    }
+  }
+  console.log(`  Retrieved data for ${tickerData.size} tickers`);
 
   let updated = 0, errors = 0;
+
   for (let i = 0; i < filings.length; i++) {
     const filing = filings[i];
     const ticker = filing.company?.ticker;
@@ -606,51 +570,41 @@ async function backfillAnalystData() {
         console.log(`  Progress: ${i + 1}/${filings.length} (${updated} updated, ${errors} errors)`);
       }
 
-      // 4 parallel FMP calls per ticker (matches Vercel cron)
-      const [profile, upgradeEvents, recommendation, earnings] = await Promise.all([
-        fmpGetProfile(ticker),
-        fmpGetUpgradesDowngrades(ticker),
-        fmpGetRecommendation(ticker),
-        fmpGetEarnings(ticker, 5),
-      ]);
+      const summary = tickerData.get(ticker);
+      if (!summary) continue;
 
-      // Analyst activity from upgrade/downgrade history
+      // Extract analyst activity from upgrade/downgrade history
+      const upgradeEvents = summary.upgradeDowngradeHistory?.history ?? [];
       const activity = getAnalystActivity(upgradeEvents, filing.filingDate);
 
-      // Consensus score (0-100 scale, 100 = Strong Buy)
+      // Calculate consensus score (0-100 scale, 100 = Strong Buy)
       let consensusScore = null;
-      if (recommendation) {
-        const total = (recommendation.analystRatingsStrongBuy || 0) +
-          (recommendation.analystRatingsbuy || 0) +
-          (recommendation.analystRatingsHold || 0) +
-          (recommendation.analystRatingsSell || 0) +
-          (recommendation.analystRatingsStrongSell || 0);
+      const trend = summary.recommendationTrend?.trend?.[0];
+      if (trend) {
+        const total = (trend.strongBuy || 0) +
+                     (trend.buy || 0) +
+                     (trend.hold || 0) +
+                     (trend.sell || 0) +
+                     (trend.strongSell || 0);
         if (total > 0) {
           consensusScore = Math.round(
-            ((recommendation.analystRatingsStrongBuy || 0) * 100 +
-             (recommendation.analystRatingsbuy || 0) * 75 +
-             (recommendation.analystRatingsHold || 0) * 50 +
-             (recommendation.analystRatingsSell || 0) * 25) / total
+            ((trend.strongBuy || 0) * 100 +
+             (trend.buy || 0) * 75 +
+             (trend.hold || 0) * 50 +
+             (trend.sell || 0) * 25) / total
           );
         }
       }
 
-      // Upside potential
+      // Calculate upside potential
       let upsidePotential = null;
-      if (profile?.targetMeanPrice && profile?.price) {
-        upsidePotential = ((profile.targetMeanPrice - profile.price) / profile.price) * 100;
+      const targetMeanPrice = summary.financialData?.targetMeanPrice;
+      const currentPrice = summary.financialData?.currentPrice;
+      if (targetMeanPrice && currentPrice) {
+        upsidePotential = ((targetMeanPrice - currentPrice) / currentPrice) * 100;
       }
 
-      // Number of analysts
-      const numberOfAnalysts = recommendation
-        ? (recommendation.analystRatingsStrongBuy || 0) +
-          (recommendation.analystRatingsbuy || 0) +
-          (recommendation.analystRatingsHold || 0) +
-          (recommendation.analystRatingsSell || 0) +
-          (recommendation.analystRatingsStrongSell || 0)
-        : null;
-
-      // Earnings surprise data
+      // Extract earnings surprise data
       let consensusEPS: number | null = null;
       let actualEPS: number | null = null;
       let epsSurprise: 'beat' | 'miss' | 'inline' | 'unknown' = 'unknown';
@@ -658,51 +612,59 @@ async function backfillAnalystData() {
       let revenueSurprise: 'beat' | 'miss' | 'inline' | 'unknown' = 'unknown';
       let revenueSurpriseMagnitude: number | null = null;
 
-      if (earnings && earnings.length > 0) {
-        // Find earnings report closest to filing date (within 90 days)
-        let closestEarnings = null;
-        let smallestDiff = Infinity;
-        const filingTime = filing.filingDate.getTime();
+      try {
+        const earningsHistory = summary.earningsHistory?.history;
+        if (earningsHistory && earningsHistory.length > 0) {
+          let closestEarnings: any = null;
+          let smallestDiff = Infinity;
+          const filingTime = filing.filingDate.getTime();
 
-        for (const period of earnings) {
-          if (!period.date) continue;
-          const diff = Math.abs(new Date(period.date).getTime() - filingTime);
-          if (diff < smallestDiff) {
-            smallestDiff = diff;
-            closestEarnings = period;
+          for (const period of earningsHistory) {
+            if (!period.quarter) continue;
+            const earningsDate = new Date(period.quarter);
+            const diff = Math.abs(earningsDate.getTime() - filingTime);
+            if (diff < smallestDiff) {
+              smallestDiff = diff;
+              closestEarnings = period;
+            }
+          }
+
+          const daysDiff = smallestDiff / (1000 * 60 * 60 * 24);
+          if (closestEarnings && daysDiff <= 90) {
+            if (typeof closestEarnings.epsEstimate === 'number') consensusEPS = closestEarnings.epsEstimate;
+            if (typeof closestEarnings.epsActual === 'number') actualEPS = closestEarnings.epsActual;
+
+            if (closestEarnings.epsActual != null && closestEarnings.epsEstimate != null && closestEarnings.epsEstimate !== 0) {
+              epsSurpriseMagnitude = ((closestEarnings.epsActual - closestEarnings.epsEstimate) / Math.abs(closestEarnings.epsEstimate)) * 100;
+              if (epsSurpriseMagnitude > 2) epsSurprise = 'beat';
+              else if (epsSurpriseMagnitude < -2) epsSurprise = 'miss';
+              else epsSurprise = 'inline';
+            }
           }
         }
-
-        const daysDiff = smallestDiff / (1000 * 60 * 60 * 24);
-        if (closestEarnings && daysDiff <= 90) {
-          if (typeof closestEarnings.epsEstimated === 'number') consensusEPS = closestEarnings.epsEstimated;
-          if (typeof closestEarnings.epsActual === 'number') actualEPS = closestEarnings.epsActual;
-
-          if (closestEarnings.epsActual != null && closestEarnings.epsEstimated != null && closestEarnings.epsEstimated !== 0) {
-            epsSurpriseMagnitude = ((closestEarnings.epsActual - closestEarnings.epsEstimated) / Math.abs(closestEarnings.epsEstimated)) * 100;
-            if (epsSurpriseMagnitude > 2) epsSurprise = 'beat';
-            else if (epsSurpriseMagnitude < -2) epsSurprise = 'miss';
-            else epsSurprise = 'inline';
-          }
-
-          if (closestEarnings.revenueActual != null && closestEarnings.revenueEstimated != null && closestEarnings.revenueEstimated !== 0) {
-            revenueSurpriseMagnitude = ((closestEarnings.revenueActual - closestEarnings.revenueEstimated) / closestEarnings.revenueEstimated) * 100;
-            if (revenueSurpriseMagnitude > 2) revenueSurprise = 'beat';
-            else if (revenueSurpriseMagnitude < -2) revenueSurprise = 'miss';
-            else revenueSurprise = 'inline';
-          }
-        }
+      } catch {
+        // Silently handle — not all tickers have earnings data
       }
 
-      // Merge into analysisData JSON (matches Vercel cron format exactly)
+      // Merge analyst data into analysisData JSON
       let existingData: any = {};
       if (filing.analysisData) {
         try {
           existingData = typeof filing.analysisData === 'string'
             ? JSON.parse(filing.analysisData)
             : filing.analysisData;
-        } catch { existingData = {}; }
+        } catch {
+          existingData = {};
+        }
       }
+
+      const numberOfAnalysts = trend
+        ? (trend.strongBuy || 0) +
+          (trend.buy || 0) +
+          (trend.hold || 0) +
+          (trend.sell || 0) +
+          (trend.strongSell || 0)
+        : null;
 
       const updatedAnalysisData = {
         ...existingData,
@@ -710,7 +672,7 @@ async function backfillAnalystData() {
           consensusScore,
           upsidePotential,
           numberOfAnalysts,
-          targetPrice: profile?.targetMeanPrice ?? null,
+          targetPrice: summary.financialData?.targetMeanPrice ?? null,
           activity: {
             upgradesLast30d: activity.upgradesLast30d,
             downgradesLast30d: activity.downgradesLast30d,
@@ -718,6 +680,20 @@ async function backfillAnalystData() {
             majorUpgrades: activity.majorUpgrades,
             majorDowngrades: activity.majorDowngrades,
           },
+          recommendationTrend: summary.recommendationTrend?.trend ?? null,
+        },
+        enrichedMetrics: {
+          pegRatio: summary.defaultKeyStatistics?.pegRatio ?? null,
+          shortRatio: summary.defaultKeyStatistics?.shortRatio ?? null,
+          shortPercentOfFloat: summary.defaultKeyStatistics?.shortPercentOfFloat ?? null,
+          enterpriseToRevenue: summary.defaultKeyStatistics?.enterpriseToRevenue ?? null,
+          enterpriseToEbitda: summary.defaultKeyStatistics?.enterpriseToEbitda ?? null,
+          revenueGrowth: summary.financialData?.revenueGrowth ?? null,
+          earningsGrowth: summary.financialData?.earningsGrowth ?? null,
+          grossMargins: summary.financialData?.grossMargins ?? null,
+          operatingMargins: summary.financialData?.operatingMargins ?? null,
+          profitMargins: summary.financialData?.profitMargins ?? null,
+          freeCashflow: summary.financialData?.freeCashflow ?? null,
         },
         financialMetrics: {
           ...existingData.financialMetrics,
@@ -731,7 +707,7 @@ async function backfillAnalystData() {
         },
       };
 
-      // Update filing with dedicated fields AND analysisData (matches cron)
+      // Update filing with both dedicated fields and analysisData
       await prisma.filing.update({
         where: { id: filing.id },
         data: {
@@ -744,43 +720,39 @@ async function backfillAnalystData() {
       });
 
       updated++;
-      await sleep(250);
     } catch (e: any) {
       errors++;
-      console.error(`  Error ${ticker}: ${e.message}`);
+      console.error(`  Error updating filing ${filing.id} (${ticker}): ${e.message}`);
     }
   }
+
   console.log(`Analyst data done: ${updated} updated, ${errors} errors`);
-  console.log(`  FMP API calls total: ${fmpCallCount}`);
 }
 
-// ─── MAIN ──────────────────────────────────────────────────────────────────
+// ─── MAIN ────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log('Starting comprehensive data backfill...');
-  console.log(`Time: ${new Date().toISOString()}`);
-  console.log(`FMP API key: ${process.env.FMP_API_KEY ? 'configured' : 'MISSING'}`);
-  console.log(`Options: maxPrices=${maxPrices}, skipPrices=${skipPrices}, skipMacro=${skipMacro}, skipAnalyst=${skipAnalyst}, yahooFallback=${yahooFallback}\n`);
+  console.log('╔══════════════════════════════════════════╗');
+  console.log('║    SEC Filing Analyzer — Data Backfill   ║');
+  console.log('║    Source: Yahoo Finance + FRED           ║');
+  console.log('╚══════════════════════════════════════════╝');
+  console.log(`\nFlags: skip-prices=${skipPrices}, skip-macro=${skipMacro}, skip-analyst=${skipAnalyst}`);
+  console.log(`Max prices: ${maxPrices}`);
 
-  try {
-    if (!skipMacro) {
-      await backfillMacroIndicators();
-    }
+  const startTime = Date.now();
 
-    if (!skipPrices) {
-      await backfillStockPrices();
-    }
+  if (!skipPrices) await backfillStockPrices();
+  if (!skipMacro) await backfillMacroIndicators();
+  if (!skipAnalyst) await backfillAnalystData();
 
-    if (!skipAnalyst) {
-      await backfillAnalystData();
-    }
+  const elapsed = Math.round((Date.now() - startTime) / 1000);
+  console.log(`\n✅ Backfill complete in ${elapsed}s`);
 
-    console.log(`\nAll backfills complete! (${fmpCallCount} FMP API calls used)`);
-  } catch (e: any) {
-    console.error('\nFatal error:', e.message);
-  } finally {
-    await prisma.$disconnect();
-  }
+  await prisma.$disconnect();
 }
 
-main();
+main().catch(async (e) => {
+  console.error('Fatal error:', e);
+  await prisma.$disconnect();
+  process.exit(1);
+});

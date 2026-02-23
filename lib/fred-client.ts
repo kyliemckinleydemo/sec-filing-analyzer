@@ -1,7 +1,39 @@
 /**
+ * @module lib/fred-client
+ * @description Fetches Federal Reserve economic data (treasury yields, fed funds rate) from FRED API with automatic rate limiting and business day handling
+ *
+ * PURPOSE:
+ * - Retrieve current and historical US treasury rates (3-month, 2-year, 10-year) and federal funds rate from FRED API
+ * - Calculate yield curve spread (10y - 2y) automatically from fetched treasury data
+ * - Handle missing data for weekends/holidays by looking back up to 5 business days for most recent valid observations
+ * - Enforce 100ms rate limiting between API requests to prevent throttling
+ *
+ * DEPENDENCIES:
+ * - process.env.FRED_API_KEY - Required API key for authenticated requests to Federal Reserve Economic Data API
+ *
+ * EXPORTS:
+ * - TreasuryRates (interface) - Shape containing fedFundsRate, treasury3m, treasury2y, treasury10y, and calculated yieldCurve2y10y spread, all nullable numbers
+ * - getTreasuryRates (function) - Fetches treasury rates for single date, returns TreasuryRates with most recent valid values within 5-day lookback window
+ * - getTreasuryHistory (function) - Bulk fetches treasury rates for date range, returns Map of date string to TreasuryRates for backfilling operations
+ * - getTreasury10yFromHistory (function) - Extracts 10-year treasury value from N days prior in history map for calculating rate changes
+ * - fredClient (default) - Object bundling getTreasuryRates, getTreasuryHistory, and getTreasury10yFromHistory methods
+ *
+ * PATTERNS:
+ * - Call getTreasuryRates('2024-01-15') for single date retrieval; automatically handles weekends by looking back for latest valid data
+ * - Use getTreasuryHistory('2024-01-01', '2024-12-31') for bulk backfills; extends start date by 45 days internally to calculate 30-day changes
+ * - Access yieldCurve2y10y from returned TreasuryRates for inverted yield curve detection (negative values indicate inversion)
+ * - Set FRED_API_KEY environment variable before use; missing key returns empty arrays with console warnings
+ *
+ * CLAUDE NOTES:
+ * - Implements 100ms rate limiting via lastRequestTime tracking and Promise-based delays between fredFetch calls
+ * - FRED API returns '.' string for missing observations; parseValue converts these to null for consistent handling
+ * - Fetches extended date range (startDate - 45 days) in getTreasuryHistory to ensure first few days have valid comparison values for change calculations
+ * - Yield curve calculation rounds to 3 decimal places (Math.round * 1000 / 1000) for consistent precision across dates
+ */
+/**
  * FRED (Federal Reserve Economic Data) API Client
  *
- * Fetches treasury/interest rate data not available via FMP free tier:
+ * Fetches treasury/interest rate data from FRED:
  * - Federal funds rate (DFF)
  * - 3-month treasury yield (DGS3MO)
  * - 2-year treasury yield (DGS2)

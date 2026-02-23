@@ -1,8 +1,33 @@
 /**
- * Financial Data API Client
- * Fetches analyst consensus estimates from Financial Modeling Prep API
- * Free tier available: https://site.financialmodelingprep.com/developer/docs
+ * @module yahoo-finance
+ * @description Yahoo Finance API client for fetching analyst consensus estimates and earnings data
+ *
+ * PURPOSE:
+ * - Retrieves analyst consensus estimates (EPS, revenue) from Yahoo Finance
+ * - Matches earnings data to SEC filing dates for earnings surprise analysis
+ * - Compares actual results against consensus to determine beat/miss/inline outcomes
+ * - Provides formatted earnings surprise data for AI model consumption
+ *
+ * EXPORTS:
+ * - AnalystEstimates: Interface for consensus and actual earnings data
+ * - EarningsComparison: Interface for beat/miss classification and surprise percentages
+ * - financialDataClient: Singleton client instance for fetching and analyzing earnings data
+ *
+ * CLAUDE NOTES:
+ * - Uses Yahoo Finance earningsHistory module (EPS only - revenue from XBRL)
+ * - Matches earnings to filings within 45-day window (typical 10-K/Q filing delay)
+ * - Beat/miss threshold: ±2% (inline if within this range)
+ * - EPS surprise calculated as: (actual - estimate) / |estimate| * 100
+ * - Revenue estimates NOT available in earningsHistory - must use XBRL parsing
+ * - Returns null if no matching earnings data found or date mismatch too large
  */
+
+/**
+ * Financial Data API Client
+ * Fetches analyst consensus estimates from Yahoo Finance earningsHistory
+ */
+
+import yahooFinance from './yahoo-finance-singleton';
 
 export interface AnalystEstimates {
   ticker: string;
@@ -26,16 +51,6 @@ export interface AnalystEstimates {
   analystCount?: number;
 }
 
-interface FMPEarningsData {
-  symbol: string;
-  date: string; // Earnings date
-  epsActual: number | null;
-  epsEstimated: number | null;
-  revenueActual: number | null;
-  revenueEstimated: number | null;
-  lastUpdated: string;
-}
-
 export interface EarningsComparison {
   epsBeat: boolean;
   revenueBeat: boolean;
@@ -48,116 +63,87 @@ export interface EarningsComparison {
 }
 
 class FinancialDataClient {
-  private apiKey: string | undefined;
-  private baseUrl = 'https://financialmodelingprep.com';
-
-  constructor() {
-    this.apiKey = process.env.FMP_API_KEY; // Financial Modeling Prep API key
-    if (!this.apiKey) {
-      console.warn('[FMP API] No API key configured. Set FMP_API_KEY in .env.local for analyst estimates.');
-      console.warn('[FMP API] Get free API key at: https://site.financialmodelingprep.com/developer/docs');
-    }
-  }
-
   /**
    * Fetch analyst estimates and actuals for a given ticker and quarter
-   * Uses FMP /stable/earnings endpoint (2025+ API)
+   * Uses Yahoo Finance earningsHistory module
    */
   async getAnalystEstimates(
     ticker: string,
     filingDate: Date
   ): Promise<AnalystEstimates | null> {
-    if (!this.apiKey) {
-      console.log(`[FMP API] Skipping analyst estimates - no API key configured`);
-      return null;
-    }
-
     try {
-      console.log(`[FMP API] Fetching earnings data for ${ticker}...`);
+      console.log(`[Yahoo Finance] Fetching earnings data for ${ticker}...`);
 
-      // Use new /stable/earnings endpoint (free tier: limit=5)
-      const url = `${this.baseUrl}/stable/earnings?symbol=${ticker}&limit=5&apikey=${this.apiKey}`;
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'SEC Filing Analyzer',
-        },
+      const summary = await yahooFinance.quoteSummary(ticker, {
+        modules: ['earningsHistory'],
       });
 
-      if (!response.ok) {
-        console.error(`[FMP API] HTTP ${response.status}: ${response.statusText}`);
-        return null;
-      }
-
-      const data: FMPEarningsData[] = await response.json();
-
-      if (!data || data.length === 0) {
-        console.log(`[FMP API] No earnings data found for ${ticker}`);
+      const history = summary.earningsHistory?.history;
+      if (!history || history.length === 0) {
+        console.log(`[Yahoo Finance] No earnings data found for ${ticker}`);
         return null;
       }
 
       // Find the earnings report closest to the filing date
       const filingTime = filingDate.getTime();
-      let closestEarnings: FMPEarningsData | null = null;
+      let closestEarnings: (typeof history)[number] | null = null;
       let smallestDiff = Infinity;
 
-      for (const earnings of data) {
+      for (const entry of history) {
         // Skip if no estimate data
-        if (!earnings.epsEstimated && !earnings.revenueEstimated) {
+        if (entry.epsEstimate == null) {
           continue;
         }
 
-        const earningsDate = new Date(earnings.date);
+        const earningsDate = entry.quarter ? new Date(entry.quarter) : null;
+        if (!earningsDate) continue;
+
         const diff = Math.abs(earningsDate.getTime() - filingTime);
 
         if (diff < smallestDiff) {
           smallestDiff = diff;
-          closestEarnings = earnings;
+          closestEarnings = entry;
         }
       }
 
       if (!closestEarnings) {
-        console.log(`[FMP API] No earnings with estimates found for ${ticker}`);
+        console.log(`[Yahoo Finance] No earnings with estimates found for ${ticker}`);
         return null;
       }
 
       // Only use earnings within 45 days of filing (10-K/Q usually filed within 30-40 days)
       if (smallestDiff > 45 * 24 * 60 * 60 * 1000) {
-        console.log(`[FMP API] Closest earnings is ${Math.round(smallestDiff / (24 * 60 * 60 * 1000))} days away - too far`);
+        console.log(`[Yahoo Finance] Closest earnings is ${Math.round(smallestDiff / (24 * 60 * 60 * 1000))} days away - too far`);
         return null;
       }
 
-      const earningsDate = new Date(closestEarnings.date);
+      const earningsDate = closestEarnings.quarter ? new Date(closestEarnings.quarter) : new Date();
       const quarter = `Q${Math.floor(earningsDate.getMonth() / 3) + 1}`;
       const year = earningsDate.getFullYear();
 
-      // Calculate surprises if we have both estimated and actual
+      // Calculate EPS surprise if we have both estimated and actual
       let epsSurprise: number | undefined;
-      let revenueSurprise: number | undefined;
 
-      if (closestEarnings.epsActual && closestEarnings.epsEstimated) {
-        epsSurprise = ((closestEarnings.epsActual - closestEarnings.epsEstimated) / Math.abs(closestEarnings.epsEstimated)) * 100;
+      if (closestEarnings.epsActual != null && closestEarnings.epsEstimate != null && closestEarnings.epsEstimate !== 0) {
+        epsSurprise = ((closestEarnings.epsActual - closestEarnings.epsEstimate) / Math.abs(closestEarnings.epsEstimate)) * 100;
       }
 
-      if (closestEarnings.revenueActual && closestEarnings.revenueEstimated) {
-        revenueSurprise = ((closestEarnings.revenueActual - closestEarnings.revenueEstimated) / closestEarnings.revenueEstimated) * 100;
-      }
+      // Revenue estimates are not available in Yahoo earningsHistory;
+      // revenue surprise relies on XBRL data in the earnings calculator
 
-      console.log(`[FMP API] Found ${quarter} ${year}: EPS ${closestEarnings.epsEstimated} → ${closestEarnings.epsActual || 'pending'}`);
+      console.log(`[Yahoo Finance] Found ${quarter} ${year}: EPS ${closestEarnings.epsEstimate} → ${closestEarnings.epsActual ?? 'pending'}`);
 
       return {
         ticker,
         fiscalQuarter: `${quarter} ${year}`,
         fiscalYear: year,
-        consensusEPS: closestEarnings.epsEstimated || undefined,
-        consensusRevenue: closestEarnings.revenueEstimated || undefined,
-        actualEPS: closestEarnings.epsActual || undefined,
-        actualRevenue: closestEarnings.revenueActual || undefined,
+        consensusEPS: closestEarnings.epsEstimate ?? undefined,
+        actualEPS: closestEarnings.epsActual ?? undefined,
         epsSurprise,
-        revenueSurprise,
         earningsDate,
       };
     } catch (error: any) {
-      console.error(`[FMP API] Error fetching earnings data:`, error.message);
+      console.error(`[Yahoo Finance] Error fetching earnings data:`, error.message);
       return null;
     }
   }

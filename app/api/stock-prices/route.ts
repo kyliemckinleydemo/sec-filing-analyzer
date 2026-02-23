@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ prices: [] });
       }
 
-      // Fetch prices from database (updated by FMP cron job)
+      // Fetch prices from database (updated by stock price cron job)
       const companies = await prisma.company.findMany({
         where: { ticker: { in: tickers } },
         select: { ticker: true, currentPrice: true },
