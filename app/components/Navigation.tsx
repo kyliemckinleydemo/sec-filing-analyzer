@@ -41,12 +41,6 @@ export default function Navigation() {
           href="/query"
           className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
         >
-          Query
-        </Link>
-        <Link
-          href="/chat"
-          className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-        >
           Ask the Market
         </Link>
         <Link
