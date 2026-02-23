@@ -125,9 +125,15 @@ test.describe('Homepage — unauthenticated view', () => {
   });
 
   test('"Watchlist" nav link navigates to /watchlist', async ({ page }) => {
-    const nav = page.locator('nav').first();
-    await nav.locator('text=Watchlist').click();
-    await expect(page).toHaveURL(/\/watchlist/);
+    const watchlistLink = page.locator('nav a[href="/watchlist"]');
+    await expect(watchlistLink).toBeVisible({ timeout: 10000 });
+
+    // Click and verify navigation reaches /watchlist
+    // (page redirects back to / for unauthenticated users, so catch the intermediate URL)
+    await Promise.all([
+      page.waitForURL(/\/watchlist/, { timeout: 10000 }),
+      watchlistLink.click(),
+    ]);
   });
 
   test('"View Live Filings Feed" CTA navigates to /latest-filings', async ({ page }) => {
