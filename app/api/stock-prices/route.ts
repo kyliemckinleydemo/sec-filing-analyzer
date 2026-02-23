@@ -1,7 +1,37 @@
+/**
+ * @module app/api/stock-prices/route
+ * @description Next.js API route handler providing dual-mode stock price data fetching from Yahoo Finance for both real-time watchlist quotes and historical SEC filing analysis
+ *
+ * PURPOSE:
+ * - Fetch live current prices for multiple tickers via ?tickers=AAPL,GOOGL query parameter for dashboard watchlist display
+ * - Retrieve 60-day historical price windows (±30 days) around SEC filing dates via ?ticker=AAPL&filingDate=2024-01-15 parameters
+ * - Calculate percentage price changes normalized to filing date for both stock and SPY benchmark comparison
+ * - Identify 7 business days post-filing date marker excluding weekends for regulatory deadline tracking
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextRequest/NextResponse types for API route handling and JSON responses
+ * - @prisma/client - Instantiates PrismaClient for potential database operations (currently unused in code)
+ * - query1.finance.yahoo.com API - External data source for both historical OHLC data and real-time quote information
+ *
+ * EXPORTS:
+ * - GET (function) - Async route handler supporting two modes: multi-ticker quotes (?tickers) or single-ticker historical data (?ticker&filingDate)
+ *
+ * PATTERNS:
+ * - Call GET /api/stock-prices?tickers=AAPL,MSFT,GOOGL to receive array of {ticker, currentPrice, change, changePercent} objects
+ * - Call GET /api/stock-prices?ticker=AAPL&filingDate=2024-01-15 to receive {ticker, filingDate, sevenBdDate, prices[]} with normalized percentage changes
+ * - Handle Promise.allSettled results for multi-ticker requests - failed fetches return zero values without breaking response
+ * - Use returned prices array where each entry includes {date, price, pctChange, spyPctChange, isFilingDate, is7BdDate} flags
+ *
+ * CLAUDE NOTES:
+ * - PrismaClient instantiated but never used - potential dead code or planned future database caching implementation
+ * - Yahoo Finance API called with User-Agent header 'SEC-Filing-Analyzer/1.0' to avoid rate limiting as legitimate bot
+ * - Business day calculation manually implements weekend exclusion (day 0 and 6) but ignores market holidays which could cause off-by-one errors
+ * - Filing date price lookup uses linear search through chronologically sorted data finding last price <= filing timestamp, assumes Yahoo data arrives pre-sorted
+ * - Multi-ticker mode uses Promise.allSettled to prevent one failed ticker from breaking entire batch, gracefully degrading to zero values
+ */
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
+import { getProfile } from '@/lib/fmp-client';
 
 /**
  * Fetch stock price data:
@@ -23,31 +53,34 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ prices: [] });
       }
 
-      // Fetch live prices from Yahoo Finance for all tickers
-      const pricePromises = tickers.map(ticker => fetchYahooQuote(ticker));
-      const yahooResults = await Promise.allSettled(pricePromises);
-
-      const prices = yahooResults.map((result, index) => {
-        const ticker = tickers[index];
-
-        if (result.status === 'fulfilled' && result.value) {
-          return {
-            ticker,
-            currentPrice: result.value.currentPrice,
-            change: result.value.change,
-            changePercent: result.value.changePercent
-          };
-        } else {
-          // If Yahoo Finance fails, return 0s
-          console.warn(`Failed to fetch price for ${ticker}`);
-          return {
-            ticker,
-            currentPrice: 0,
-            change: 0,
-            changePercent: 0
-          };
-        }
+      // Fetch prices from database (updated by FMP cron job)
+      const companies = await prisma.company.findMany({
+        where: { ticker: { in: tickers } },
+        select: { ticker: true, currentPrice: true },
       });
+
+      const companyMap = new Map(companies.map(c => [c.ticker, c.currentPrice]));
+
+      // Try FMP for real-time price on tickers where DB has no price
+      const missingTickers = tickers.filter(t => !companyMap.get(t));
+      if (missingTickers.length > 0 && missingTickers.length <= 5) {
+        const fmpResults = await Promise.allSettled(
+          missingTickers.map(t => getProfile(t))
+        );
+        fmpResults.forEach((result, i) => {
+          if (result.status === 'fulfilled' && result.value?.price) {
+            companyMap.set(missingTickers[i], result.value.price);
+          }
+        });
+      }
+
+      const prices = tickers.map(t => {
+        const price = companyMap.get(t);
+        if (price) {
+          return { ticker: t, currentPrice: price, change: null, changePercent: null };
+        }
+        return null;
+      }).filter(Boolean);
 
       return NextResponse.json({ prices });
     }
@@ -125,6 +158,13 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // Create a map of SPY data by date for O(1) lookup
+    const spyDataMap = new Map<string, { close: number }>();
+    for (const spyPoint of spyData) {
+      const spyDateStr = new Date(spyPoint.date).toISOString().split('T')[0];
+      spyDataMap.set(spyDateStr, { close: spyPoint.close });
+    }
+
     // Build result with percentage changes
     const prices = stockData.map(point => {
       const dateStr = new Date(point.date).toISOString().split('T')[0];
@@ -132,11 +172,8 @@ export async function GET(request: NextRequest) {
         ? ((point.close - stockFilingPrice) / stockFilingPrice * 100)
         : 0;
 
-      // Find corresponding SPY data
-      const spyPoint = spyData.find(spy => {
-        const spyDateStr = new Date(spy.date).toISOString().split('T')[0];
-        return spyDateStr === dateStr;
-      });
+      // Find corresponding SPY data using the map
+      const spyPoint = spyDataMap.get(dateStr);
 
       const spyPctChange = (spyPoint && spyFilingPrice)
         ? ((spyPoint.close - spyFilingPrice) / spyFilingPrice * 100)
@@ -223,6 +260,59 @@ async function fetchYahooFinanceData(
   } catch (error) {
     console.error(`[Yahoo Finance] Error fetching ${ticker}:`, error);
     return [];
+  }
+}
+
+/**
+ * Batch fetch current quote data for multiple tickers from Yahoo Finance API
+ * Returns a map of ticker to quote data
+ */
+async function fetchYahooQuoteBatch(
+  tickers: string[]
+): Promise<Record<string, { currentPrice: number; change: number; changePercent: number }>> {
+  try {
+    // Yahoo Finance supports comma-separated tickers in a single request
+    const tickerList = tickers.join(',');
+    const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${tickerList}`;
+
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; SEC-Filing-Analyzer/1.0)'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Yahoo Finance API returned ${response.status}`);
+    }
+
+    const data = await response.json();
+    const results = data.quoteResponse?.result || [];
+
+    const quotesMap: Record<string, { currentPrice: number; change: number; changePercent: number }> = {};
+
+    for (const result of results) {
+      const ticker = result.symbol;
+      const currentPrice = result.regularMarketPrice;
+      const previousClose = result.regularMarketPreviousClose;
+
+      if (currentPrice && previousClose) {
+        const change = currentPrice - previousClose;
+        const changePercent = (change / previousClose) * 100;
+
+        quotesMap[ticker] = {
+          currentPrice: Math.round(currentPrice * 100) / 100,
+          change: Math.round(change * 100) / 100,
+          changePercent: Math.round(changePercent * 100) / 100
+        };
+      } else {
+        console.warn(`[Yahoo Finance Quote Batch] Missing price data for ${ticker}`);
+      }
+    }
+
+    return quotesMap;
+  } catch (error) {
+    console.error(`[Yahoo Finance Quote Batch] Error fetching quotes:`, error);
+    return {};
   }
 }
 

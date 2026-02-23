@@ -1,3 +1,37 @@
+/**
+ * @module app/api/chat/route
+ * @description Next.js API route streaming Claude AI responses for natural language queries about SEC filing analysis data including financials, risk scores, and stock performance
+ *
+ * PURPOSE:
+ * - Authenticate requests and enforce 100 AI analyses per day quota using requireAuthAndAIQuota middleware
+ * - Fetch up to 20 recent SEC filings from Prisma filtered by ticker or sector with company metrics and predictions
+ * - Build enriched filing context with calculated fields like YoY growth rates, market cap in billions, distance from 52-week high, and prediction accuracy
+ * - Stream Claude Sonnet 4.5 responses via Server-Sent Events processing user questions against filing data with specific instructions to avoid disclaimers and focus on available data
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextRequest type for API route handler
+ * - @/lib/prisma - Accesses Prisma client to query Filing and Company models with nested includes
+ * - @/lib/claude-client - Provides claudeClient wrapper for streaming Claude API messages.create calls
+ * - @/lib/api-middleware - Supplies requireAuthAndAIQuota to verify JWT and check daily usage limit
+ *
+ * EXPORTS:
+ * - runtime (const) - Set to 'nodejs' to enable Node.js runtime for streaming responses
+ * - dynamic (const) - Set to 'force-dynamic' to prevent route caching and ensure fresh data
+ * - POST (function) - Handles chat requests with streaming AI responses, returns 401 if unauthenticated, 404 if no filings found, or text/plain stream
+ *
+ * PATTERNS:
+ * - Send POST to /api/chat with JSON body { message: string, ticker?: string, sector?: string }
+ * - Receive streaming text/plain response chunks - parse incrementally as Claude generates tokens
+ * - Handle 401 with requiresAuth: true to prompt login - quota resets daily at midnight
+ * - Use ticker filter for company-specific questions or sector filter for cross-company comparisons
+ *
+ * CLAUDE NOTES:
+ * - Prompt explicitly forbids Claude from mentioning missing data or limitations - instructs to answer confidently with available information only
+ * - Filing context limited to 20 items and truncates concernFactors/positiveFactors to 2 each to stay within token budget
+ * - Calculates derived metrics like quarter from filing date, market cap in billions, distance from 52-week high percentage, and prediction error vs actual returns
+ * - Uses temperature 0.3 for consistent factual responses and max_tokens 2048 to balance detail with response time
+ * - Filters out null/undefined values from filing context to reduce noise and improve Claude's focus on actual data points
+ */
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { claudeClient } from '@/lib/claude-client';
@@ -13,27 +47,42 @@ export const dynamic = 'force-dynamic';
  * filing data to answer questions about risk trends, concern levels, and more.
  */
 
-async function fetchRelevantFilings(ticker?: string, sector?: string, limit: number = 10) {
+const COMPANY_SELECT = {
+  ticker: true,
+  name: true,
+  sector: true,
+  currentPrice: true,
+  marketCap: true,
+  peRatio: true,
+  fiftyTwoWeekHigh: true,
+  fiftyTwoWeekLow: true,
+  analystTargetPrice: true,
+  dividendYield: true,
+  beta: true,
+  latestRevenue: true,
+  latestRevenueYoY: true,
+  latestNetIncome: true,
+  latestNetIncomeYoY: true,
+  latestEPS: true,
+  latestGrossMargin: true,
+  latestOperatingMargin: true,
+  latestQuarter: true,
+} as const;
+
+async function fetchRelevantFilings(ticker?: string, sectorNames?: string[], limit: number = 10) {
   const where: any = {};
 
   if (ticker) {
     where.company = { ticker: ticker.toUpperCase() };
-  } else if (sector) {
-    where.company = { sector: { contains: sector, mode: 'insensitive' } };
+  } else if (sectorNames && sectorNames.length > 0) {
+    where.company = { sector: { in: sectorNames } };
   }
 
   return await prisma.filing.findMany({
     where,
     include: {
       company: {
-        select: {
-          ticker: true,
-          name: true,
-          sector: true,
-          currentPrice: true,
-          marketCap: true,
-          peRatio: true,
-        },
+        select: COMPANY_SELECT,
       },
       predictions: {
         orderBy: { createdAt: 'desc' },
@@ -42,6 +91,45 @@ async function fetchRelevantFilings(ticker?: string, sector?: string, limit: num
     },
     orderBy: { filingDate: 'desc' },
     take: limit,
+  });
+}
+
+async function fetchHighConcernFilings(limit: number = 20) {
+  return await prisma.filing.findMany({
+    where: {
+      concernLevel: { gte: 5 },
+      actual30dReturn: { not: null },
+    },
+    include: {
+      company: { select: COMPANY_SELECT },
+      predictions: { orderBy: { createdAt: 'desc' }, take: 1 },
+    },
+    orderBy: { filingDate: 'desc' },
+    take: limit,
+  });
+}
+
+async function fetchAnalyzedFilings(limit: number = 20) {
+  return await prisma.filing.findMany({
+    where: {
+      analysisData: { not: null },
+      concernLevel: { not: null },
+    },
+    include: {
+      company: { select: COMPANY_SELECT },
+      predictions: { orderBy: { createdAt: 'desc' }, take: 1 },
+    },
+    orderBy: { filingDate: 'desc' },
+    take: limit,
+  });
+}
+
+async function fetchSectorCompanies(sectorNames: string[]) {
+  return await prisma.company.findMany({
+    where: { sector: { in: sectorNames } },
+    select: COMPANY_SELECT,
+    orderBy: { marketCap: 'desc' },
+    take: 50,
   });
 }
 
@@ -94,11 +182,24 @@ function buildFilingContext(filings: any[]) {
       marketCap: f.company.marketCap,
       marketCapB: marketCapB ? `$${marketCapB}B` : null,
       peRatio: f.company.peRatio,
+      dividendYield: f.company.dividendYield,
+      beta: f.company.beta,
       fiftyTwoWeekHigh: f.company.fiftyTwoWeekHigh,
       fiftyTwoWeekLow: f.company.fiftyTwoWeekLow,
       distanceFrom52WeekHigh: f.company.currentPrice && f.company.fiftyTwoWeekHigh
         ? `${(((f.company.currentPrice - f.company.fiftyTwoWeekHigh) / f.company.fiftyTwoWeekHigh) * 100).toFixed(1)}%`
         : null,
+      analystTargetPrice: f.company.analystTargetPrice,
+
+      // Company-Level Fundamentals (from latest financial data)
+      companyRevenue: f.company.latestRevenue,
+      companyRevenueYoY: f.company.latestRevenueYoY,
+      companyNetIncome: f.company.latestNetIncome,
+      companyNetIncomeYoY: f.company.latestNetIncomeYoY,
+      companyEPS: f.company.latestEPS,
+      companyGrossMargin: f.company.latestGrossMargin,
+      companyOperatingMargin: f.company.latestOperatingMargin,
+      companyLatestQuarter: f.company.latestQuarter,
 
       // Earnings Analysis
       epsSurprise: structuredData?.epsSurprise || null,
@@ -141,6 +242,36 @@ function buildFilingContext(filings: any[]) {
   }).slice(0, 20); // Limit context to avoid token overflow
 }
 
+function buildCompanyContext(companies: any[]) {
+  return companies.map((c) => {
+    const marketCapB = c.marketCap ? (c.marketCap / 1e9).toFixed(1) : null;
+    const data: Record<string, any> = {
+      ticker: c.ticker,
+      name: c.name,
+      sector: c.sector,
+      currentPrice: c.currentPrice,
+      marketCapB: marketCapB ? `$${marketCapB}B` : null,
+      peRatio: c.peRatio,
+      dividendYield: c.dividendYield,
+      beta: c.beta,
+      analystTargetPrice: c.analystTargetPrice,
+      latestRevenue: c.latestRevenue,
+      revenueYoY: c.latestRevenueYoY,
+      latestNetIncome: c.latestNetIncome,
+      netIncomeYoY: c.latestNetIncomeYoY,
+      eps: c.latestEPS,
+      grossMargin: c.latestGrossMargin,
+      operatingMargin: c.latestOperatingMargin,
+      latestQuarter: c.latestQuarter,
+      fiftyTwoWeekHigh: c.fiftyTwoWeekHigh,
+      fiftyTwoWeekLow: c.fiftyTwoWeekLow,
+    };
+    return Object.fromEntries(
+      Object.entries(data).filter(([_, v]) => v !== null && v !== undefined)
+    );
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Check authentication and AI quota (requires login, 100 analyses/day)
@@ -161,7 +292,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { message, ticker, sector } = await request.json();
+    const { message, ticker, sector: explicitSector } = await request.json();
 
     if (!message || typeof message !== 'string') {
       return new Response(
@@ -170,16 +301,80 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log(`[Chat API] Query: "${message}"${ticker ? ` (ticker: ${ticker})` : ''}${sector ? ` (sector: ${sector})` : ''}`);
+    // Detect sector from message text if not explicitly provided
+    // Map common names to the DB sector values (some sectors have multiple names)
+    const SECTOR_ALIASES: Record<string, string[]> = {
+      'Technology': ['Technology', 'Information Technology'],
+      'Basic Materials': ['Basic Materials'],
+      'Communication Services': ['Communication Services'],
+      'Consumer Cyclical': ['Consumer Cyclical', 'Consumer Discretionary'],
+      'Consumer Defensive': ['Consumer Defensive', 'Consumer Staples'],
+      'Energy': ['Energy'],
+      'Financial Services': ['Financial Services', 'Financials'],
+      'Healthcare': ['Healthcare'],
+      'Industrials': ['Industrials'],
+      'Real Estate': ['Real Estate'],
+      'Utilities': ['Utilities'],
+    };
+    let sector = explicitSector || '';
+    let sectorDbNames: string[] = [];
+    if (!sector) {
+      const msgLower = message.toLowerCase();
+      for (const [name, aliases] of Object.entries(SECTOR_ALIASES)) {
+        if (msgLower.includes(name.toLowerCase())) {
+          sector = name;
+          sectorDbNames = aliases;
+          break;
+        }
+      }
+    }
+    if (sector && sectorDbNames.length === 0) {
+      sectorDbNames = SECTOR_ALIASES[sector] || [sector];
+    }
+
+    // Detect ticker from message text if not explicitly provided (e.g., "AAPL's risk factors")
+    let effectiveTicker = ticker || '';
+    if (!effectiveTicker) {
+      const tickerMatch = message.match(/\b([A-Z]{1,5})\b(?:'s|'s|\s)/);
+      if (tickerMatch) {
+        // Verify it's a real ticker by checking the database
+        const company = await prisma.company.findFirst({ where: { ticker: tickerMatch[1] }, select: { ticker: true } });
+        if (company) {
+          effectiveTicker = company.ticker;
+        }
+      }
+    }
+
+    console.log(`[Chat API] Query: "${message}"${effectiveTicker ? ` (ticker: ${effectiveTicker})` : ''}${sector ? ` (sector: ${sector})` : ''}`);
+
+    // Detect query intent for smarter data fetching
+    const msgLower = message.toLowerCase();
+    const wantsConcern = msgLower.includes('concern') || msgLower.includes('risk level');
+    const wantsReturns = msgLower.includes('return') || msgLower.includes('performance') || msgLower.includes('alpha');
 
     // Fetch relevant filings based on context
-    const filings = await fetchRelevantFilings(ticker, sector, (ticker || sector) ? 20 : 10);
+    let filings;
+    if (!effectiveTicker && !sector && wantsConcern) {
+      // Specialized query for concern-level analysis
+      filings = await fetchHighConcernFilings(20);
+    } else if (!effectiveTicker && !sector) {
+      // General query — fetch filings that have analysis data (not random recent ones)
+      filings = await fetchAnalyzedFilings(20);
+    } else {
+      filings = await fetchRelevantFilings(effectiveTicker || undefined, sectorDbNames.length > 0 ? sectorDbNames : undefined, (effectiveTicker || sector) ? 20 : 10);
+    }
 
-    if (filings.length === 0) {
+    // For sector queries, also fetch all companies in the sector for comprehensive coverage
+    let sectorCompanies: any[] = [];
+    if (sector && !effectiveTicker && sectorDbNames.length > 0) {
+      sectorCompanies = await fetchSectorCompanies(sectorDbNames);
+    }
+
+    if (filings.length === 0 && sectorCompanies.length === 0) {
       return new Response(
         JSON.stringify({
-          error: ticker
-            ? `No filings found for ${ticker}. Try analyzing a filing first.`
+          error: effectiveTicker
+            ? `No filings found for ${effectiveTicker}. Try analyzing a filing first.`
             : 'No filings found in database. Try analyzing some filings first.'
         }),
         { status: 404, headers: { 'Content-Type': 'application/json' } }
@@ -187,11 +382,15 @@ export async function POST(request: NextRequest) {
     }
 
     const filingContext = buildFilingContext(filings);
+    const companyContext = sectorCompanies.length > 0 ? buildCompanyContext(sectorCompanies) : null;
 
     // Build prompt for Claude
-    const prompt = `You are a financial analyst assistant specialized in SEC filing analysis. Answer the user's question based on the filing data provided. When data spans multiple companies (e.g., a sector query), compare and rank companies to surface cross-company insights.
-
-FILING DATA:
+    const prompt = `You are a senior financial analyst at a top-tier investment firm. Answer the user's question using the data provided. Be specific, quantitative, and insightful. When comparing companies, always rank them and highlight standouts.
+${companyContext ? `
+SECTOR COMPANIES (${sectorCompanies.length} companies in ${sector}):
+${JSON.stringify(companyContext, null, 2)}
+` : ''}
+RECENT FILING DATA:
 ${JSON.stringify(filingContext, null, 2)}
 
 DATA FIELDS EXPLAINED:
@@ -219,22 +418,15 @@ STOCK PRICE FIELDS:
 USER QUESTION:
 ${message}
 
-CRITICAL INSTRUCTIONS:
-1. **Answer directly** - Jump straight to the answer without preambles, disclaimers, or apologies
-2. **Use available data** - Work with what you have and present it clearly
-3. **No excuses** - Never mention missing data, limitations, incomplete information, or what you can't see
-4. **Be confident** - Present findings as facts based on the data you analyzed
-5. **Focus on insights** - If some data is missing, focus on what IS available and provide value
-
-ANSWER GUIDELINES:
-- Start with the direct answer or finding (not "Based on the data I have...")
-- Use specific numbers and percentages from the data
-- Rank companies when asked for "best" or "highest"
-- Create markdown tables for multi-company comparisons
-- Reference specific tickers and filing dates
-- Filter by marketCap, quarter, year as needed
-- Keep responses professional but conversational
-- If you truly can't answer (no relevant data at all), suggest a related query instead
+INSTRUCTIONS:
+1. **Answer directly** — lead with the key finding, not preambles or disclaimers
+2. **Be quantitative** — use specific numbers ($, %, ratios) from the data in every answer
+3. **Never apologize for missing data** — only discuss what you have; skip fields silently if absent
+4. **Use markdown tables** for any comparison of 3+ companies — include the most relevant metrics
+5. **Rank and highlight** — when comparing, sort by the most relevant metric and call out the top/bottom performers
+6. **Use SECTOR COMPANIES data** for broad questions about a sector (revenue growth, valuations, dividends, etc.)
+7. **Use FILING DATA** for questions about specific filings, risk factors, concern levels, or post-filing returns
+8. **Keep it concise** — aim for a clear, scannable answer. Tables > walls of text.
 
 Answer the question:`;
 

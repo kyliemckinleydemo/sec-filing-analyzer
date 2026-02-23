@@ -95,8 +95,8 @@ interface TopSignal {
 interface StockPrice {
   ticker: string;
   currentPrice: number;
-  change: number;
-  changePercent: number;
+  change: number | null;
+  changePercent: number | null;
 }
 
 interface CompanySuggestion {
@@ -453,9 +453,13 @@ export default function Home() {
                             {price ? (
                               <div className="text-right mr-3">
                                 <div className="font-semibold text-white">{safeFormatPrice(price.currentPrice)}</div>
-                                <div className={`text-xs ${price.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                  {price.change >= 0 ? '▲' : '▼'} {safeFormatPercent(Math.abs(price.changePercent))}
-                                </div>
+                                {price.change != null && price.changePercent != null ? (
+                                  <div className={`text-xs ${price.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                    {price.change >= 0 ? '▲' : '▼'} {safeFormatPercent(Math.abs(price.changePercent))}
+                                  </div>
+                                ) : (
+                                  <div className="text-xs text-muted-foreground">Last close</div>
+                                )}
                               </div>
                             ) : (
                               <div className="text-right mr-3">
