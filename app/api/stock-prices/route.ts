@@ -31,7 +31,7 @@
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getProfile } from '@/lib/fmp-client';
+import yahooFinance from '@/lib/yahoo-finance-singleton';
 
 /**
  * Fetch stock price data:
@@ -61,15 +61,15 @@ export async function GET(request: NextRequest) {
 
       const companyMap = new Map(companies.map(c => [c.ticker, c.currentPrice]));
 
-      // Try FMP for real-time price on tickers where DB has no price
+      // Try Yahoo Finance for real-time price on tickers where DB has no price
       const missingTickers = tickers.filter(t => !companyMap.get(t));
       if (missingTickers.length > 0 && missingTickers.length <= 5) {
-        const fmpResults = await Promise.allSettled(
-          missingTickers.map(t => getProfile(t))
+        const yfResults = await Promise.allSettled(
+          missingTickers.map(t => yahooFinance.quote(t))
         );
-        fmpResults.forEach((result, i) => {
-          if (result.status === 'fulfilled' && result.value?.price) {
-            companyMap.set(missingTickers[i], result.value.price);
+        yfResults.forEach((result, i) => {
+          if (result.status === 'fulfilled' && result.value?.regularMarketPrice) {
+            companyMap.set(missingTickers[i], result.value.regularMarketPrice);
           }
         });
       }

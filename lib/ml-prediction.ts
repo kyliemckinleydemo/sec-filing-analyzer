@@ -1,7 +1,43 @@
+/**
+ * @module lib/ml-prediction
+ * @description Extracts 42 financial features from SEC filings and market data, then calls Python ML model to predict 7-day stock price returns with confidence scores
+ *
+ * PURPOSE:
+ * - Fetches company fundamentals, analyst ratings, and historical price data from Prisma DB and Yahoo Finance API
+ * - Calculates technical indicators (RSI, MACD, moving averages, volatility) and market context (SPX returns, VIX)
+ * - Marshals features into JSON payload and executes Python prediction script via child_process
+ * - Parses ML model output to return predicted 7-day return percentage and confidence score (0-1)
+ *
+ * DEPENDENCIES:
+ * - child_process - Spawns Python ML prediction script as subprocess with feature JSON
+ * - util - Promisifies exec for async/await Python script execution
+ * - ./prisma - Queries companies and filings tables for concernLevel, analyst activity, and fundamental metrics
+ * - yahoo-finance2 - Fetches real-time quotes, historical prices, analyst targets, and market indices (SPX, VIX)
+ *
+ * EXPORTS:
+ * - MLPredictionInput (interface) - Shape with filingId, ticker, filingType, filingDate for prediction request
+ * - MLPredictionResult (interface) - Shape with predicted7dReturn (percentage) and predictionConfidence (0-1 score)
+ * - extractMLFeatures (function) - Computes 42 feature values including technicals, fundamentals, analyst data, and market context from DB and Yahoo Finance
+ * - generateMLPrediction (function) - Orchestrates feature extraction, Python script execution, and result parsing to return ML prediction
+ *
+ * PATTERNS:
+ * - Call await generateMLPrediction({ filingId, ticker, filingType, filingDate }) to get { predicted7dReturn, predictionConfidence }
+ * - extractMLFeatures can be called independently to inspect feature values before prediction
+ * - Python script must exist at scripts/predict_single_filing.py and accept JSON via command-line argument
+ * - Wrap calls in try/catch as Yahoo Finance API failures throw errors (historical prices, VIX, SPX data)
+ *
+ * CLAUDE NOTES:
+ * - Uses shell-escaped JSON string passed to Python script - vulnerable to command injection if input contains malicious strings
+ * - Falls back to neutral defaults (RSI=50, riskScore=5, VIX=20) when Yahoo Finance API calls fail to prevent prediction crashes
+ * - Calculates annualized volatility as sqrt(variance) * sqrt(252) * 100 assuming 252 trading days per year
+ * - Analyst activity (upgrades/downgrades) parsed from filing.analysisData JSON field with extensive error handling for missing/malformed data
+ * - Legacy riskScore and sentimentScore fixed at neutral values (5, 0) - code comment indicates concernLevel will replace them in future model versions
+ * - Market cap categories (mega/large/mid/small) use thresholds: $200B, $10B, $2B for tier boundaries
+ */
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { prisma } from './prisma';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from './yahoo-finance-singleton';
 
 const execAsync = promisify(exec);
 
@@ -121,16 +157,43 @@ export async function extractMLFeatures(input: MLPredictionInput) {
   const thirtyDaysAgo = new Date(filingDate);
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
+  // Batch all Yahoo Finance API calls together
   let historicalPrices;
+  let spxData;
+  let vixData;
+
   try {
-    historicalPrices = await yahooFinance.chart(ticker, {
-      period1: sixtyDaysAgo,
-      period2: filingDate,
-      interval: '1d'
-    });
+    [historicalPrices, spxData, vixData] = await Promise.all([
+      yahooFinance.chart(ticker, {
+        period1: sixtyDaysAgo,
+        period2: filingDate,
+        interval: '1d'
+      }).catch(error => {
+        console.warn(`Failed to fetch historical prices for ${ticker}:`, error);
+        return null;
+      }),
+      yahooFinance.chart('^GSPC', {
+        period1: thirtyDaysAgo,
+        period2: filingDate,
+        interval: '1d'
+      }).catch(error => {
+        console.warn('Failed to fetch SPX data:', error);
+        return null;
+      }),
+      yahooFinance.chart('^VIX', {
+        period1: filingDate,
+        period2: filingDate,
+        interval: '1d'
+      }).catch(error => {
+        console.warn('Failed to fetch VIX data:', error);
+        return null;
+      })
+    ]);
   } catch (error) {
-    console.warn(`Failed to fetch historical prices for ${ticker}:`, error);
+    console.warn('Failed to fetch market data:', error);
     historicalPrices = null;
+    spxData = null;
+    vixData = null;
   }
 
   const quotes = historicalPrices?.quotes || [];
@@ -180,35 +243,9 @@ export async function extractMLFeatures(input: MLPredictionInput) {
   // 30-day return
   const return30d = closes.length >= 30 ? ((closes[closes.length - 1] - closes[closes.length - 30]) / closes[closes.length - 30]) * 100 : 0;
 
-  // Fetch S&P 500 data for market context
-  let spxData;
-  try {
-    spxData = await yahooFinance.chart('^GSPC', {
-      period1: thirtyDaysAgo,
-      period2: filingDate,
-      interval: '1d'
-    });
-  } catch (error) {
-    console.warn('Failed to fetch SPX data:', error);
-    spxData = null;
-  }
-
   const spxCloses = spxData?.quotes?.map(q => q.close).filter(c => c != null) as number[] || [];
   const spxReturn7d = spxCloses.length >= 7 ? ((spxCloses[spxCloses.length - 1] - spxCloses[spxCloses.length - 7]) / spxCloses[spxCloses.length - 7]) * 100 : 0;
   const spxReturn30d = spxCloses.length >= 30 ? ((spxCloses[spxCloses.length - 1] - spxCloses[spxCloses.length - 30]) / spxCloses[spxCloses.length - 30]) * 100 : 0;
-
-  // Fetch VIX data
-  let vixData;
-  try {
-    vixData = await yahooFinance.chart('^VIX', {
-      period1: filingDate,
-      period2: filingDate,
-      interval: '1d'
-    });
-  } catch (error) {
-    console.warn('Failed to fetch VIX data:', error);
-    vixData = null;
-  }
 
   const vixClose = vixData?.quotes?.[0]?.close || 20; // Default to neutral VIX
 

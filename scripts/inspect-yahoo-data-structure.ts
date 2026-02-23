@@ -4,7 +4,7 @@
  * See what fields are actually available in upgrade/downgrade history
  */
 
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../lib/yahoo-finance-singleton';
 
 async function inspectYahooData() {
   console.log('🔍 INSPECTING YAHOO FINANCE DATA STRUCTURE\n');

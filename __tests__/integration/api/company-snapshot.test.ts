@@ -1,3 +1,39 @@
+/**
+ * @module company-snapshot.test
+ * @description Unit tests for the company snapshot API endpoint that aggregates
+ * comprehensive company data including live market data, price history, filings,
+ * and analyst activity.
+ *
+ * PURPOSE:
+ * - Validates the GET /api/company/[ticker]/snapshot endpoint behavior
+ * - Tests integration between Yahoo Finance API and database fallback data
+ * - Ensures proper error handling for invalid/untracked tickers
+ * - Verifies live data fetching and caching mechanisms
+ * - Tests data aggregation from multiple sources (quote, chart, financials)
+ * - Validates price history retrieval for both stock and S&P 500 index
+ * - Ensures proper fallback to database when external APIs fail
+ *
+ * EXPORTS:
+ * - Test suite: GET /api/company/[ticker]/snapshot
+ *   - 404 response for untracked companies
+ *   - Live data retrieval from Yahoo Finance
+ *   - Database fallback when Yahoo Finance fails
+ *   - S&P 500 historical data inclusion
+ *   - Database fallback for price history (StockPrice, MacroIndicators)
+ *   - SEC filings inclusion in response
+ *   - Empty ticker validation
+ *
+ * CLAUDE NOTES:
+ * - All Yahoo Finance calls go through Promise.allSettled for resilience
+ * - Uses vi.hoisted() to properly mock the Yahoo Finance singleton
+ * - Cache is cleared between tests to ensure isolation
+ * - Mock data includes BigInt values for volume (matches Prisma schema)
+ * - Tests both happy path (Yahoo data) and fallback path (DB data)
+ * - Yahoo Finance dividendYield is returned as percentage (13.0 = 13%)
+ * - Rate limiting middleware is mocked to allow all requests
+ * - RSS parser is mocked to return empty news items by default
+ */
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { prismaMock } from '../../mocks/prisma';
 import { cache } from '@/lib/cache';
@@ -13,23 +49,17 @@ vi.mock('@/lib/rate-limit', () => ({
   checkUnauthRateLimit: vi.fn().mockReturnValue({ limit: 20, remaining: 19, resetAt: Date.now() + 86400000 }),
 }));
 
-// Mock FMP client - all calls go through Promise.allSettled
-const { mockGetProfile, mockGetHistoricalPrices } = vi.hoisted(() => ({
-  mockGetProfile: vi.fn(),
-  mockGetHistoricalPrices: vi.fn(),
+// Mock Yahoo Finance singleton - all calls go through Promise.allSettled
+const { mockQuote, mockChart, mockQuoteSummary } = vi.hoisted(() => ({
+  mockQuote: vi.fn(),
+  mockChart: vi.fn(),
+  mockQuoteSummary: vi.fn(),
 }));
-vi.mock('@/lib/fmp-client', () => ({
+vi.mock('@/lib/yahoo-finance-singleton', () => ({
   default: {
-    getProfile: mockGetProfile,
-    getHistoricalPrices: mockGetHistoricalPrices,
-  },
-  parseRange: (range: string) => {
-    if (!range) return null;
-    const parts = range.split('-').map((s: string) => parseFloat(s.trim()));
-    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-      return { low: Math.min(parts[0], parts[1]), high: Math.max(parts[0], parts[1]) };
-    }
-    return null;
+    quote: mockQuote,
+    chart: mockChart,
+    quoteSummary: mockQuoteSummary,
   },
 }));
 
@@ -101,24 +131,19 @@ const MOCK_COMPANY = {
   ],
 };
 
-const MOCK_FMP_PROFILE = {
+const MOCK_YAHOO_QUOTE = {
   symbol: 'FMC',
-  companyName: 'FMC CORP',
-  price: 15.0,
-  mktCap: 1_900_000_000,
+  shortName: 'FMC CORP',
+  regularMarketPrice: 15.0,
+  regularMarketPreviousClose: 14.8,
+  marketCap: 1_900_000_000,
+  regularMarketVolume: 3_000_000,
+  averageDailyVolume10Day: 5_000_000,
+  fiftyTwoWeekHigh: 57.0,
+  fiftyTwoWeekLow: 12.17,
+  trailingPE: 18.5,
+  dividendYield: 13.0, // Yahoo returns as percentage (13.0 = 13%)
   beta: 0.66,
-  volAvg: 5_000_000,
-  volume: 3_000_000,
-  lastDiv: 1.95,
-  range: '12.17-57.00',
-  sector: 'Basic Materials',
-  industry: 'Agricultural Chemicals',
-  exchangeShortName: 'NYSE',
-  currency: 'USD',
-  pe: 18.5,
-  targetMeanPrice: 22.0,
-  dividendYield: 0.13,
-  previousClose: 14.8,
 };
 
 describe('GET /api/company/[ticker]/snapshot', () => {
@@ -126,10 +151,12 @@ describe('GET /api/company/[ticker]/snapshot', () => {
     vi.clearAllMocks();
     cache.clear(); // Clear snapshot cache between tests
     prismaMock.analystActivity.findMany.mockResolvedValue([]);
-    mockGetProfile.mockReset();
-    mockGetHistoricalPrices.mockReset();
-    mockGetProfile.mockResolvedValue(null);
-    mockGetHistoricalPrices.mockResolvedValue([]);
+    mockQuote.mockReset();
+    mockChart.mockReset();
+    mockQuoteSummary.mockReset();
+    mockQuote.mockResolvedValue(null);
+    mockChart.mockResolvedValue({ quotes: [] });
+    mockQuoteSummary.mockResolvedValue({ financialData: { targetMeanPrice: 22.0 } });
   });
 
   it('returns 404 when company is not tracked', async () => {
@@ -144,13 +171,14 @@ describe('GET /api/company/[ticker]/snapshot', () => {
     expect(body.error).toContain("don't track");
   });
 
-  it('returns live data from FMP when available', async () => {
+  it('returns live data from Yahoo Finance when available', async () => {
     prismaMock.company.findUnique.mockResolvedValue(MOCK_COMPANY);
     prismaMock.stockPrice.findMany.mockResolvedValue([]);
     prismaMock.macroIndicators.findMany.mockResolvedValue([]);
 
-    mockGetProfile.mockResolvedValue(MOCK_FMP_PROFILE);
-    mockGetHistoricalPrices.mockResolvedValue([]);
+    mockQuote.mockResolvedValue(MOCK_YAHOO_QUOTE);
+    mockChart.mockResolvedValue({ quotes: [] });
+    mockQuoteSummary.mockResolvedValue({ financialData: { targetMeanPrice: 22.0 } });
 
     const res = await GET(makeRequest('FMC'), {
       params: Promise.resolve({ ticker: 'FMC' }),
@@ -167,14 +195,14 @@ describe('GET /api/company/[ticker]/snapshot', () => {
     expect(body.company.name).toBe('FMC CORP');
   });
 
-  it('falls back to DB data when FMP fails completely', async () => {
+  it('falls back to DB data when Yahoo Finance fails completely', async () => {
     prismaMock.company.findUnique.mockResolvedValue(MOCK_COMPANY);
     prismaMock.stockPrice.findMany.mockResolvedValue([]);
     prismaMock.macroIndicators.findMany.mockResolvedValue([]);
 
-    // All FMP calls return null/empty
-    mockGetProfile.mockResolvedValue(null);
-    mockGetHistoricalPrices.mockResolvedValue([]);
+    // All Yahoo Finance calls return null/empty
+    mockQuote.mockResolvedValue(null);
+    mockChart.mockResolvedValue({ quotes: [] });
 
     const res = await GET(makeRequest('FMC'), {
       params: Promise.resolve({ ticker: 'FMC' }),
@@ -196,19 +224,23 @@ describe('GET /api/company/[ticker]/snapshot', () => {
     prismaMock.stockPrice.findMany.mockResolvedValue([]);
     prismaMock.macroIndicators.findMany.mockResolvedValue([]);
 
-    mockGetProfile.mockResolvedValue(MOCK_FMP_PROFILE);
+    mockQuote.mockResolvedValue(MOCK_YAHOO_QUOTE);
+    mockQuoteSummary.mockResolvedValue({ financialData: { targetMeanPrice: 22.0 } });
 
-    // Stock historical (first call)
-    mockGetHistoricalPrices
-      .mockResolvedValueOnce([
-        { date: '2025-09-02', open: 30.5, high: 32, low: 30, close: 31, volume: 1100000 },
-        { date: '2025-09-01', open: 29.5, high: 31, low: 29, close: 30, volume: 1000000 },
-      ])
-      // S&P 500 historical (second call)
-      .mockResolvedValueOnce([
-        { date: '2025-09-02', open: 5530, high: 5560, low: 5530, close: 5550, volume: 3100000000 },
-        { date: '2025-09-01', open: 5480, high: 5520, low: 5480, close: 5500, volume: 3000000000 },
-      ]);
+    // Stock chart (first call) then S&P 500 chart (second call)
+    mockChart
+      .mockResolvedValueOnce({
+        quotes: [
+          { date: new Date('2025-09-02'), open: 30.5, high: 32, low: 30, close: 31, volume: 1100000 },
+          { date: new Date('2025-09-01'), open: 29.5, high: 31, low: 29, close: 30, volume: 1000000 },
+        ],
+      })
+      .mockResolvedValueOnce({
+        quotes: [
+          { date: new Date('2025-09-02'), open: 5530, high: 5560, low: 5530, close: 5550, volume: 3100000000 },
+          { date: new Date('2025-09-01'), open: 5480, high: 5520, low: 5480, close: 5500, volume: 3000000000 },
+        ],
+      });
 
     const res = await GET(makeRequest('FMC'), {
       params: Promise.resolve({ ticker: 'FMC' }),
@@ -226,9 +258,9 @@ describe('GET /api/company/[ticker]/snapshot', () => {
   it('falls back to StockPrice and MacroIndicators DB tables for price history', async () => {
     prismaMock.company.findUnique.mockResolvedValue(MOCK_COMPANY);
 
-    // FMP returns no data
-    mockGetProfile.mockResolvedValue(null);
-    mockGetHistoricalPrices.mockResolvedValue([]);
+    // Yahoo Finance returns no data
+    mockQuote.mockResolvedValue(null);
+    mockChart.mockResolvedValue({ quotes: [] });
 
     // DB fallback data
     prismaMock.stockPrice.findMany.mockResolvedValue([
@@ -257,8 +289,9 @@ describe('GET /api/company/[ticker]/snapshot', () => {
     prismaMock.company.findUnique.mockResolvedValue(MOCK_COMPANY);
     prismaMock.stockPrice.findMany.mockResolvedValue([]);
     prismaMock.macroIndicators.findMany.mockResolvedValue([]);
-    mockGetProfile.mockResolvedValue(MOCK_FMP_PROFILE);
-    mockGetHistoricalPrices.mockResolvedValue([]);
+    mockQuote.mockResolvedValue(MOCK_YAHOO_QUOTE);
+    mockChart.mockResolvedValue({ quotes: [] });
+    mockQuoteSummary.mockResolvedValue({ financialData: { targetMeanPrice: 22.0 } });
 
     const res = await GET(makeRequest('FMC'), {
       params: Promise.resolve({ ticker: 'FMC' }),

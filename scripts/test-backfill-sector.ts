@@ -1,5 +1,5 @@
 import { prisma } from '../lib/prisma';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../lib/yahoo-finance-singleton';
 
 async function testBackfill() {
   console.log('Testing sector backfill with 5 companies...\n');

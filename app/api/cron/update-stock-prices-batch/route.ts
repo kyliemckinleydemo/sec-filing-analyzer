@@ -33,7 +33,7 @@
  */
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import fmpClient, { parseRange } from '@/lib/fmp-client';
+import yahooFinance from '@/lib/yahoo-finance-singleton';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -98,24 +98,29 @@ export async function GET(request: Request) {
 
     for (const company of batchCompanies) {
       try {
-        const profile = await fmpClient.getProfile(company.ticker);
+        const quote = await yahooFinance.quote(company.ticker);
 
-        if (profile) {
-          const range = parseRange(profile.range);
+        if (quote?.regularMarketPrice) {
+          // Fetch analyst target price separately (not in basic quote)
+          let analystTargetPrice = null;
+          try {
+            const summary = await yahooFinance.quoteSummary(company.ticker, { modules: ['financialData'] });
+            analystTargetPrice = summary.financialData?.targetMeanPrice ?? null;
+          } catch { /* non-critical */ }
 
           await prisma.company.update({
             where: { id: company.id },
             data: {
-              currentPrice: profile.price ?? null,
-              marketCap: profile.mktCap ?? null,
-              peRatio: profile.pe ?? null,
-              beta: profile.beta ?? null,
-              dividendYield: profile.lastDiv ? profile.lastDiv / (profile.price || 1) : null,
-              fiftyTwoWeekHigh: range?.high ?? null,
-              fiftyTwoWeekLow: range?.low ?? null,
-              volume: profile.volume ? BigInt(profile.volume) : null,
-              averageVolume: profile.volAvg ? BigInt(profile.volAvg) : null,
-              analystTargetPrice: profile.targetMeanPrice ?? null,
+              currentPrice: quote.regularMarketPrice ?? null,
+              marketCap: quote.marketCap ?? null,
+              peRatio: quote.trailingPE ?? null,
+              beta: (quote as any).beta ?? null,
+              dividendYield: (quote as any).dividendYield ? (quote as any).dividendYield / 100 : null,
+              fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh ?? null,
+              fiftyTwoWeekLow: quote.fiftyTwoWeekLow ?? null,
+              volume: quote.regularMarketVolume ? BigInt(quote.regularMarketVolume) : null,
+              averageVolume: quote.averageDailyVolume10Day ? BigInt(quote.averageDailyVolume10Day) : null,
+              analystTargetPrice,
               yahooLastUpdated: new Date()
             }
           });

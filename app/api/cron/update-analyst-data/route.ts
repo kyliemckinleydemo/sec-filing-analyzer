@@ -1,6 +1,44 @@
+/**
+ * @module app/api/cron/update-analyst-data/route
+ * @description Next.js API route executing scheduled cron job to fetch and update analyst consensus, upgrade/downgrade activity, and earnings surprise data for recent SEC filings from Yahoo Finance API
+ *
+ * PURPOSE:
+ * - Query filings from past 7 days filtered to 10-K, 10-Q, and earnings-related 8-K types
+ * - Fetch analyst recommendations, upgrade/downgrade events, earnings surprises, and price targets from Yahoo Finance quoteSummary for each ticker
+ * - Calculate consensus scores (0-100), net upgrades in 30 days before filing, upside potential, and EPS/revenue surprise metrics
+ * - Merge analyst metrics into existing analysisData JSON field and persist to database with comprehensive error handling
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextResponse for JSON responses and request handling in API routes
+ * - @/lib/prisma - Database client for querying Filing and Company records and creating CronJobRun audit logs
+ * - @/lib/yahoo-finance-singleton - Yahoo Finance v3 client providing quoteSummary with analyst, earnings, and financial modules
+ *
+ * EXPORTS:
+ * - dynamic (const) - Next.js config forcing dynamic rendering to prevent route caching
+ * - maxDuration (const) - Sets maximum execution time to 300 seconds (5 minutes) for long-running cron job
+ * - GET (function) - Async handler processing cron requests with auth verification, filing queries, Yahoo Finance API calls, and batch database updates
+ *
+ * PATTERNS:
+ * - Vercel Cron must include 'vercel-cron/' in user-agent header OR provide Bearer token matching CRON_SECRET env var to authenticate
+ * - Auto-cleans stuck jobs marked 'running' for >10 minutes before starting new run
+ * - Stops processing early if execution exceeds 270 seconds (leaving 30s buffer before maxDuration timeout)
+ * - Filters 8-K filings to earnings-related only by checking analysisData for keywords like 'earnings', 'quarterly results', 'eps'
+ * - Calculates consensusScore using weighted average: Strong Buy=100, Buy=75, Hold=50, Sell=25 across all analyst ratings
+ * - Matches earnings reports to filings within 90-day window by finding closest date difference
+ * - Classifies EPS/revenue surprises as 'beat' if >2%, 'miss' if <-2%, 'inline' otherwise
+ *
+ * CLAUDE NOTES:
+ * - Uses hardcoded list of 17 major investment firms (Goldman Sachs, Morgan Stanley, etc.) to weight upgrades/downgrades as 'major' vs standard
+ * - Rating hierarchy maps 15 analyst terms (Strong Buy, Outperform, Underweight, etc.) to 1-5 numeric values for upgrade/downgrade classification
+ * - Single Yahoo Finance quoteSummary call per ticker fetches all needed modules in one request
+ * - Creates CronJobRun audit record with 'running' status before processing and updates to 'completed'/'failed' with metrics on finish
+ * - Upside potential calculated as (targetMeanPrice - currentPrice) / currentPrice percentage for each ticker
+ * - EPS surprise magnitude measures percentage deviation from consensus estimate, normalized by absolute estimate to handle negative EPS
+ * - Progress logged every 5 filings to monitor throughput without excessive console output
+ */
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import fmpClient, { type FMPUpgradeDowngrade } from '@/lib/fmp-client';
+import yahooFinance from '@/lib/yahoo-finance-singleton';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -12,8 +50,9 @@ export const maxDuration = 300;
  * 1. Analyst consensus (rating, target price, coverage)
  * 2. Analyst activity (upgrades/downgrades in 30 days before filing)
  * 3. Earnings surprise data
+ * 4. Enriched metrics (PEG ratio, short interest, margins, growth rates)
  *
- * Uses FMP API instead of yahoo-finance2 (which is blocked on Vercel).
+ * Uses Yahoo Finance quoteSummary API with multiple modules per ticker.
  */
 
 interface AnalystActivity {
@@ -22,6 +61,14 @@ interface AnalystActivity {
   netUpgrades: number;
   majorUpgrades: number;
   majorDowngrades: number;
+}
+
+interface YahooUpgradeDowngrade {
+  epochGradeDate: Date;
+  firm: string;
+  toGrade: string;
+  fromGrade: string;
+  action: string;
 }
 
 // Major firms whose ratings carry more weight
@@ -68,7 +115,7 @@ function isMajorFirm(firm: string): boolean {
          majorFirms.has(firm.replace(' Capital Markets', ''));
 }
 
-function getAnalystActivityFromFMPData(events: FMPUpgradeDowngrade[], filingDate: Date): AnalystActivity {
+function getAnalystActivityFromYahooData(events: YahooUpgradeDowngrade[], filingDate: Date): AnalystActivity {
   try {
     // Calculate date 30 days before filing
     const thirtyDaysBefore = new Date(filingDate);
@@ -76,8 +123,8 @@ function getAnalystActivityFromFMPData(events: FMPUpgradeDowngrade[], filingDate
 
     // Filter events in the 30 days before filing
     const recentEvents = events.filter((event) => {
-      if (!event.publishedDate) return false;
-      const eventDate = new Date(event.publishedDate);
+      if (!event.epochGradeDate) return false;
+      const eventDate = new Date(event.epochGradeDate);
       return eventDate >= thirtyDaysBefore && eventDate <= filingDate;
     });
 
@@ -88,8 +135,8 @@ function getAnalystActivityFromFMPData(events: FMPUpgradeDowngrade[], filingDate
     let majorDowngrades = 0;
 
     for (const event of recentEvents) {
-      const action = classifyAnalystEvent(event.previousGrade || '', event.newGrade || '');
-      const isMajor = isMajorFirm(event.gradingCompany || '');
+      const action = classifyAnalystEvent(event.fromGrade || '', event.toGrade || '');
+      const isMajor = isMajorFirm(event.firm || '');
 
       if (action === 'upgrade') {
         upgrades++;
@@ -251,40 +298,49 @@ export async function GET(request: Request) {
           console.log(`[AnalystCron] Progress: ${i + 1}/${recentFilings.length} filings (${updated} updated, ${errors} errors)`);
         }
 
-        // Fetch all analyst data from FMP (3 parallel calls per ticker)
-        currentOperation = `fmp_fetch_${ticker}`;
-        const [profile, upgradeEvents, recommendation, earnings] = await Promise.all([
-          fmpClient.getProfile(ticker),
-          fmpClient.getUpgradesDowngrades(ticker),
-          fmpClient.getAnalystRecommendation(ticker),
-          fmpClient.getEarnings(ticker, 5),
-        ]);
+        // Fetch all analyst data from Yahoo Finance (single quoteSummary call per ticker)
+        currentOperation = `yahoo_fetch_${ticker}`;
+        const summary = await yahooFinance.quoteSummary(ticker, {
+          modules: [
+            'financialData',
+            'recommendationTrend',
+            'upgradeDowngradeHistory',
+            'earningsHistory',
+            'earnings',
+            'defaultKeyStatistics',
+            'calendarEvents',
+          ],
+        });
 
         // Extract analyst activity from upgrade/downgrade history
-        const activity = getAnalystActivityFromFMPData(upgradeEvents, filing.filingDate);
+        const upgradeEvents: YahooUpgradeDowngrade[] = (summary.upgradeDowngradeHistory?.history ?? []) as YahooUpgradeDowngrade[];
+        const activity = getAnalystActivityFromYahooData(upgradeEvents, filing.filingDate);
 
         // Calculate consensus score (0-100 scale, 100 = Strong Buy)
         let consensusScore = null;
-        if (recommendation) {
-          const total = (recommendation.analystRatingsStrongBuy || 0) +
-                       (recommendation.analystRatingsbuy || 0) +
-                       (recommendation.analystRatingsHold || 0) +
-                       (recommendation.analystRatingsSell || 0) +
-                       (recommendation.analystRatingsStrongSell || 0);
+        const trend = summary.recommendationTrend?.trend?.[0];
+        if (trend) {
+          const total = (trend.strongBuy || 0) +
+                       (trend.buy || 0) +
+                       (trend.hold || 0) +
+                       (trend.sell || 0) +
+                       (trend.strongSell || 0);
           if (total > 0) {
             consensusScore = Math.round(
-              ((recommendation.analystRatingsStrongBuy || 0) * 100 +
-               (recommendation.analystRatingsbuy || 0) * 75 +
-               (recommendation.analystRatingsHold || 0) * 50 +
-               (recommendation.analystRatingsSell || 0) * 25) / total
+              ((trend.strongBuy || 0) * 100 +
+               (trend.buy || 0) * 75 +
+               (trend.hold || 0) * 50 +
+               (trend.sell || 0) * 25) / total
             );
           }
         }
 
         // Calculate upside potential
         let upsidePotential = null;
-        if (profile?.targetMeanPrice && profile?.price) {
-          upsidePotential = ((profile.targetMeanPrice - profile.price) / profile.price) * 100;
+        const targetMeanPrice = summary.financialData?.targetMeanPrice;
+        const currentPrice = summary.financialData?.currentPrice;
+        if (targetMeanPrice && currentPrice) {
+          upsidePotential = ((targetMeanPrice - currentPrice) / currentPrice) * 100;
         }
 
         // Extract earnings surprise data
@@ -297,15 +353,16 @@ export async function GET(request: Request) {
         let revenueSurpriseMagnitude: number | null = null;
 
         try {
-          if (earnings && earnings.length > 0) {
+          const earningsHistory = summary.earningsHistory?.history;
+          if (earningsHistory && earningsHistory.length > 0) {
             // Find earnings report closest to filing date (within 90 days)
-            let closestEarnings = null;
+            let closestEarnings: any = null;
             let smallestDiff = Infinity;
             const filingTime = filing.filingDate.getTime();
 
-            for (const period of earnings) {
-              if (!period.date) continue;
-              const earningsDate = new Date(period.date);
+            for (const period of earningsHistory) {
+              if (!period.quarter) continue;
+              const earningsDate = new Date(period.quarter);
               const diff = Math.abs(earningsDate.getTime() - filingTime);
               if (diff < smallestDiff) {
                 smallestDiff = diff;
@@ -315,21 +372,24 @@ export async function GET(request: Request) {
 
             const daysDiff = smallestDiff / (1000 * 60 * 60 * 24);
             if (closestEarnings && daysDiff <= 90) {
-              if (typeof closestEarnings.epsEstimated === 'number') consensusEPS = closestEarnings.epsEstimated;
+              if (typeof closestEarnings.epsEstimate === 'number') consensusEPS = closestEarnings.epsEstimate;
               if (typeof closestEarnings.epsActual === 'number') actualEPS = closestEarnings.epsActual;
 
-              if (closestEarnings.epsActual != null && closestEarnings.epsEstimated != null && closestEarnings.epsEstimated !== 0) {
-                epsSurpriseMagnitude = ((closestEarnings.epsActual - closestEarnings.epsEstimated) / Math.abs(closestEarnings.epsEstimated)) * 100;
+              if (closestEarnings.epsActual != null && closestEarnings.epsEstimate != null && closestEarnings.epsEstimate !== 0) {
+                epsSurpriseMagnitude = ((closestEarnings.epsActual - closestEarnings.epsEstimate) / Math.abs(closestEarnings.epsEstimate)) * 100;
                 if (epsSurpriseMagnitude > 2) epsSurprise = 'beat';
                 else if (epsSurpriseMagnitude < -2) epsSurprise = 'miss';
                 else epsSurprise = 'inline';
               }
 
-              if (closestEarnings.revenueActual != null && closestEarnings.revenueEstimated != null && closestEarnings.revenueEstimated !== 0) {
-                revenueSurpriseMagnitude = ((closestEarnings.revenueActual - closestEarnings.revenueEstimated) / closestEarnings.revenueEstimated) * 100;
-                if (revenueSurpriseMagnitude > 2) revenueSurprise = 'beat';
-                else if (revenueSurpriseMagnitude < -2) revenueSurprise = 'miss';
-                else revenueSurprise = 'inline';
+              // Yahoo earningsHistory doesn't have revenue; use earnings.financialsChart.quarterly if available
+              const quarterlyRevenue = summary.earnings?.financialsChart?.quarterly;
+              if (quarterlyRevenue && quarterlyRevenue.length > 0) {
+                // Find the closest quarterly revenue entry
+                const lastQuarter = quarterlyRevenue[quarterlyRevenue.length - 1];
+                if (lastQuarter?.revenue && lastQuarter?.earnings) {
+                  // Revenue data available but no estimate - skip revenue surprise from this source
+                }
               }
             }
           }
@@ -351,12 +411,12 @@ export async function GET(request: Request) {
           }
         }
 
-        const numberOfAnalysts = recommendation
-          ? (recommendation.analystRatingsStrongBuy || 0) +
-            (recommendation.analystRatingsbuy || 0) +
-            (recommendation.analystRatingsHold || 0) +
-            (recommendation.analystRatingsSell || 0) +
-            (recommendation.analystRatingsStrongSell || 0)
+        const numberOfAnalysts = trend
+          ? (trend.strongBuy || 0) +
+            (trend.buy || 0) +
+            (trend.hold || 0) +
+            (trend.sell || 0) +
+            (trend.strongSell || 0)
           : null;
 
         const updatedAnalysisData = {
@@ -365,14 +425,28 @@ export async function GET(request: Request) {
             consensusScore,
             upsidePotential,
             numberOfAnalysts,
-            targetPrice: profile?.targetMeanPrice ?? null,
+            targetPrice: summary.financialData?.targetMeanPrice ?? null,
             activity: {
               upgradesLast30d: activity.upgradesLast30d,
               downgradesLast30d: activity.downgradesLast30d,
               netUpgrades: activity.netUpgrades,
               majorUpgrades: activity.majorUpgrades,
               majorDowngrades: activity.majorDowngrades
-            }
+            },
+            recommendationTrend: summary.recommendationTrend?.trend ?? null,
+          },
+          enrichedMetrics: {
+            pegRatio: summary.defaultKeyStatistics?.pegRatio ?? null,
+            shortRatio: summary.defaultKeyStatistics?.shortRatio ?? null,
+            shortPercentOfFloat: summary.defaultKeyStatistics?.shortPercentOfFloat ?? null,
+            enterpriseToRevenue: summary.defaultKeyStatistics?.enterpriseToRevenue ?? null,
+            enterpriseToEbitda: summary.defaultKeyStatistics?.enterpriseToEbitda ?? null,
+            revenueGrowth: summary.financialData?.revenueGrowth ?? null,
+            earningsGrowth: summary.financialData?.earningsGrowth ?? null,
+            grossMargins: summary.financialData?.grossMargins ?? null,
+            operatingMargins: summary.financialData?.operatingMargins ?? null,
+            profitMargins: summary.financialData?.profitMargins ?? null,
+            freeCashflow: summary.financialData?.freeCashflow ?? null,
           },
           financialMetrics: {
             ...existingData.financialMetrics,
@@ -400,8 +474,8 @@ export async function GET(request: Request) {
 
         updated++;
 
-        // Rate limit delay between tickers (FMP calls already have internal rate limiting)
-        await new Promise(resolve => setTimeout(resolve, 250));
+        // Small delay between tickers to be polite (Yahoo Finance has no strict rate limit)
+        await new Promise(resolve => setTimeout(resolve, 50));
 
       } catch (error: any) {
         errors++;

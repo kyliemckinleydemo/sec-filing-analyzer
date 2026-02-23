@@ -28,13 +28,28 @@ model Company {
   analystTargetPrice   Float?
   earningsDate         DateTime?
 
-  // Additional Yahoo Finance metrics (Phase 1 enhancement)
-  dividendYield        Float?   // Dividend yield percentage
+  // Additional Yahoo Finance metrics
+  dividendYield        Float?   // Dividend yield ratio (0.005 = 0.5%)
   beta                 Float?   // Volatility vs market (1.0 = market volatility)
   volume               BigInt?  // Current volume
   averageVolume        BigInt?  // Average daily volume
   analystRating        Float?   // 1-5 scale (1=Strong Buy, 5=Sell)
   analystRatingCount   Int?     // Number of analysts covering
+
+  // Yahoo Finance enriched metrics (from quoteSummary)
+  pegRatio             Float?   // Price/Earnings-to-Growth ratio
+  shortRatio           Float?   // Days to cover short positions
+  shortPercentOfFloat  Float?   // Short interest as % of float
+  enterpriseToRevenue  Float?   // EV/Revenue ratio
+  enterpriseToEbitda   Float?   // EV/EBITDA ratio
+  revenueGrowth        Float?   // TTM revenue growth rate
+  earningsGrowth       Float?   // TTM earnings growth rate
+  grossMargins         Float?   // Gross profit margin ratio
+  operatingMargins     Float?   // Operating margin ratio
+  profitMargins        Float?   // Net profit margin ratio
+  freeCashflow         Float?   // Free cash flow (absolute)
+  fiftyDayAverage      Float?   // 50-day moving average price
+  twoHundredDayAverage Float?   // 200-day moving average price
 
   // Latest financial fundamentals (from most recent filing's XBRL data)
   latestRevenue        Float?   // Most recent quarterly revenue

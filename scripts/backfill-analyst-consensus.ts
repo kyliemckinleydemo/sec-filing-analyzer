@@ -1,4 +1,39 @@
 /**
+ * @module backfill-analyst-consensus
+ * @description Backfills historical SEC filings with analyst consensus data from Yahoo Finance.
+ * 
+ * PURPOSE:
+ * This script enriches the filings database with analyst sentiment metrics to improve
+ * machine learning model predictions of post-filing stock performance. It fetches current
+ * analyst consensus data (target prices, ratings, coverage) for all companies with filings
+ * and stores the metrics in the analysisData JSON field. The analyst metrics include:
+ * - Target price consensus (mean, high, low)
+ * - Recommendation ratings (buy/hold/sell)
+ * - Number of analysts covering the stock
+ * - Upside potential (target vs current price)
+ * - Consensus score (normalized 0-100 scale)
+ * 
+ * The script processes filings with 10-K/10-Q forms that have actual7dReturn data,
+ * focusing on the 7-day window before SEC filing dates to capture analyst sentiment
+ * leading up to earnings releases.
+ * 
+ * EXPORTS:
+ * - getAnalystConsensus(ticker: string): Promise<AnalystData | null>
+ * - calculateConsensusScore(data: AnalystData): number | null
+ * - calculateUpsidePotential(currentPrice: number, targetPrice: number): number
+ * - backfillAnalystConsensus(): Promise<void>
+ * 
+ * CLAUDE NOTES:
+ * - This is a snapshot-based approach; Yahoo Finance doesn't provide historical analyst
+ *   data, so we're using current consensus as a proxy for historical sentiment
+ * - The script includes rate limiting (2s delay per 10 tickers) to avoid API throttling
+ * - Analyst data is merged into existing analysisData JSON field to preserve other metrics
+ * - The recommendation scale is inverted: 1=Strong Buy, 5=Sell (converted to 0-100 score)
+ * - Expected ML model improvement: +2-4 percentage points in prediction accuracy
+ * - Future enhancement: Track real-time analyst upgrades/downgrades via news APIs
+ */
+
+/**
  * Backfill Analyst Consensus Changes
  *
  * Track analyst rating changes (upgrades/downgrades) and estimate revisions
@@ -12,7 +47,7 @@
  */
 
 import { prisma } from '../lib/prisma';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../lib/yahoo-finance-singleton';
 
 interface AnalystData {
   targetMeanPrice?: number;

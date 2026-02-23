@@ -1,4 +1,37 @@
 /**
+ * @module backfill-all-returns
+ * 
+ * @description
+ * Comprehensive stock return backfill script for SEC filings with AI analysis.
+ * Calculates historical returns and market-relative performance (alpha) for all
+ * filings that have AI risk/sentiment scores but missing return data.
+ * 
+ * PURPOSE:
+ * - Backfill missing return metrics for filings with completed AI analysis
+ * - Calculate actual7dReturn and actual30dReturn (raw stock performance)
+ * - Calculate actual7dAlpha and actual30dAlpha (market-relative performance vs SPX)
+ * - Support ML model training and validation with complete historical data
+ * - Enable correlation analysis between AI predictions and actual outcomes
+ * 
+ * EXPORTS:
+ * - main(): Primary backfill execution function
+ * - calculateReturns(): Computes all return metrics for a single filing
+ * - getStockPrice(): Fetches historical stock price from Yahoo Finance
+ * - getSPXReturn(): Calculates S&P 500 benchmark returns
+ * - ReturnData: Interface for return calculation results
+ * 
+ * CLAUDE NOTES:
+ * - Processes only filings with existing AI analysis (riskScore/sentimentScore not null)
+ * - Returns stored as decimals (0.05 = 5%) for consistency with database schema
+ * - Alpha calculated as stock return minus SPX return (excess return vs market)
+ * - Implements 2-day buffer for price lookups to handle weekends/holidays
+ * - Rate limited to 500ms between requests to respect Yahoo Finance API limits
+ * - Progress reporting every 50 filings for long-running backfill operations
+ * - Focuses on 10-K and 10-Q filings only (annual/quarterly reports)
+ * - Expects 65-70% prediction accuracy with 30-day return data per ML analysis
+ */
+
+/**
  * Comprehensive Return Backfill Script
  *
  * Calculates for ALL filings with AI analysis:
@@ -9,7 +42,7 @@
  */
 
 import { prisma } from '../lib/prisma';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../lib/yahoo-finance-singleton';
 
 interface ReturnData {
   actual7dReturn: number | null;

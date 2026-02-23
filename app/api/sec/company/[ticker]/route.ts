@@ -1,8 +1,46 @@
+/**
+ * @module app/api/sec/company/[ticker]/route
+ * @description Next.js API route handler that fetches comprehensive company data by ticker symbol, combining database records, SEC filings, and analyst activity with intelligent caching and rate limiting
+ *
+ * PURPOSE:
+ * - Validates ticker parameter and enforces 20 requests/day rate limit for unauthenticated users
+ * - Returns cached company data with 1-hour TTL if available to minimize external API calls
+ * - Queries database for tracked companies with recent filings (last 12 months), including market data, financials, and analyst activity
+ * - Falls back to SEC API via secClient when company not tracked, then persists new company and filings to database
+ * - Returns 404 with sector-based or market-cap-based suggestions when company not tracked in system
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextRequest/NextResponse for API route handling
+ * - @/lib/sec-client - Fetches company info and filings from SEC EDGAR API when not in database
+ * - @/lib/cache - In-memory cache with 1-hour TTL to reduce database and API calls
+ * - @/lib/prisma - Database client for querying Company, Filing, AnalystActivity, and CompanySnapshot tables
+ * - @/lib/fmp-client - Financial Modeling Prep API client to fetch company sector for suggestions
+ * - @/lib/api-middleware - Provides addRateLimitHeaders to attach rate limit info to responses
+ * - @/lib/rate-limit - Generates fingerprints and enforces 20 requests/day limit for unauthenticated users
+ *
+ * EXPORTS:
+ * - GET (function) - Async handler returning company profile, recent filings, analyst activity, and market data for given ticker
+ *
+ * PATTERNS:
+ * - Access via GET /api/sec/company/[ticker] where ticker is uppercase stock symbol (e.g., AAPL)
+ * - Authenticated requests bypass rate limiting; unauthenticated limited to 20/day with X-RateLimit headers
+ * - Response includes tracked:true for companies in database, tracked:false with suggestions array for untracked
+ * - Fast path returns immediately if company exists with filings; slow path queries SEC API and persists to DB
+ * - Cache key format 'company:TICKER' with 3600000ms (1 hour) expiration
+ *
+ * CLAUDE NOTES:
+ * - Three-tier data strategy: cache → database (fast path) → SEC API (slow path with persistence)
+ * - Rate limiting only applies to unauthenticated users; session presence bypasses limits entirely
+ * - Untracked company suggestions prioritize same-sector companies from FMP profile, falling back to top 5 by market cap
+ * - Only stores last 12 months of filings when fetching from SEC to limit database growth
+ * - Returns extensive market metrics (PE ratios, 52-week ranges, volume, analyst ratings) when company tracked
+ * - Volume/averageVolume converted to Number from BigInt for JSON serialization compatibility
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { secClient } from '@/lib/sec-client';
 import { cache, cacheKeys } from '@/lib/cache';
 import { prisma } from '@/lib/prisma';
-import fmpClient from '@/lib/fmp-client';
+import yahooFinance from '@/lib/yahoo-finance-singleton';
 import { requireUnauthRateLimit, addRateLimitHeaders } from '@/lib/api-middleware';
 import { generateFingerprint, checkUnauthRateLimit } from '@/lib/rate-limit';
 
@@ -132,12 +170,12 @@ export async function GET(
       let suggestions: Array<{ ticker: string; name: string; sector?: string }> = [];
 
       try {
-        // Try to get sector from FMP for the searched ticker
-        const profile = await fmpClient.getProfile(ticker.toUpperCase());
-        console.log(`[${ticker}] FMP profile sector:`, profile?.sector);
+        // Try to get sector from Yahoo Finance for the searched ticker
+        const summary = await yahooFinance.quoteSummary(ticker.toUpperCase(), { modules: ['summaryProfile'] });
+        const tickerSector = summary.summaryProfile?.sector;
+        console.log(`[${ticker}] Yahoo Finance sector:`, tickerSector);
 
-        if (profile?.sector) {
-          const tickerSector = profile.sector;
+        if (tickerSector) {
           console.log(`[${ticker}] Found sector: ${tickerSector}`);
 
           // Query Company model (which has sector field) for companies in same sector
@@ -165,10 +203,10 @@ export async function GET(
             sector: c.sector ?? undefined
           }));
         } else {
-          console.log(`[${ticker}] No sector found in FMP profile`);
+          console.log(`[${ticker}] No sector found in Yahoo Finance profile`);
         }
       } catch (error) {
-        console.log(`[${ticker}] Error getting sector from FMP:`, error);
+        console.log(`[${ticker}] Error getting sector from Yahoo Finance:`, error);
       }
 
       // Fall back to top companies by market cap if no sector suggestions

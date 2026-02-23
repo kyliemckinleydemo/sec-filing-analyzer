@@ -1,4 +1,35 @@
 /**
+ * @module backfill-analyst-activity
+ * 
+ * @description
+ * Backfills analyst upgrade/downgrade activity data for SEC filings by querying Yahoo Finance
+ * historical data and storing structured analyst sentiment metrics in the analysisData field.
+ * 
+ * PURPOSE:
+ * - Track analyst upgrades, downgrades, and rating changes in the 30 days preceding each SEC filing
+ * - Capture "smart money" sentiment shifts that may predict post-filing stock performance
+ * - Identify activity from major institutional firms (Goldman Sachs, Morgan Stanley, etc.)
+ * - Generate ML training features by correlating pre-filing analyst sentiment with actual returns
+ * - Support hypothesis that analyst activity patterns can improve filing return predictions
+ * 
+ * EXPORTS:
+ * - getAnalystActivity(): Fetches and classifies analyst events within 30-day window before filing
+ * - backfillAnalystActivity(): Main execution function that processes all historical filings
+ * - AnalystEvent: TypeScript interface for individual analyst rating changes
+ * - AnalystActivity: TypeScript interface for aggregated sentiment metrics
+ * 
+ * CLAUDE NOTES:
+ * - Uses 30-day lookback window (changed from 7 days) to improve coverage and capture broader trends
+ * - Rating classification uses weighted hierarchy (Strong Buy=5 down to Strong Sell=1)
+ * - Major firm detection includes 17 top-tier institutional analysts with normalized name matching
+ * - Handles Yahoo Finance epochGradeDate as Date objects (NOT Unix timestamps despite naming)
+ * - Implements rate limiting (2s delay per 5 requests) to avoid API throttling
+ * - Merges new analyst data with existing analysisData JSON without overwriting other fields
+ * - Generates comprehensive statistics including coverage %, sentiment distribution, and sample output
+ * - Intended to be run as one-time backfill script before ML dataset re-export
+ */
+
+/**
  * Backfill Analyst Activity Around Filings
  *
  * Track analyst upgrades/downgrades in the 30 days before each SEC filing
@@ -7,7 +38,7 @@
  */
 
 import { prisma } from '../lib/prisma';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../lib/yahoo-finance-singleton';
 
 interface AnalystEvent {
   date: Date;

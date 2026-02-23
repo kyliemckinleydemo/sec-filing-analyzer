@@ -6,7 +6,7 @@
  */
 
 import { prisma } from '../lib/prisma';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../lib/yahoo-finance-singleton';
 
 async function main() {
   console.log('🚀 Backfilling Historical Stock Prices\n');

@@ -1,5 +1,32 @@
+/**
+ * @module backfill-company-sectors
+ * 
+ * @description
+ * Script to backfill missing sector data for companies in the database by fetching
+ * sector information from Yahoo Finance API.
+ * 
+ * PURPOSE:
+ * - Identifies companies in the database that are missing sector classification
+ * - Fetches sector data from Yahoo Finance quoteSummary API (assetProfile module)
+ * - Updates company records with retrieved sector information
+ * - Implements rate limiting to comply with Yahoo Finance API constraints (2 req/sec)
+ * - Provides progress tracking and comprehensive result statistics
+ * 
+ * EXPORTS:
+ * - backfillSectors: Main async function that orchestrates the backfill process
+ * 
+ * CLAUDE NOTES:
+ * - This is a one-time/maintenance script, not a regular application module
+ * - Implements exponential backoff when rate limited (429 errors)
+ * - Uses 500ms delay between requests to stay under 2 requests/second limit
+ * - Gracefully handles missing sector data without failing the entire process
+ * - Disconnects from Prisma after completion to allow clean script exit
+ * - Could be enhanced with batch processing, retry logic, or resume capability
+ * - Consider adding --dry-run flag for testing without database updates
+ */
+
 import { prisma } from '../lib/prisma';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../lib/yahoo-finance-singleton';
 
 async function backfillSectors() {
   console.log('Starting sector backfill for all companies...\n');

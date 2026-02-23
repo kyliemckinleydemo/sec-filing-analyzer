@@ -1,3 +1,51 @@
+/**
+ * @module __tests__/fixtures/cron-data
+ * @description Provides comprehensive mock data fixtures for testing cron jobs, SEC filings, company profiles, analyst activities, and financial market indicators across multiple data sources (SEC RSS, Yahoo Finance, FMP API).
+ *
+ * PURPOSE:
+ * - Supply realistic test fixtures representing successful, running, and failed cron job execution states with timestamps and metrics
+ * - Mock SEC filing data structures from RSS feeds including accession numbers, filing types, and report dates for integration testing
+ * - Provide complete company profiles with financial metrics (market cap, P/E ratios, 52-week ranges, analyst ratings) for AAPL and MSFT
+ * - Define mock responses from external APIs (Yahoo Finance quote summaries, FMP historical prices, earnings data) matching production schemas
+ *
+ * EXPORTS:
+ * - MOCK_CRON_JOB_RUN_SUCCESS (const) - Completed cron job run with 25 filings fetched, 20 stored, 15 companies processed
+ * - MOCK_CRON_JOB_RUN_RUNNING (const) - Stuck cron job running for 15 minutes with no progress on filings
+ * - MOCK_CRON_JOB_RUN_FAILED (const) - Failed cron job with connection timeout error after 1 minute
+ * - MOCK_RSS_FILING (const) - Apple 10-K filing from SEC RSS feed with accession number and filing URL
+ * - MOCK_RSS_FILING_2 (const) - Microsoft 10-Q filing from SEC RSS feed for multi-filing test scenarios
+ * - MOCK_COMPANY_AAPL_FULL (const) - Complete Apple company record with current price $195, market cap $3T, P/E 31.5, and 38 analyst ratings
+ * - MOCK_COMPANY_MSFT_FULL (const) - Complete Microsoft company record with current price $380, market cap $2.8T, and software industry classification
+ * - MOCK_FILING_RECENT (const) - Recent 10-K filing with AI analysis, risk score 3.5, sentiment 0.2, and nested company relationship
+ * - MOCK_FILING_8K_EARNINGS (const) - 8-K earnings filing with EPS beat analysis in filing content summary
+ * - MOCK_YAHOO_FINANCIALS (const) - Yahoo Finance financial data including EPS estimates for current/next quarter and year
+ * - MOCK_YAHOO_QUOTE_SUMMARY (const) - Yahoo Finance quote summary with price, recommendation trends, upgrade/downgrade history, and earnings history
+ * - MOCK_ANALYST_ACTIVITY (const) - Goldman Sachs upgrade from Hold to Buy with target raised from $180 to $210
+ * - MOCK_PAPER_PORTFOLIO (const) - Paper trading portfolio with $100K starting capital, 60% win rate, 1.5 Sharpe ratio, and 10% max position size
+ * - MOCK_USER_WITH_WATCHLIST (const) - Pro tier user with watchlist (AAPL, MSFT), sector watchlist (Technology), and immediate filing/analyst alerts
+ * - MOCK_FMP_PROFILE (const) - FMP API company profile response with price, market cap, beta, and analyst target
+ * - MOCK_FMP_PROFILE_NO_DATA (const) - Null response representing missing FMP data for error handling tests
+ * - MOCK_FMP_HISTORICAL_PRICES (const) - Two days of historical OHLCV price data from FMP API
+ * - MOCK_FMP_SPX_HISTORICAL (const) - Two days of S&P 500 index historical prices for benchmark comparison
+ * - MOCK_FMP_UPGRADES_DOWNGRADES (const) - Array of analyst rating changes with Goldman upgrade and Morgan Stanley reiteration
+ * - MOCK_FMP_ANALYST_RECOMMENDATION (const) - FMP analyst rating distribution with 10 strong buy, 15 buy, 10 hold, 2 sell, 1 strong sell
+ * - MOCK_FMP_EARNINGS (const) - Apple earnings with actual EPS $1.56 beating estimate $1.50, revenue $94.93B vs $94.2B estimate
+ * - MOCK_MACRO_INDICATORS (const) - Macro economic indicators including S&P 500 returns, VIX 14.5, Fed funds 5.25%, inverted yield curve -0.30%
+ *
+ * PATTERNS:
+ * - Import specific fixtures in test files with destructuring: import { MOCK_COMPANY_AAPL_FULL, MOCK_FILING_RECENT } from './__tests__/fixtures/cron-data'
+ * - Use MOCK_CRON_JOB_RUN_* variants to test different cron execution states (success, running/stuck, failed)
+ * - Combine MOCK_RSS_FILING with MOCK_COMPANY_AAPL_FULL to test complete filing ingestion pipelines
+ * - Use MOCK_YAHOO_QUOTE_SUMMARY for testing Yahoo Finance API integration with nested price, summaryDetail, and upgrade/downgrade history objects
+ * - Reference MOCK_USER_WITH_WATCHLIST.alerts and .watchlist arrays for testing notification and tracking features
+ *
+ * CLAUDE NOTES:
+ * - MOCK_CRON_JOB_RUN_RUNNING simulates stuck job with Date.now() - 15 minutes for testing timeout detection
+ * - BigInt used for volume fields (volume, averageVolume) matching database schema requirements for large integers
+ * - MOCK_FILING_RECENT includes nested company object enabling tests of relational queries without separate joins
+ * - Yahoo Finance mock structures nested objects (price, summaryDetail, financialData) matching actual API response shape for accurate integration testing
+ * - MOCK_FMP_UPGRADES_DOWNGRADES uses Date.now() - days calculation for relative timestamps, ensuring recent data in tests regardless of when run
+ */
 // Shared mock data for cron/pipeline integration tests
 
 export const MOCK_CRON_JOB_RUN_SUCCESS = {
@@ -324,7 +372,46 @@ export const MOCK_USER_WITH_WATCHLIST = {
   ],
 };
 
-// FMP API mock responses
+// Yahoo Finance API mock responses
+export const MOCK_YAHOO_QUOTE = {
+  symbol: 'AAPL',
+  shortName: 'Apple Inc.',
+  quoteType: 'EQUITY' as const,
+  regularMarketPrice: 195.0,
+  marketCap: 3_000_000_000_000,
+  trailingPE: 31.5,
+  beta: 1.2,
+  dividendYield: 0.5, // Yahoo returns percentage (0.5 = 0.5%)
+  fiftyTwoWeekHigh: 199.62,
+  fiftyTwoWeekLow: 164.08,
+  regularMarketVolume: 55000000,
+  averageDailyVolume10Day: 60000000,
+  language: 'en-US',
+  region: 'US',
+  triggerable: true,
+  marketState: 'REGULAR' as const,
+  tradeable: true,
+  exchange: 'NMS',
+  exchangeTimezoneName: 'America/New_York',
+  exchangeTimezoneShortName: 'EST',
+  gmtOffSetMilliseconds: -18000000,
+  market: 'us_market',
+  esgPopulated: false,
+  sourceInterval: 15,
+  exchangeDataDelayedBy: 0,
+  fullExchangeName: 'NasdaqGS',
+};
+
+export const MOCK_YAHOO_QUOTE_SUMMARY_FINANCIAL_DATA = {
+  financialData: {
+    targetMeanPrice: 210.0,
+    currentPrice: 195.0,
+    numberOfAnalystOpinions: 38,
+    recommendationKey: 'buy',
+  },
+};
+
+// FMP API mock responses (legacy, used by other tests)
 export const MOCK_FMP_PROFILE = {
   symbol: 'AAPL',
   companyName: 'Apple Inc.',

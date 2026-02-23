@@ -1,5 +1,40 @@
+/**
+ * @module lib/paper-trading
+ * @description Executes simulated trades based on ML model predictions with 7-day hold periods and performance tracking against S&P 500 benchmark
+ *
+ * PURPOSE:
+ * - Opens LONG/SHORT positions at next trading day open price after 10-K/10-Q filing analysis
+ * - Validates signals against confidence threshold (default >minConfidence), predicted return magnitude (>0.5%), and prevents duplicate ticker positions
+ * - Calculates position sizing using Kelly Criterion (confidence * predictedReturn / 100) capped at maxPositionSize portfolio percentage
+ * - Fetches historical opening prices from Yahoo Finance with fallbacks to recent close prices or pending status when market closed
+ * - Closes positions after hold period comparing actualReturn to predictedReturn for model validation
+ *
+ * DEPENDENCIES:
+ * - ./prisma - Accesses paperPortfolio, paperTrade, and filing tables for position tracking and performance metrics
+ * - yahoo-finance2 - Fetches historical opening prices via chart() API and current quotes via quote() for trade execution
+ *
+ * EXPORTS:
+ * - TradeSignal (interface) - Input shape with ticker, filingId, predictedReturn percentage, confidence score, LONG/SHORT direction, and optional marketCap
+ * - TradeExecutionResult (interface) - Response shape with success boolean, optional tradeId string, reason string, and details object
+ * - PaperTradingEngine (class) - Core engine managing trade lifecycle from signal evaluation through position closure with P&L calculation
+ * - createPaperPortfolio (function) - Factory function initializing new paper trading portfolio with starting cash and risk parameters
+ *
+ * PATTERNS:
+ * - Instantiate with portfolioId: const engine = new PaperTradingEngine(portfolioId)
+ * - Validate signal: const shouldTrade = await engine.evaluateTradeSignal({ ticker, filingId, predictedReturn, confidence, direction })
+ * - Execute if valid: const result = await engine.executeTrade(signal); check result.success and handle result.tradeId
+ * - Close after 7 days: await engine.closeTrade(tradeId, 'hold period complete'); updates realizedPnL and actualReturn fields
+ *
+ * CLAUDE NOTES:
+ * - Trade entry happens at next trading day OPEN after filing (adjusts for weekends: Friday filing executes Monday)
+ * - Creates PENDING status trades when market closed, requiring separate execution job to fill entryPrice/shares at market open
+ * - Uses Kelly Criterion for position sizing but CAPS at maxPositionSize to prevent over-concentration (default 10% portfolio)
+ * - SHORT positions calculate P&L inversely: profit = entryValue - exitValue (gains when price drops)
+ * - Tracks both realizedPnLPct (actual profit including commissions) and actualReturn (raw price movement) separately for ML model validation
+ * - $1.00 commission applied on both entry and exit to simulate realistic trading costs
+ */
 import { prisma } from './prisma';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from './yahoo-finance-singleton';
 
 /**
  * Paper Trading Engine

@@ -6,9 +6,9 @@
  * - Validates authentication and authorization for the macro indicators cron job
  * - Tests fetching and calculation of market data (SPX, VIX, sector ETFs)
  * - Tests integration with FRED API for treasury rates and yield curve data
- * - Tests integration with FMP API for historical price and profile data
+ * - Tests integration with Yahoo Finance API for historical price and quote data
  * - Verifies database persistence of macro indicators with treasury fields
- * - Tests error handling for external API failures (FRED, FMP)
+ * - Tests error handling for external API failures (FRED, Yahoo Finance)
  * - Validates cron job tracking lifecycle (create, update, cleanup)
  * - Tests calculation of derived metrics (30-day treasury rate changes, returns)
  *
@@ -16,35 +16,34 @@
  * - Test suite: 'GET /api/cron/update-macro-indicators'
  * - Helper function: makeRequest() - Creates NextRequest with optional headers
  * - Helper function: makeAuthRequest() - Creates authenticated NextRequest
- * - Helper function: makeMockHistory() - Generates mock historical price data
+ * - Helper function: makeMockChartResult() - Generates mock Yahoo Finance chart() response data
  * - Mock data: MOCK_TREASURY_RATES - Current treasury rate fixture
  * - Mock data: MOCK_TREASURY_RATES_30D_AGO - Historical treasury rate fixture
  *
  * CLAUDE NOTES:
  * - Uses vi.hoisted() to ensure mocks are initialized before imports
- * - Mocks both @/lib/fmp-client and @/lib/fred-client for isolated testing
+ * - Mocks both @/lib/yahoo-finance-singleton and @/lib/fred-client for isolated testing
  * - Tests parallel data fetching from multiple external APIs
  * - Validates graceful degradation when external APIs fail
  * - Tests both complete failures and partial failures (e.g., today succeeds, 30d-ago fails)
  * - Covers edge cases: missing data, rate limiting, DB write failures
  * - Verifies job tracking cleanup of stuck jobs from previous runs
  * - Tests processing of 2 dates (today + yesterday) as per route implementation
- * - Mock history generator creates 45 days of data for return calculations
+ * - Mock chart result generator creates 45 days of data for return calculations
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { prismaMock } from '../../../mocks/prisma';
-import { MOCK_FMP_HISTORICAL_PRICES, MOCK_FMP_PROFILE } from '../../../fixtures/cron-data';
 
-// Mock FMP client
-const { mockGetProfile, mockGetHistoricalPrices } = vi.hoisted(() => ({
-  mockGetProfile: vi.fn(),
-  mockGetHistoricalPrices: vi.fn(),
+// Mock Yahoo Finance singleton
+const { mockChart, mockQuote } = vi.hoisted(() => ({
+  mockChart: vi.fn(),
+  mockQuote: vi.fn(),
 }));
-vi.mock('@/lib/fmp-client', () => ({
+vi.mock('@/lib/yahoo-finance-singleton', () => ({
   default: {
-    getProfile: mockGetProfile,
-    getHistoricalPrices: mockGetHistoricalPrices,
+    chart: mockChart,
+    quote: mockQuote,
   },
 }));
 
@@ -72,16 +71,16 @@ function makeAuthRequest() {
   return makeRequest({ authorization: 'Bearer test-cron-secret' });
 }
 
-// Generate 45 days of mock historical prices
-function makeMockHistory(ticker: string, latestClose: number) {
-  const prices = [];
+// Generate a mock Yahoo Finance chart() result with 45 days of quotes
+function makeMockChartResult(latestClose: number) {
+  const quotes = [];
   const today = new Date();
   for (let i = 0; i < 45; i++) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
     const close = latestClose * (1 - i * 0.001); // Slight daily decline for calculating returns
-    prices.push({
-      date: date.toISOString().split('T')[0],
+    quotes.push({
+      date,
       open: close - 1,
       high: close + 2,
       low: close - 2,
@@ -89,7 +88,7 @@ function makeMockHistory(ticker: string, latestClose: number) {
       volume: 1000000,
     });
   }
-  return prices;
+  return { quotes };
 }
 
 const MOCK_TREASURY_RATES = {
@@ -121,9 +120,9 @@ describe('GET /api/cron/update-macro-indicators', () => {
     prismaMock.cronJobRun.update.mockResolvedValue({});
     prismaMock.macroIndicators.upsert.mockResolvedValue({});
 
-    // Default FMP mocks
-    mockGetHistoricalPrices.mockResolvedValue(makeMockHistory('SPY', 5500));
-    mockGetProfile.mockResolvedValue({ ...MOCK_FMP_PROFILE, price: 14.5 }); // VIXY price
+    // Default Yahoo Finance mocks
+    mockChart.mockResolvedValue(makeMockChartResult(5500));
+    mockQuote.mockResolvedValue({ regularMarketPrice: 14.5 }); // VIXY price
 
     // Default FRED mocks
     mockGetTreasuryRates
@@ -186,15 +185,15 @@ describe('GET /api/cron/update-macro-indicators', () => {
     expect(firstCall.create.treasury10yChange30d).toBe(0.1);
   });
 
-  it('fetches FRED data in parallel with FMP data', async () => {
+  it('fetches FRED data in parallel with Yahoo Finance data', async () => {
     await GET(makeAuthRequest());
 
     // FRED should be called twice (today + 30d ago)
     expect(mockGetTreasuryRates).toHaveBeenCalledTimes(2);
-    // FMP getHistoricalPrices should be called for SPY + VIXY + 4 sector ETFs
-    expect(mockGetHistoricalPrices).toHaveBeenCalled();
-    // FMP getProfile should be called for VIXY
-    expect(mockGetProfile).toHaveBeenCalled();
+    // Yahoo Finance chart() should be called for SPY + VIXY + 4 sector ETFs
+    expect(mockChart).toHaveBeenCalled();
+    // Yahoo Finance quote() should be called for VIXY
+    expect(mockQuote).toHaveBeenCalled();
   });
 
   // --- FRED failure handling ---
@@ -236,10 +235,10 @@ describe('GET /api/cron/update-macro-indicators', () => {
     expect(firstCall.create.treasury10yChange30d).toBeNull();
   });
 
-  // --- FMP failure handling ---
+  // --- Yahoo Finance failure handling ---
 
-  it('handles FMP historical prices failure gracefully', async () => {
-    mockGetHistoricalPrices.mockResolvedValue([]);
+  it('handles Yahoo Finance chart() failure gracefully', async () => {
+    mockChart.mockResolvedValue({ quotes: [] });
 
     const res = await GET(makeAuthRequest());
     const body = await res.json();
@@ -249,8 +248,8 @@ describe('GET /api/cron/update-macro-indicators', () => {
     expect(body.results[0].spxClose).toBeNull();
   });
 
-  it('handles VIX profile failure gracefully', async () => {
-    mockGetProfile.mockRejectedValue(new Error('FMP rate limited'));
+  it('handles VIX quote failure gracefully', async () => {
+    mockQuote.mockRejectedValue(new Error('Yahoo Finance rate limited'));
 
     const res = await GET(makeAuthRequest());
     const body = await res.json();
@@ -318,7 +317,7 @@ describe('GET /api/cron/update-macro-indicators', () => {
   it('fetches sector ETF data (XLK, XLF, XLE, XLV)', async () => {
     await GET(makeAuthRequest());
 
-    const tickersCalled = mockGetHistoricalPrices.mock.calls.map(
+    const tickersCalled = mockChart.mock.calls.map(
       (call: any[]) => call[0]
     );
     expect(tickersCalled).toContain('SPY');

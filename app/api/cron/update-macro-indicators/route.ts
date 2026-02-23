@@ -1,10 +1,47 @@
 /**
+ * @module app/api/cron/update-macro-indicators/route
+ * @description Next.js API route handler executing daily cron job to fetch and store comprehensive macro market indicators from Yahoo Finance and FRED APIs
+ *
+ * PURPOSE:
+ * - Fetch SPY momentum metrics (7d, 14d, 21d, 30d returns) using 45-day historical price data from Yahoo Finance
+ * - Calculate VIX volatility close price and 30-day moving average from VIXY historical data
+ * - Retrieve sector performance for XLK, XLF, XLE, XLV ETFs computing 30-day returns
+ * - Query FRED API for treasury rates (fed funds, 3m, 2y, 10y) and yield curve spread with 30-day change calculation
+ * - Upsert macro indicators for today and yesterday into MacroIndicators table with normalized UTC midnight timestamps
+ * - Track job execution status in CronJobRun table with auto-cleanup of stuck jobs older than 10 minutes
+ *
+ * DEPENDENCIES:
+ * - @/lib/prisma - Provides Prisma client for MacroIndicators and CronJobRun table operations
+ * - @/lib/yahoo-finance-singleton - Fetches historical prices via chart() and current quotes via quote() from Yahoo Finance v3 API
+ * - @/lib/fred-client - Retrieves treasury rates and economic indicators from Federal Reserve Economic Data API
+ *
+ * EXPORTS:
+ * - dynamic (const) - Next.js config forcing dynamic rendering for API route
+ * - maxDuration (const) - Vercel function timeout limit set to 60 seconds
+ * - GET (function) - Async handler processing cron trigger, fetching multi-source market data, and persisting to database
+ *
+ * PATTERNS:
+ * - Trigger via Vercel cron schedule or manual call with 'Authorization: Bearer ${CRON_SECRET}' header
+ * - Route runs at 9 AM UTC daily (configured in vercel.json cron schedule)
+ * - Returns JSON with { success, message, duration, results } array containing per-date status and metrics
+ * - Uses Promise.all to parallelize Yahoo Finance historical fetches and FRED rate queries for performance
+ * - Automatically cleans up CronJobRun records stuck in 'running' status for over 10 minutes before starting new job
+ *
+ * CLAUDE NOTES:
+ * - Uses VIXY (VIX ETF) instead of ^VIX ticker for consistent tradable security data
+ * - Fetches 45 days of historical data but only calculates returns for 7/14/21/30-day periods to ensure sufficient trading day coverage
+ * - Finds closest trading day to target date when calculating returns since markets are closed weekends/holidays - uses smallest time delta
+ * - Processes both today and yesterday dates to handle market close timing edge cases and data availability delays
+ * - Treasury 10y change is calculated as current minus 30-days-ago with 3 decimal precision rounding
+ * - Normalizes all dates to midnight UTC ('T00:00:00.000Z') before database operations to prevent duplicate records from timezone shifts
+ */
+/**
  * Daily Macro Indicators Update Cron Job
  *
  * Fetches and stores comprehensive macro data:
- * - Market momentum (SPY: 7d, 14d, 21d, 30d returns) via FMP
- * - Volatility (VIX close + 30-day MA) via FMP
- * - Sector performance (XLK, XLF, XLE, XLV 30d returns) via FMP
+ * - Market momentum (SPY: 7d, 14d, 21d, 30d returns) via Yahoo Finance
+ * - Volatility (VIX close + 30-day MA) via Yahoo Finance
+ * - Sector performance (XLK, XLF, XLE, XLV 30d returns) via Yahoo Finance
  * - Treasury rates (fed funds, 3m, 2y, 10y, yield curve) via FRED
  *
  * Runs daily at 9 AM UTC (after market close)
@@ -12,7 +49,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import fmpClient from '@/lib/fmp-client';
+import yahooFinance from '@/lib/yahoo-finance-singleton';
 import fredClient from '@/lib/fred-client';
 
 export const dynamic = 'force-dynamic';
@@ -34,7 +71,7 @@ function calcReturn(current: number, previous: number): number {
 }
 
 /**
- * Fetch historical prices and calculate returns for a given ticker
+ * Fetch historical prices and calculate returns for a given ticker using Yahoo Finance chart()
  */
 async function fetchHistoricalReturns(
   ticker: string,
@@ -45,18 +82,19 @@ async function fetchHistoricalReturns(
   startDate.setDate(startDate.getDate() - daysBack);
 
   try {
-    const historical = await fmpClient.getHistoricalPrices(
-      ticker,
-      startDate.toISOString().split('T')[0],
-      endDate.toISOString().split('T')[0]
-    );
+    const result = await yahooFinance.chart(ticker, {
+      period1: startDate,
+      period2: endDate,
+      interval: '1d',
+    });
 
-    if (!historical || historical.length === 0) {
+    const quotes = result.quotes;
+    if (!quotes || quotes.length === 0) {
       return { close: null, returns: {} };
     }
 
-    // FMP returns most recent first; sort by date descending to be safe
-    const sorted = [...historical].sort((a, b) =>
+    // Sort by date descending (most recent first)
+    const sorted = [...quotes].sort((a, b) =>
       new Date(b.date).getTime() - new Date(a.date).getTime()
     );
     const latestClose = sorted[0]?.close ?? null;
@@ -97,23 +135,24 @@ async function fetchHistoricalReturns(
 }
 
 /**
- * Calculate 30-day moving average of VIX from historical data
+ * Calculate 30-day moving average of VIX from historical data using Yahoo Finance chart()
  */
 async function fetchVixMA30(endDate: Date): Promise<number | null> {
   const startDate = new Date(endDate);
   startDate.setDate(startDate.getDate() - 45); // Extra days to ensure 30 trading days
 
   try {
-    const historical = await fmpClient.getHistoricalPrices(
-      'VIXY',
-      startDate.toISOString().split('T')[0],
-      endDate.toISOString().split('T')[0]
-    );
+    const result = await yahooFinance.chart('VIXY', {
+      period1: startDate,
+      period2: endDate,
+      interval: '1d',
+    });
 
-    if (!historical || historical.length < 20) return null;
+    const quotes = result.quotes;
+    if (!quotes || quotes.length < 20) return null;
 
     // Sort by date descending
-    const sorted = [...historical].sort((a, b) =>
+    const sorted = [...quotes].sort((a, b) =>
       new Date(b.date).getTime() - new Date(a.date).getTime()
     );
     const last30 = sorted.slice(0, 30);
@@ -181,10 +220,10 @@ export async function GET(req: NextRequest) {
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     const thirtyDaysAgoStr = thirtyDaysAgo.toISOString().split('T')[0];
 
-    const [spyData, vixProfile, vixMA30, treasuryRatesToday, treasuryRates30dAgo, ...sectorResults] = await Promise.all([
+    const [spyData, vixQuote, vixMA30, treasuryRatesToday, treasuryRates30dAgo, ...sectorResults] = await Promise.all([
       fetchHistoricalReturns('SPY', today, 45),
-      fmpClient.getProfile('VIXY').catch((e: any) => {
-        console.error('[MacroCron] VIX profile error:', e.message);
+      yahooFinance.quote('VIXY').catch((e: any) => {
+        console.error('[MacroCron] VIX quote error:', e.message);
         return null;
       }),
       fetchVixMA30(today),
@@ -208,7 +247,7 @@ export async function GET(req: NextRequest) {
       sectorReturns[sectorKeys[i]] = sectorResults[i]?.returns?.['30d'] ?? null;
     }
 
-    const vixClose = vixProfile?.price ?? null;
+    const vixClose = vixQuote?.regularMarketPrice ?? null;
 
     // Calculate treasury 10y 30-day change
     const treasury10yChange30d =
@@ -216,7 +255,8 @@ export async function GET(req: NextRequest) {
         ? Math.round((treasuryRatesToday.treasury10y - treasuryRates30dAgo.treasury10y) * 1000) / 1000
         : null;
 
-    for (const date of dates) {
+    // Prepare all upsert operations
+    const upsertPromises = dates.map(async (date) => {
       const dateStr = date.toISOString().split('T')[0];
 
       try {
@@ -258,18 +298,22 @@ export async function GET(req: NextRequest) {
           `2Y: ${macroData.treasury2y ?? 'n/a'}`
         );
 
-        results.push({
+        return {
           date: dateStr,
           success: true,
           spxClose: macroData.spxClose,
           spxReturn7d: macroData.spxReturn7d,
           vixClose: macroData.vixClose,
-        });
+        };
       } catch (error: any) {
         console.error(`[MacroCron] ${dateStr}: Failed:`, error.message);
-        results.push({ date: dateStr, success: false, error: error.message });
+        return { date: dateStr, success: false, error: error.message };
       }
-    }
+    });
+
+    // Execute all upserts in parallel
+    const batchResults = await Promise.all(upsertPromises);
+    results.push(...batchResults);
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
     const successCount = results.filter(r => r.success).length;

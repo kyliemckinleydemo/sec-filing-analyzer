@@ -2,7 +2,7 @@
  * Test what historical analyst data Yahoo Finance provides
  */
 
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../lib/yahoo-finance-singleton';
 
 async function testYahooAnalystHistory() {
   console.log('🔍 Testing Yahoo Finance Analyst Data Availability\n');

@@ -6,7 +6,7 @@
  */
 
 import { prisma } from '../lib/prisma';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../lib/yahoo-finance-singleton';
 
 async function main() {
   console.log('🚀 Backfilling Macro Indicators\n');
@@ -30,7 +30,7 @@ async function main() {
   console.log(`\n📊 Found ${uniqueDates.length} unique filing dates\n`);
   console.log('═'.repeat(80));
 
-  // Check which dates already have macro data
+  // Check which dates already have macro data - batch query
   const existingMacro = await prisma.macroIndicators.findMany({
     select: { date: true },
   });
@@ -90,6 +90,9 @@ async function main() {
 
     const vixByDate = new Map(vixData.map(d => [d.date.toISOString().split('T')[0], d]));
 
+    // Prepare batch upsert data
+    const macroIndicatorsData = [];
+
     // Process each date
     for (let i = 0; i < spxData.length; i++) {
       const date = spxData[i].date;
@@ -136,23 +139,13 @@ async function main() {
           }
         }
 
-        await prisma.macroIndicators.upsert({
-          where: { date },
-          create: {
-            date,
-            spxClose,
-            spxReturn7d,
-            spxReturn30d,
-            vixClose,
-            vixMA30,
-          },
-          update: {
-            spxClose,
-            spxReturn7d,
-            spxReturn30d,
-            vixClose,
-            vixMA30,
-          },
+        macroIndicatorsData.push({
+          date,
+          spxClose,
+          spxReturn7d,
+          spxReturn30d,
+          vixClose,
+          vixMA30,
         });
 
         processed++;
@@ -165,6 +158,18 @@ async function main() {
         errors++;
       }
     }
+
+    // Batch upsert all macro indicators
+    console.log(`\n💾 Batch upserting ${macroIndicatorsData.length} macro indicators...`);
+    for (const data of macroIndicatorsData) {
+      await prisma.macroIndicators.upsert({
+        where: { date: data.date },
+        create: data,
+        update: data,
+      });
+    }
+    console.log(`✅ Batch upsert completed\n`);
+
   } catch (error) {
     console.error(`❌ Error fetching market data: ${error instanceof Error ? error.message : 'Unknown error'}`);
     errors++;

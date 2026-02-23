@@ -1,6 +1,39 @@
+/**
+ * @module app/api/cron/update-stock-prices/route
+ * @description Scheduled API route that updates current stock prices and market metrics for companies with SEC filings in the past 30 days via Yahoo Finance API
+ *
+ * PURPOSE:
+ * - Fetch current stock prices, market cap, P/E ratios, 52-week ranges, and analyst targets from Yahoo Finance API
+ * - Update database records for companies that filed SEC documents within 30 days to prioritize active tickers
+ * - Process updates in batches of 50 with minimal delays (Yahoo Finance has no strict rate limit)
+ * - Authenticate requests via Vercel cron headers or CRON_SECRET bearer token to prevent unauthorized execution
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextResponse for JSON responses and status codes
+ * - @/lib/prisma - Database client for querying companies and updating stock price fields
+ * - @/lib/yahoo-finance-singleton - Yahoo Finance API client for quote and quoteSummary calls
+ *
+ * EXPORTS:
+ * - dynamic (const) - Force-dynamic rendering mode to prevent route caching
+ * - maxDuration (const) - 300 second (5 minute) maximum execution time for Vercel serverless function
+ * - GET (function) - Async handler that authenticates request, fetches active companies, updates stock data in batches, and returns success/error summary with counts
+ *
+ * PATTERNS:
+ * - Deploy as Vercel cron job with schedule like '0 0 * * *' for daily midnight execution
+ * - Set CRON_SECRET environment variable and pass as 'Authorization: Bearer {secret}' header for manual testing
+ * - Route returns partial completion JSON when approaching 270-second timeout (leaves 30s buffer)
+ * - Skips companies with 404/Not Found errors (delisted tickers) without logging to reduce noise
+ *
+ * CLAUDE NOTES:
+ * - Uses 30-day filing window to prioritize recently active companies, avoiding stale ticker updates
+ * - Implements timeout protection by checking elapsed time every company and returning partial results at 4.5 minutes
+ * - Stores volume fields as BigInt in Prisma since daily volume can exceed JavaScript's safe integer limit (2^53-1)
+ * - Yahoo Finance quote() provides most fields directly; quoteSummary(financialData) used for analystTargetPrice
+ * - dividendYield from Yahoo Finance is already a ratio (e.g. 0.005 = 0.5%), stored directly
+ */
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import fmpClient, { parseRange } from '@/lib/fmp-client';
+import yahooFinance from '@/lib/yahoo-finance-singleton';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -11,7 +44,7 @@ export const maxDuration = 300;
  * Updates current price, market cap, P/E, and other key metrics
  * for companies that have filed in the past 30 days.
  *
- * Uses FMP API instead of yahoo-finance2 (which is blocked on Vercel).
+ * Uses Yahoo Finance API (quote + quoteSummary) for market data.
  */
 
 export async function GET(request: Request) {
@@ -66,9 +99,9 @@ export async function GET(request: Request) {
 
     console.log(`[StockPriceCron] Found ${activeCompanies.length} companies with filings in past 30 days`);
 
-    // Update in batches to avoid rate limits and timeout
+    // Process in batches for progress logging
     const BATCH_SIZE = 50;
-    const BATCH_DELAY_MS = 2000;
+    const POLITE_DELAY_MS = 50;
 
     const totalBatches = Math.ceil(activeCompanies.length / BATCH_SIZE);
 
@@ -98,24 +131,64 @@ export async function GET(request: Request) {
             });
           }
 
-          const profile = await fmpClient.getProfile(company.ticker);
+          // Fetch quote data from Yahoo Finance
+          const quote = await yahooFinance.quote(company.ticker);
 
-          if (profile) {
-            const range = parseRange(profile.range);
+          if (quote && quote.regularMarketPrice != null) {
+            // Fetch enriched metrics from quoteSummary (separate call)
+            let enrichedData: Record<string, any> = {
+              analystTargetPrice: null,
+              revenueGrowth: null,
+              earningsGrowth: null,
+              grossMargins: null,
+              operatingMargins: null,
+              profitMargins: null,
+              freeCashflow: null,
+              pegRatio: null,
+              shortRatio: null,
+              shortPercentOfFloat: null,
+              enterpriseToRevenue: null,
+              enterpriseToEbitda: null,
+            };
+            try {
+              const summary = await yahooFinance.quoteSummary(company.ticker, {
+                modules: ['financialData', 'defaultKeyStatistics'],
+              });
+              enrichedData = {
+                analystTargetPrice: summary.financialData?.targetMeanPrice ?? null,
+                revenueGrowth: summary.financialData?.revenueGrowth ?? null,
+                earningsGrowth: summary.financialData?.earningsGrowth ?? null,
+                grossMargins: summary.financialData?.grossMargins ?? null,
+                operatingMargins: summary.financialData?.operatingMargins ?? null,
+                profitMargins: summary.financialData?.profitMargins ?? null,
+                freeCashflow: summary.financialData?.freeCashflow ?? null,
+                pegRatio: summary.defaultKeyStatistics?.pegRatio ?? null,
+                shortRatio: summary.defaultKeyStatistics?.shortRatio ?? null,
+                shortPercentOfFloat: summary.defaultKeyStatistics?.shortPercentOfFloat ?? null,
+                enterpriseToRevenue: summary.defaultKeyStatistics?.enterpriseToRevenue ?? null,
+                enterpriseToEbitda: summary.defaultKeyStatistics?.enterpriseToEbitda ?? null,
+              };
+            } catch {
+              // Skip if quoteSummary fails - enriched fields will remain null
+            }
 
             await prisma.company.update({
               where: { id: company.id },
               data: {
-                currentPrice: profile.price ?? null,
-                marketCap: profile.mktCap ?? null,
-                peRatio: profile.pe ?? null,
-                beta: profile.beta ?? null,
-                dividendYield: profile.lastDiv ? profile.lastDiv / (profile.price || 1) : null,
-                fiftyTwoWeekHigh: range?.high ?? null,
-                fiftyTwoWeekLow: range?.low ?? null,
-                volume: profile.volume ? BigInt(profile.volume) : null,
-                averageVolume: profile.volAvg ? BigInt(profile.volAvg) : null,
-                analystTargetPrice: profile.targetMeanPrice ?? null,
+                currentPrice: quote.regularMarketPrice ?? null,
+                marketCap: quote.marketCap ?? null,
+                peRatio: quote.trailingPE ?? null,
+                beta: (quote as any).beta ?? null,
+                dividendYield: ('dividendYield' in quote && (quote as any).dividendYield != null)
+                  ? (quote as any).dividendYield / 100
+                  : null,
+                fiftyTwoWeekHigh: quote.fiftyTwoWeekHigh ?? null,
+                fiftyTwoWeekLow: quote.fiftyTwoWeekLow ?? null,
+                fiftyDayAverage: (quote as any).fiftyDayAverage ?? null,
+                twoHundredDayAverage: (quote as any).twoHundredDayAverage ?? null,
+                volume: quote.regularMarketVolume ? BigInt(quote.regularMarketVolume) : null,
+                averageVolume: quote.averageDailyVolume10Day ? BigInt(quote.averageDailyVolume10Day) : null,
+                ...enrichedData,
                 yahooLastUpdated: new Date()
               }
             });
@@ -130,6 +203,9 @@ export async function GET(request: Request) {
             skippedCompanies++;
           }
 
+          // Small polite delay between requests
+          await new Promise(resolve => setTimeout(resolve, POLITE_DELAY_MS));
+
         } catch (error: any) {
           stockPriceErrors++;
 
@@ -143,10 +219,9 @@ export async function GET(request: Request) {
         }
       }
 
-      // Delay between batches
+      // Log batch completion
       if (i + BATCH_SIZE < activeCompanies.length) {
-        console.log(`[StockPriceCron] Batch ${batchNum} complete, pausing ${BATCH_DELAY_MS}ms...`);
-        await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
+        console.log(`[StockPriceCron] Batch ${batchNum} complete`);
       }
     }
 

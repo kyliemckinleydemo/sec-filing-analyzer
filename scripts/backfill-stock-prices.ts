@@ -10,7 +10,7 @@
  */
 
 import { prisma } from '../lib/prisma';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../lib/yahoo-finance-singleton';
 
 interface PriceData {
   date: Date;
@@ -97,6 +97,42 @@ async function backfillStockPrices(options: {
   let errors = 0;
   let skipped = 0;
 
+  // Batch fetch all price data first
+  const pricesByTicker = new Map<string, { filing: typeof filings[0], prices: PriceData[] }[]>();
+  
+  for (const filing of filings) {
+    const ticker = filing.company.ticker;
+    if (!pricesByTicker.has(ticker)) {
+      pricesByTicker.set(ticker, []);
+    }
+    pricesByTicker.get(ticker)!.push({ filing, prices: [] });
+  }
+
+  // Fetch prices for all unique tickers
+  for (const [ticker, filingData] of pricesByTicker.entries()) {
+    const allFilingDates = filingData.map(fd => fd.filing.filingDate);
+    const minDate = new Date(Math.min(...allFilingDates.map(d => d.getTime())));
+    const maxDate = new Date(Math.max(...allFilingDates.map(d => d.getTime())));
+    const endDate = addBusinessDays(maxDate, 10);
+
+    try {
+      const prices = await getHistoricalPrices(ticker, minDate, endDate);
+      
+      // Distribute prices to each filing
+      for (const fd of filingData) {
+        const filingStartDate = new Date(fd.filing.filingDate);
+        const filingEndDate = addBusinessDays(filingStartDate, 10);
+        fd.prices = prices.filter(p => p.date >= filingStartDate && p.date <= filingEndDate);
+      }
+      
+      // Rate limiting between ticker requests
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+    } catch (error: any) {
+      console.error(`Error fetching bulk data for ${ticker}:`, error.message);
+    }
+  }
+
+  // Process each filing with pre-fetched data
   for (const filing of filings) {
     processed++;
     const ticker = filing.company.ticker;
@@ -104,11 +140,9 @@ async function backfillStockPrices(options: {
     console.log(`[${processed}/${filings.length}] Processing ${ticker} - ${filing.filingType} on ${filing.filingDate.toISOString().split('T')[0]}...`);
 
     try {
-      // Get price data from filing date to 7 business days after
-      const startDate = new Date(filing.filingDate);
-      const endDate = addBusinessDays(startDate, 10); // Extra buffer for holidays
-
-      const prices = await getHistoricalPrices(ticker, startDate, endDate);
+      const filingDataArray = pricesByTicker.get(ticker);
+      const filingData = filingDataArray?.find(fd => fd.filing.id === filing.id);
+      const prices = filingData?.prices || [];
 
       if (prices.length < 2) {
         console.log(`  ⚠️  Insufficient price data (${prices.length} days)`);
@@ -217,11 +251,6 @@ async function backfillStockPrices(options: {
     } catch (error: any) {
       console.error(`  ❌ Error: ${error.message}`);
       errors++;
-    }
-
-    // Rate limiting
-    if (processed < filings.length) {
-      await new Promise(resolve => setTimeout(resolve, delayMs));
     }
   }
 

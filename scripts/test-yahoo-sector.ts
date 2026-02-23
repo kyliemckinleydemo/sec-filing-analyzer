@@ -1,4 +1,4 @@
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../lib/yahoo-finance-singleton';
 
 async function testYahooSector() {
   const ticker = 'AAPL';

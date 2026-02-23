@@ -1,21 +1,41 @@
+/**
+ * @module update-stock-prices.test
+ * @description Test suite for the stock price update cron job API endpoint
+ *
+ * PURPOSE:
+ * - Validates authentication and authorization for the cron endpoint
+ * - Tests successful stock price updates from Yahoo Finance API
+ * - Verifies correct data transformation and storage (price, volume, market cap, PE ratio, etc.)
+ * - Ensures proper handling of missing data, API failures, and edge cases
+ * - Validates error handling for delisted tickers and database errors
+ *
+ * EXPORTS:
+ * - None (test file)
+ *
+ * CLAUDE NOTES:
+ * - Uses Vitest mocking to stub Prisma client and Yahoo Finance API calls
+ * - Tests cover authentication via Bearer token (CRON_SECRET)
+ * - Validates BigInt conversion for volume field
+ * - Tests percentage-to-ratio conversion for dividendYield (0.5% → 0.005)
+ * - Verifies graceful degradation when quoteSummary fails (analystTargetPrice → null)
+ * - Tests batch processing with per-ticker error isolation
+ * - Validates 52-week high/low and analyst target price updates
+ * - Mock fixtures imported from '../../../fixtures/cron-data'
+ * - prismaMock imported from '../../../mocks/prisma'
+ */
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { prismaMock } from '../../../mocks/prisma';
-import { MOCK_FMP_PROFILE } from '../../../fixtures/cron-data';
+import { MOCK_YAHOO_QUOTE, MOCK_YAHOO_QUOTE_SUMMARY_FINANCIAL_DATA } from '../../../fixtures/cron-data';
 
-const { mockGetProfile } = vi.hoisted(() => ({
-  mockGetProfile: vi.fn(),
+const { mockQuote, mockQuoteSummary } = vi.hoisted(() => ({
+  mockQuote: vi.fn(),
+  mockQuoteSummary: vi.fn(),
 }));
-vi.mock('@/lib/fmp-client', () => ({
+vi.mock('@/lib/yahoo-finance-singleton', () => ({
   default: {
-    getProfile: mockGetProfile,
-  },
-  parseRange: (range: string) => {
-    if (!range) return null;
-    const parts = range.split('-').map((s: string) => parseFloat(s.trim()));
-    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-      return { low: Math.min(parts[0], parts[1]), high: Math.max(parts[0], parts[1]) };
-    }
-    return null;
+    quote: mockQuote,
+    quoteSummary: mockQuoteSummary,
   },
 }));
 
@@ -37,7 +57,8 @@ describe('GET /api/cron/update-stock-prices', () => {
     vi.clearAllMocks();
     prismaMock.company.findMany.mockResolvedValue([]);
     prismaMock.company.update.mockResolvedValue({});
-    mockGetProfile.mockResolvedValue(MOCK_FMP_PROFILE);
+    mockQuote.mockResolvedValue(MOCK_YAHOO_QUOTE);
+    mockQuoteSummary.mockResolvedValue(MOCK_YAHOO_QUOTE_SUMMARY_FINANCIAL_DATA);
   });
 
   // --- Auth ---
@@ -99,17 +120,75 @@ describe('GET /api/cron/update-stock-prices', () => {
     );
   });
 
+  it('updates 52-week high and low from Yahoo Finance quote', async () => {
+    prismaMock.company.findMany.mockResolvedValue([{ id: 'c1', ticker: 'AAPL' }]);
+
+    await GET(makeAuthRequest());
+
+    expect(prismaMock.company.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          fiftyTwoWeekHigh: 199.62,
+          fiftyTwoWeekLow: 164.08,
+        }),
+      })
+    );
+  });
+
+  it('updates analystTargetPrice from quoteSummary financialData', async () => {
+    prismaMock.company.findMany.mockResolvedValue([{ id: 'c1', ticker: 'AAPL' }]);
+
+    await GET(makeAuthRequest());
+
+    expect(prismaMock.company.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          analystTargetPrice: 210.0,
+        }),
+      })
+    );
+  });
+
+  it('sets analystTargetPrice to null when quoteSummary fails', async () => {
+    prismaMock.company.findMany.mockResolvedValue([{ id: 'c1', ticker: 'AAPL' }]);
+    mockQuoteSummary.mockRejectedValue(new Error('quoteSummary failed'));
+
+    await GET(makeAuthRequest());
+
+    expect(prismaMock.company.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          analystTargetPrice: null,
+        }),
+      })
+    );
+  });
+
+  it('converts dividendYield from percentage to ratio', async () => {
+    prismaMock.company.findMany.mockResolvedValue([{ id: 'c1', ticker: 'AAPL' }]);
+
+    await GET(makeAuthRequest());
+
+    expect(prismaMock.company.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          dividendYield: 0.005, // 0.5% / 100 = 0.005
+        }),
+      })
+    );
+  });
+
   // --- Error handling ---
 
-  it('handles FMP errors per-ticker', async () => {
+  it('handles Yahoo Finance errors per-ticker', async () => {
     prismaMock.company.findMany.mockResolvedValue([
       { id: 'c1', ticker: 'AAPL' },
       { id: 'c2', ticker: 'MSFT' },
     ]);
 
-    mockGetProfile
-      .mockRejectedValueOnce(new Error('FMP API error'))
-      .mockResolvedValueOnce(MOCK_FMP_PROFILE);
+    mockQuote
+      .mockRejectedValueOnce(new Error('Yahoo Finance API error'))
+      .mockResolvedValueOnce(MOCK_YAHOO_QUOTE);
 
     const res = await GET(makeAuthRequest());
     const body = await res.json();
@@ -130,9 +209,20 @@ describe('GET /api/cron/update-stock-prices', () => {
     expect(body.results.totalCompanies).toBe(0);
   });
 
-  it('skips companies with no profile data', async () => {
+  it('skips companies with no quote data', async () => {
     prismaMock.company.findMany.mockResolvedValue([{ id: 'c1', ticker: 'AAPL' }]);
-    mockGetProfile.mockResolvedValue(null);
+    mockQuote.mockResolvedValue(null);
+
+    const res = await GET(makeAuthRequest());
+    const body = await res.json();
+
+    expect(body.results.skipped).toBe(1);
+    expect(body.results.updated).toBe(0);
+  });
+
+  it('skips companies with no regularMarketPrice', async () => {
+    prismaMock.company.findMany.mockResolvedValue([{ id: 'c1', ticker: 'AAPL' }]);
+    mockQuote.mockResolvedValue({ ...MOCK_YAHOO_QUOTE, regularMarketPrice: undefined });
 
     const res = await GET(makeAuthRequest());
     const body = await res.json();
@@ -164,7 +254,7 @@ describe('GET /api/cron/update-stock-prices', () => {
     prismaMock.company.findMany.mockResolvedValue([
       { id: 'c1', ticker: 'DELISTED' },
     ]);
-    mockGetProfile.mockRejectedValue(new Error('Not Found (404)'));
+    mockQuote.mockRejectedValue(new Error('Not Found (404)'));
 
     const res = await GET(makeAuthRequest());
     const body = await res.json();

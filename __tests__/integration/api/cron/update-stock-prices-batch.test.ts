@@ -1,21 +1,40 @@
+/**
+ * @module update-stock-prices-batch.test
+ * @description Test suite for the batch stock price update cron job endpoint
+ *
+ * PURPOSE:
+ * - Validates authentication/authorization for the cron endpoint
+ * - Tests batch selection logic based on day of year rotation
+ * - Verifies correct slicing of companies into batches (6 total batches)
+ * - Ensures proper updating of company price, market cap, and volume data
+ * - Tests error handling for Yahoo Finance API failures, database errors, and delisted tickers
+ * - Validates graceful degradation when individual ticker updates fail
+ *
+ * EXPORTS:
+ * - None (test file)
+ *
+ * CLAUDE NOTES:
+ * - Uses Vitest mocking for Prisma client and Yahoo Finance singleton
+ * - Mocks are hoisted using vi.hoisted() to ensure proper module initialization order
+ * - System time is mocked using vi.setSystemTime() to test day-based batch rotation
+ * - Tests assume 6 batches with rotation based on (day of year) % 6
+ * - CRON_SECRET environment variable must be set to 'test-cron-secret' for authenticated requests
+ * - Mock data fixtures (MOCK_YAHOO_QUOTE, MOCK_YAHOO_QUOTE_SUMMARY_FINANCIAL_DATA) simulate API responses
+ * - Test scenarios cover both happy paths and error conditions (401, 404, 500)
+ */
+
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { prismaMock } from '../../../mocks/prisma';
-import { MOCK_FMP_PROFILE } from '../../../fixtures/cron-data';
+import { MOCK_YAHOO_QUOTE, MOCK_YAHOO_QUOTE_SUMMARY_FINANCIAL_DATA } from '../../../fixtures/cron-data';
 
-const { mockGetProfile } = vi.hoisted(() => ({
-  mockGetProfile: vi.fn(),
+const { mockQuote, mockQuoteSummary } = vi.hoisted(() => ({
+  mockQuote: vi.fn(),
+  mockQuoteSummary: vi.fn(),
 }));
-vi.mock('@/lib/fmp-client', () => ({
+vi.mock('@/lib/yahoo-finance-singleton', () => ({
   default: {
-    getProfile: mockGetProfile,
-  },
-  parseRange: (range: string) => {
-    if (!range) return null;
-    const parts = range.split('-').map((s: string) => parseFloat(s.trim()));
-    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
-      return { low: Math.min(parts[0], parts[1]), high: Math.max(parts[0], parts[1]) };
-    }
-    return null;
+    quote: mockQuote,
+    quoteSummary: mockQuoteSummary,
   },
 }));
 
@@ -37,7 +56,8 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
     vi.clearAllMocks();
     prismaMock.company.findMany.mockResolvedValue([]);
     prismaMock.company.update.mockResolvedValue({});
-    mockGetProfile.mockResolvedValue(MOCK_FMP_PROFILE);
+    mockQuote.mockResolvedValue(MOCK_YAHOO_QUOTE);
+    mockQuoteSummary.mockResolvedValue(MOCK_YAHOO_QUOTE_SUMMARY_FINANCIAL_DATA);
   });
 
   afterEach(() => {
@@ -143,9 +163,9 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
     // batch 0 will process companies[0] and companies[1]
     prismaMock.company.findMany.mockResolvedValue(companies);
 
-    mockGetProfile
-      .mockResolvedValueOnce(MOCK_FMP_PROFILE)
-      .mockRejectedValueOnce(new Error('FMP error'));
+    mockQuote
+      .mockResolvedValueOnce(MOCK_YAHOO_QUOTE)
+      .mockRejectedValueOnce(new Error('Yahoo Finance error'));
 
     const res = await GET(makeAuthRequest());
     const body = await res.json();
@@ -180,7 +200,7 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
     vi.setSystemTime(new Date('2024-12-01T05:00:00Z'));
 
     prismaMock.company.findMany.mockResolvedValue([{ id: 'c1', ticker: 'DEAD' }]);
-    mockGetProfile.mockRejectedValue(new Error('Not Found'));
+    mockQuote.mockRejectedValue(new Error('Not Found'));
 
     const res = await GET(makeAuthRequest());
     const body = await res.json();

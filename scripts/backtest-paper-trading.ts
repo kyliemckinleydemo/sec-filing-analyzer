@@ -1,6 +1,6 @@
 import { prisma } from '../lib/prisma';
 import { PaperTradingEngine, createPaperPortfolio } from '../lib/paper-trading';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '../lib/yahoo-finance-singleton';
 
 /**
  * Backtest Paper Trading System

@@ -1,4 +1,40 @@
 /**
+ * @module lib/yahoo-finance-client
+ * @description Yahoo Finance API client that fetches real-time stock quotes, historical prices, company financials, and analyst ratings using Yahoo Finance v8 API and yahoo-finance2 library
+ *
+ * PURPOSE:
+ * - Fetch historical daily stock prices for configurable date ranges (1mo to 2y) from Yahoo Finance chart endpoint
+ * - Retrieve current real-time quotes with price, change, and timestamp for any stock ticker
+ * - Extract comprehensive company financials including P/E ratios, market cap, EPS estimates, analyst ratings, and beta values using quoteSummary modules
+ * - Parse analyst upgrade/downgrade history with firm names, rating changes, and action types from upgradeDowngradeHistory module
+ * - Calculate 7-day return percentages after specific dates from sorted historical price arrays
+ *
+ * DEPENDENCIES:
+ * - yahoo-finance2 - Official library providing quote(), quoteSummary() methods and type-safe access to Yahoo Finance data with automatic retry logic
+ *
+ * EXPORTS:
+ * - StockPrice (interface) - Daily OHLCV data shape with ISO date string, open/high/low/close prices, and volume
+ * - CurrentQuote (interface) - Real-time quote data with symbol, current price, dollar/percent change, and ISO timestamp
+ * - CompanyFinancials (interface) - Comprehensive financial metrics including market cap, P/E ratios, 52-week highs/lows, EPS/revenue estimates, analyst counts, dividend yield, beta, and volume data
+ * - AnalystAction (interface) - Analyst rating change event with Date object, firm name, actionType enum (upgrade/downgrade/initiate/reiterate), fromGrade, toGrade, and raw action string
+ * - yahooFinanceClient (const) - Singleton YahooFinanceClient instance for making API calls
+ *
+ * PATTERNS:
+ * - Import { yahooFinanceClient } from '@/lib/yahoo-finance-client' and call methods directly: await yahooFinanceClient.getHistoricalPrices('AAPL', '1y')
+ * - Pass ticker string and optional range ('1mo'|'3mo'|'6mo'|'1y'|'2y') to getHistoricalPrices(); returns array sorted most recent first
+ * - Use getCompanyFinancials(ticker) to fetch all available metrics; returns null if ticker not found, logs detailed errors to console
+ * - Call getAnalystActivity(ticker) to get array of rating changes; empty array if none exist or API fails
+ * - Pass StockPrice[] and ISO date string to calculate7DayReturn() to get percentage change 7 trading days after date; returns null if insufficient data
+ *
+ * CLAUDE NOTES:
+ * - Suppresses yahoo-finance2 survey notices on initialization to prevent console clutter in production
+ * - Uses raw REST API for historical/quotes (requires User-Agent header spoofing) but yahoo-finance2 library for financials/analyst data due to better reliability and automatic rate limiting
+ * - Validates earnings dates must be between 1970-2100 before including in results to filter invalid Unix timestamps
+ * - Skips historical price data points where close or open is null to prevent downstream calculation errors
+ * - Normalizes analyst ratings to 1-5 scale (Strong Buy=5, Buy=4) to enable programmatic comparison of upgrades vs downgrades
+ * - No authentication required - uses free public Yahoo Finance endpoints with no rate limits but requires careful error handling for ticker lookup failures
+ */
+/**
  * Yahoo Finance Stock Price Client
  *
  * Uses Yahoo Finance API v8 (unofficial but widely used)
@@ -6,10 +42,7 @@
  * More reliable than Alpha Vantage for high-volume apps
  */
 
-import yahooFinance from 'yahoo-finance2';
-
-// Suppress yahoo-finance2 survey notice
-yahooFinance.suppressNotices(['yahooSurvey']);
+import yahooFinance from './yahoo-finance-singleton';
 
 export interface StockPrice {
   date: string;
@@ -188,7 +221,6 @@ class YahooFinanceClient {
       console.log(`[Yahoo Finance] Fetching company data for ${ticker}`);
 
       // Use yahoo-finance2 library (more reliable than raw API)
-      const yahooFinance = (await import('yahoo-finance2')).default;
       const quote = await yahooFinance.quote(ticker);
 
       if (!quote) {
@@ -304,8 +336,6 @@ class YahooFinanceClient {
   async getAnalystActivity(ticker: string): Promise<AnalystAction[]> {
     try {
       console.log(`[Yahoo Finance] Fetching analyst activity for ${ticker}`);
-
-      const yahooFinance = (await import('yahoo-finance2')).default;
 
       // Fetch upgrade/downgrade history using quoteSummary
       const summary = await yahooFinance.quoteSummary(ticker, {

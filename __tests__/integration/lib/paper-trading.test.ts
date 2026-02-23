@@ -1,7 +1,38 @@
+/**
+ * @module paper-trading.test
+ * 
+ * @description
+ * Unit tests for the PaperTradingEngine class, covering trade signal evaluation,
+ * position sizing, trade execution validation, and P&L calculation logic for both
+ * LONG and SHORT positions.
+ * 
+ * PURPOSE:
+ * - Verify PaperTradingEngine correctly evaluates trade signals against portfolio constraints
+ * - Test rejection logic for invalid signals (low confidence, duplicate positions, inactive portfolios)
+ * - Validate P&L calculations for LONG trades (exitValue - entryValue - commissions)
+ * - Validate P&L calculations for SHORT trades (entryValue - exitValue - commissions)
+ * - Ensure proper handling of edge cases (missing trades, closed trades, pending trades)
+ * - Mock external dependencies (Prisma ORM, Yahoo Finance API) for isolated unit testing
+ * 
+ * EXPORTS:
+ * - Test suites for PaperTradingEngine.evaluateTradeSignal
+ * - Test suites for PaperTradingEngine.closeTrade
+ * 
+ * CLAUDE NOTES:
+ * - Uses Vitest testing framework with mocked Prisma client
+ * - Yahoo Finance singleton is mocked at module level to prevent external API calls
+ * - MOCK_PORTFOLIO provides consistent test fixture with $100k starting capital
+ * - Trade signal confidence threshold is 0.60, minimum predicted return is 0.5%
+ * - Commission structure: $1 per trade entry and exit (total $2 per round trip)
+ * - P&L formula for LONG: (shares × exitPrice) - entryValue - commissions
+ * - P&L formula for SHORT: entryValue - (shares × exitPrice) - commissions
+ * - Tests verify both success and failure paths with appropriate error reasons
+ */
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { prismaMock } from '../../mocks/prisma';
 
-vi.mock('yahoo-finance2', () => ({
+vi.mock('@/lib/yahoo-finance-singleton', () => ({
   default: {
     quote: vi.fn(),
     chart: vi.fn(),
@@ -10,7 +41,7 @@ vi.mock('yahoo-finance2', () => ({
 
 import { PaperTradingEngine } from '@/lib/paper-trading';
 import type { TradeSignal } from '@/lib/paper-trading';
-import yahooFinance from 'yahoo-finance2';
+import yahooFinance from '@/lib/yahoo-finance-singleton';
 
 const PORTFOLIO_ID = 'portfolio-001';
 
