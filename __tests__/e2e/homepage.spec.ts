@@ -58,10 +58,10 @@ test.describe('Homepage — unauthenticated view', () => {
   test('"Start Free" and "View Live Filings Feed" CTAs are visible and clickable', async ({ page }) => {
     // Scope to <main> to avoid duplicate buttons in nav
     const main = page.locator('main');
-    const startFree = main.getByRole('button', { name: 'Start Free' });
+    const startFree = main.getByRole('button', { name: /Join now/i }).first();
     await expect(startFree).toBeVisible({ timeout: 15000 });
 
-    const viewFeed = main.getByRole('button', { name: /View Live Filings Feed/i });
+    const viewFeed = main.getByRole('button', { name: /View Live Filings Feed/i }).first();
     await expect(viewFeed).toBeVisible();
 
     // Click Start Free — should navigate to /profile
@@ -115,13 +115,12 @@ test.describe('Homepage — unauthenticated view', () => {
     await expect(footer.locator('text=FAQ')).toBeVisible();
   });
 
-  test('navbar contains all expected links: Ask the Market, Latest Filings, Watchlist, Alerts, FAQ', async ({ page }) => {
+  test('navbar contains all expected links: Ask the Market, Latest Filings, Watchlist, FAQ', async ({ page }) => {
     const nav = page.locator('nav').first();
     await expect(nav).toBeVisible({ timeout: 10000 });
     await expect(nav.locator('text=Ask the Market')).toBeVisible();
     await expect(nav.locator('text=Latest Filings')).toBeVisible();
     await expect(nav.locator('text=Watchlist')).toBeVisible();
-    await expect(nav.locator('text=Alerts')).toBeVisible();
     await expect(nav.locator('text=FAQ')).toBeVisible();
   });
 

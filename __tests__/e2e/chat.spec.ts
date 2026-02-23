@@ -96,7 +96,7 @@ test.describe('Ask the Market page — AI features', () => {
 
   test('AI mode sends query and shows response or auth error', async ({ page }) => {
     // Switch to AI mode
-    await page.locator('button:has-text("AI")').click();
+    await page.getByRole('button', { name: 'AI', exact: true }).click();
 
     const searchInput = page.locator('input[type="text"]').first();
     await searchInput.fill('What are the latest filings?');

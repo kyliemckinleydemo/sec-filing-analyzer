@@ -46,9 +46,9 @@ test.describe('Ask the Market page — merged query + AI', () => {
   });
 
   test('mode toggle buttons are visible (Auto, Screen, AI)', async ({ page }) => {
-    await expect(page.locator('button:has-text("Auto")')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('button:has-text("Screen")')).toBeVisible();
-    await expect(page.locator('button:has-text("AI")')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Auto', exact: true })).toBeVisible({ timeout: 10000 });
+    await expect(page.getByRole('button', { name: 'Screen', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'AI', exact: true })).toBeVisible();
   });
 
   test('stock screening example queries are visible', async ({ page }) => {
@@ -59,7 +59,7 @@ test.describe('Ask the Market page — merged query + AI', () => {
   });
 
   test('AI analysis example queries are visible', async ({ page }) => {
-    await expect(page.locator('text=AI Filing Analysis')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('AI Filing Analysis', { exact: true })).toBeVisible({ timeout: 10000 });
     await expect(page.locator('text=What are AAPL\'s biggest risk factors from recent filings?')).toBeVisible();
   });
 
@@ -122,7 +122,7 @@ test.describe('Ask the Market page — merged query + AI', () => {
   });
 
   test('switching to AI mode changes button label to "Ask AI"', async ({ page }) => {
-    await page.locator('button:has-text("AI")').click();
+    await page.getByRole('button', { name: 'AI', exact: true }).click();
 
     const searchInput = page.locator('input[type="text"]').first();
     await searchInput.fill('test');
