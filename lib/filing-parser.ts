@@ -1,4 +1,31 @@
 /**
+ * @module lib/filing-parser
+ * @description Parses SEC filing HTML documents (10-K, 10-Q, 8-K) to extract structured sections like Risk Factors and Management Discussion & Analysis with intelligent content detection
+ *
+ * PURPOSE:
+ * - Strip HTML markup while preserving document structure and converting entities to clean text
+ * - Locate and extract Item 1A (Risk Factors) and Item 7 (MD&A) from 10-K annual reports using regex patterns
+ * - Extract quarterly MD&A and detect risk factor updates or references to 10-K filings in 10-Q reports
+ * - Parse 8-K current report disclosure items (2.02, 7.01, 9.01) for material events
+ *
+ * EXPORTS:
+ * - FilingParser (class) - Main parser with methods for cleaning HTML and extracting sections by filing type
+ * - filingParser (const) - Singleton instance of FilingParser ready for immediate use
+ * - ParsedFiling (interface) - Shape with riskFactors string, mdaText string, and itemsFound array
+ *
+ * PATTERNS:
+ * - Import singleton: import { filingParser } from '@/lib/filing-parser'
+ * - Call filingParser.parseFiling(htmlString, '10-K') to get ParsedFiling with riskFactors and mdaText
+ * - Use filingParser.getSummary(parsed) to get character counts of extracted sections
+ * - Access parsed.itemsFound array to see which sections were successfully located
+ *
+ * CLAUDE NOTES:
+ * - Implements anti-TOC logic that skips table of contents entries by requiring 200+ chars of narrative text after section headers
+ * - Truncates extracted sections at 30,000 characters (~7,500 tokens) to prevent Claude API token limit errors
+ * - Handles 10-Q risk factor references that say 'unchanged from 10-K' by detecting reference patterns and inserting explanatory text
+ * - Uses cascading regex patterns with multiple variations (capitalization, punctuation) to handle inconsistent SEC filing formats
+ */
+/**
  * SEC Filing HTML Parser
  *
  * Extracts specific sections from SEC filings (10-K, 10-Q, 8-K)

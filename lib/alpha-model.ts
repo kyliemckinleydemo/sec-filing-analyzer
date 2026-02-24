@@ -1,4 +1,33 @@
 /**
+ * @module lib/alpha-model
+ * @description Stepwise+Ridge regression model predicting 30-day market-relative alpha using 8 features from SEC filings, trained on 340 samples with fixed coefficients for deterministic scoring
+ *
+ * PURPOSE:
+ * - Calculate standardized alpha scores by applying Ridge regression weights to 8 features (price momentum, analyst activity, AI sentiment)
+ * - Classify predictions as LONG/SHORT/NEUTRAL with high/medium/low confidence based on training distribution percentiles
+ * - Extract model features from company, filing, and analyst activity data ensuring ratio-based price calculations
+ * - Provide per-feature contribution breakdown showing which signals drive the alpha prediction
+ *
+ * EXPORTS:
+ * - AlphaFeatures (interface) - Shape with 8 numeric features: priceToLow, majorDowngrades, analystUpsidePotential, priceToHigh, concernLevel, marketCap, sentimentScore, upgradesLast30d
+ * - AlphaPrediction (interface) - Shape with rawScore, expectedAlpha, signal (LONG/SHORT/NEUTRAL), confidence level, percentile, featureContributions map, and predicted30dReturn
+ * - predictAlpha (function) - Accepts AlphaFeatures, returns AlphaPrediction with standardized score and classification
+ * - extractAlphaFeatures (function) - Converts company/filing/analystActivity records into AlphaFeatures using ratio calculations and fallback to training means
+ *
+ * PATTERNS:
+ * - Call extractAlphaFeatures({ company, filing, analystActivity }) to build features from database records
+ * - Pass features to predictAlpha(features) which returns signal, confidence, and expectedAlpha percentage
+ * - Check prediction.signal === 'LONG' && prediction.confidence === 'high' for top 10% percentile entries (>90th)
+ * - Use prediction.featureContributions to debug which features pushed score bullish/bearish
+ *
+ * CLAUDE NOTES:
+ * - CRITICAL: priceToHigh and priceToLow MUST be ratios (e.g., 0.88, 1.27), NOT percentages (-12.0, +27.0) — training stats confirm ratio scale with mean=0.8588 and 1.3978
+ * - Model replaces three previous systems: RandomForest (CV R²=-0.067), Logistic Regression baseline, and rule-based engine — this fixed-formula approach prevents overfitting on small dataset
+ * - Uses frozen training statistics (FEATURE_STATS) for z-score normalization — never recalculate these means/stds or model breaks
+ * - Backtested 56.3% directional accuracy overall, 62.5% for high-confidence signals with +7.64pp long-short spread on high-conf subset
+ * - extractAlphaFeatures falls back to training means when data missing (e.g., no analyst target price) to prevent NaN propagation
+ */
+/**
  * Alpha Prediction Model — Stepwise+Ridge (8 features)
  *
  * Predicts 30-day market-relative alpha (stock return minus S&P 500 return).

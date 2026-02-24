@@ -1,3 +1,33 @@
+/**
+ * @module lib/supervisor
+ * @description Monitors cron job health by detecting stuck jobs, missing scheduled runs, and high failure rates, with automatic recovery and email alerting via Resend API
+ *
+ * PURPOSE:
+ * - Detects and marks jobs stuck in 'running' status for over 10 minutes as failed
+ * - Auto-retries stuck jobs by calling their API endpoints with CRON_SECRET authorization
+ * - Alerts when daily-filings-rss hasn't succeeded in 30 hours or update-analyst-data in 48 hours on weekdays
+ * - Sends HTML email alerts via Resend API when critical issues detected or jobs auto-triggered
+ *
+ * DEPENDENCIES:
+ * - ./prisma - Queries cronJobRun table for job status history and updates stuck job records
+ *
+ * EXPORTS:
+ * - SupervisorReport (interface) - Report structure containing timestamp, counts of fixed jobs, missing job flags, triggered job names, alert messages, and action logs
+ * - runSupervisorChecks (function) - Executes health monitoring checks and returns SupervisorReport; accepts autoTriggerMissing boolean to enable automatic job triggering
+ *
+ * PATTERNS:
+ * - Call runSupervisorChecks(true) to enable auto-triggering of missing jobs, or runSupervisorChecks(false) for monitoring only
+ * - Configure RESEND_API_KEY and ALERT_EMAIL environment variables to enable email alerts
+ * - Set CRON_SECRET and VERCEL_URL for automatic job retry functionality
+ * - Check report.alerts array for warning messages and report.actions for recovery actions taken
+ *
+ * CLAUDE NOTES:
+ * - Uses 30-hour buffer for daily jobs and 48-hour buffer for analyst updates to avoid false positives from schedule variations
+ * - Batches all stuck job retry API calls with Promise.all to minimize supervisor execution time
+ * - Only alerts about missing analyst updates on weekdays (Mon-Fri) since job runs weekdays only
+ * - Sends email on supervisor failure itself to prevent silent monitoring failures
+ * - Marks stuck jobs as failed with specific 'Job timed out - auto-fixed by supervisor' error message before retry
+ */
 import { prisma } from './prisma';
 
 export interface SupervisorReport {
@@ -109,13 +139,13 @@ export async function runSupervisorChecks(autoTriggerMissing: boolean = false): 
       report.actions.push(`Fixed ${result.count} stuck jobs`);
       console.log(`[Supervisor] Marked ${result.count} stuck jobs as failed`);
 
-      // Auto-retry stuck jobs
+      // Auto-retry stuck jobs - batch all fetch calls
       const cronSecret = process.env.CRON_SECRET;
       const baseUrl = process.env.VERCEL_URL
         ? `https://${process.env.VERCEL_URL}`
         : 'https://sec-filing-analyzer-indol.vercel.app';
 
-      for (const stuckJob of stuckJobs) {
+      const retryPromises = stuckJobs.map(async (stuckJob) => {
         const jobPath = stuckJob.jobName === 'daily-filings-rss'
           ? '/api/cron/daily-filings-rss'
           : stuckJob.jobName === 'update-analyst-data'
@@ -136,17 +166,41 @@ export async function runSupervisorChecks(autoTriggerMissing: boolean = false): 
 
             if (retryResponse.ok) {
               const result = await retryResponse.json();
-              report.jobsTriggered.push(`${stuckJob.jobName} (retry)`);
-              report.actions.push(`✅ Auto-retried stuck job ${stuckJob.jobName}: ${result.message || 'Success'}`);
-              console.log(`[Supervisor] Successfully retried ${stuckJob.jobName}`);
+              return {
+                success: true,
+                jobName: stuckJob.jobName,
+                message: result.message || 'Success'
+              };
             } else {
               const error = await retryResponse.text();
-              report.actions.push(`❌ Failed to retry ${stuckJob.jobName}: ${error}`);
-              console.error(`[Supervisor] Failed to retry ${stuckJob.jobName}:`, error);
+              return {
+                success: false,
+                jobName: stuckJob.jobName,
+                error
+              };
             }
           } catch (error: any) {
-            report.actions.push(`❌ Error retrying ${stuckJob.jobName}: ${error.message}`);
-            console.error(`[Supervisor] Error retrying ${stuckJob.jobName}:`, error);
+            return {
+              success: false,
+              jobName: stuckJob.jobName,
+              error: error.message
+            };
+          }
+        }
+        return null;
+      });
+
+      const retryResults = await Promise.all(retryPromises);
+
+      for (const result of retryResults) {
+        if (result) {
+          if (result.success) {
+            report.jobsTriggered.push(`${result.jobName} (retry)`);
+            report.actions.push(`✅ Auto-retried stuck job ${result.jobName}: ${result.message}`);
+            console.log(`[Supervisor] Successfully retried ${result.jobName}`);
+          } else {
+            report.actions.push(`❌ Failed to retry ${result.jobName}: ${result.error}`);
+            console.error(`[Supervisor] Failed to retry ${result.jobName}:`, result.error);
           }
         }
       }

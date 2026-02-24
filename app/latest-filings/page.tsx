@@ -1,3 +1,36 @@
+/**
+ * @module app/latest-filings/page
+ * @description Next.js client page component displaying paginated SEC filings with company search, filtering by ticker/filing type, and routing to individual filing analysis
+ *
+ * PURPOSE:
+ * - Fetch and display SEC filings from /api/filings/latest with pagination and filtering
+ * - Provide autocomplete company search via /api/companies/search with 300ms debounce
+ * - Synchronize ticker filter between URL query parameters and component state
+ * - Route users to /filing/[accessionNumber] with filing metadata for AI analysis
+ *
+ * DEPENDENCIES:
+ * - @/components/ui/card - Card container for filing items and suggestion dropdown
+ * - @/components/ui/badge - Badge component for filing type indicators (10-K, 10-Q, 8-K)
+ * - @/components/ui/button - Button components for search, clear, refresh, and navigation actions
+ * - @/components/ui/input - Text input for ticker/company name search with autocomplete
+ * - @/components/CompanySnapshotTooltip - Displays company financial metrics (price, PE, market cap, margins)
+ *
+ * EXPORTS:
+ * - LatestFilingsPage (component) - Suspense-wrapped page component for /latest-filings route
+ *
+ * PATTERNS:
+ * - Initialize ticker filter from searchParams.get('ticker') before fetching to respect URL state
+ * - Call handleAnalyze(filing) to navigate with normalized accession number (adds dashes: XXXXXXXXXX-XX-XXXXXX)
+ * - Use handleSelectTicker(ticker) from autocomplete to update URL via router.push and trigger refetch
+ * - Access filing.companySnapshot for financial metrics passed to CompanySnapshotTooltip
+ *
+ * CLAUDE NOTES:
+ * - Uses isInitialized flag to prevent double-fetching - waits for URL params to load before initial API call
+ * - Normalizes accession numbers by adding dashes (SEC format) before routing to match database entries
+ * - Clears filings array immediately on filter change to prevent showing stale data during loading state
+ * - Debounces autocomplete search by 300ms and closes suggestions 200ms after blur to allow click events
+ * - Passes filing metadata as URL params to /filing/[id] so analyze API can create database records if missing
+ */
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';

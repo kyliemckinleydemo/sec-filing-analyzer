@@ -1,6 +1,38 @@
+/**
+ * @module app/company/[ticker]/filings/page
+ * @description Next.js page component rendering company SEC filings with error handling, pagination, and navigation to individual filing analysis
+ *
+ * PURPOSE:
+ * - Fetch company data and SEC filings from /api/sec/company/{ticker} endpoint with error handling and suggestions
+ * - Display paginated list of filings with form type icons (10-K, 10-Q) and filing metadata
+ * - Navigate to individual filing analysis page when clicking a filing card with normalized accession numbers
+ * - Handle untracked companies by showing similar company suggestions and navigation options
+ *
+ * DEPENDENCIES:
+ * - next/navigation - Provides useParams for ticker URL parameter, useRouter for programmatic navigation to filing details and home
+ * - @/components/ui/card - Card components for filing list items, error states, and info section layout
+ * - @/components/ui/button - Action buttons for navigation, load more pagination, and similar company suggestions
+ *
+ * EXPORTS:
+ * - CompanyPage (component) - Default export rendering company filings page at /company/[ticker]/filings route
+ *
+ * PATTERNS:
+ * - Route mounted at /company/[ticker]/filings - ticker extracted via useParams().ticker
+ * - Click filing card to navigate to /filing/{normalizedAccession}?ticker=X&cik=Y&filingType=Z with query params
+ * - API fetches on mount via useEffect when ticker changes, handles loading/error/success states
+ * - Pagination via displayCount state - initially 10 filings, increment by 10 on 'Load More' click
+ * - Accession number normalization adds dashes: XXXXXXXXXX-XX-XXXXXX format before routing
+ *
+ * CLAUDE NOTES:
+ * - Error response includes suggestions array with similar companies - rendered as clickable navigation buttons
+ * - Filing cards show different emojis based on form type: 📕 for 10-K, 📗 for 10-Q, 📄 for others
+ * - Query params passed to filing detail page preserve context: ticker, cik, filingType, filingDate, filingUrl, companyName
+ * - Prevents event bubbling on SEC.gov external link click using e.stopPropagation() to avoid triggering card navigation
+ * - Uses tracked boolean from API response to determine if company is monitored, shows dedicated error UI if false
+ */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -66,6 +98,33 @@ export default function CompanyPage() {
 
     fetchCompany();
   }, [ticker]);
+
+  // Pre-compute displayed filings to avoid recalculation in the map loop
+  const displayedFilings = useMemo(() => {
+    if (!data) return [];
+    return data.filings.slice(0, displayCount).map((filing) => {
+      // Normalize accession number (add dashes if missing)
+      const normalizedAccession = filing.accessionNumber.includes('-')
+        ? filing.accessionNumber
+        : `${filing.accessionNumber.slice(0, 10)}-${filing.accessionNumber.slice(10, 12)}-${filing.accessionNumber.slice(12)}`;
+
+      // Pre-compute query params
+      const params = new URLSearchParams({
+        ticker: data.company.ticker,
+        cik: data.company.cik,
+        filingType: filing.form,
+        filingDate: filing.filingDate,
+        filingUrl: filing.filingUrl,
+        companyName: data.company.name,
+      });
+
+      return {
+        filing,
+        normalizedAccession,
+        queryString: params.toString(),
+      };
+    });
+  }, [data, displayCount]);
 
   if (loading) {
     return (
@@ -153,26 +212,12 @@ export default function CompanyPage() {
           <h2 className="text-2xl font-bold">Recent SEC Filings</h2>
 
           <div className="grid gap-4">
-            {data.filings.slice(0, displayCount).map((filing) => (
+            {displayedFilings.map(({ filing, normalizedAccession, queryString }) => (
               <Card
                 key={filing.accessionNumber}
                 className="hover:shadow-lg transition-shadow cursor-pointer"
                 onClick={() => {
-                  // Normalize accession number (add dashes if missing)
-                  const normalizedAccession = filing.accessionNumber.includes('-')
-                    ? filing.accessionNumber
-                    : `${filing.accessionNumber.slice(0, 10)}-${filing.accessionNumber.slice(10, 12)}-${filing.accessionNumber.slice(12)}`;
-
-                  // Pass filing metadata as query params
-                  const params = new URLSearchParams({
-                    ticker: data!.company.ticker,
-                    cik: data!.company.cik,
-                    filingType: filing.form,
-                    filingDate: filing.filingDate,
-                    filingUrl: filing.filingUrl,
-                    companyName: data!.company.name,
-                  });
-                  router.push(`/filing/${normalizedAccession}?${params.toString()}`);
+                  router.push(`/filing/${normalizedAccession}?${queryString}`);
                 }}
               >
                 <CardHeader>

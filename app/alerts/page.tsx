@@ -1,3 +1,38 @@
+/**
+ * @module app/alerts/page
+ * @description Next.js client component page rendering user alert configuration interface with real-time CRUD operations for notification preferences
+ *
+ * PURPOSE:
+ * - Fetch and display user's configured alert subscriptions from /api/alerts endpoint on mount
+ * - Create new alert configurations with POST requests including alert type, enabled status, and frequency
+ * - Update existing alerts via PATCH requests for enabling/disabling, frequency changes, delivery times, and threshold values
+ * - Delete alert configurations with DELETE requests to /api/alerts endpoint
+ * - Redirect unauthenticated users (401 responses) to home page
+ *
+ * DEPENDENCIES:
+ * - next/navigation - Provides useRouter for programmatic navigation to /profile and authentication redirect
+ * - @/components/ui/button - Renders action buttons for add, enable/disable, delete operations
+ * - @/components/ui/card - Structures alert list and configuration panels with header/content layout
+ * - @/components/ui/badge - Displays alert status (Enabled/Disabled) with color-coded styling
+ * - @/components/ui/input - Provides numeric inputs for threshold values like concern level and predicted return
+ *
+ * EXPORTS:
+ * - AlertsPage (component) - Full-page interface for managing alert configurations with add, edit, toggle, and delete operations
+ *
+ * PATTERNS:
+ * - Mount component to trigger useEffect which calls fetchAlerts() to load initial data
+ * - Use handleAddAlert() with newAlertType state to create alerts via POST to /api/alerts
+ * - Call handleToggleAlert(alert) to flip enabled status and refresh list
+ * - Use handleUpdateFrequency(alert, 'daily_digest') or handleUpdateDeliveryTime(alert, 'morning') to modify settings
+ * - Pass alert and field name to handleUpdateThreshold(alert, 'minConcernLevel', 5) for numeric thresholds
+ *
+ * CLAUDE NOTES:
+ * - Uses optimistic UI pattern - buttons disable immediately during operations, then fetchAlerts() refreshes entire list
+ * - All update handlers call fetchAlerts() after each mutation instead of local state updates for server-as-truth
+ * - ALERT_TYPES constant provides metadata for 4 alert categories but doesn't restrict what backend accepts
+ * - Delivery time feature shows ET timezone-specific scheduling (8:00am/6:00pm) hardcoded in UI labels
+ * - Loading state shows centered spinner during initial fetch but no loading states during subsequent CRUD operations
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

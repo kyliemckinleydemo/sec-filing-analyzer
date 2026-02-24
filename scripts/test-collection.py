@@ -53,14 +53,44 @@ def calc_return(ticker, filing_date):
         pass
     return None
 
+def calc_returns_batch(ticker, filing_dates):
+    """Calculate returns for multiple filing dates in batch"""
+    if not filing_dates:
+        return {}
+    
+    try:
+        dt_min = min(datetime.fromisoformat(d) for d in filing_dates)
+        dt_max = max(datetime.fromisoformat(d) for d in filing_dates) + timedelta(days=14)
+        
+        stock = yf.Ticker(ticker)
+        hist = stock.history(start=dt_min, end=dt_max)
+        
+        returns = {}
+        for filing_date in filing_dates:
+            dt = datetime.fromisoformat(filing_date)
+            end_dt = dt + timedelta(days=14)
+            
+            filing_hist = hist[(hist.index >= dt) & (hist.index <= end_dt)]
+            if len(filing_hist) >= 2:
+                returns[filing_date] = ((filing_hist['Close'].iloc[min(7, len(filing_hist)-1)] - filing_hist['Close'].iloc[0]) / filing_hist['Close'].iloc[0]) * 100
+            else:
+                returns[filing_date] = None
+        
+        return returns
+    except:
+        return {date: None for date in filing_dates}
+
 all_filings = []
 for ticker in TICKERS:
     print(f"[{ticker}] Fetching...", file=sys.stderr)
     cik = CIK_MAP[ticker]
     filings = fetch_filings(ticker, cik)
 
+    filing_dates = [filing["filingDate"] for filing in filings]
+    returns = calc_returns_batch(ticker, filing_dates)
+    
     for filing in filings:
-        filing["actual7dReturn"] = calc_return(ticker, filing["filingDate"])
+        filing["actual7dReturn"] = returns.get(filing["filingDate"])
         if filing["actual7dReturn"]:
             print(f"[{ticker}] {filing['filingType']} {filing['filingDate']}: {filing['actual7dReturn']:.2f}%", file=sys.stderr)
 

@@ -1,3 +1,31 @@
+/**
+ * @module app/global-error
+ * @description Next.js global error boundary component that catches unhandled errors throughout the entire application and displays a styled error UI with recovery options
+ *
+ * PURPOSE:
+ * - Catch and display all unhandled errors that bubble up to the root level of the Next.js application
+ * - Log error details to console including error message and optional digest for debugging
+ * - Provide user-facing error recovery through 'Try again' reset button and 'Go home' navigation
+ * - Render self-contained HTML with inline styles to ensure error UI displays even when CSS fails to load
+ *
+ * DEPENDENCIES:
+ * - react - Provides useEffect hook for error logging side effect on component mount
+ *
+ * EXPORTS:
+ * - GlobalError (component) - Next.js global error boundary that renders full HTML page with error message, recovery buttons, and inline dark-themed styling
+ *
+ * PATTERNS:
+ * - Place in app/ directory as global-error.tsx to catch errors in root layout and entire app
+ * - Next.js automatically passes error object with message and optional digest, plus reset() callback
+ * - Component must be client-side ('use client') and render complete <html> and <body> tags
+ * - Use reset() prop to attempt error recovery, or window.location.href for hard navigation
+ *
+ * CLAUDE NOTES:
+ * - Renders complete HTML/body tags because global errors may occur before root layout renders, requiring self-contained page structure
+ * - Uses inline styles instead of CSS classes to ensure styling works even if stylesheets fail to load during error state
+ * - Error digest property is optional and typically provided by Next.js for server-side error tracking and correlation
+ * - Gradient button styling matches application theme (green-to-cyan) while maintaining accessibility in error state
+ */
 'use client';
 
 import { useEffect } from 'react';

@@ -1,4 +1,28 @@
 /**
+ * @module lib/top1000-tickers
+ * @description Exports a curated array of 1,000 US stock ticker symbols organized by market capitalization tiers from mega-cap to small-cap companies
+ *
+ * PURPOSE:
+ * - Provide standardized list of top 1,000 US companies based on Russell 1000 Index components as of October 2025
+ * - Enable stock screening, filtering, and validation against major US equities
+ * - Organize tickers hierarchically from mega-caps (AAPL, MSFT) through large, mid, and small-cap companies
+ *
+ * EXPORTS:
+ * - TOP_1000_TICKERS (const) - Array of 1,000 string ticker symbols ordered by approximate market cap descending
+ *
+ * PATTERNS:
+ * - Import with 'import { TOP_1000_TICKERS } from "@/lib/top1000-tickers"'
+ * - Use TOP_1000_TICKERS.includes(ticker) to validate if ticker is in top 1000
+ * - Filter by market cap tier using array slicing: TOP_1000_TICKERS.slice(0, 50) for mega-caps, slice(50, 200) for large-caps
+ * - Access directly by index where lower indices represent larger market cap companies
+ *
+ * CLAUDE NOTES:
+ * - Array contains some duplicate tickers (BALL appears at indices 265 and 324, multiple utility tickers repeated in 801-1000 range)
+ * - Market cap tiers are commented but not programmatically enforced - slice boundaries at indices 50, 200, 400, 600, 800 define tier transitions
+ * - Static data snapshot from October 2025 - requires manual updates to reflect market cap changes, delistings, or index rebalancing
+ * - Includes special ticker formats like BRK.B (Berkshire Hathaway Class B) with dot notation rather than hyphen
+ */
+/**
  * Top 1,000 US Companies by Market Cap
  * Based on Russell 1000 Index components
  * Updated: October 2025

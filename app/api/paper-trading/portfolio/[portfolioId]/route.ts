@@ -1,3 +1,35 @@
+/**
+ * @module app/api/paper-trading/portfolio/[portfolioId]/route
+ * @description Next.js API route handler that retrieves comprehensive paper trading portfolio data including summary, positions, historical snapshots, and performance statistics
+ *
+ * PURPOSE:
+ * - Fetch portfolio summary using PaperTradingEngine for given portfolioId
+ * - Query last 90 days of portfolio snapshots from database for charting historical performance
+ * - Retrieve all closed trades and calculate detailed performance metrics including win rate, profit factor, and model accuracy
+ * - Return unified response with portfolio state, open positions, recent trades, snapshots, and statistical analysis
+ *
+ * DEPENDENCIES:
+ * - @/lib/paper-trading - Provides PaperTradingEngine class for portfolio summary computation and position valuation
+ * - @/lib/prisma - Database client for querying portfolioSnapshot and paperTrade records with filtering and ordering
+ *
+ * EXPORTS:
+ * - dynamic (const) - Next.js config set to 'force-dynamic' to disable route caching and ensure fresh data
+ * - GET (function) - Async handler returning portfolio summary, positions, trades, 90-day snapshots, and calculated stats or 404/500 errors
+ * - calculatePortfolioStats (function) - Computes trading statistics from closed trades including win rate, profit factor, best/worst trades, average hold days, and ML model prediction accuracy
+ *
+ * PATTERNS:
+ * - Call GET /api/paper-trading/portfolio/[portfolioId] to receive JSON with portfolio, openPositions, recentTrades, snapshots, and stats fields
+ * - Use snapshots array (90 records) for rendering portfolio value charts over time
+ * - Access stats.winRate for percentage, stats.profitFactor for gross profit/loss ratio, and stats.modelAccuracy for ML prediction correctness
+ * - Handle 404 response when portfolioId doesn't exist or 500 for database/calculation errors
+ *
+ * CLAUDE NOTES:
+ * - Forces dynamic rendering to prevent stale portfolio data in production builds
+ * - Model accuracy calculation checks if predicted and actual returns have matching sign (both positive or both negative)
+ * - Returns zero-filled stats object when portfolio has no closed trades yet to prevent division errors
+ * - Profit factor is total wins divided by absolute total losses, common trading performance metric where >1 indicates profitability
+ * - Average hold days calculated by summing millisecond differences between exit and entry dates then converting to days
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { PaperTradingEngine } from '@/lib/paper-trading';
 import { prisma } from '@/lib/prisma';

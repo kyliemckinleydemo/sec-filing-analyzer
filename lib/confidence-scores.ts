@@ -1,4 +1,36 @@
 /**
+ * @module lib/confidence-scores
+ * @description Provides historical prediction accuracy scores for stock tickers based on 278 backtested filings from 2022-2025, enabling confidence-adjusted predictions and tier-based UI indicators.
+ *
+ * PURPOSE:
+ * - Maps 20 stock tickers to historical accuracy percentages, sample sizes, and reliability tiers (high/medium/low) from backtest data
+ * - Adjusts prediction confidence scores by comparing ticker accuracy against model average (56.8%) and applying delta-based modifications
+ * - Calculates confidence statistics including tier distribution, average accuracy, and best/worst performing tickers
+ * - Provides Tailwind CSS color classes (green/yellow/red) for confidence badge rendering based on tier
+ *
+ * EXPORTS:
+ * - TickerConfidence (interface) - Shape with ticker symbol, accuracy percentage, sampleSize, tier classification, and human-readable reliability description
+ * - TICKER_CONFIDENCE_MAP (const) - Record mapping 20 ticker symbols to their historical performance metrics from Python backtest
+ * - getTickerConfidence (function) - Returns TickerConfidence for given ticker, falling back to 56.8% model average for unknown symbols
+ * - getConfidenceBadgeColor (function) - Maps tier to Tailwind class: 'bg-green-500' (high), 'bg-yellow-500' (medium), 'bg-red-500' (low)
+ * - getConfidenceTier (function) - Classifies accuracy percentage into 'high' (≥70%), 'medium' (≥55%), or 'low' (<55%)
+ * - adjustPredictionConfidence (function) - Modifies confidence score by accuracy delta from model average, clamping between 0.1-0.95, returns adjusted values with explanation
+ * - getTickersByConfidence (function) - Returns all tickers sorted descending by accuracy percentage
+ * - getConfidenceStats (function) - Aggregates distribution counts, average accuracy, and best/worst performers across all tracked tickers
+ *
+ * PATTERNS:
+ * - Call getTickerConfidence('AAPL') to retrieve { accuracy: 60.0, tier: 'medium', reliability: '...' } for display
+ * - Use getConfidenceBadgeColor(tickerConf.tier) in className props for consistent color-coded badges
+ * - Invoke adjustPredictionConfidence(0.65, 0.72, 'NVDA') before showing predictions to account for ticker-specific reliability (NVDA reduces confidence due to 46.7% accuracy)
+ * - Access TICKER_CONFIDENCE_MAP directly for known tickers like TICKER_CONFIDENCE_MAP['HD'] which has 80% accuracy over 15 samples
+ *
+ * CLAUDE NOTES:
+ * - Accuracy data sourced from scripts/backtest-with-real-data.py covering 278 actual filings across 2022-2025 period
+ * - Unknown tickers default to 56.8% accuracy (dataset average) rather than failing, ensuring graceful degradation
+ * - adjustPredictionConfidence applies accuracy delta as percentage adjustment (e.g., HD at 80% gets +23.2% confidence boost from 56.8% baseline) but clamps final confidence between 10-95%
+ * - Tier thresholds create three clear buckets: high confidence (HD, JPM, AMD ≥70%), medium (AAPL, MSFT, WMT 55-70%), low (NVDA, INTC <55%) for user-facing reliability signals
+ */
+/**
  * Ticker Confidence Scores
  *
  * Based on historical backtest accuracy (278 filings, 2022-2025)

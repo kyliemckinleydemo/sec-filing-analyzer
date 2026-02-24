@@ -1,3 +1,34 @@
+/**
+ * @module app/api/cron/watchlist-alerts/route
+ * @description Cron endpoint that sends scheduled email alerts (morning/evening) to users about new SEC filings and analyst activity matching their watchlist preferences
+ *
+ * PURPOSE:
+ * - Verify cron authentication via Bearer token from CRON_SECRET environment variable
+ * - Query Prisma for recent filings (10-K/10-Q/8-K) and analyst activity within 14-hour morning or 10-hour evening time windows
+ * - Match filings against each user's watchlist tickers, sector preferences, and alert configuration (concern level, predicted return thresholds)
+ * - Send batched HTML emails via Resend containing grouped notifications for new filings, predictions, and analyst changes
+ *
+ * DEPENDENCIES:
+ * - @/lib/prisma - Provides prisma client for querying User, Filing, AnalystActivity tables with watchlist and alert joins
+ * - next/server - Provides NextRequest/NextResponse for route handler and authorization header access
+ * - resend - Email delivery service initialized with RESEND_API_KEY for sending HTML alert emails
+ *
+ * EXPORTS:
+ * - POST (function) - Processes watchlist alerts for time parameter (morning/evening), returns JSON with stats for emails sent, filings found, and processing duration
+ *
+ * PATTERNS:
+ * - Call via authenticated POST to /api/cron/watchlist-alerts?time=morning or ?time=evening with Authorization: Bearer {CRON_SECRET} header
+ * - Morning window calculates 14 hours back (6pm yesterday to 8am today); evening window calculates 10 hours back (8am to 6pm today)
+ * - Each user's alerts are deduplicated by accessionNumber to prevent duplicate filings when ticker appears in both watchlist and sector watchlist
+ * - Use NEXT_PUBLIC_BASE_URL or VERCEL_URL environment variables for generating filing detail links in email templates
+ *
+ * CLAUDE NOTES:
+ * - Uses Set<string> to track addedFilingIds preventing duplicate filings when same ticker matches both individual watchlist and sector watchlist alerts
+ * - Morning/evening delivery time logic supports 'both' value allowing users to receive alerts at both 8am and 6pm daily
+ * - Filters filings by concern level and predicted return thresholds from alert configuration before adding to notifications array
+ * - Returns detailed stats object with filings count, analyst activities, users processed, emails sent, errors, and duration for monitoring cron job health
+ * - Email HTML uses inline styles for compatibility with email clients and includes color-coded concern badges using getConcernColor helper function
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Resend } from 'resend';

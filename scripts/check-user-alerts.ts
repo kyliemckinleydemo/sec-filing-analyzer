@@ -1,3 +1,26 @@
+/**
+ * @module check-user-alerts
+ * @description Diagnostic utility for verifying user alert configuration and watchlist setup
+ * 
+ * PURPOSE:
+ * - Validates user account existence and configuration
+ * - Checks alert settings (types, frequency, delivery preferences)
+ * - Displays watchlist companies
+ * - Identifies recent filings for watched companies
+ * - Provides actionable setup instructions when configuration is incomplete
+ * 
+ * EXPORTS:
+ * - None (executable script)
+ * 
+ * CLAUDE NOTES:
+ * - Hardcoded email address for specific user lookup
+ * - Uses 14-hour window for recent filing detection
+ * - Requires active database connection via Prisma
+ * - Output includes helpful setup instructions for missing configuration
+ * - Disconnects from database after execution
+ * - Intended for development/debugging purposes
+ */
+
 import { prisma } from '../lib/prisma';
 
 async function checkUserAlerts() {

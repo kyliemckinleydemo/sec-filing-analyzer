@@ -1,4 +1,34 @@
 /**
+ * @module lib/market-momentum
+ * @description Python yfinance integration that calculates SPY 30-day market returns and volatility metrics preceding a given filing date
+ *
+ * PURPOSE:
+ * - Execute Python script to fetch SPY (S&P 500 ETF) historical data from yfinance
+ * - Calculate 30-day returns, annualized volatility, and market regime classification for filing dates
+ * - Determine flight-to-quality conditions based on market volatility thresholds
+ * - Provide market context for analyzing filing behavior during different market conditions
+ *
+ * DEPENDENCIES:
+ * - child_process - Spawns Python subprocess to execute yfinance data fetching script
+ * - util - Promisifies exec for async/await pattern instead of callbacks
+ * - path - Resolves absolute path to fetch-market-momentum.py in scripts directory
+ *
+ * EXPORTS:
+ * - MarketMomentumData (interface) - Shape with success flag, SPY 30d return percentage, volatility, regime classification (bull/flat/bear), and flight-to-quality boolean
+ * - marketMomentumClient (const) - Singleton instance exposing fetchMomentum method for retrieving market data
+ *
+ * PATTERNS:
+ * - Import marketMomentumClient and call await marketMomentumClient.fetchMomentum(new Date('2024-01-15'))
+ * - Check returned data.success before using data.marketMomentum to handle Python script failures
+ * - Pass filing date as Date object; method converts to YYYY-MM-DD format for Python script
+ *
+ * CLAUDE NOTES:
+ * - Depends on external Python script at scripts/fetch-market-momentum.py - will fail if script missing or python3 not installed
+ * - 30-second timeout prevents hanging on slow network or yfinance API issues
+ * - Ignores stderr containing '[*********************100%]' because yfinance prints progress bars to stderr
+ * - Returns null on any error rather than throwing, requiring callers to handle missing data gracefully
+ */
+/**
  * Market Momentum integration via Python yfinance library
  * Fetches SPY 30-day return prior to filing date
  */

@@ -1,3 +1,28 @@
+/**
+ * @module backfill-company-enrichment
+ * @description Backfill script to enrich Company table with financial metrics from Yahoo Finance API and XBRL filing data
+ * 
+ * PURPOSE:
+ * - Populates Company records with market data (dividend yield, beta, volume, analyst ratings) from Yahoo Finance
+ * - Extracts latest financial fundamentals (revenue, net income, EPS, margins) from most recent 10-Q/10-K filings
+ * - Enables rich natural language queries like "Show companies with dividend yield > 3%" or "Find companies with revenue growth > 20%"
+ * - Provides a one-time or periodic enrichment process to sync external market data with internal company records
+ * 
+ * EXPORTS:
+ * - backfillCompanyEnrichment: Async function that processes all companies and updates their enrichment data
+ * 
+ * CLAUDE NOTES:
+ * - Script uses batched filing fetch to optimize database queries (fetches all filings once, creates map by companyId)
+ * - Implements 200ms rate limiting between Yahoo Finance API requests to avoid throttling
+ * - Dividend yield converted from percentage (0.4%) to decimal (0.004) for storage
+ * - Analyst rating calculated as weighted average: Buy=1, Hold=3, Sell=5 on 1-5 scale
+ * - XBRL data extracted from analysisData.financialMetrics.structuredData with percentage parsing helper
+ * - Quarter label auto-calculated from filing reportDate (e.g., "Q1 2024")
+ * - Comprehensive error handling with detailed progress logging and summary statistics
+ * - Volume fields stored as BigInt to handle large trading volumes
+ * - Gracefully handles missing data (null values) for both Yahoo Finance and XBRL sources
+ */
+
 import { prisma } from '../lib/prisma';
 import { yahooFinanceClient } from '../lib/yahoo-finance-client';
 
@@ -26,6 +51,30 @@ async function backfillCompanyEnrichment() {
 
   console.log(`Found ${companies.length} companies to process\n`);
 
+  // Batch fetch all latest filings for all companies
+  const latestFilings = await prisma.filing.findMany({
+    where: {
+      companyId: { in: companies.map(c => c.id) },
+      filingType: { in: ['10-Q', '10-K'] },
+      analysisData: { not: null }
+    },
+    select: {
+      companyId: true,
+      analysisData: true,
+      reportDate: true,
+      filingDate: true
+    },
+    orderBy: { filingDate: 'desc' }
+  });
+
+  // Create a map of companyId -> latest filing
+  const latestFilingMap = new Map();
+  for (const filing of latestFilings) {
+    if (!latestFilingMap.has(filing.companyId)) {
+      latestFilingMap.set(filing.companyId, filing);
+    }
+  }
+
   let processed = 0;
   let yahooSuccess = 0;
   let financialsSuccess = 0;
@@ -41,20 +90,8 @@ async function backfillCompanyEnrichment() {
       // 1. Fetch Yahoo Finance data
       const financials = await yahooFinanceClient.getCompanyFinancials(company.ticker);
 
-      // 2. Get most recent 10-Q or 10-K filing with XBRL data
-      // (8-K filings don't have financial statements)
-      const latestFiling = await prisma.filing.findFirst({
-        where: {
-          companyId: company.id,
-          filingType: { in: ['10-Q', '10-K'] },
-          analysisData: { not: null }
-        },
-        orderBy: { filingDate: 'desc' },
-        select: {
-          analysisData: true,
-          reportDate: true
-        }
-      });
+      // 2. Get most recent 10-Q or 10-K filing with XBRL data from pre-fetched map
+      const latestFiling = latestFilingMap.get(company.id);
 
       // Parse XBRL data from latest filing
       // XBRL data is nested in analysisData.financialMetrics.structuredData

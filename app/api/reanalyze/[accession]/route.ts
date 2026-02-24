@@ -1,3 +1,33 @@
+/**
+ * @module app/api/reanalyze/[accession]/route
+ * @description API route handler that clears cached AI analysis data and predictions for a specific SEC filing by accession number, forcing fresh analysis on next view
+ *
+ * PURPOSE:
+ * - Validates user authentication and available AI quota before allowing re-analysis
+ * - Normalizes accession number format from XXXXXXXXXX-XX-XXXXXX or continuous string to hyphenated format
+ * - Clears all analysis fields (analysisData, sentimentScore, riskScore, concernLevel, predictions) from database
+ * - Deletes associated prediction records to ensure complete reset of filing analysis state
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextRequest and NextResponse for API route handling
+ * - @/lib/prisma - Database client for querying and updating Filing and Prediction records
+ * - @/lib/api-middleware - Provides requireAuthAndAIQuota middleware to enforce auth and AI usage limits
+ *
+ * EXPORTS:
+ * - POST (function) - Clears analysis data for filing matching accession parameter and returns success confirmation with filing metadata
+ *
+ * PATTERNS:
+ * - POST to /api/reanalyze/[accession] with authenticated request header
+ * - Returns 401/403 if auth fails or AI quota exceeded, 404 if filing not found, 500 on database errors
+ * - Success response includes ticker, filingType, and normalized accessionNumber for UI confirmation
+ * - Accession can be passed with or without hyphens - both formats are supported and normalized
+ *
+ * CLAUDE NOTES:
+ * - Re-analysis consumes AI quota even though it only clears data - actual AI processing happens on subsequent filing view
+ * - Accession normalization assumes format XXXXXXXXXX-XX-XXXXXX (10 digits, 2 digits, remaining digits)
+ * - Deletes prediction records separately via cascade-style manual deletion rather than database cascade
+ * - Console logs indicate this is meant for admin/debug use - UI should refresh after clearing to trigger new analysis
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuthAndAIQuota } from '@/lib/api-middleware';

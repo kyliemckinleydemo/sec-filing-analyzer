@@ -1,3 +1,44 @@
+/**
+ * @module app/company/[ticker]/page
+ * @description Next.js client page component that fetches and displays a comprehensive company stock snapshot with live market data, price charts, analyst ratings, SEC filings, and news
+ *
+ * PURPOSE:
+ * - Fetches company snapshot data from /api/company/[ticker]/snapshot endpoint on mount
+ * - Renders live market metrics including current price, market cap, P/E ratio, 52-week range, and volume
+ * - Displays dual-axis price chart comparing stock performance against S&P 500 with filing markers
+ * - Shows analyst rating distribution bar chart with buy/hold/sell recommendations breakdown
+ * - Lists recent SEC filings with concern levels and predicted 7-day returns from ML model
+ * - Presents analyst activity timeline with upgrades/downgrades and target price changes
+ * - Renders latest news articles with thumbnails and publication timestamps
+ *
+ * DEPENDENCIES:
+ * - next/navigation - Provides useParams for ticker route parameter and useRouter for programmatic navigation
+ * - @/components/ui/card - Shadcn card components for consistent layout containers
+ * - @/components/ui/button - Shadcn button component for navigation and actions
+ * - @/components/ui/badge - Shadcn badge component for visual tags and labels
+ * - recharts - Chart library for rendering LineChart (price history) and AreaChart (analyst ratings) visualizations
+ *
+ * EXPORTS:
+ * - CompanySnapshotPage (default component) - Full-page company overview rendering market data, charts, filings, and news with loading/error states
+ *
+ * PATTERNS:
+ * - Access at /company/[ticker] route where ticker is stock symbol (e.g., /company/AAPL)
+ * - Component fetches data on mount via useEffect triggered by ticker parameter change
+ * - Click 'Chat with AI' button to navigate to /chat?ticker=[ticker] for interactive analysis
+ * - Click 'Back' button or company in filings table to navigate between company pages
+ * - Displays loading spinner with company ticker during initial data fetch
+ * - Shows error card with navigation options if ticker not found or API fails
+ *
+ * CLAUDE NOTES:
+ * - Implements dual-axis chart showing stock price against S&P 500 baseline with ReferenceDot markers for SEC filing dates
+ * - Uses color-coded concern levels (red/yellow/green badges) on filings based on ML model predictions
+ * - Calculates analyst upside percentage by comparing current price to mean analyst target price
+ * - Displays 52-week range as both text and visual progress bar showing current price position
+ * - Formats large numbers dynamically using B/M/K suffixes (e.g., $2.5T, $150M) for readability
+ * - Price change shown as absolute dollar amount plus percentage with color coding (green positive, red negative)
+ * - Analyst activity shows target price movements with arrow indicators and color-coded action types
+ * - News articles rendered with optional thumbnail images and relative timestamps
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

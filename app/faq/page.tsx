@@ -1,3 +1,34 @@
+/**
+ * @module app/faq/page
+ * @description Next.js page component rendering an interactive FAQ about SEC filing analysis, covering the ML prediction model, data sources, accuracy metrics, and usage patterns
+ *
+ * PURPOSE:
+ * - Display comprehensive FAQ covering model methodology, analyst opinion tracking, backtesting results, and data source limitations
+ * - Organize questions into 5 categories: Purpose & Overview, The Model, Variables & Features, Backtesting & Accuracy, and Data & Coverage
+ * - Provide detailed explanations of RandomForest ML model using 40+ features with 80% directional accuracy
+ * - Document key findings including analyst upgrades as most predictive feature and mega-cap muted reactions
+ *
+ * DEPENDENCIES:
+ * - @/components/ui/button - Provides Button component for navigation actions in page header
+ * - @/components/ui/card - Provides Card, CardContent, CardDescription, CardHeader, CardTitle for structuring FAQ content sections
+ * - next/navigation - Provides useRouter hook for programmatic navigation between app pages
+ *
+ * EXPORTS:
+ * - FAQPage (component) - Default export rendering FAQ page with 20+ questions across 5 categories explaining SEC filing analysis methodology
+ *
+ * PATTERNS:
+ * - Access at /faq route to view comprehensive documentation of prediction model and methodology
+ * - FAQ data structured as array of category objects, each containing questions array with q/a properties
+ * - Use router.push() or router.back() for navigation (router hook initialized but navigation handlers not yet implemented)
+ * - Card components wrap each category section with CardHeader for category title and CardContent for Q&A pairs
+ *
+ * CLAUDE NOTES:
+ * - Reveals RandomForest ML model uses analyst opinion changes (30 days pre-filing) as single most important feature achieving 80% accuracy
+ * - Documents critical data source limitations including SEC EDGAR XBRL tagging errors, Yahoo Finance 15-20 minute delays, and no independent verification
+ * - Mega-cap companies (>$500B) show 30% less price movement post-filing due to institutional ownership and liquidity differences
+ * - Model trained on 2+ years of historical data from 640+ companies (S&P 500 + high-volume stocks) with out-of-sample validation
+ * - 7-day prediction window chosen based on research showing market reactions typically occur within 3-10 trading days post-filing
+ */
 'use client';
 
 import { Button } from '@/components/ui/button';

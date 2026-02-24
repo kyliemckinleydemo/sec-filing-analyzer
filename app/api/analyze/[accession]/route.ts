@@ -1,3 +1,40 @@
+/**
+ * @module app/api/analyze/[accession]/route
+ * @description API route handling SEC filing analysis by fetching filing data, extracting sections, running Claude AI analysis, and storing results with ML predictions
+ *
+ * PURPOSE:
+ * - Authenticates requests and validates AI quota limits (100 analyses per day)
+ * - Fetches SEC filing data from database or creates new filing records with normalized accession numbers
+ * - Extracts risk factors and MD&A sections from XBRL/HTML filing content with sequential rate-limited requests
+ * - Runs Claude AI analysis to generate risk scores, sentiment analysis, and trading predictions
+ * - Calculates alpha predictions using ML model with extracted financial features and stores analysis in database
+ *
+ * DEPENDENCIES:
+ * - @/lib/prisma - Database client for querying and storing filing records with analysis results
+ * - @/lib/claude-client - AI client for analyzing filing text and generating risk/sentiment scores
+ * - @/lib/sec-client - Fetches structured company facts from SEC Submissions API
+ * - @/lib/filing-parser - Parses filing HTML to extract risk factors and MD&A sections
+ * - @/lib/xbrl-parser - Extracts financial metrics from XBRL structured data
+ * - @/lib/yahoo-finance - Fetches current stock price for return calculations
+ * - @/lib/alpha-model - ML model providing predictAlpha() and extractAlphaFeatures() for 30-day return predictions
+ * - @/lib/api-middleware - Provides requireAuthAndAIQuota() for authentication and rate limiting
+ *
+ * EXPORTS:
+ * - GET (function) - Analyzes SEC filing by accession number with optional query params (ticker, cik, filingType, filingDate, filingUrl, companyName) for creating new filings
+ *
+ * PATTERNS:
+ * - Call GET /api/analyze/[accession] with Authorization header; optionally include ?ticker=AAPL&cik=0000320193&filingType=10-K&filingDate=2023-10-27&filingUrl=https://...&companyName=Apple for new filings
+ * - Returns cached analysis if filing.analysisData exists in database; otherwise regenerates analysis
+ * - Implements sequential fetching with 200ms delays between SEC API calls to avoid 429 rate limit errors
+ * - Stores prediction with signal (LONG/SHORT/NEUTRAL), confidence (high/medium/low), and expectedAlpha in database
+ *
+ * CLAUDE NOTES:
+ * - Disabled caching at route level - always regenerates analysis for fresh results despite database check
+ * - Normalizes accession numbers from 0000320193231234 to 0000320193-23-1234 format automatically
+ * - Fetches prior filing of same type for comparison analysis but proceeds without it if not found
+ * - Uses 10-second timeout for filing HTML fetch and falls back to XBRL-only analysis on 429/403/timeout errors
+ * - Returns both new prediction format (predicted30dAlpha) and legacy mlPrediction format for backward compatibility
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { claudeClient } from '@/lib/claude-client';
@@ -10,6 +47,7 @@ import { financialDataClient } from '@/lib/yahoo-finance';
 import { yahooFinancePythonClient } from '@/lib/yahoo-finance-python';
 import { predictAlpha, extractAlphaFeatures } from '@/lib/alpha-model';
 import { requireAuthAndAIQuota } from '@/lib/api-middleware';
+import { extractCompanyFinancials } from '@/lib/company-financials';
 
 /**
  * Analyze a specific SEC filing using Claude AI
@@ -1014,6 +1052,41 @@ Note: Base analysis on general knowledge. Do not mention data access limitations
           predicted7dReturn: alphaPrediction ? alphaPrediction.predicted30dReturn * (7 / 30) : undefined,
         },
       });
+
+      // Update Company model with latest financial metrics if this is a 10-Q/10-K
+      if (['10-Q', '10-K'].includes(filing.filingType) && analysis.financialMetrics?.structuredData) {
+        try {
+          // Only update if this is the most recent financial filing for the company
+          const newerFiling = await prisma.filing.findFirst({
+            where: {
+              companyId: filing.companyId,
+              filingType: { in: ['10-Q', '10-K'] },
+              filingDate: { gt: filing.filingDate },
+              analysisData: { not: null },
+            },
+          });
+
+          if (!newerFiling) {
+            const companyUpdate = extractCompanyFinancials(
+              JSON.stringify(analysis),
+              filing.filingType,
+              filing.filingDate,
+              filing.reportDate
+            );
+
+            if (companyUpdate) {
+              await prisma.company.update({
+                where: { id: filing.companyId },
+                data: companyUpdate,
+              });
+              console.log(`[Company Financials] Updated ${filing.company.ticker} with latest financial metrics`);
+            }
+          }
+        } catch (companyUpdateError: any) {
+          // Non-fatal — don't fail the analysis if Company update fails
+          console.error(`[Company Financials] Error updating company: ${companyUpdateError.message}`);
+        }
+      }
 
       // Store prediction record with feature breakdown
       if (alphaPrediction) {

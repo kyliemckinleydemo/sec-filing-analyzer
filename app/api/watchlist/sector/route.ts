@@ -1,3 +1,34 @@
+/**
+ * @module app/api/watchlist/sector/route
+ * @description Next.js API route handlers for managing user sector watchlist with add, retrieve valid sectors list, and remove operations
+ *
+ * PURPOSE:
+ * - Validate sector names against 11 predefined industry categories (Technology, Healthcare, Energy, etc.)
+ * - Add sectors to user watchlist via POST using upsert to prevent duplicates
+ * - Return complete list of valid sector names via GET for client-side validation
+ * - Remove sectors from user watchlist via DELETE using sector query parameter
+ *
+ * DEPENDENCIES:
+ * - @/lib/auth - Provides getSession() to extract userId from JWT for authorization checks
+ * - @/lib/prisma - Database client for sectorWatch table operations (upsert, deleteMany)
+ *
+ * EXPORTS:
+ * - POST (function) - Creates or updates sectorWatch record for authenticated user with validation
+ * - GET (function) - Returns array of 11 valid sector names without authentication requirement
+ * - DELETE (function) - Removes sector from authenticated user's watchlist using sector query param
+ *
+ * PATTERNS:
+ * - POST to /api/watchlist/sector with JSON body { sector: 'Technology' }
+ * - GET /api/watchlist/sector returns { sectors: string[] } for dropdown/validation
+ * - DELETE /api/watchlist/sector?sector=Healthcare removes that sector
+ * - All write operations require valid session, return 401 if unauthorized
+ *
+ * CLAUDE NOTES:
+ * - Uses upsert with composite key userId_sector to make POST idempotent - repeated adds won't error
+ * - GET endpoint deliberately public (no auth) to support client-side form validation before submission
+ * - Validation includes helpful error with all valid sectors when invalid name submitted
+ * - DELETE uses deleteMany instead of delete to handle case where record doesn't exist without throwing error
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';

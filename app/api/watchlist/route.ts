@@ -1,3 +1,36 @@
+/**
+ * @module app/api/watchlist/route
+ * @description Next.js API route handler managing authenticated user watchlists with GET retrieval including company data, POST addition with auto-alert creation, and DELETE removal by ticker
+ *
+ * PURPOSE:
+ * - GET fetches user's watchlist with joined company financial data (price, PE ratio, margins, revenue) and sector watchlist ordered by creation date
+ * - POST adds normalized ticker to watchlist with upsert to prevent duplicates, validates company exists in 640+ tracked set, and auto-creates 4 alert types ('new_filing', 'prediction_result', 'analyst_change', 'sector_filing') on first watchlist item
+ * - DELETE removes ticker from watchlist using query parameter with normalized uppercase matching
+ * - Enforces authentication via getSession() returning 401 for unauthenticated requests across all endpoints
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextRequest and NextResponse for API route handling
+ * - @/lib/auth - Supplies getSession() for JWT-based user authentication and session validation
+ * - @/lib/prisma - Exports configured Prisma client for database operations on watchlist, company, sectorWatch, and alert tables
+ *
+ * EXPORTS:
+ * - GET (function) - Returns JSON with watchlist array (items with nested company data) and sectorWatchlist array, or 401/500 errors
+ * - POST (function) - Accepts JSON body with ticker field, returns success boolean and created watchlistItem, or 400/404/500 errors
+ * - DELETE (function) - Accepts ticker query parameter, returns success boolean on deletion, or 400/500 errors
+ *
+ * PATTERNS:
+ * - Call GET /api/watchlist with authenticated session cookie to receive { watchlist: Array<{ticker, company: {...financials}}>, sectorWatchlist: Array }
+ * - Call POST /api/watchlist with JSON body { ticker: 'AAPL' } - ticker is normalized to uppercase and validated against company table
+ * - Call DELETE /api/watchlist?ticker=AAPL to remove specific ticker from user's watchlist
+ * - First POST by new user triggers automatic creation of 4 alert types with enabled:true and frequency:'immediate'
+ *
+ * CLAUDE NOTES:
+ * - Watchlist uses composite unique key userId_ticker for upsert operations preventing duplicate entries per user
+ * - GET performs two separate queries (watchlist items then companies) and client-side joins via Array.find() rather than Prisma relation includes
+ * - Auto-alert creation only checks total alert count - if user manually deletes all alerts then adds ticker, 4 new alerts are recreated
+ * - Company validation returns specific error message 'We don't track ${ticker}. We track 640+ companies by market cap.' indicating finite company dataset
+ * - DELETE uses deleteMany instead of delete to handle case where ticker doesn't exist without throwing error
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -14,13 +47,19 @@ export async function GET() {
       );
     }
 
-    // Fetch watchlist with company data
-    const watchlist = await prisma.watchlist.findMany({
-      where: { userId: session.userId },
-      orderBy: { createdAt: 'desc' },
-    });
+    // Fetch watchlist with company data and sector watchlist in parallel
+    const [watchlist, sectorWatchlist] = await Promise.all([
+      prisma.watchlist.findMany({
+        where: { userId: session.userId },
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.sectorWatch.findMany({
+        where: { userId: session.userId },
+        orderBy: { createdAt: 'desc' },
+      }),
+    ]);
 
-    // Fetch company data for each ticker
+    // Fetch company data for all tickers in a single query
     const tickers = watchlist.map(w => w.ticker);
     const companies = await prisma.company.findMany({
       where: { ticker: { in: tickers } },
@@ -42,12 +81,6 @@ export async function GET() {
         latestQuarter: true,
         analystTargetPrice: true,
       },
-    });
-
-    // Fetch sector watchlist
-    const sectorWatchlist = await prisma.sectorWatch.findMany({
-      where: { userId: session.userId },
-      orderBy: { createdAt: 'desc' },
     });
 
     // Combine watchlist items with company data
@@ -130,19 +163,16 @@ export async function POST(request: NextRequest) {
     if (existingAlerts === 0) {
       const alertTypes = ['new_filing', 'prediction_result', 'analyst_change', 'sector_filing'];
 
-      await Promise.all(
-        alertTypes.map(alertType =>
-          prisma.alert.create({
-            data: {
-              userId: session.userId,
-              alertType,
-              enabled: true,
-              frequency: 'immediate',
-              deliveryTime: 'both',
-            },
-          })
-        )
-      );
+      // Batch create all alerts in a single transaction
+      await prisma.alert.createMany({
+        data: alertTypes.map(alertType => ({
+          userId: session.userId,
+          alertType,
+          enabled: true,
+          frequency: 'immediate',
+          deliveryTime: 'both',
+        })),
+      });
 
       console.log(`[Watchlist] Auto-created ${alertTypes.length} alert types for user ${session.userId}`);
     }

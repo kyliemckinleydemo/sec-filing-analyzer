@@ -1,3 +1,36 @@
+/**
+ * @module app/watchlist/page
+ * @description Next.js client page component managing user watchlists for tracking individual stock tickers and entire market sectors with real-time company data display
+ *
+ * PURPOSE:
+ * - Fetch and display user's watchlist of stock tickers and sector subscriptions from /api/watchlist endpoint
+ * - Add new tickers via POST requests with uppercase normalization and remove items via DELETE requests with ticker/sector query parameters
+ * - Display live company metrics including current price, market cap (formatted as T/B/M suffixes), and P/E ratios from enriched company data
+ * - Redirect to home page on 401 unauthorized responses and navigate to company detail pages on ticker click
+ *
+ * DEPENDENCIES:
+ * - next/navigation - Provides useRouter for programmatic navigation to home and company detail pages
+ * - @/components/ui/button - Renders action buttons for add/remove operations and navigation
+ * - @/components/ui/input - Text input field for ticker symbol entry with uppercase transformation
+ * - @/components/ui/card - Container components organizing watchlist sections and add forms
+ * - @/components/ui/badge - Displays sector tags on individual stock watchlist items
+ * - @/lib/format-utils - Provides safeFormatPrice utility for consistent currency formatting
+ *
+ * EXPORTS:
+ * - WatchlistPage (component) - Default exported page component rendering ticker and sector watchlist management interface
+ *
+ * PATTERNS:
+ * - Mount component to automatically fetch watchlist data and valid sectors list via useEffect on page load
+ * - Submit ticker form to POST /api/watchlist with uppercase ticker, then refetch entire watchlist on success
+ * - Submit sector form to POST /api/watchlist/sector with selected sector from dropdown of valid sectors
+ * - Click ticker text to navigate to /company/[ticker] detail page, click Remove to DELETE via query parameter
+ *
+ * CLAUDE NOTES:
+ * - Market cap formatting uses exponential notation checks (1e12 for trillion) and returns suffixed strings like '$1.25T' or '$450.32M'
+ * - P/E ratio display includes isFinite check to handle division by zero or undefined earnings scenarios
+ * - Single fetchWatchlist call returns both ticker watchlist and sectorWatchlist arrays in one response payload
+ * - Adding state prevents double-submission of forms and disables inputs during API calls, with error state cleared on new submission
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

@@ -1,3 +1,38 @@
+/**
+ * @module app/api/auth/send-magic-link/route
+ * @description Next.js API route handler that generates and emails passwordless authentication magic links with 15-minute expiry tokens
+ *
+ * PURPOSE:
+ * - Validates and normalizes incoming email addresses from POST requests
+ * - Generates cryptographically secure magic link tokens with 15-minute TTL and stores in database
+ * - Constructs environment-aware base URLs supporting localhost, Vercel, and custom domains
+ * - Sends branded HTML emails via Resend API containing one-time authentication links
+ * - Associates tokens with existing user IDs or allows new user registration flow
+ *
+ * DEPENDENCIES:
+ * - @/lib/prisma - Provides database client for querying users and creating magicLinkToken records
+ * - @/lib/auth - Exports generateMagicLinkToken() function for secure random token generation
+ * - resend - Third-party email service SDK for transactional email delivery
+ * - next/server - Provides NextRequest/NextResponse types for route handler implementation
+ *
+ * EXPORTS:
+ * - POST (function) - Async route handler accepting email in JSON body, returns success message or 400/500 error responses
+ *
+ * PATTERNS:
+ * - POST to /api/auth/send-magic-link with { email: 'user@example.com' } in request body
+ * - Expects RESEND_API_KEY environment variable for email service authentication
+ * - Optionally set RESEND_FROM_EMAIL (defaults to onboarding@resend.dev for testing)
+ * - Configure NEXT_PUBLIC_BASE_URL or relies on VERCEL_URL for production deployments
+ * - Returns { success: true, message: string } on success or { error: string, details?: string } on failure
+ *
+ * CLAUDE NOTES:
+ * - Token expiry set to exactly 15 minutes from creation timestamp using Date.now() + 15 * 60 * 1000
+ * - Email normalization uses toLowerCase().trim() to prevent duplicate accounts from case/whitespace variations
+ * - Falls back through three base URL sources: NEXT_PUBLIC_BASE_URL → VERCEL_URL → localhost:3000
+ * - Links existing users via userId field but also supports null userId for new user registration flow
+ * - Error details only exposed in development environment via NODE_ENV check for security
+ * - Uses onboarding@resend.dev sender which requires domain verification before production use
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateMagicLinkToken } from '@/lib/auth';

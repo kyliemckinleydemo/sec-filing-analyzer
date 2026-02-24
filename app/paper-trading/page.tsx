@@ -1,3 +1,36 @@
+/**
+ * @module app/paper-trading/page
+ * @description Next.js client page displaying real-time paper trading portfolio performance with open positions, trade history, and performance metrics refreshed every 60 seconds
+ *
+ * PURPOSE:
+ * - Fetch and auto-refresh portfolio data from /api/paper-trading/portfolio/{id} endpoint every minute
+ * - Display portfolio overview showing total value, win rate, and available cash with color-coded gains/losses
+ * - Render open positions table with entry/current prices, unrealized P&L percentages, and days held counter
+ * - Show recent closed trades table with realized profit/loss and exit dates
+ *
+ * DEPENDENCIES:
+ * - react - Provides useState for portfolio data/loading/error state and useEffect for 60-second polling interval
+ *
+ * EXPORTS:
+ * - PaperTradingPage (component) - Default export rendering full portfolio dashboard with auto-refresh
+ * - MetricCard (component) - Internal helper displaying title, value, subtitle with conditional green/red styling
+ * - Position (interface) - Open position shape with ticker, shares, entry/current prices, P&L, days held, and ML predictions
+ * - Trade (interface) - Closed trade shape with entry/exit prices, realized P&L, predicted vs actual returns
+ * - PortfolioData (interface) - Complete API response shape containing portfolio summary, positions array, trades array, and statistics
+ *
+ * PATTERNS:
+ * - Navigate to /paper-trading route to view dashboard; data automatically polls API every 60 seconds
+ * - Portfolio ID is hardcoded as 'cmgu5ysgx0000boh27mxywid1' in PORTFOLIO_ID constant
+ * - Component shows 'Loading portfolio...' state initially, then error banner on fetch failure, then full dashboard
+ * - Tables use responsive Tailwind classes with hover effects and color-coded P&L (green for positive, red for negative)
+ *
+ * CLAUDE NOTES:
+ * - Uses setInterval for 60-second auto-refresh with cleanup in useEffect return to prevent memory leaks
+ * - Hardcoded portfolio ID prevents multi-user support - would need route params or auth context for production
+ * - Open positions show 'X/7' days held indicating positions automatically close after 7 days
+ * - No manual trade execution UI - appears to be read-only dashboard for automated trading system performance
+ * - Empty states provide context: 'Waiting for next SEC filing' suggests trades trigger from SEC filings data
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

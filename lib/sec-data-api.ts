@@ -1,4 +1,34 @@
 /**
+ * @module lib/sec-data-api
+ * @description SEC XBRL data client that fetches structured financial statements from data.sec.gov and extracts standardized metrics including revenue, profitability, and growth rates
+ *
+ * PURPOSE:
+ * - Fetch XBRL company facts from SEC's free data.sec.gov API using CIK identifiers
+ * - Extract standardized financial metrics (revenue, net income, EPS, margins, cash flow) for specific filings by accession number
+ * - Calculate year-over-year growth percentages by comparing same fiscal periods across years
+ * - Normalize accession number formats to match both database storage and SEC API conventions
+ *
+ * DEPENDENCIES:
+ * - None - uses native fetch API to call SEC's public endpoints
+ *
+ * EXPORTS:
+ * - ExtractedFinancials (interface) - Shape defining 15+ financial metrics with revenue, profitability, per-share data, balance sheet items, cash flow, and metadata fields
+ * - secDataAPI (const) - Singleton SECDataAPIClient instance for fetching and parsing SEC XBRL data
+ *
+ * PATTERNS:
+ * - Call secDataAPI.getFinancialSummary(cik, accessionNumber) to fetch and extract all metrics in one operation
+ * - Use secDataAPI.getCompanyFacts(cik) to get raw XBRL data, then extractFinancialsForFiling(facts, accessionNumber) for parsing
+ * - Pad CIK to 10 digits with leading zeros before API calls (handled internally)
+ * - Include 'User-Agent' header in all requests - SEC requires contact info to avoid rate limiting
+ *
+ * CLAUDE NOTES:
+ * - Handles multiple GAAP concept names for same metric (e.g., 'Revenues' OR 'RevenueFromContractWithCustomerExcludingAssessedTax') to work across different company filings
+ * - Searches USD units first, then falls back to 'shares' or 'pure' units when extracting concept values
+ * - YoY growth calculation finds prior year value by matching fiscal year (fy - 1) AND same fiscal period (Q1/Q2/Q3/FY)
+ * - Free cash flow uses simplified 80% of operating cash flow estimation when detailed capex data unavailable
+ * - Returns null if revenue or net income missing - considered minimum required metrics for valid financial extraction
+ */
+/**
  * SEC Data API Client
  *
  * Uses the official SEC data.sec.gov APIs to extract structured XBRL financial data

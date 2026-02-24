@@ -1,4 +1,41 @@
 /**
+ * @module lib/claude-client
+ * @description Anthropic Claude AI client providing comprehensive SEC filing analysis including risk assessment, sentiment analysis, concern scoring, and financial metrics extraction using extended thinking mode
+ *
+ * PURPOSE:
+ * - Analyze SEC filings (8-K, 10-Q, 10-K) to detect material risks, negative events, and business changes that impact stock price
+ * - Score management sentiment and tone from MD&A sections using natural language processing on scale from -1 (pessimistic) to +1 (optimistic)
+ * - Generate multi-factor concern assessments by synthesizing risk trends, earnings surprises, guidance changes, and margin compression signals
+ * - Extract and structure financial metrics including revenue growth, margin trends, guidance changes, and XBRL data for quantitative analysis
+ *
+ * DEPENDENCIES:
+ * - @anthropic-ai/sdk - Provides Anthropic client for Claude API calls with streaming and extended thinking support
+ *
+ * EXPORTS:
+ * - RiskAnalysis (interface) - Risk assessment with trend direction, 0-10 score, new/removed/changed risks, and top material changes
+ * - RiskItem (interface) - Individual risk with title, 1-10 severity score, business impact description, reasoning, and optional section location
+ * - SentimentAnalysis (interface) - Management tone with -1 to 1 sentiment score, 0-1 confidence level, tone label, key phrases, and prior period comparison
+ * - ConcernAssessment (interface) - Multi-factor concern evaluation with 0-10 level, label (LOW/MODERATE/ELEVATED/HIGH/CRITICAL), net sentiment (BULLISH/NEUTRAL/CAUTIOUS/BEARISH), and reasoning
+ * - FinancialMetrics (interface) - Financial data including YoY growth percentages, margin trends, guidance direction, XBRL structured data, and Yahoo Finance consensus comparisons
+ * - FilingAnalysis (interface) - Complete analysis combining risks, sentiment, concerns, summary, guidance, and metrics
+ * - claudeClient (const) - Singleton instance of ClaudeClient for making analysis requests
+ *
+ * PATTERNS:
+ * - Import claudeClient singleton and call analyzeRisks(currentText, priorText?) to detect material risk changes between filings
+ * - Call analyzeSentiment(mdaText) to score management tone from MD&A section narratives
+ * - Use assessConcerns(riskAnalysis, sentimentAnalysis, financialMetrics) to generate holistic concern score synthesizing all signals
+ * - Pass 'bulk' to useCase parameter in analysis methods for batch processing with faster claude-haiku-4-5 model instead of default claude-sonnet-4-5
+ * - Ensure ANTHROPIC_API_KEY environment variable is set to valid API key (throws error on 'sk-ant-api03-placeholder' or missing value)
+ *
+ * CLAUDE NOTES:
+ * - Uses dual model strategy - claude-sonnet-4-5 (high quality) for user-facing analysis, claude-haiku-4-5 (faster/cheaper) for bulk batch processing via getModel() selector
+ * - Risk scoring uses inverted scale where 10 = maximum concern/risk and 0 = minimal risk, with 8-10 indicating multiple high-severity risks and INCREASING trend
+ * - CRITICAL concern level (9-10) is intentionally rare - reserved only for existential threats like going concern warnings, major fraud, bankruptcy risk, or regulatory shutdown
+ * - Prompts explicitly instruct Claude to never mention data limitations, rate limiting, or SEC API access issues in analysis output to ensure clean business-focused assessments
+ * - Margin compression detection compares earnings growth vs revenue growth - if earnings grow slower than revenue (e.g., 4% vs 6%), margins are compressing which increases concern score
+ * - Detects material events beyond formal Risk Factors sections including data breaches, litigation, executive departures, regulatory actions, restructuring charges, and product recalls in 8-K filings
+ */
+/**
  * Claude AI Client for SEC Filing Analysis
  * Uses Anthropic's Claude Sonnet 4.5 with extended thinking mode
  */
@@ -90,7 +127,7 @@ export interface FilingAnalysis {
 class ClaudeClient {
   private client: Anthropic;
   private model = 'claude-sonnet-4-5-20250929';
-  private haikuModel = 'claude-3-5-haiku-20241022';
+  private haikuModel = 'claude-haiku-4-5-20251001';
 
   constructor() {
     const apiKey = process.env.ANTHROPIC_API_KEY;

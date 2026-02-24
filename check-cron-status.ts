@@ -1,3 +1,26 @@
+/**
+ * @module check-cron-status
+ * @description Standalone diagnostic script that queries and displays the last 5 cron job execution records with their processing statistics and database totals
+ *
+ * PURPOSE:
+ * - Fetch the 5 most recent cronJobRun records ordered by startedAt descending
+ * - Display each job's name, status, timestamps, processing counts (companies/filings), and error messages if any
+ * - Query and output total filing and company counts from the database for health monitoring
+ *
+ * DEPENDENCIES:
+ * - @prisma/client - Provides PrismaClient for querying cronJobRun, filing, and company tables
+ *
+ * PATTERNS:
+ * - Run directly via node or ts-node: 'ts-node check-cron-status.ts'
+ * - Use for debugging scheduled jobs - check if daily/hourly crons are executing and how many records they process
+ * - Prisma connection auto-disconnects in finally block after queries complete
+ *
+ * CLAUDE NOTES:
+ * - Script is self-executing with checkCronStatus() called at module bottom - not importable as library
+ * - Displays comprehensive per-run metrics: companiesProcessed, filingsFetched, filingsStored to track job efficiency
+ * - Gracefully handles empty database state by checking runs.length before iteration
+ * - No command-line arguments or configuration - hardcoded to show last 5 runs and current totals
+ */
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();

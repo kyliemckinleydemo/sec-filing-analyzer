@@ -1,3 +1,31 @@
+/**
+ * @module backfill-yfinance-earnings
+ * @description Backfills earnings surprise data from Yahoo Finance API for historical filings
+ * 
+ * PURPOSE:
+ * - Retrieves analyst consensus estimates and actual earnings results from yfinance
+ * - Matches earnings reports to SEC filings based on filing dates (within 90-day window)
+ * - Populates consensusEPS, actualEPS, epsSurprise, and revenue fields in the database
+ * - Provides free alternative to premium financial data APIs
+ * - Enables analysis of earnings surprise correlation with stock returns
+ * - Expected coverage: 70-90% of filings (depends on analyst coverage availability)
+ * 
+ * EXPORTS:
+ * - backfillYFinanceEarnings(limit?: number): Main backfill function with optional test limit
+ * - Executable script: Accepts command-line argument for limiting number of tickers
+ * 
+ * CLAUDE NOTES:
+ * - Groups filings by ticker to minimize API calls (1 call per ticker vs per filing)
+ * - Uses 90-day matching window to account for delayed 10-K/10-Q filing deadlines
+ * - Implements 1.5s rate limiting to be respectful to Yahoo Finance servers
+ * - Batch updates via Prisma transactions for better performance
+ * - Processes most recent filings first (DESC order) for priority coverage
+ * - Tracks multiple success metrics: data availability, complete records, match rates
+ * - Includes detailed progress logging with time estimates
+ * - Only processes filings that have actual returns and financial data
+ * - Run with: npx tsx backfill-yfinance-earnings.ts [optional_limit]
+ */
+
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { yfinanceClient } from '../lib/yfinance-client';
@@ -74,8 +102,10 @@ async function backfillYFinanceEarnings(limit?: number) {
 
       console.log(`  ✅ Found ${response.data.length} earnings reports`);
 
-      // Match each filing to closest earnings report
+      // Match each filing to closest earnings report and prepare batch updates
       let matchedCount = 0;
+      const updates = [];
+      
       for (const filing of tickerFilings) {
         const closestEarnings = yfinanceClient.findClosestEarnings(
           response.data,
@@ -95,9 +125,9 @@ async function backfillYFinanceEarnings(limit?: number) {
         // Convert to our database format
         const data = yfinanceClient.toAnalystEstimates(closestEarnings);
 
-        // Update filing
-        await prisma.filing.update({
-          where: { id: filing.id },
+        // Prepare update for batch
+        updates.push({
+          id: filing.id,
           data: {
             consensusEPS: data.consensusEPS,
             actualEPS: data.actualEPS,
@@ -117,6 +147,18 @@ async function backfillYFinanceEarnings(limit?: number) {
         if (hasConsensus && hasActual) {
           complete++;
         }
+      }
+
+      // Batch update all filings for this ticker
+      if (updates.length > 0) {
+        await prisma.$transaction(
+          updates.map(update => 
+            prisma.filing.update({
+              where: { id: update.id },
+              data: update.data
+            })
+          )
+        );
       }
 
       console.log(`  📝 Matched ${matchedCount}/${tickerFilings.length} filings\n`);

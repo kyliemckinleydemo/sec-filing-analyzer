@@ -126,42 +126,6 @@ function calculateReturn(prices: number[], days: number): number | null {
   return ((end - start) / start) * 100;
 }
 
-// Fetch Yahoo Finance data for S&P 500, VIX
-async function fetchMarketData(startDate: Date, endDate: Date): Promise<Map<string, any>> {
-  console.log(`  📊 Fetching S&P 500 and VIX data from Yahoo Finance...`);
-
-  const marketData = new Map<string, any>();
-
-  try {
-    // Fetch SPX (S&P 500) - use ^GSPC
-    const spxData = await fetchYahooHistory('^GSPC', startDate, endDate);
-    spxData.forEach(d => {
-      const dateKey = d.date.toISOString().split('T')[0];
-      if (!marketData.has(dateKey)) {
-        marketData.set(dateKey, {});
-      }
-      marketData.get(dateKey).spxClose = d.close;
-      marketData.get(dateKey).spxPrices = spxData.map(p => p.close);
-    });
-
-    // Fetch VIX
-    const vixData = await fetchYahooHistory('^VIX', startDate, endDate);
-    vixData.forEach(d => {
-      const dateKey = d.date.toISOString().split('T')[0];
-      if (!marketData.has(dateKey)) {
-        marketData.set(dateKey, {});
-      }
-      marketData.get(dateKey).vixClose = d.close;
-    });
-
-    console.log(`    ✅ Fetched market data for ${marketData.size} dates`);
-  } catch (error) {
-    console.log(`    ⚠️  Error fetching market data: ${error instanceof Error ? error.message : 'Unknown'}`);
-  }
-
-  return marketData;
-}
-
 async function fetchYahooHistory(symbol: string, startDate: Date, endDate: Date): Promise<PriceData[]> {
   const period1 = Math.floor(startDate.getTime() / 1000);
   const period2 = Math.floor(endDate.getTime() / 1000);
@@ -193,6 +157,46 @@ async function fetchYahooHistory(symbol: string, startDate: Date, endDate: Date)
   }
 
   return data;
+}
+
+// Fetch Yahoo Finance data for S&P 500, VIX
+async function fetchMarketData(startDate: Date, endDate: Date): Promise<Map<string, any>> {
+  console.log(`  📊 Fetching S&P 500 and VIX data from Yahoo Finance...`);
+
+  const marketData = new Map<string, any>();
+
+  try {
+    // Batch fetch both SPX and VIX data
+    const [spxData, vixData] = await Promise.all([
+      fetchYahooHistory('^GSPC', startDate, endDate),
+      fetchYahooHistory('^VIX', startDate, endDate)
+    ]);
+
+    // Process SPX data
+    spxData.forEach(d => {
+      const dateKey = d.date.toISOString().split('T')[0];
+      if (!marketData.has(dateKey)) {
+        marketData.set(dateKey, {});
+      }
+      marketData.get(dateKey).spxClose = d.close;
+      marketData.get(dateKey).spxPrices = spxData.map(p => p.close);
+    });
+
+    // Process VIX data
+    vixData.forEach(d => {
+      const dateKey = d.date.toISOString().split('T')[0];
+      if (!marketData.has(dateKey)) {
+        marketData.set(dateKey, {});
+      }
+      marketData.get(dateKey).vixClose = d.close;
+    });
+
+    console.log(`    ✅ Fetched market data for ${marketData.size} dates`);
+  } catch (error) {
+    console.log(`    ⚠️  Error fetching market data: ${error instanceof Error ? error.message : 'Unknown'}`);
+  }
+
+  return marketData;
 }
 
 // Fetch FRED data for interest rates
@@ -240,22 +244,34 @@ async function main() {
   let processed = 0;
   let errors = 0;
 
+  // Batch fetch all stock prices for all tickers at once
+  const allStockPrices = await prisma.stockPrice.findMany({
+    where: {
+      ticker: { in: tickers },
+      date: {
+        gte: lookbackDate,
+        lte: maxDate,
+      },
+    },
+    orderBy: { date: 'asc' },
+  });
+
+  // Group stock prices by ticker for efficient lookup
+  const stockPricesByTicker = new Map<string, typeof allStockPrices>();
+  for (const price of allStockPrices) {
+    if (!stockPricesByTicker.has(price.ticker)) {
+      stockPricesByTicker.set(price.ticker, []);
+    }
+    stockPricesByTicker.get(price.ticker)!.push(price);
+  }
+
   // Process each ticker
   for (const ticker of tickers) {
     console.log(`\n[${processed + 1}/${tickers.length}] Processing ${ticker}...`);
 
     try {
-      // Fetch all stock prices for this ticker (with lookback)
-      const stockPrices = await prisma.stockPrice.findMany({
-        where: {
-          ticker,
-          date: {
-            gte: lookbackDate,
-            lte: maxDate,
-          },
-        },
-        orderBy: { date: 'asc' },
-      });
+      // Use pre-fetched stock prices
+      const stockPrices = stockPricesByTicker.get(ticker) || [];
 
       if (stockPrices.length < 30) {
         console.log(`  ⚠️  Only ${stockPrices.length} price points, skipping (need 30+)`);
@@ -270,6 +286,7 @@ async function main() {
         .map(f => f.filingDate.toISOString().split('T')[0]);
 
       let indicatorsCreated = 0;
+      const indicatorsToUpsert = [];
 
       for (let i = 30; i < stockPrices.length; i++) {
         const currentDate = stockPrices[i].date;
@@ -308,58 +325,61 @@ async function main() {
         const return30d = calculateReturn(closes, 30);
         const return90d = calculateReturn(closes, 90);
 
-        // Upsert technical indicators
+        indicatorsToUpsert.push({
+          ticker,
+          date: currentDate,
+          ma30,
+          ma50,
+          ma200,
+          priceToMA30,
+          priceToMA50,
+          priceToMA200,
+          rsi14,
+          rsi30,
+          macd: macdResult?.macd,
+          macdSignal: macdResult?.signal,
+          macdHistogram: macdResult?.histogram,
+          atr14,
+          volatility30,
+          volumeMA30,
+          volumeRatio,
+          return7d,
+          return30d,
+          return90d,
+        });
+      }
+
+      // Batch upsert all indicators for this ticker
+      for (const indicator of indicatorsToUpsert) {
         await prisma.technicalIndicators.upsert({
           where: {
             ticker_date: {
-              ticker,
-              date: currentDate,
+              ticker: indicator.ticker,
+              date: indicator.date,
             },
           },
-          create: {
-            ticker,
-            date: currentDate,
-            ma30,
-            ma50,
-            ma200,
-            priceToMA30,
-            priceToMA50,
-            priceToMA200,
-            rsi14,
-            rsi30,
-            macd: macdResult?.macd,
-            macdSignal: macdResult?.signal,
-            macdHistogram: macdResult?.histogram,
-            atr14,
-            volatility30,
-            volumeMA30,
-            volumeRatio,
-            return7d,
-            return30d,
-            return90d,
-          },
+          create: indicator,
           update: {
-            ma30,
-            ma50,
-            ma200,
-            priceToMA30,
-            priceToMA50,
-            priceToMA200,
-            rsi14,
-            rsi30,
-            macd: macdResult?.macd,
-            macdSignal: macdResult?.signal,
-            macdHistogram: macdResult?.histogram,
-            atr14,
-            volatility30,
-            volumeMA30,
-            volumeRatio,
-            return7d,
-            return30d,
-            return90d,
+            ma30: indicator.ma30,
+            ma50: indicator.ma50,
+            ma200: indicator.ma200,
+            priceToMA30: indicator.priceToMA30,
+            priceToMA50: indicator.priceToMA50,
+            priceToMA200: indicator.priceToMA200,
+            rsi14: indicator.rsi14,
+            rsi30: indicator.rsi30,
+            macd: indicator.macd,
+            macdSignal: indicator.macdSignal,
+            macdHistogram: indicator.macdHistogram,
+            atr14: indicator.atr14,
+            volatility30: indicator.volatility30,
+            volumeMA30: indicator.volumeMA30,
+            volumeRatio: indicator.volumeRatio,
+            return7d: indicator.return7d,
+            return30d: indicator.return30d,
+            return90d: indicator.return90d,
           },
         });
-
         indicatorsCreated++;
       }
 

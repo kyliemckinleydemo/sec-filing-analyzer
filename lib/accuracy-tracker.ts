@@ -1,4 +1,36 @@
 /**
+ * @module lib/accuracy-tracker
+ * @description Validates stock prediction accuracy by comparing predicted versus actual returns for both 7-day and 30-day alpha performance metrics using historical price data from Yahoo Finance
+ *
+ * PURPOSE:
+ * - Calculate actual stock returns and alpha (stock return minus S&P 500) at 7-day and 30-day intervals after SEC filing dates
+ * - Fetch historical prices from Yahoo Finance and match them to specific filing dates using business-day calculations
+ * - Compare predicted returns/alpha against actual values to determine directional accuracy (LONG/SHORT signal correctness)
+ * - Persist actual return values back to database filing records for performance tracking
+ *
+ * DEPENDENCIES:
+ * - ./yahoo-finance-client - Fetches historical stock prices via getHistoricalPrices for calculating actual returns
+ * - ./prisma - Updates filing records with actual7dReturn, actual30dReturn, and actual30dAlpha after validation periods
+ *
+ * EXPORTS:
+ * - AlphaModelStats (interface) - Shape containing total predictions count, directional accuracy percentages, and average LONG/SHORT alpha spreads
+ * - AccuracyTracker (class) - Main validation engine with methods for checking 7-day/30-day accuracy and updating database
+ * - accuracyTracker (const) - Singleton instance of AccuracyTracker for application-wide accuracy checking
+ *
+ * PATTERNS:
+ * - Call checkAccuracy(ticker, filingDate, predicted7dReturn) after 10+ calendar days to validate legacy 7-day predictions
+ * - Call checkAlphaAccuracy(ticker, filingDate, predicted30dAlpha) after 35+ calendar days to validate 30-day alpha predictions with S&P 500 benchmark
+ * - Use updateActualReturn(accessionNumber, actual7dReturn) or updateActual30dAlpha(accessionNumber, actual30dReturn, actual30dAlpha) to persist calculated actuals to database
+ * - Extract signalCorrect from checkAlphaAccuracy response to determine if LONG/SHORT directional signal was accurate
+ *
+ * CLAUDE NOTES:
+ * - Uses 21 business days as proxy for 30 calendar days when calculating alpha accuracy (findPriceNBusinessDaysLater with businessDays=21)
+ * - Requires minimum 10 calendar days elapsed for 7-day checks and 35 calendar days for 30-day alpha checks to ensure sufficient trading data exists
+ * - Alpha calculation subtracts SPY (S&P 500 ETF) return from stock return to measure outperformance: actual30dAlpha = actual30dReturn - spxReturn30d
+ * - Directional accuracy checks signal correctness (LONG if predicted alpha > 0, SHORT if < 0) regardless of magnitude error
+ * - Price matching algorithm finds closest date in sorted price array by minimizing absolute time difference, then counts N business days forward
+ */
+/**
  * Accuracy Tracker
  *
  * Compares predicted vs actual stock returns.

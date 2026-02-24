@@ -1,3 +1,32 @@
+/**
+ * @module app/api/backtest/route
+ * @description API endpoint performing backtesting to evaluate prediction model accuracy by comparing predicted vs actual 7-day returns on historical SEC filings with financial data
+ *
+ * PURPOSE:
+ * - Query filings from Prisma database filtered by optional ticker symbol, filing type, and presence of both predicted and actual return values
+ * - Filter results to only include filings containing financial data (EPS, revenue, guidance) using hasFinancialData utility
+ * - Calculate per-filing accuracy metrics including absolute error, error percentage, direction correctness, and accuracy labels
+ * - Compute aggregate statistics including direction accuracy rate, average error, and distribution across 'Excellent/Good/Fair/Poor' accuracy tiers
+ *
+ * DEPENDENCIES:
+ * - @/lib/prisma - Provides database client for querying Filing and Company tables with relational includes
+ * - @/lib/accuracy-tracker - Supplies getAccuracyLabel function to categorize error percentages into human-readable tiers
+ * - @/lib/filing-utils - Exports hasFinancialData validator checking if filing contains EPS, revenue, or guidance fields
+ *
+ * EXPORTS:
+ * - GET (function) - Next.js route handler accepting ticker, limit (default 10), and optional filingType query params, returning JSON with backtestResults array and summary statistics object
+ *
+ * PATTERNS:
+ * - Call via GET /api/backtest?ticker=AAPL&limit=10&filingType=10-K to test model accuracy on Apple's annual reports
+ * - Endpoint returns 404 if ticker not found, 200 with empty results if no qualifying filings exist, or 500 on database/processing errors
+ * - Response includes results array with per-filing metrics (error, errorPercent, correctDirection, accuracy label) plus summary with directionAccuracy percentage and accuracyDistribution counts
+ *
+ * CLAUDE NOTES:
+ * - Fetches 3x the requested limit initially, then filters to only filings with financial data - this oversampling prevents returning fewer results than requested when many filings lack financial info
+ * - Direction accuracy checks if prediction and actual have same sign (both positive or both negative), independent of magnitude - useful for trading signals even if magnitude predictions are imperfect
+ * - Requires both predicted7dReturn and actual7dReturn to be non-null in database query - filings without completed prediction-observation cycles are excluded from backtest validation
+ * - Error percentage calculation divides absolute error by absolute actual return, making it scale-invariant - a 2% error matters more on a 3% move than a 20% move
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { accuracyTracker } from '@/lib/accuracy-tracker';

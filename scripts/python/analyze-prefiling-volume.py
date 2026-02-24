@@ -181,34 +181,51 @@ def analyze_prefiling_volume(csv_file):
     fetched = 0
     cached = 0
     failed = 0
+    
+    # Identify records that need fetching
+    records_to_fetch = []
+    for idx, row in df.iterrows():
+        ticker = row['ticker']
+        filing_date = row['filingDate']
+        cache_key = f"{ticker}_{filing_date.strftime('%Y-%m-%d')}"
+        
+        if cache_key not in cache:
+            records_to_fetch.append((idx, row, cache_key))
 
+    # Batch fetch for uncached records
+    for idx, row, cache_key in records_to_fetch:
+        ticker = row['ticker']
+        filing_date = row['filingDate']
+        
+        print(f"  [{idx+1}/{len(df)}] {ticker} on {filing_date.date()}", end=' ')
+        volume_metrics = fetch_prefiling_volume(ticker, filing_date)
+
+        if volume_metrics:
+            cache[cache_key] = volume_metrics
+            fetched += 1
+            print("✅")
+        else:
+            failed += 1
+            print("❌")
+
+        # Rate limiting
+        time.sleep(RATE_LIMIT_DELAY)
+
+    # Process all records (cached + newly fetched)
     for idx, row in df.iterrows():
         ticker = row['ticker']
         filing_date = row['filingDate']
         filing_id = row['filingId']
-
-        # Cache key
         cache_key = f"{ticker}_{filing_date.strftime('%Y-%m-%d')}"
 
         # Check cache
         if cache_key in cache:
             volume_metrics = cache[cache_key]
-            cached += 1
-            print(f"  [{idx+1}/{len(df)}] {ticker} on {filing_date.date()} - 💾 cached")
+            if idx < len(records_to_fetch):
+                cached += 1
+                print(f"  [{idx+1}/{len(df)}] {ticker} on {filing_date.date()} - 💾 cached")
         else:
-            print(f"  [{idx+1}/{len(df)}] {ticker} on {filing_date.date()}", end=' ')
-            volume_metrics = fetch_prefiling_volume(ticker, filing_date)
-
-            if volume_metrics:
-                cache[cache_key] = volume_metrics
-                fetched += 1
-                print("✅")
-            else:
-                failed += 1
-                print("❌")
-
-            # Rate limiting
-            time.sleep(RATE_LIMIT_DELAY)
+            volume_metrics = None
 
         # Add to results
         if volume_metrics:

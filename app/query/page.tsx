@@ -1,35 +1,40 @@
 /**
- * @module page
- * @description Interactive query interface for stock screening and AI-powered SEC filing analysis
+ * @module app/query/page
+ * @description Interactive query interface providing instant stock screening by fundamentals and AI-powered SEC filing analysis with natural language processing
  *
  * PURPOSE:
- * This component serves as the main query interface for the financial analysis platform,
- * providing users with dual capabilities:
- * 1. Instant stock screening based on fundamental metrics (dividends, P/E, growth, etc.)
- * 2. AI-powered natural language analysis of SEC filings and company data
- * 
- * The page implements intelligent query routing that automatically determines whether
- * to use database screening (instant results) or AI analysis (deeper insights) based on
- * the query structure and selected mode.
+ * - Route queries automatically between database screening (instant results) and AI analysis (deep insights) based on query structure and selected mode
+ * - Execute stock screens filtering by dividend yield, P/E ratio, revenue growth, beta, market cap, and analyst target comparisons
+ * - Stream AI responses analyzing SEC filings for risk factors, revenue trends, and concern-vs-return patterns
+ * - Manage chat history for follow-up questions and maintain pagination for large screening result sets
+ *
+ * DEPENDENCIES:
+ * - @/components/ui/button - Provides Button component for query submission and mode toggle
+ * - @/components/ui/card - Supplies Card, CardContent, CardDescription, CardHeader, CardTitle for layout structure
+ * - @/components/CompanySnapshotTooltip - Renders hover previews displaying company metrics on ticker hover
+ * - next/navigation - Provides useRouter for navigation and useSearchParams for reading URL ticker parameter
  *
  * EXPORTS:
- * - QueryPageContent: Main query interface component with search, filters, and results
- * - QueryPage: Suspense-wrapped default export for Next.js page routing
+ * - QueryPage (component) - Suspense-wrapped default export for Next.js page routing with QueryPageContent inside
+ * - QueryPageContent (component) - Main query interface with search input, mode toggle, ticker/sector filters, and adaptive results display
+ *
+ * PATTERNS:
+ * - Import as default export for Next.js app router page at /query route
+ * - URL parameter ?ticker=AAPL auto-fills ticker filter and expands filter panel on mount
+ * - Mode 'auto' tries database screen first; if fallback=true in response, routes to AI chat
+ * - Mode 'screen' forces /api/query endpoint for structured results; mode 'ai' forces /api/chat streaming
+ * - Call handleQuery(page) for paginated screening; handleAIQuery(text) for streaming AI responses
+ * - Apply ticker/sector filters to AI queries by passing in /api/chat request body
  *
  * CLAUDE NOTES:
- * - Uses 'use client' directive for client-side interactivity and state management
- * - Three query modes: 'auto' (smart routing), 'screen' (DB only), 'ai' (AI only)
- * - Supports streaming responses for AI queries using ReadableStream
- * - Includes ticker/sector filters that apply to AI queries for focused analysis
- * - Pagination implemented for large screening result sets
- * - CompanySnapshotTooltip provides hover previews of company metrics
- * - Markdown formatting applied to AI responses with link/emphasis support
- * - URL params support pre-filling ticker filter (e.g., ?ticker=AAPL)
- * - Example queries categorized by type (screening vs AI analysis)
- * - Results display adapts to query type: companies, filings, snapshots, or before/after comparisons
- * - AI chat history maintained in state for follow-up questions
- * - Authentication required for AI mode (free tier: 100 queries/day)
- * - Valid sectors restricted to 11 predefined categories matching database schema
+ * - Three-mode system: 'auto' smart-routes based on query structure, 'screen' forces DB-only instant results, 'ai' forces streaming analysis
+ * - AI responses stream via ReadableStream with chunk-by-chunk decoder, updating last message in aiMessages array incrementally
+ * - Authentication gated for AI mode - 401 response triggers signup prompt with inline link to /profile, shows 100 queries/day free tier
+ * - Markdown formatting applies to AI responses: converts **bold**, *italic*, `code`, [links](url) to HTML with Tailwind classes
+ * - Sector filter restricted to 11 predefined VALID_SECTORS matching backend database schema validation
+ * - Pagination only applies to screening results (companies/filings arrays); AI chat history persists in state without pagination
+ * - CompanySnapshotTooltip provides hover previews on ticker symbols in results for quick metric checks without navigation
+ * - Example queries categorized: screenExamples use Building2/TrendingUp/FileText icons, aiExamples use Brain/BarChart3/MessageSquare
  */
 
 'use client';

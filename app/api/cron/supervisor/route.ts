@@ -1,3 +1,31 @@
+/**
+ * @module app/api/cron/supervisor/route
+ * @description Next.js API route exposing supervisor health check endpoint for manual verification or external monitoring of cron job execution status
+ *
+ * PURPOSE:
+ * - Authenticate requests using Vercel cron user-agent or Bearer token from CRON_SECRET environment variable
+ * - Execute runSupervisorChecks with auto-trigger enabled to both monitor and potentially restart missing cron jobs
+ * - Return health report with 'healthy' or 'alerts' status based on detected supervisor alerts
+ *
+ * DEPENDENCIES:
+ * - @/lib/supervisor - Provides runSupervisorChecks function to verify cron job execution and optionally trigger missing jobs
+ *
+ * EXPORTS:
+ * - dynamic (const) - Forces Next.js dynamic rendering to prevent response caching
+ * - maxDuration (const) - Sets 300 second timeout allowing sufficient time for supervisor checks and potential job triggering
+ * - GET (function) - Handles authenticated GET requests, runs supervisor checks with auto-trigger, returns JSON health report or error
+ *
+ * PATTERNS:
+ * - Call GET /api/cron/supervisor with either User-Agent containing 'vercel-cron/' or Authorization header 'Bearer YOUR_CRON_SECRET'
+ * - Response returns { status: 'healthy'|'alerts'|'error', report: {...} } with HTTP 200 for success or 401/500 for auth/system failures
+ * - When auto-trigger enabled via manual call, endpoint actively restarts missing jobs rather than just reporting status
+ *
+ * CLAUDE NOTES:
+ * - Dual authentication accepts both Vercel's automatic cron user-agent and manual Bearer token for flexibility in monitoring systems
+ * - Auto-trigger parameter set to true means this endpoint actively fixes problems by restarting jobs, not just passive monitoring
+ * - 5 minute maxDuration accommodates cascading job triggers since supervisor may need to start multiple sequential cron jobs
+ * - Status differentiates 'alerts' (jobs missing but detected) from 'error' (supervisor check itself failed)
+ */
 import { NextResponse } from 'next/server';
 import { runSupervisorChecks } from '@/lib/supervisor';
 

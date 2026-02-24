@@ -205,23 +205,57 @@ export async function GET(request: Request) {
     const uniqueCompanies = new Set(allFilings.map(f => f.ticker));
     results.companiesProcessed = uniqueCompanies.size;
 
+    // Fetch all existing companies in a single query to avoid N+1 pattern
+    const uniqueTickers = Array.from(uniqueCompanies);
+    const existingCompanies = await prisma.company.findMany({
+      where: {
+        ticker: { in: uniqueTickers }
+      },
+      select: {
+        id: true,
+        ticker: true,
+        cik: true,
+        name: true
+      }
+    });
+
+    const companyMap = new Map(existingCompanies.map(c => [c.ticker, c]));
+
     // Store companies and filings in database, tracking affected company IDs
     const affectedCompanyIds = new Set<string>();
     for (const filing of allFilings) {
       try {
-        // Upsert company
-        const company = await prisma.company.upsert({
-          where: { ticker: filing.ticker },
-          create: {
-            ticker: filing.ticker,
-            cik: filing.cik,
-            name: filing.companyName,
-          },
-          update: {
-            cik: filing.cik,
-            name: filing.companyName,
-          },
-        });
+        // Check if company exists in our fetched map, otherwise upsert
+        let company = companyMap.get(filing.ticker);
+        
+        if (!company) {
+          // Company doesn't exist, create it
+          company = await prisma.company.upsert({
+            where: { ticker: filing.ticker },
+            create: {
+              ticker: filing.ticker,
+              cik: filing.cik,
+              name: filing.companyName,
+            },
+            update: {
+              cik: filing.cik,
+              name: filing.companyName,
+            },
+          });
+          companyMap.set(filing.ticker, company);
+        } else {
+          // Company exists, update if needed
+          if (company.cik !== filing.cik || company.name !== filing.companyName) {
+            company = await prisma.company.update({
+              where: { ticker: filing.ticker },
+              data: {
+                cik: filing.cik,
+                name: filing.companyName,
+              },
+            });
+            companyMap.set(filing.ticker, company);
+          }
+        }
 
         // Upsert filing
         await prisma.filing.upsert({

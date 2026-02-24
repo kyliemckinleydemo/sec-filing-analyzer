@@ -1,3 +1,50 @@
+"""
+@module fetch-macro-indicators-enhanced
+@description Enhanced macro economic indicators fetcher with comprehensive market data collection
+
+PURPOSE:
+    Fetches multi-dimensional macro economic indicators for a given filing date to provide
+    context for insider trading analysis. Collects market momentum, interest rates, volatility,
+    dollar strength, and sector performance data to enable regime-based trading analysis.
+    
+    Key metrics include:
+    - Market momentum: S&P 500 returns across 7d, 14d, 21d, 30d timeframes
+    - Interest rates: Fed funds, 3M, 2Y, 10Y Treasury yields with curve analysis
+    - Volatility: VIX current and 30-day moving average
+    - Dollar strength: DXY index with trend analysis
+    - Sector rotation: XLK (tech), XLF (financials), XLE (energy), XLV (healthcare)
+    - Market regime classification: Combines momentum, volatility, rates into bull/bear regime
+
+EXPORTS:
+    - fetch_enhanced_macro_indicators(filing_date_str: str) -> dict
+        Main function that fetches all macro indicators for a specific date
+        Returns comprehensive dict with success status and all available metrics
+        
+    - CLI interface: python fetch-macro-indicators-enhanced.py YYYY-MM-DD
+        Outputs JSON to stdout for Node.js consumption
+
+CLAUDE NOTES:
+    Data sources via yfinance:
+    - SPY: S&P 500 ETF proxy for market index
+    - ^VIX: CBOE Volatility Index
+    - ^IRX: 13-week Treasury (3-month proxy)
+    - ^TNX: 10-year Treasury yield
+    - DX-Y.NYB: U.S. Dollar Index
+    - IEF: 7-10Y Treasury ETF (used for 2Y estimation)
+    - XLK, XLF, XLE, XLV: Sector SPDR ETFs
+    
+    Regime scoring logic:
+    - Combines SPX momentum, VIX level, and rate trends
+    - Score range: -6 to +6 (bearish to bullish)
+    - Classifications: strong_bear, bear, neutral, bull, strong_bull
+    
+    Historical data window: 400 days prior to filing date to ensure 30-day calculations
+    are accurate even with market holidays/gaps
+    
+    Error handling: Returns partial data on individual ticker failures, logs warnings
+    to stderr while maintaining JSON stdout for successful metrics
+"""
+
 #!/usr/bin/env python3
 """
 Enhanced Macro Economic Indicators
@@ -200,16 +247,22 @@ def fetch_enhanced_macro_indicators(filing_date_str: str):
             "XLV": "healthcareSectorReturn30d" # Healthcare
         }
 
+        # Batch fetch all sector tickers at once
+        sector_tickers = list(sectors.keys())
+        sector_data = yf.download(sector_tickers, start=start_date, end=end_date, group_by='ticker', progress=False)
+
         for ticker, field_name in sectors.items():
             try:
-                sector_etf = yf.Ticker(ticker)
-                sector_hist = sector_etf.history(start=start_date, end=end_date)
+                if len(sector_tickers) == 1:
+                    sector_hist = sector_data
+                else:
+                    sector_hist = sector_data[ticker] if ticker in sector_data else None
 
-                if not sector_hist.empty and len(sector_hist) >= 30:
+                if sector_hist is not None and not sector_hist.empty and len(sector_hist) >= 30:
                     sector_30d_return = ((sector_hist['Close'].iloc[-1] - sector_hist['Close'].iloc[-30]) / sector_hist['Close'].iloc[-30]) * 100
                     result[field_name] = float(sector_30d_return)
             except Exception as e:
-                print(f"[Macro] Warning: Could not fetch {ticker}: {e}", file=sys.stderr)
+                print(f"[Macro] Warning: Could not process {ticker}: {e}", file=sys.stderr)
 
         # ===== 6. Market Regime Classification =====
         # Combine momentum, volatility, and rates for overall regime

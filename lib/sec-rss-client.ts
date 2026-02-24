@@ -1,4 +1,37 @@
 /**
+ * @module lib/sec-rss-client
+ * @description Fetches SEC filing data from RSS feeds and daily index files with automatic filtering for top 1,000 public companies by ticker symbol
+ *
+ * PURPOSE:
+ * - Retrieve real-time SEC filings (10-K, 10-Q, 8-K) from RSS feeds filtered by form type with 100-entry batches
+ * - Parse daily index files from SEC Archives to backfill missed filing dates with CIK-to-ticker resolution
+ * - Filter all retrieved filings to include only companies from pre-defined top 1,000 ticker list
+ * - Map CIK numbers to ticker symbols using SEC's company_tickers.json endpoint with in-memory caching
+ *
+ * DEPENDENCIES:
+ * - ./top1000-tickers - Provides TOP_1000_TICKERS array for filtering filings to major public companies
+ * - child_process (exec) - Executes curl commands as fallback when fetch() is blocked by SEC servers
+ * - util (promisify) - Converts exec callback to promise-based async/await pattern
+ *
+ * EXPORTS:
+ * - SECFiling (interface) - Typing for filing objects with accessionNumber, cik, ticker, companyName, formType, filingDate, reportDate, and filingUrl fields
+ * - SECRSSClient (class) - Client providing methods to fetch from RSS feeds, daily indexes, and batch catch-up with rate limiting
+ * - secRSSClient (const) - Singleton instance of SECRSSClient ready for immediate import and use
+ *
+ * PATTERNS:
+ * - Import secRSSClient and call fetchRecentFilingsFromRSS(['10-K', '10-Q']) to get latest 100 filings per form type
+ * - Use fetchFromDailyIndex(new Date('2025-01-15'), ['10-K']) to retrieve specific date's filings from archive
+ * - Call fetchMissedDays(startDate, endDate) to backfill date range, automatically skipping weekends and holidays
+ * - All methods return SECFiling[] arrays pre-filtered to top 1,000 companies only
+ *
+ * CLAUDE NOTES:
+ * - Uses curl via child_process as fallback because SEC blocks direct fetch() requests - increases reliability but requires system curl
+ * - Enforces 100ms delay between requests (10 req/sec) to comply with SEC rate limiting policy stated in code
+ * - CIK-to-ticker mapping loads once on first use and caches in memory Map for subsequent lookups - reduces API calls by ~99%
+ * - Daily index parsing skips first 11 lines (header rows) and validates pipe-delimited format to avoid parsing HTML error pages
+ * - Returns empty array instead of throwing when daily index is unavailable (weekends/holidays) - enables robust batch processing
+ */
+/**
  * SEC RSS Feed and Daily Index Client
  *
  * Efficiently fetches SEC filings using:
@@ -56,6 +89,11 @@ export class SECRSSClient {
   async fetchRecentFilingsFromRSS(formTypes: string[] = ['10-K', '10-Q', '8-K']): Promise<SECFiling[]> {
     const filings: SECFiling[] = [];
 
+    // Ensure CIK mapping is loaded before processing any form types
+    if (this.cikToTickerMap.size === 0) {
+      await this.loadCIKMapping();
+    }
+
     // RSS feed can filter by form type
     for (const formType of formTypes) {
       const url = `${this.BASE_URL}/cgi-bin/browse-edgar?action=getcurrent&type=${formType}&company=&dateb=&owner=include&start=0&count=100&output=atom`;
@@ -97,6 +135,11 @@ export class SECRSSClient {
     const url = `${this.BASE_URL}/Archives/edgar/daily-index/${year}/QTR${quarter}/master.${dateStr}.idx`;
 
     try {
+      // Ensure CIK mapping is loaded before processing
+      if (this.cikToTickerMap.size === 0) {
+        await this.loadCIKMapping();
+      }
+
       // Use curl instead of fetch() to avoid being blocked by SEC
       const indexText = await this.fetchWithCurl(url);
 
@@ -125,24 +168,46 @@ export class SECRSSClient {
     const filings: SECFiling[] = [];
     const currentDate = new Date(startDate);
 
-    while (currentDate <= endDate) {
-      // Skip weekends
-      const dayOfWeek = currentDate.getDay();
+    // Ensure CIK mapping is loaded before processing any dates
+    if (this.cikToTickerMap.size === 0) {
+      await this.loadCIKMapping();
+    }
+
+    // Collect all URLs first (batch preparation)
+    const urls: Array<{date: Date, url: string}> = [];
+    const tempDate = new Date(startDate);
+    
+    while (tempDate <= endDate) {
+      const dayOfWeek = tempDate.getDay();
       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
-        try {
-          const dayFilings = await this.fetchFromDailyIndex(currentDate, formTypes);
-          filings.push(...dayFilings);
-          console.log(`[Catch-up] ${this.formatDate(currentDate)}: Found ${dayFilings.length} filings`);
-        } catch (error: any) {
-          console.error(`[Catch-up] ${this.formatDate(currentDate)}: ${error.message}`);
+        const year = tempDate.getFullYear();
+        const quarter = Math.floor(tempDate.getMonth() / 3) + 1;
+        const dateStr = this.formatDate(tempDate);
+        const url = `${this.BASE_URL}/Archives/edgar/daily-index/${year}/QTR${quarter}/master.${dateStr}.idx`;
+        urls.push({date: new Date(tempDate), url});
+      }
+      tempDate.setDate(tempDate.getDate() + 1);
+    }
+
+    // Fetch all URLs with rate limiting
+    for (const {date, url} of urls) {
+      try {
+        const indexText = await this.fetchWithCurl(url);
+        
+        if (indexText.trim().startsWith('<') || !indexText.includes('CIK|Company Name|Form Type')) {
+          console.log(`[Catch-up] ${this.formatDate(date)}: Invalid response format, skipping`);
+          continue;
         }
 
-        // Rate limit
-        await this.delay(100);
+        const dayFilings = await this.parseDailyIndex(indexText, formTypes);
+        filings.push(...dayFilings);
+        console.log(`[Catch-up] ${this.formatDate(date)}: Found ${dayFilings.length} filings`);
+      } catch (error: any) {
+        console.error(`[Catch-up] ${this.formatDate(date)}: ${error.message}`);
       }
 
-      // Move to next day
-      currentDate.setDate(currentDate.getDate() + 1);
+      // Rate limit
+      await this.delay(100);
     }
 
     return filings;

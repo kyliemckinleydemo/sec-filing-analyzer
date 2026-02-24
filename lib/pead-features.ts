@@ -1,4 +1,40 @@
 /**
+ * @module lib/pead-features
+ * @description Calculates 24+ quantitative features for predicting 7-day post-earnings stock price movements (PEAD) including earnings surprises, analyst revisions, technical indicators, and beta-adjusted abnormal returns
+ *
+ * PURPOSE:
+ * - Compute SUE (Standardized Unexpected Earnings) by dividing EPS beat by analyst estimate standard deviation
+ * - Calculate guidance delta as percentage change from old consensus to new guidance midpoint
+ * - Track analyst revision momentum over 30-day windows using CompanySnapshot historical data
+ * - Measure stock relative strength versus sector benchmarks over 90-day periods
+ * - Calculate interest rate sensitivity via Pearson correlation between stock returns and 10Y Treasury yield changes
+ * - Generate beta-adjusted abnormal returns by subtracting (Beta × Market Return) from raw stock returns
+ *
+ * DEPENDENCIES:
+ * - @prisma/client - Queries CompanySnapshot for analyst estimates/ratings, TechnicalIndicators for MA/RSI data, MacroIndicators for treasury yields and sector returns, StockPrice for historical pricing
+ *
+ * EXPORTS:
+ * - PEADFeatures (interface) - Shape containing 24 feature fields: sue, epsActual/Consensus/Beat, guidanceDelta/Shift, analystRevision30d/Upgrade30d, consensusDispersion, relativeStrength90d, sectorReturn90d, priceToMA50/MA200, rsi14, interestRateSensitivity, yieldCurve, vix, spxReturn7d, marketCap, beta, peRatio, abnormalReturn7d, rawReturn7d, marketReturn7d
+ * - PEADFeatureEngine (class) - Feature calculator with methods: calculateSUE(), calculateGuidanceDelta(), calculateAnalystRevisionMomentum(), calculateRelativeStrength(), calculateMAProximity(), calculateInterestRateSensitivity(), calculateAbnormalReturn(), extractAllFeatures()
+ * - peadFeatureEngine (const) - Singleton instance of PEADFeatureEngine ready for immediate use
+ *
+ * PATTERNS:
+ * - Instantiate const engine = new PEADFeatureEngine(); then call await engine.extractAllFeatures(ticker, earningsDate, actualEPS, guidanceLow, guidanceHigh) to get complete PEADFeatures object
+ * - For individual features, call methods like await engine.calculateSUE(ticker, date, actualEPS) which returns { sue, epsConsensus, consensusDispersion }
+ * - calculateSUE() queries CompanySnapshot within 2-day window before earnings and estimates dispersion from analyst rating distribution (buy/hold/sell counts)
+ * - calculateAnalystRevisionMomentum() compares consensus at T-1 vs T-30 with ±3 day tolerance windows for snapshot matching
+ * - calculateInterestRateSensitivity() requires minimum 30 data points and uses Pearson correlation between daily stock returns and treasury yield changes over 90 days
+ * - All methods return null for missing data rather than throwing errors - caller must handle null feature values
+ *
+ * CLAUDE NOTES:
+ * - SUE calculation estimates consensus dispersion heuristically from analyst rating variance when actual estimate standard deviation unavailable - uses formula: abs(epsConsensus) * (0.05 + ratingVariance * 0.10) to approximate 5-15% dispersion typical for large caps
+ * - Relative strength uses sector-specific field mapping (techSectorReturn30d, financialSectorReturn30d, etc.) but only supports 4 sectors - returns null for unmapped sectors
+ * - calculateInterestRateSensitivity() has asymmetric length handling - aligns arrays by taking minimum length but requires both to independently have 30+ points before alignment
+ * - extractAllFeatures() is incomplete in provided code (cuts off mid-expression at earningsDate.g) - implementation appears to aggregate all individual feature calculations but final assembly logic missing
+ * - All date-based queries use tolerance windows (±1 to ±3 days) to handle missing trading days/weekends rather than exact date matching
+ * - Pearson correlation method referenced but not shown in code - appears to be private helper used by calculateInterestRateSensitivity()
+ */
+/**
  * PEAD (Post-Earnings Announcement Drift) Feature Engineering
  *
  * Implements the quantitative features for predicting 7-day post-earnings returns:

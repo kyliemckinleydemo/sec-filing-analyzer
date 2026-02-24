@@ -1,3 +1,35 @@
+/**
+ * @module app/backtest/page
+ * @description Next.js page component that renders an interactive backtesting interface for evaluating ML model prediction accuracy against historical SEC filing data with real-time API integration
+ *
+ * PURPOSE:
+ * - Fetch backtest results from /api/backtest endpoint with ticker symbol and limit=20 parameter
+ * - Display aggregate statistics including direction accuracy, average error percentages, and accuracy distribution across four tiers (excellent/good/fair/poor)
+ * - Render detailed results table showing predicted vs actual 7-day returns for each filing with color-coded direction indicators
+ * - Manage loading states, error handling, and conditional UI rendering based on API response success/failure
+ *
+ * DEPENDENCIES:
+ * - react - useState for ticker input, loading state, results/summary data, and error messages; useEffect for component lifecycle
+ * - @/components/ui/card - Provides Card, CardContent, CardHeader, CardTitle, CardDescription for structured layout sections
+ * - @/components/ui/button - Provides Button component for navigation and backtest trigger action
+ * - next/navigation - useRouter hook for programmatic navigation back to home page
+ *
+ * EXPORTS:
+ * - BacktestPage (component, default) - Client-side page component that manages backtest workflow from ticker input through results display
+ *
+ * PATTERNS:
+ * - Access at /backtest route; enter ticker symbol (auto-uppercased) and click 'Run Backtest' button
+ * - Component fetches GET /api/backtest?ticker=AAPL&limit=20 and displays BacktestResult[] array plus BacktestSummary statistics
+ * - Results table color-codes predicted/actual returns (green for positive, red for negative) and shows accuracy badges (excellent/good/fair/poor)
+ * - Error state displays red-bordered card with error message from API response or generic failure message
+ *
+ * CLAUDE NOTES:
+ * - Hardcoded limit=20 parameter restricts backtest to most recent 20 filings per ticker
+ * - Accuracy tiers categorize predictions: excellent (<5% error), good (5-15%), fair (15-30%), poor (>30%)
+ * - Direction accuracy counts correct/wrong sign predictions separately from magnitude accuracy metrics
+ * - Empty results array triggers special message explaining 7-day waiting period needed for actual returns calculation
+ * - All monetary values display with 2 decimal precision; percentages use fixed(2) formatting throughout
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

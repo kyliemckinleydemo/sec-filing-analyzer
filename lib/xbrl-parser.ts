@@ -1,4 +1,30 @@
 /**
+ * @module lib/xbrl-parser
+ * @description Parses inline XBRL tags from SEC filing HTML documents to extract structured financial statement data including income statement, balance sheet, and cash flow metrics
+ *
+ * PURPOSE:
+ * - Extract financial metrics (revenue, net income, EPS, assets, liabilities, cash flows) from inline XBRL-tagged HTML in 10-K/10-Q filings
+ * - Handle multiple XBRL concept name variations per metric (e.g., 'Revenues' vs 'RevenueFromContractWithCustomerExcludingAssessedTax')
+ * - Apply scale attributes to convert abbreviated values (scale="6" converts to millions)
+ * - Format extracted financials into human-readable strings with billions/percentages for display
+ *
+ * EXPORTS:
+ * - XBRLFinancials (interface) - Type definition with optional fields for income statement (revenue, netIncome, eps), balance sheet (totalAssets, stockholdersEquity), cash flow (operatingCashFlow), and period metadata
+ * - XBRLParser (class) - Parser with parseInlineXBRL(), formatFinancials(), and getSummary() methods for extraction and formatting
+ * - xbrlParser (const) - Singleton instance of XBRLParser ready for immediate use
+ *
+ * PATTERNS:
+ * - Import xbrlParser singleton and call xbrlParser.parseInlineXBRL(htmlString) to get XBRLFinancials object
+ * - Use formatFinancials(financials) to convert raw numbers into display strings like '$45.2B' or '23.5%'
+ * - Call getSummary(financials) to get comma-separated string of key metrics for logging/debugging
+ *
+ * CLAUDE NOTES:
+ * - Tries multiple XBRL concept names per metric in priority order - stops at first match (e.g., tries 'EarningsPerShareBasic' before 'EarningsPerShareDiluted')
+ * - Scale attribute handling critical - SEC filings often use scale="6" to represent millions, scale="9" for billions
+ * - Regex patterns match both 'ix:nonfraction' and 'ix:nonFraction' capitalization to handle vendor variations in XBRL tagging
+ * - Returns undefined for missing metrics rather than throwing errors - caller must check presence before using values
+ */
+/**
  * Inline XBRL Parser for SEC Filings
  *
  * Extracts financial data from inline XBRL tags in 10-K/10-Q HTML filings

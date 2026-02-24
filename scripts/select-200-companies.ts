@@ -85,6 +85,9 @@ async function selectCompanies(): Promise<CompanySelection[]> {
 
   console.log('📊 Selecting across market cap spectrum:');
 
+  // Create a map of company IDs to their index for efficient lookup
+  const companyIndexMap = new Map(allCompanies.map((c, i) => [c.id, i]));
+
   for (const bucket of buckets) {
     const companiesInBucket = remaining.filter(c =>
       c.marketCap! >= bucket.min && c.marketCap! < bucket.max
@@ -105,7 +108,7 @@ async function selectCompanies(): Promise<CompanySelection[]> {
       selected.push({
         ...company,
         marketCap: company.marketCap!,
-        rank: allCompanies.findIndex(c => c.id === company.id) + 1,
+        rank: (companyIndexMap.get(company.id) ?? 0) + 1,
         category: bucket.name,
       });
     });

@@ -1,3 +1,33 @@
+/**
+ * @module app/api/backfill/route
+ * @description Next.js API route that backfills historical SEC filings data for companies by fetching and storing filing records across a specified date range
+ *
+ * PURPOSE:
+ * - Fetch historical SEC filings (10-K, 10-Q, 8-K) using daily index files from the SEC RSS client
+ * - Process and store company records and filing data in the database with upsert operations
+ * - Track backfill job execution status, metrics, and errors in the cronJobRun table
+ * - Support flexible date ranges via query parameters (days back or custom start/end dates)
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextResponse for API route JSON responses
+ * - @/lib/prisma - Database client for upserting companies and filings, tracking job runs
+ * - @/lib/sec-rss-client - secRSSClient.fetchMissedDays() retrieves historical filings from SEC daily indices
+ *
+ * EXPORTS:
+ * - dynamic (const) - Forces dynamic rendering to prevent static generation at build time
+ * - GET (function) - HTTP handler that executes backfill job and returns results with filing counts
+ *
+ * PATTERNS:
+ * - Call via GET /api/backfill?days=90 to backfill last 90 days (max 50 per run to avoid timeouts)
+ * - Or use GET /api/backfill?startDate=2025-01-01&endDate=2025-10-01 for custom date ranges
+ * - Response includes { success, message, results: { fetched, stored, errors, companiesProcessed, daysProcessed } }
+ *
+ * CLAUDE NOTES:
+ * - Auto-limits requests to 50 days maximum per run to prevent API timeouts - requires multiple runs for longer ranges
+ * - Uses upsert pattern for both companies and filings to handle duplicate submissions across date ranges
+ * - Creates cronJobRun record at start and updates with status/metrics on completion or failure for audit trail
+ * - End date defaults to yesterday (getDate() - 1) to avoid incomplete current-day data from SEC
+ */
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { secRSSClient } from '@/lib/sec-rss-client';

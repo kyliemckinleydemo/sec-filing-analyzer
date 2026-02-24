@@ -1,4 +1,34 @@
 /**
+ * @module lib/baseline-features
+ * @description Extracts 6 standardized features from earnings data (actual vs. estimated EPS) to feed into production baseline prediction model
+ *
+ * PURPOSE:
+ * - Calculate EPS surprise percentage using formula: ((actual - estimated) / |estimated|) * 100
+ * - Generate binary indicators for beats/misses at 2% and 10% thresholds
+ * - Validate earnings data contains non-null, non-NaN actualEPS and estimatedEPS values
+ * - Format extracted features as human-readable strings with percentage notation
+ *
+ * EXPORTS:
+ * - BaselineFeatures (interface) - Shape with epsSurprise, surpriseMagnitude, and 4 binary flags (epsBeat, epsMiss, largeBeat, largeMiss)
+ * - EarningsData (interface) - Input shape requiring actualEPS and estimatedEPS numbers
+ * - extractBaselineFeatures (function) - Converts EarningsData into complete BaselineFeatures object
+ * - validateEarningsData (function) - Type guard checking if partial earnings data is valid and complete
+ * - formatFeatures (function) - Returns multi-line string with percentages and Yes/No for binary flags
+ * - interpretFeatures (function) - Returns single-line natural language summary of earnings outcome
+ *
+ * PATTERNS:
+ * - Call validateEarningsData() before extractBaselineFeatures() to ensure data integrity
+ * - Use extractBaselineFeatures({ actualEPS: 2.50, estimatedEPS: 2.30 }) to get all 6 features at once
+ * - Pass extracted features to formatFeatures() for logging or interpretFeatures() for user-facing messages
+ * - EPS surprise values are capped between -1000% and 1000% to prevent infinity from zero estimates
+ *
+ * CLAUDE NOTES:
+ * - Binary thresholds are hardcoded: 2% separates beat/miss, 10% separates large events
+ * - Zero estimated EPS is handled specially by treating actualEPS * 100 as the surprise percentage
+ * - interpretFeatures() returns hierarchical interpretation checking large events before small ones
+ * - All 6 features match exact requirements of production baseline model - modification breaks compatibility
+ */
+/**
  * Baseline Model Feature Extraction
  *
  * Extracts the 6 features required by the production baseline model:

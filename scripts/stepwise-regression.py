@@ -160,7 +160,9 @@ feature_importance = pd.DataFrame({
     'abs_coef': np.abs(lr.coef_)
 }).sort_values('abs_coef', ascending=False)
 
-for i, row in feature_importance.head(10).iterrows():
+top_10_features = feature_importance.head(10)
+for idx in top_10_features.index:
+    row = feature_importance.loc[idx]
     print(f"{row['feature']:25s}: {row['coefficient']:+.3f}")
 print()
 
@@ -235,14 +237,16 @@ print(f"Improvement: {direction_accuracy_lasso - 54.7:+.1f} percentage points")
 print()
 
 # Features selected by Lasso
-selected_features = feature_importance[lasso.coef_ != 0]
+lasso_non_zero_mask = lasso.coef_ != 0
+selected_features = feature_importance[lasso_non_zero_mask]
 print(f"Features selected by Lasso: {len(selected_features)}/{len(features.columns)}")
 print()
 
 print("SELECTED FEATURES (non-zero coefficients):")
 print("-" * 80)
-for i, row in feature_importance[lasso.coef_ != 0].iterrows():
-    lasso_coef = lasso.coef_[i]
+for idx in selected_features.index:
+    row = feature_importance.loc[idx]
+    lasso_coef = lasso.coef_[idx]
     print(f"{row['feature']:25s}: {lasso_coef:+.3f}")
 print()
 
@@ -298,19 +302,22 @@ print()
 # Feature insights
 print(f"4. KEY FEATURES (from Lasso):")
 if len(selected_features) > 0:
-    top_features = selected_features.head(5)
-    for i, row in top_features.iterrows():
-        print(f"   → {row['feature']}: {lasso.coef_[i]:+.3f}")
+    top_features_indices = selected_features.head(5).index
+    for idx in top_features_indices:
+        row = selected_features.loc[idx]
+        print(f"   → {row['feature']}: {lasso.coef_[idx]:+.3f}")
 else:
     print(f"   → All features zeroed out (dataset too noisy)")
 print()
 
 # Non-linearity
+mega_cap_loc = features.columns.get_loc('mega_cap')
+mega_cap_bull_loc = features.columns.get_loc('mega_cap_bull')
 print(f"5. NON-LINEAR RELATIONSHIPS:")
 print(f"   → Market cap: Test log, squared, categorical")
-print(f"   → Mega cap effect: {lasso.coef_[features.columns.get_loc('mega_cap')]:+.3f}")
-print(f"   → Mega cap × bull: {lasso.coef_[features.columns.get_loc('mega_cap_bull')]:+.3f}")
-print(f"   → Non-linear market cap relationship {'CONFIRMED' if abs(lasso.coef_[features.columns.get_loc('mega_cap_bull')]) > 0.1 else 'NOT FOUND'}")
+print(f"   → Mega cap effect: {lasso.coef_[mega_cap_loc]:+.3f}")
+print(f"   → Mega cap × bull: {lasso.coef_[mega_cap_bull_loc]:+.3f}")
+print(f"   → Non-linear market cap relationship {'CONFIRMED' if abs(lasso.coef_[mega_cap_bull_loc]) > 0.1 else 'NOT FOUND'}")
 print()
 
 print("=" * 80)

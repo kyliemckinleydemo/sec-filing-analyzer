@@ -1,4 +1,29 @@
 /**
+ * @module lib/filing-utils
+ * @description Validates SEC filings for financial data completeness by parsing analysisData JSON and checking for earnings metrics, revenue surprises, and guidance information
+ *
+ * PURPOSE:
+ * - Filter filings to ensure they contain at least one financial indicator (EPS surprise, revenue surprise, structured financials, or guidance)
+ * - Identify 8-K filings as earnings-related by searching for specific keywords like 'earnings', 'financial results', or 'item 2.02' in filing summaries
+ * - Extract boolean flags indicating presence of EPS, revenue, guidance, and key metrics from parsed analysisData
+ * - Support v1.0 prediction accuracy by excluding filings without quantifiable financial data
+ *
+ * EXPORTS:
+ * - hasFinancialData (function) - Returns true if filing contains at least one financial indicator: EPS surprise, revenue surprise, structured data (revenue/EPS), guidance direction, or key metrics array
+ * - getFinancialDataSummary (function) - Returns object with hasEps, hasRevenue, hasGuidance, hasMetrics boolean flags parsed from filing's analysisData JSON
+ *
+ * PATTERNS:
+ * - Call hasFinancialData({ analysisData, filingType }) to validate before processing filing for predictions
+ * - Use getFinancialDataSummary({ analysisData }) to display which financial components are available in UI badges or filters
+ * - Both functions return false/empty on JSON parse errors, making them safe for malformed or missing analysisData
+ *
+ * CLAUDE NOTES:
+ * - 8-K filings require dual validation: must be earnings-related via keyword match AND have financial metrics - not just one condition
+ * - analysisData is stored as JSON string requiring parse - functions gracefully handle parse failures with try/catch returning false/empty defaults
+ * - Guidance counts as present only when guidanceDirection exists AND is not 'not_provided' - empty string or null treated as absent
+ * - hasMetrics checks TWO sources: fm.keyMetrics array length OR fm.structuredData.revenue existence - either qualifies as having metrics
+ */
+/**
  * Filing utility functions
  */
 

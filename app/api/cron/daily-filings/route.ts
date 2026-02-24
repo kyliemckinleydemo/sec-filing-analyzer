@@ -1,3 +1,37 @@
+/**
+ * @module app/api/cron/daily-filings/route
+ * @description Next.js API route handler that fetches and stores recent SEC filings for top 1,000 companies using incremental batch processing triggered by Vercel Cron
+ *
+ * PURPOSE:
+ * - Authenticates incoming requests via Vercel Cron user-agent or Bearer token from CRON_SECRET environment variable
+ * - Calculates dynamic lookback period (1-90 days) based on last successful run timestamp to fetch only new filings incrementally
+ * - Processes 100 companies per execution in batches of 50 to prevent timeout, with round-robin continuation tracking via companiesProcessed counter
+ * - Fetches 10-K, 10-Q, and 8-K filings from SEC API for each company ticker and upserts both Company and Filing records in Prisma database
+ * - Cleans up stuck CronJobRun records older than 10 minutes and maintains execution metadata including fetched count, stored count, and cumulative progress percentage
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextResponse for JSON API responses with status codes
+ * - @/lib/prisma - Database client for upserting Company and Filing records and managing CronJobRun state
+ * - @/lib/sec-client - Provides getCompanyByTicker and getCompanyFilings methods to fetch SEC EDGAR data with rate limiting
+ * - @/lib/top1000-tickers - Array constant TOP_1000_TICKERS containing company ticker symbols to process in chunks
+ *
+ * EXPORTS:
+ * - dynamic (const) - Next.js route segment config set to 'force-dynamic' to prevent static generation and ensure runtime execution
+ * - GET (function) - Async request handler that orchestrates cron job authentication, incremental filing fetch, batch processing, and database persistence with error handling
+ *
+ * PATTERNS:
+ * - Deploy with vercel.json cron configuration pointing to /api/cron/daily-filings endpoint with schedule like '0 2 * * *' for daily 2 AM UTC
+ * - Set CRON_SECRET environment variable in Vercel to enable manual triggering via 'Authorization: Bearer <secret>' header for testing
+ * - Monitor CronJobRun table for status='failed' with errorMessage to detect timeouts or SEC API failures requiring retry
+ * - Expect round-robin processing where each run advances startIndex by 100 companies, wrapping to index 0 after completing all 1,000 tickers
+ *
+ * CLAUDE NOTES:
+ * - Uses adaptive lookback calculation: first run fetches 90 days baseline, subsequent runs fetch daysSinceLastRun + 1 buffer to handle missed executions without gaps
+ * - Implements stuck job cleanup by marking CronJobRun records as failed if startedAt timestamp exceeds 10 minutes while still in 'running' status
+ * - Chunks 1,000 companies into 100-per-run batches processed in groups of 50 to balance Vercel's 300-second serverless timeout with SEC API rate limits of ~1-2 seconds per ticker
+ * - Returns progress percentage calculated as (cumulativeCompaniesProcessed / 1000) * 100 allowing external monitoring of multi-run completion cycles
+ * - Filters filings by cutoffDate using filing.filingDate > cutoffDate before slicing to 10 results per company, ensuring only new documents since last run are stored
+ */
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { secClient } from '@/lib/sec-client';

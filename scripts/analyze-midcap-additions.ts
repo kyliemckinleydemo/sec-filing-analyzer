@@ -1,4 +1,36 @@
 /**
+ * @module analyze-midcap-additions
+ * 
+ * @description
+ * Incrementally analyzes newly added mid-cap companies that haven't been processed yet.
+ * Identifies unanalyzed companies from the selection file, fetches their SEC filings,
+ * and performs Claude AI analysis to extract risk scores, sentiment, and summaries.
+ * 
+ * PURPOSE:
+ * - Load companies from selected-companies-with-midcaps.json selection file
+ * - Identify companies that lack AI analysis on their latest filings
+ * - Batch process SEC filings (10-K, 10-Q, 8-K) for unanalyzed companies
+ * - Extract Risk Factors and MD&A sections from filing HTML
+ * - Generate AI-powered risk scores and sentiment analysis using Claude
+ * - Update database with analysis results (riskScore, sentimentScore, aiSummary)
+ * - Provide detailed progress reporting and error handling
+ * - Support incremental runs (only analyzes what's missing)
+ * 
+ * EXPORTS:
+ * - None (executable script with main() entry point)
+ * 
+ * CLAUDE NOTES:
+ * - Processes companies in batches of 5 to manage API rate limits
+ * - Pre-fetches all filing contents per batch to optimize network requests
+ * - Extracts up to 15KB of Risk Factors and MD&A text for analysis
+ * - Implements 2-second delay between individual analyses
+ * - Implements 10-second delay between batches
+ * - Stores full analysis JSON in analysisData field
+ * - Defaults to riskScore=5.0 and sentimentScore=0.0 if analysis incomplete
+ * - Continues processing on individual failures (non-fatal error handling)
+ */
+
+/**
  * Analyze Mid-Cap Additions
  *
  * Only analyzes companies from the new mid-cap selection that haven't been analyzed yet
@@ -71,6 +103,23 @@ async function main() {
     console.log(`\n📦 Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(needAnalysis.length / batchSize)}`);
     console.log('─'.repeat(80));
 
+    // Batch fetch all filing contents for this batch
+    const filingUrls = batch.map(item => item.filing.filingUrl);
+    const filingContents = await Promise.all(
+      filingUrls.map(async (url) => {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            return { success: false, error: `Failed to fetch filing: ${response.statusText}` };
+          }
+          const html = await response.text();
+          return { success: true, html };
+        } catch (error) {
+          return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+        }
+      })
+    );
+
     for (let j = 0; j < batch.length; j++) {
       const { company, filing } = batch[j];
       const idx = i + j + 1;
@@ -82,14 +131,14 @@ async function main() {
       console.log(`     Accession: ${filing.accessionNumber}`);
 
       try {
-        // Fetch filing content
-        console.log(`  🌐 Fetching filing content from SEC...`);
-        const response = await fetch(filing.filingUrl);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch filing: ${response.statusText}`);
+        // Get the pre-fetched filing content
+        const filingContent = filingContents[j];
+        if (!filingContent.success) {
+          throw new Error(filingContent.error);
         }
 
-        const html = await response.text();
+        console.log(`  🌐 Using pre-fetched filing content from SEC...`);
+        const html = filingContent.html;
         const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
 
         // Extract sections

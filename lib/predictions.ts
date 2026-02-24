@@ -1,4 +1,34 @@
 /**
+ * @module lib/predictions
+ * @description Research-backed prediction engine calculating 7-day stock returns after SEC filings using risk analysis, earnings surprises, guidance changes, and market context with asymmetric impact modeling
+ *
+ * PURPOSE:
+ * - Calculate predicted 7-day return percentage using 15+ features including EPS/revenue surprises, risk score deltas, sentiment analysis, and guidance changes
+ * - Apply research-backed weightings from 2024 Q3 earnings data showing asymmetric impacts (EPS beats +1.3%, misses -2.9%)
+ * - Adjust predictions using valuation context (P/E ratio), market regime (bull/bear/flat), and macro factors (dollar strength, GDP proxy)
+ * - Generate confidence scores and detailed reasoning strings explaining each factor's contribution to final prediction
+ *
+ * DEPENDENCIES:
+ * - None - standalone prediction engine with no external imports
+ *
+ * EXPORTS:
+ * - PredictionFeatures (interface) - Input feature set with 20+ fields including risk deltas, sentiment scores, earnings surprises, guidance changes, valuation metrics, market context, and analyst activity
+ * - Prediction (interface) - Output shape with predicted7dReturn (number), confidence (number), reasoning (string), and features (PredictionFeatures)
+ * - predictionEngine (class instance) - Singleton PredictionEngine exposing predict() method for generating stock return predictions
+ *
+ * PATTERNS:
+ * - Call predictionEngine.predict(features) with Partial<PredictionFeatures> object containing available metrics from filing analysis
+ * - Start with baseline 0.0% then apply weighted factors: risk delta (-1.2x), sentiment (2.0x with concern adjustment), earnings surprises (±1.0-1.8%), guidance changes (±3.5-4.0%)
+ * - Handle concern level adjustments by inverting positive sentiment when concernLevel ≥7 (management tone misalignment detection)
+ * - Apply P/E and market cap multipliers to earnings surprise impacts using calculatePEMultiplier() and calculateMarketCapMultiplier() helpers
+ *
+ * CLAUDE NOTES:
+ * - Model underwent recalibration 2025-12-17 after 741-sample backtest showed 35.9% bullish over-prediction - baseline adjusted from +0.83% to 0.0%, risk weight increased 0.8→1.2
+ * - Implements asymmetric impact modeling where EPS misses penalized 2x harder than beats, and guidance lowering has -4.0% impact vs +3.5% for raises
+ * - Contains sophisticated concern-sentiment alignment logic: high concern (≥7) + positive sentiment inverts to negative impact as red flag for management disconnection
+ * - EPS inline results have 75% accuracy in real data (highest predictor) and receive +0.6% bias for predictability value
+ */
+/**
  * Prediction Engine
  * Pattern-based prediction system for stock price movements post-filing
  */

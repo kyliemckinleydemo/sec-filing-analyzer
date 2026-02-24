@@ -1,3 +1,37 @@
+/**
+ * @module app/api/cron/paper-trading-close-positions/route
+ * @description Next.js API route executing scheduled cron job to automatically close paper trading positions held for 7+ days and update portfolio metrics
+ *
+ * PURPOSE:
+ * - Authenticate requests using Vercel cron user-agent or CRON_SECRET bearer token
+ * - Query all active paper trading portfolios from database
+ * - Close positions held 7+ days using PaperTradingEngine.closeExpiredPositions()
+ * - Recalculate portfolio metrics after position closures using updatePortfolioMetrics()
+ * - Return summary with total positions closed across all portfolios
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextResponse for API route responses
+ * - @/lib/prisma - Database client for querying active paper portfolios
+ * - @/lib/paper-trading - PaperTradingEngine class handling position closure and metric updates
+ *
+ * EXPORTS:
+ * - dynamic (const) - Set to 'force-dynamic' to disable static generation for cron execution
+ * - maxDuration (const) - Set to 300 seconds allowing up to 5 minutes for batch processing
+ * - GET (function) - Async handler processing daily cron job for position closure
+ *
+ * PATTERNS:
+ * - Deploy with vercel.json cron schedule at '0 3 * * *' (3:00 AM ET daily)
+ * - Set CRON_SECRET environment variable for local testing with Bearer token authentication
+ * - Route accessible at /api/cron/paper-trading-close-positions for manual trigger
+ * - Returns JSON with { success, message, results: { portfolios, positionsClosed } }
+ *
+ * CLAUDE NOTES:
+ * - Scheduled after 3:00 AM ET to run after analyst data updates complete per comment
+ * - Continues processing remaining portfolios even if individual portfolio fails with try-catch
+ * - Accepts both Vercel cron user-agent and CRON_SECRET bearer token for flexibility
+ * - Uses 5-minute timeout to handle large batch operations across multiple portfolios
+ * - No transaction wrapping - each portfolio processed independently to isolate failures
+ */
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { PaperTradingEngine } from '@/lib/paper-trading';

@@ -1,3 +1,37 @@
+/**
+ * @module app/api/predict/[accession]/route
+ * @description Next.js API route that generates or retrieves 30-day alpha predictions for SEC filings by accession number, with rate limiting, accuracy tracking, and automatic paper trading evaluation
+ *
+ * PURPOSE:
+ * - Fetches filing and company data by normalized accession number from Prisma database
+ * - Generates alpha predictions using price momentum, analyst activity (upgrades/downgrades from major firms), and sentiment analysis
+ * - Caches predictions in database and returns stored results on subsequent requests with accuracy metrics
+ * - Automatically evaluates prediction signals for paper trading execution based on confidence thresholds
+ *
+ * DEPENDENCIES:
+ * - @/lib/prisma - Database client for querying Filing, Company, AnalystActivity, Prediction, and PaperPortfolio tables
+ * - @/lib/alpha-model - Provides predictAlpha() and extractAlphaFeatures() for alpha-v1.0 prediction model
+ * - @/lib/predictions - Legacy fallback predictionEngine for cases with insufficient market data
+ * - @/lib/accuracy-tracker - Tracks prediction accuracy by comparing predicted vs actual 7-day returns from market data
+ * - @/lib/api-middleware - Rate limits unauthenticated requests to 20 per day via requireUnauthRateLimit()
+ *
+ * EXPORTS:
+ * - GET (function) - API handler that accepts accession number route parameter and returns prediction JSON with signal (LONG/SHORT/NEUTRAL), confidence level, expected alpha percentage, and optional accuracy data
+ *
+ * PATTERNS:
+ * - Call GET /api/predict/[accession] with 18-digit accession (dashes optional, normalized automatically)
+ * - Response includes prediction.signal ('LONG'/'SHORT'/'NEUTRAL'), prediction.expectedAlpha (percentage), prediction.confidence ('high'/'medium'/'low')
+ * - Authenticated users bypass rate limits; unauthenticated users limited to 20 requests per day
+ * - Returns cached predictions immediately if predicted30dAlpha exists in database
+ * - Automatically triggers paper trading evaluation if PaperPortfolio.isActive exists
+ *
+ * CLAUDE NOTES:
+ * - Queries AnalystActivity table for upgrades and major firm downgrades in 30 days prior to filing date to inform model
+ * - Falls back to legacy rule-based engine only when currentPrice missing or fiftyTwoWeekLow unavailable (rare case)
+ * - Stores both predicted30dAlpha (primary) and predicted7dReturn (backward compatibility, scaled as 7/30 of 30d prediction)
+ * - Updates actual7dReturn in database when accuracy check retrieves real market data but filing record hasn't stored it yet
+ * - MAJOR_FIRMS constant defines Goldman Sachs, Morgan Stanley, JP Morgan, BofA, Citi, Wells Fargo, Barclays, UBS for downgrade weighting
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { predictAlpha, extractAlphaFeatures } from '@/lib/alpha-model';

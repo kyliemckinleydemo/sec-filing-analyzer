@@ -1,3 +1,33 @@
+/**
+ * @module components/SignInModal
+ * @description Modal dialog component that handles passwordless authentication by sending magic links to user email addresses
+ *
+ * PURPOSE:
+ * - Renders a dialog modal with email input form for passwordless authentication
+ * - Posts email to /api/auth/send-magic-link endpoint to trigger magic link delivery
+ * - Displays success confirmation screen after successful link transmission
+ * - Manages form state including loading, success, and error conditions with visual feedback
+ *
+ * DEPENDENCIES:
+ * - @/components/ui/button - Provides styled Button component for form submission and close actions
+ * - @/components/ui/input - Provides styled Input component for email field with disabled state support
+ * - @/components/ui/dialog - Provides Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription for modal structure
+ *
+ * EXPORTS:
+ * - SignInModal (component) - Controlled modal accepting isOpen boolean and onClose callback to manage visibility
+ *
+ * PATTERNS:
+ * - Pass isOpen={modalOpen} and onClose={handleCloseModal} props to control modal visibility from parent
+ * - Component auto-resets internal state (email, success, error) when onClose is triggered
+ * - Shows email input form initially, then switches to success message after successful submission
+ * - Displays inline error messages in red banner above submit button on API failures
+ *
+ * CLAUDE NOTES:
+ * - Magic links expire in 15 minutes as indicated in success message to users
+ * - Form prevents submission while loading=true and disables input field during API request
+ * - Uses gradient background on submit button (blue-600 to purple-600) matching app branding
+ * - handleClose resets all form state ensuring clean slate when modal reopens after previous submission
+ */
 'use client';
 
 import { useState } from 'react';

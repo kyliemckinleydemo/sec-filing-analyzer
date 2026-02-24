@@ -1,3 +1,26 @@
+/**
+ * @module check-high-dividend-yields
+ * @description Diagnostic script to identify and analyze companies with suspicious or high dividend yields in the database
+ * 
+ * PURPOSE:
+ * - Detects potential data format inconsistencies in dividend yield storage
+ * - Identifies companies with yields between 1% and 100% that may be stored incorrectly
+ * - Validates dividend yields in the normal high range (5-20%)
+ * - Provides statistical overview of dividend yield distribution across all companies
+ * - Helps diagnose whether yields are stored as decimals (0.05 for 5%) or percentages (5 for 5%)
+ * 
+ * EXPORTS:
+ * - None (standalone script with self-executing main function)
+ * 
+ * CLAUDE NOTES:
+ * - Script assumes dividend yields should be stored as decimals (e.g., 0.05 for 5%)
+ * - Queries companies with yields >= 0.01 and <= 100 to catch format errors
+ * - Outputs top 50 suspicious entries sorted by yield descending
+ * - Includes aggregate statistics (count, average, min, max) for all dividend yields
+ * - Automatically disconnects Prisma client on completion or error
+ * - Formatting: ticker (6 chars), company name (42 chars), raw yield, and percentage display
+ */
+
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();

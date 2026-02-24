@@ -1,3 +1,45 @@
+"""
+Automated Historical Data Collection Pipeline for SEC Filings
+
+@module collect-historical-data
+@description Fetches historical earnings filings (10-Q, 10-K) from SEC EDGAR API
+             for multiple tickers over a 3-year period (2022-2025) and calculates
+             corresponding stock returns. Creates a comprehensive dataset of 100-300
+             filings for training and validating financial analysis models.
+
+PURPOSE:
+    - Automate collection of SEC filings from EDGAR database for top 20 mega-cap companies
+    - Retrieve 10-Q (quarterly) and 10-K (annual) earnings reports since 2022
+    - Calculate actual 7-day stock returns following each filing date using yfinance
+    - Generate structured JSON output containing filing metadata and performance metrics
+    - Build robust training dataset for machine learning models analyzing SEC filings
+    - Support batch processing with rate limiting to comply with SEC API guidelines
+
+EXPORTS:
+    - get_company_cik(ticker: str) -> Optional[str]
+        Retrieves CIK (Central Index Key) for a given stock ticker
+    
+    - fetch_company_filings(ticker: str, cik: str, start_date: str) -> List[Dict]
+        Fetches all 10-Q and 10-K filings for a company since specified date
+    
+    - calculate_stock_returns_batch(filings: List[Dict], days: int) -> Dict[str, Dict[str, Optional[float]]]
+        Calculates stock returns for multiple filings efficiently in batch mode
+    
+    - main()
+        Main pipeline orchestrating data collection, return calculation, and JSON output
+
+CLAUDE NOTES:
+    - SEC EDGAR API requires User-Agent header with contact information
+    - Rate limiting enforced (0.2s delay between requests) per SEC guidelines (max 10/sec)
+    - CIK values are hardcoded for top 20 companies for reliability and performance
+    - Batch processing of stock returns minimizes yfinance API calls (one per ticker)
+    - Returns calculated from filing date (or next trading day) plus N trading days
+    - Output includes both raw filings and filings with successfully calculated returns
+    - Error handling implemented per-ticker to prevent single failures from blocking pipeline
+    - Accession numbers require dash removal for constructing SEC document URLs
+    - Historical data range dynamically calculated per ticker to optimize yfinance queries
+"""
+
 #!/usr/bin/env python3
 """
 Automated Historical Data Collection Pipeline
@@ -113,34 +155,63 @@ def fetch_company_filings(ticker: str, cik: str, start_date: str = "2022-01-01")
         print(f"[{ticker}] Error fetching filings: {e}", file=sys.stderr)
         return []
 
-def calculate_stock_return(ticker: str, filing_date: str, days: int = 7) -> Optional[float]:
-    """Calculate stock return N days after filing"""
-    try:
-        filing_dt = datetime.fromisoformat(filing_date)
-        start_date = filing_dt
-        end_date = filing_dt + timedelta(days=days + 5)  # Buffer for weekends
-
-        stock = yf.Ticker(ticker)
-        hist = stock.history(start=start_date, end=end_date)
-
-        if len(hist) < 2:
-            return None
-
-        # Get price on filing date (or next trading day)
-        start_price = hist['Close'].iloc[0]
-
-        # Get price N trading days later
-        if len(hist) >= days + 1:
-            end_price = hist['Close'].iloc[days]
-        else:
-            end_price = hist['Close'].iloc[-1]
-
-        return_pct = ((end_price - start_price) / start_price) * 100
-        return float(return_pct)
-
-    except Exception as e:
-        print(f"[{ticker}] Error calculating return: {e}", file=sys.stderr)
-        return None
+def calculate_stock_returns_batch(filings: List[Dict], days: int = 7) -> Dict[str, Dict[str, Optional[float]]]:
+    """Calculate stock returns for multiple filings in batch by ticker"""
+    returns_map = {}
+    
+    # Group filings by ticker
+    filings_by_ticker = {}
+    for filing in filings:
+        ticker = filing["ticker"]
+        if ticker not in filings_by_ticker:
+            filings_by_ticker[ticker] = []
+        filings_by_ticker[ticker].append(filing)
+    
+    # Fetch historical data once per ticker
+    for ticker, ticker_filings in filings_by_ticker.items():
+        try:
+            # Find the date range needed for all filings of this ticker
+            filing_dates = [datetime.fromisoformat(f["filingDate"]) for f in ticker_filings]
+            min_date = min(filing_dates)
+            max_date = max(filing_dates) + timedelta(days=days + 5)
+            
+            # Fetch all historical data for this ticker at once
+            stock = yf.Ticker(ticker)
+            hist = stock.history(start=min_date, end=max_date)
+            
+            if len(hist) < 2:
+                continue
+            
+            # Calculate returns for each filing using the cached historical data
+            for filing in ticker_filings:
+                filing_date = filing["filingDate"]
+                filing_dt = datetime.fromisoformat(filing_date)
+                
+                # Find the filing date or next trading day in historical data
+                hist_after_filing = hist[hist.index >= filing_dt]
+                
+                if len(hist_after_filing) < 2:
+                    continue
+                
+                start_price = hist_after_filing['Close'].iloc[0]
+                
+                # Get price N trading days later
+                if len(hist_after_filing) >= days + 1:
+                    end_price = hist_after_filing['Close'].iloc[days]
+                else:
+                    end_price = hist_after_filing['Close'].iloc[-1]
+                
+                return_pct = ((end_price - start_price) / start_price) * 100
+                
+                if ticker not in returns_map:
+                    returns_map[ticker] = {}
+                returns_map[ticker][filing_date] = float(return_pct)
+                
+        except Exception as e:
+            print(f"[{ticker}] Error calculating returns: {e}", file=sys.stderr)
+            continue
+    
+    return returns_map
 
 def main():
     """Main data collection pipeline"""
@@ -168,23 +239,25 @@ def main():
 
         # Fetch filings
         filings = fetch_company_filings(ticker, cik, "2022-01-01")
-
-        # Calculate returns for each filing
-        for filing in filings:
-            filing["actual7dReturn"] = calculate_stock_return(
-                ticker,
-                filing["filingDate"],
-                days=7
-            )
-
-            if filing["actual7dReturn"] is not None:
-                print(f"[{ticker}] {filing['filingType']} on {filing['filingDate']}: "
-                      f"+{filing['actual7dReturn']:.2f}% after 7 days", file=sys.stderr)
-
         all_filings.extend(filings)
 
         # Rate limiting (SEC recommends max 10 requests/second)
         time.sleep(0.2)
+
+    # Calculate returns for all filings in batch
+    print("\n" + "=" * 80, file=sys.stderr)
+    print("Calculating stock returns in batch...", file=sys.stderr)
+    returns_map = calculate_stock_returns_batch(all_filings, days=7)
+
+    # Attach returns to filings
+    for filing in all_filings:
+        ticker = filing["ticker"]
+        filing_date = filing["filingDate"]
+        filing["actual7dReturn"] = returns_map.get(ticker, {}).get(filing_date)
+        
+        if filing["actual7dReturn"] is not None:
+            print(f"[{ticker}] {filing['filingType']} on {filing['filingDate']}: "
+                  f"+{filing['actual7dReturn']:.2f}% after 7 days", file=sys.stderr)
 
     print("\n" + "=" * 80, file=sys.stderr)
     print(f"COLLECTION COMPLETE", file=sys.stderr)

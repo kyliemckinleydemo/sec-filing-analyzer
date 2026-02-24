@@ -1,3 +1,35 @@
+/**
+ * @module lib/rate-limit
+ * @description Implements daily rate limiting for unauthenticated requests (20/day) and authenticated AI analyses (100/day) using browser fingerprinting and in-memory storage with midnight UTC reset
+ *
+ * PURPOSE:
+ * - Generate SHA-256 hashed fingerprints from IP, User-Agent, and Accept-Language headers for anonymous user tracking
+ * - Enforce 20 requests per day limit for unauthenticated users using fingerprint-based identification
+ * - Enforce 100 AI analyses per day quota for authenticated users tracked by userId
+ * - Automatically reset counters at end of day (23:59:59.999) and cleanup expired entries hourly
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextRequest type for accessing HTTP headers in middleware and API routes
+ * - crypto - Uses createHash for SHA-256 fingerprint generation from concatenated header values
+ *
+ * EXPORTS:
+ * - generateFingerprint (function) - Returns SHA-256 hash of IP, User-Agent, and Accept-Language headers for anonymous user identification
+ * - checkUnauthRateLimit (function) - Returns { allowed, remaining, resetAt, limit } object after checking/incrementing unauthenticated user's daily request count
+ * - checkAuthAIQuota (function) - Returns { allowed, remaining, resetAt, limit } object after checking/incrementing authenticated user's AI analysis quota
+ * - cleanupExpiredEntries (function) - Removes entries from both stores where current time exceeds resetAt timestamp
+ *
+ * PATTERNS:
+ * - Call generateFingerprint(request) in middleware, then checkUnauthRateLimit(fingerprint) before processing public API requests
+ * - For authenticated AI routes: extract userId from JWT/session, call checkAuthAIQuota(userId), return 429 if allowed=false
+ * - Check response.allowed before processing; use response.remaining and response.resetAt for X-RateLimit-* headers
+ * - Run cleanupExpiredEntries() manually on server initialization if needed, or rely on automatic hourly cleanup
+ *
+ * CLAUDE NOTES:
+ * - Uses in-memory Map storage - data lost on server restart; production needs Vercel KV or Redis for persistence across serverless function instances
+ * - Reset time calculated as end of current day (23:59:59.999) means limits reset at midnight local server time, not per-user timezone
+ * - Fingerprinting combines 3 headers but IP from x-forwarded-for can be spoofed; consider adding more entropy or moving to proper session tokens
+ * - Automatic cleanup runs every hour only in server context (typeof window check) but won't run in serverless environments without persistent process
+ */
 import { NextRequest } from 'next/server';
 import crypto from 'crypto';
 

@@ -1,3 +1,37 @@
+"""
+@module collect-full-dataset
+@description Collects comprehensive historical SEC filing dataset (10-Q/10-K) from 2022-2025 
+             for 20 major tech and financial tickers with corresponding 7-day return calculations.
+
+PURPOSE:
+    - Gather 200+ SEC filings (10-Q and 10-K forms) from January 2022 to present
+    - Fetch filing metadata (accession numbers, dates, types) from SEC EDGAR API
+    - Calculate actual 7-day post-filing stock returns using Yahoo Finance
+    - Generate training/validation dataset for ML-based return prediction models
+    - Support backtesting and analysis of filing-based trading strategies
+
+EXPORTS:
+    - JSON output to stdout containing:
+        * status: Collection status ("success" or error)
+        * collected: Total number of filings retrieved
+        * withReturns: Count of filings with valid return calculations
+        * filings: Array of filing objects with structure:
+            - ticker: Stock symbol
+            - filingType: "10-Q" or "10-K"
+            - accessionNumber: SEC accession identifier
+            - filingDate: ISO format date (YYYY-MM-DD)
+            - actual7dReturn: Percentage return 7 days post-filing (or null)
+
+CLAUDE NOTES:
+    - Implements batch return calculation for efficiency (single yfinance API call per ticker)
+    - Respects SEC rate limits with 0.15s delays between ticker requests
+    - Hardcoded CIK mapping for 20 major tickers (AAPL, MSFT, GOOGL, etc.)
+    - Filters filings by date range (2022-01-01 onwards) and form type (10-Q/10-K only)
+    - Returns may be null if insufficient price data available (recent filings, delisted stocks)
+    - Progress information logged to stderr, final dataset to stdout for pipeline integration
+    - User-Agent header required by SEC API compliance guidelines
+"""
+
 #!/usr/bin/env python3
 """
 Collect full historical dataset: 200+ filings from 2022-2025
@@ -62,23 +96,43 @@ def fetch_filings(ticker, cik, start_date="2022-01-01"):
         print(f"[{ticker}] Error: {e}", file=sys.stderr)
         return []
 
-def calc_return(ticker, filing_date, days=7):
-    """Calculate return N days after filing"""
+def calc_returns_batch(ticker, filing_dates, days=7):
+    """Calculate returns for multiple filing dates in batch"""
+    if not filing_dates:
+        return {}
+    
     try:
-        dt = datetime.fromisoformat(filing_date)
+        # Find the earliest and latest dates to fetch all data in one call
+        dates = [datetime.fromisoformat(d) for d in filing_dates]
+        min_date = min(dates)
+        max_date = max(dates) + timedelta(days=days+7)
+        
         stock = yf.Ticker(ticker)
-        hist = stock.history(start=dt, end=dt + timedelta(days=days+7))
-
-        if len(hist) < 2:
-            return None
-
-        start_price = hist['Close'].iloc[0]
-        end_idx = min(days, len(hist) - 1)
-        end_price = hist['Close'].iloc[end_idx]
-
-        return float(((end_price - start_price) / start_price) * 100)
-    except:
-        return None
+        hist = stock.history(start=min_date, end=max_date)
+        
+        if hist.empty:
+            return {}
+        
+        returns = {}
+        for filing_date in filing_dates:
+            dt = datetime.fromisoformat(filing_date)
+            # Filter history for this specific filing window
+            window = hist[hist.index >= dt]
+            
+            if len(window) < 2:
+                returns[filing_date] = None
+                continue
+            
+            start_price = window['Close'].iloc[0]
+            end_idx = min(days, len(window) - 1)
+            end_price = window['Close'].iloc[end_idx]
+            
+            returns[filing_date] = float(((end_price - start_price) / start_price) * 100)
+        
+        return returns
+    except Exception as e:
+        print(f"[{ticker}] Error calculating batch returns: {e}", file=sys.stderr)
+        return {}
 
 print("=" * 80, file=sys.stderr)
 print("COLLECTING FULL HISTORICAL DATASET", file=sys.stderr)
@@ -99,9 +153,12 @@ for ticker in TICKERS:
     filings = fetch_filings(ticker, cik, "2022-01-01")
     print(f"[{ticker}] Found {len(filings)} filings", file=sys.stderr)
 
-    # Calculate returns for each
+    # Calculate returns for all filings in batch
+    filing_dates = [f["filingDate"] for f in filings]
+    returns = calc_returns_batch(ticker, filing_dates)
+    
     for filing in filings:
-        filing["actual7dReturn"] = calc_return(ticker, filing["filingDate"])
+        filing["actual7dReturn"] = returns.get(filing["filingDate"])
         if filing["actual7dReturn"] is not None:
             print(f"  {filing['filingType']} {filing['filingDate']}: {filing['actual7dReturn']:+.2f}%", file=sys.stderr)
 

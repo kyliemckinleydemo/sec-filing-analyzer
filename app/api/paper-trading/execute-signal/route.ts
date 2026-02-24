@@ -1,3 +1,33 @@
+/**
+ * @module app/api/paper-trading/execute-signal/route
+ * @description Next.js API route that receives ML-generated trade signals and executes paper trades through the PaperTradingEngine with validation and criteria evaluation
+ *
+ * PURPOSE:
+ * - Receives POST requests containing ML model predictions (ticker, direction, confidence) for a specific SEC filing
+ * - Validates required fields (portfolioId, ticker, filingId) and returns 400 error if missing
+ * - Evaluates whether trade signal meets criteria via PaperTradingEngine.evaluateTradeSignal()
+ * - Executes approved trades using PaperTradingEngine.executeTrade() and returns trade details with ID
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextResponse for API route responses with JSON serialization
+ * - @/lib/paper-trading - Imports PaperTradingEngine class for trade execution and TradeSignal type definition
+ *
+ * EXPORTS:
+ * - dynamic (const) - Next.js config forcing dynamic rendering to prevent route caching
+ * - POST (function) - Async handler accepting Request with TradeSignal body, returns NextResponse with execution result
+ *
+ * PATTERNS:
+ * - POST to /api/paper-trading/execute-signal with JSON body: { portfolioId, ticker, filingId, predictedReturn, confidence, direction, marketCap? }
+ * - Response contains { executed: boolean, trade?: object, tradeId?: string, reason?: string }
+ * - Returns 400 if portfolioId/ticker/filingId missing, 500 on engine errors
+ * - Instantiate PaperTradingEngine(portfolioId) then call evaluateTradeSignal() before executeTrade()
+ *
+ * CLAUDE NOTES:
+ * - Two-phase execution: evaluateTradeSignal() gates whether trade proceeds, preventing low-confidence signals from executing
+ * - TradeSignal destructured from body excludes portfolioId which is passed separately to engine constructor
+ * - Returns executed: false with reason string rather than error status when signal fails criteria or execution
+ * - marketCap is optional field allowing position sizing based on company size
+ */
 import { NextResponse } from 'next/server';
 import { PaperTradingEngine, TradeSignal } from '@/lib/paper-trading';
 

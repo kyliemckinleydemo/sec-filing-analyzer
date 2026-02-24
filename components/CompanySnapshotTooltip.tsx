@@ -1,3 +1,32 @@
+/**
+ * @module components/CompanySnapshotTooltip
+ * @description Client-side tooltip component displaying comprehensive company financial snapshots with hover/touch interactions and responsive positioning
+ *
+ * PURPOSE:
+ * - Renders interactive tooltip on hover or touch showing valuation metrics (price, market cap, P/E ratio, analyst target)
+ * - Displays financial performance data (revenue, net income, margins) with YoY percentage changes color-coded green/red
+ * - Formats large numbers into billions notation and handles null/undefined values gracefully with 'N/A' fallbacks
+ * - Manages tooltip visibility with click-outside detection for mobile devices and prevents event propagation
+ *
+ * DEPENDENCIES:
+ * - react - Provides useState for visibility toggle and useEffect for click-outside listener cleanup
+ *
+ * EXPORTS:
+ * - CompanySnapshotTooltip (component) - Wrapper component accepting ticker, companyName, snapshot data object, and children to wrap with tooltip functionality
+ *
+ * PATTERNS:
+ * - Wrap any element with <CompanySnapshotTooltip ticker='AAPL' companyName='Apple Inc.' snapshot={snapshotData}>{children}</CompanySnapshotTooltip>
+ * - Pass snapshot object with optional fields: currentPrice, marketCap, peRatio, dividendYield, beta, revenue/income metrics, margins
+ * - Tooltip auto-hides if snapshot is empty/null or contains only null values
+ * - Use onMouseEnter/onMouseLeave for desktop hover; onClick/onTouchStart for mobile tap interaction
+ *
+ * CLAUDE NOTES:
+ * - Click-outside listener only attaches when tooltip visible to avoid unnecessary event handlers
+ * - Formats billions with /1e9 division showing 2 decimals; YoY percentages include + prefix for positive growth
+ * - Tooltip positioned with absolute left-0 top-full mt-2 creating dropdown below trigger element with 8px gap
+ * - Uses isFinite() checks throughout to filter out Infinity/-Infinity values before rendering
+ * - Organized into three sections: Valuation, Financials (with optional quarter label), Risk & Income metrics
+ */
 'use client';
 
 import { useState, useEffect } from 'react';

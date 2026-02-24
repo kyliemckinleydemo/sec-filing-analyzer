@@ -1,4 +1,36 @@
 /**
+ * @module lib/sentiment-analyzer
+ * @description Extracts MD&A sections from SEC filings and analyzes management sentiment using Claude to predict stock price movements with confidence scores and signal detection
+ *
+ * PURPOSE:
+ * - Extract Management Discussion and Analysis sections from 10-Q and 10-K SEC filing HTML using regex patterns for Item 2 and Item 7
+ * - Analyze extracted MD&A text through Claude Sonnet 4.5 to determine sentiment (positive/neutral/negative) with -10 to +10 scoring
+ * - Identify specific sentiment signals including outlook optimism, guidance language tone, growth emphasis, and uncertainty levels
+ * - Process multiple filings sequentially with 1-second rate limiting to respect API quotas
+ *
+ * DEPENDENCIES:
+ * - @anthropic-ai/sdk - Provides Claude API client for LLM-based sentiment analysis of financial text
+ *
+ * EXPORTS:
+ * - SentimentAnalysis (interface) - Shape with overall sentiment enum, confidence 0-100, score -10 to +10, signals object with 5 boolean/enum indicators, and reasoning string
+ * - extractMDA (function) - Parses SEC filing HTML to extract MD&A section text, strips HTML tags, limits to 15000 characters, returns null if no match
+ * - analyzeSentiment (function) - Sends MD&A text with ticker and filing type to Claude, returns SentimentAnalysis object or neutral fallback on error
+ * - analyzeSentimentBatch (function) - Processes array of filings sequentially through analyzeSentiment with 1-second delays, returns array of SentimentAnalysis results
+ *
+ * PATTERNS:
+ * - Call extractMDA(filingHtml) first to get MD&A text, check for null before analysis
+ * - Pass extracted text to analyzeSentiment(mdaText, 'AAPL', '10-Q') with ticker and filing type for context
+ * - For bulk processing use analyzeSentimentBatch([{ticker, filingType, mdaText}]) which handles rate limiting automatically
+ * - Access results via analysis.score for numeric rating, analysis.signals.outlookOptimistic for specific indicators, analysis.reasoning for explanation
+ *
+ * CLAUDE NOTES:
+ * - Uses 15000 character limit on MD&A text to stay within Claude's context window while covering key sections
+ * - Returns neutral sentiment with confidence 0 on errors instead of throwing, ensuring graceful degradation
+ * - Rate limiting of 1 request/second in batch mode prevents API throttling but means 100 filings take 100 seconds
+ * - Relies on regex pattern matching for Item 2/7 which may fail on non-standard SEC filing formatting or international filings
+ * - Claude response parsing extracts first JSON object from text, assumes well-formed response matching SentimentAnalysis interface
+ */
+/**
  * Sentiment Analyzer for SEC Filings
  *
  * Analyzes MD&A (Management Discussion and Analysis) sections

@@ -1,3 +1,33 @@
+/**
+ * @module components/FilingChat
+ * @description Interactive chat interface component for querying SEC filing data using AI-powered responses with authentication-gated access
+ *
+ * PURPOSE:
+ * - Render floating chat widget toggleable between minimized button and full chat interface
+ * - Stream AI responses from /api/chat endpoint with ticker context, displaying messages in real-time
+ * - Handle authentication errors (401) and rate limits (429) with visual feedback and signup prompts
+ * - Auto-scroll to latest messages and maintain conversation history in component state
+ *
+ * DEPENDENCIES:
+ * - @/components/ui/card - Provides Card, CardContent, CardDescription, CardHeader, CardTitle for chat container structure
+ * - @/components/ui/button - Provides Button component for submit, toggle, and signup actions
+ * - lucide-react - Imports MessageCircle, Send, Loader2, AlertCircle, X icons for UI elements
+ *
+ * EXPORTS:
+ * - FilingChat (component) - Returns floating chat widget requiring ticker, companyName, filingType, filingDate props
+ *
+ * PATTERNS:
+ * - Pass <FilingChat ticker="AAPL" companyName="Apple Inc." filingType="10-K" filingDate="2024-01-15" /> to filing detail pages
+ * - Component manages own open/closed state via isOpen - starts minimized as fixed bottom-right button
+ * - POST to /api/chat with { message: string, ticker: string } - expects streaming response or JSON error with requiresAuth flag
+ * - Use requiresAuth state to display signup prompt when 401 returned - triggers handleSignup() to open auth modal
+ *
+ * CLAUDE NOTES:
+ * - Streams responses using ReadableStream reader - updates last assistant message incrementally as chunks arrive
+ * - Handles three error states: requiresAuth (401), rate limit (429), and generic errors with distinct UI feedback
+ * - Removes empty assistant placeholder message from state on streaming errors to prevent showing blank bubbles
+ * - Signup fallback attempts to click existing signup button by text selector, otherwise redirects to /signup route
+ */
 'use client';
 
 import { useState, useRef, useEffect } from 'react';

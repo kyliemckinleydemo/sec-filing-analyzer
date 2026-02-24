@@ -1,4 +1,35 @@
 /**
+ * @module backfill-megacap-earnings
+ * 
+ * @description
+ * Backfills historical earnings reports (10-K and 10-Q filings) for mega-cap companies
+ * (>$500B market cap) from the SEC EDGAR database for the past 2 years. Fetches filings,
+ * analyzes them with Claude AI, and stores results in the database.
+ * 
+ * PURPOSE:
+ * - Build a comprehensive dataset of 400-500 high-quality earnings reports from top companies
+ * - Analyze historical SEC filings (10-K annual and 10-Q quarterly reports) using Claude AI
+ * - Extract risk scores, sentiment analysis, and structured insights from financial documents
+ * - Enable retrospective analysis and model training on mega-cap earnings data
+ * - Support champion/challenger model comparison with substantial historical data
+ * 
+ * EXPORTS:
+ * - main(): Primary backfill execution function that orchestrates the entire process
+ * - fetchFilingsFromSEC(): Retrieves filing metadata from SEC EDGAR API for a given company
+ * - fetchFilingContent(): Downloads full HTML content of a specific SEC filing
+ * - MEGACAP_TICKERS: Array of 50+ ticker symbols for mega-cap companies across sectors
+ * - FilingInfo: Interface defining structure of SEC filing metadata
+ * 
+ * CLAUDE NOTES:
+ * - Uses claudeClient.analyzeFullFiling() to process each earnings report
+ * - Extracts and analyzes two key sections: Risk Factors and MD&A (Management Discussion & Analysis)
+ * - Implements 2-second rate limiting between API calls to respect usage limits
+ * - Gracefully handles analysis failures while preserving filing records
+ * - Returns structured analysis including risk scores (0-10), sentiment scores (-1 to 1)
+ * - 30-second pause every 10 companies to prevent rate limit issues during bulk processing
+ */
+
+/**
  * Backfill Mega-Cap Earnings Reports (2 Years)
  *
  * Strategy:
@@ -111,6 +142,18 @@ async function fetchFilingsFromSEC(
   }
 }
 
+async function fetchFilingContent(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      return null;
+    }
+    return await response.text();
+  } catch (error) {
+    return null;
+  }
+}
+
 async function main() {
   console.log('🚀 Backfilling Mega-Cap Earnings Reports\n');
   console.log('═'.repeat(80));
@@ -185,8 +228,17 @@ async function main() {
     console.log(`  📋 Need to analyze ${newFilings.length} new filings`);
     totalFilingsToAnalyze += newFilings.length;
 
+    // Batch fetch all filing content first
+    console.log(`\n    Fetching ${newFilings.length} filing contents...`);
+    const filingContents = await Promise.all(
+      newFilings.map(filing => fetchFilingContent(filing.url))
+    );
+
     // Analyze each new filing
-    for (const filing of newFilings) {
+    for (let i = 0; i < newFilings.length; i++) {
+      const filing = newFilings[i];
+      const html = filingContents[i];
+
       try {
         console.log(`\n    Analyzing ${filing.filingType} from ${filing.filingDate.toISOString().split('T')[0]}...`);
 
@@ -206,13 +258,10 @@ async function main() {
         console.log('      🤖 Analyzing with Claude AI...');
 
         try {
-          // Fetch filing content
-          const response = await fetch(filing.url);
-          if (!response.ok) {
-            throw new Error(`Failed to fetch filing: ${response.statusText}`);
+          if (!html) {
+            throw new Error('Failed to fetch filing content');
           }
 
-          const html = await response.text();
           const text = html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
 
           // Extract sections

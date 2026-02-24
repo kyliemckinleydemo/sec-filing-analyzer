@@ -1,3 +1,34 @@
+/**
+ * @module app/profile/page
+ * @description Next.js client-side profile page rendering either an authenticated user dashboard with account settings or a sign-up flow with magic link authentication for unauthenticated visitors
+ *
+ * PURPOSE:
+ * - Fetch and display current user profile data from /api/auth/me endpoint on mount
+ * - Render sign-up form with magic link email authentication via /api/auth/send-magic-link for non-authenticated users
+ * - Provide editable name field that saves to /api/user/update endpoint with PATCH request
+ * - Display user account details including email, tier status, creation date, and navigation to watchlist/alerts pages
+ *
+ * DEPENDENCIES:
+ * - next/navigation - Provides useRouter hook for programmatic navigation to home, watchlist, and alerts pages
+ * - @/components/ui/button - Renders navigation, save, and submit buttons with variant styling
+ * - @/components/ui/card - Structures profile sections and sign-up form with CardHeader, CardContent, CardDescription, CardTitle components
+ * - @/components/ui/input - Provides controlled input fields for name editing and email entry
+ *
+ * EXPORTS:
+ * - ProfilePage (component) - Default export rendering conditional UI based on authentication state with loading spinner, sign-up form, or authenticated profile dashboard
+ *
+ * PATTERNS:
+ * - Accessed via /profile route; automatically fetches user on mount with useEffect
+ * - Shows spinner during initial load; renders sign-up page if user is null after fetch
+ * - For authenticated users, displays editable profile with disabled Save button until name changes
+ * - Magic link flow sets linkSent state to true on success, showing confirmation message with option to resend
+ *
+ * CLAUDE NOTES:
+ * - Uses optimistic UI - name input updates immediately while saving state shows 'Saving...' button text
+ * - Magic link form prevents submission when sendingLink is true or email is empty via disabled prop
+ * - Sign-up page emphasizes 'free' messaging with badge, benefit list, and prominent CTA button with gradient styling
+ * - Profile tier displays capitalized with visual badge only for 'free' tier users
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

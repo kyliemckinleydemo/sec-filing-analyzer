@@ -61,7 +61,8 @@ async function selectCompaniesWithMidcaps(): Promise<CompanySelection[]> {
 
   // 1. Top 10 Mega Caps (household names for reference)
   console.log('📈 Top 10 Mega Caps:');
-  megaCaps.slice(0, 10).forEach((c, i) => {
+  const megaCapSlice = megaCaps.slice(0, 10);
+  megaCapSlice.forEach((c, i) => {
     globalRank++;
     const capB = (c.marketCap! / 1_000_000_000).toFixed(0);
     console.log(`  ${(i + 1).toString().padStart(2)}. ${c.ticker.padEnd(6)} ${c.name.padEnd(40)} $${capB}B`);
@@ -79,7 +80,8 @@ async function selectCompaniesWithMidcaps(): Promise<CompanySelection[]> {
   const largeCapTarget = Math.min(60, largeCaps.length);
   const largeCapStep = Math.max(1, Math.floor(largeCaps.length / largeCapTarget));
 
-  largeCaps.filter((_, i) => i % largeCapStep === 0).slice(0, largeCapTarget).forEach((c, i) => {
+  const selectedLargeCaps = largeCaps.filter((_, i) => i % largeCapStep === 0).slice(0, largeCapTarget);
+  selectedLargeCaps.forEach((c, i) => {
     globalRank++;
     const capB = (c.marketCap! / 1_000_000_000).toFixed(0);
     if (i < 10) console.log(`  ${c.ticker.padEnd(6)} ${c.name.padEnd(40)} $${capB}B`);
@@ -97,7 +99,8 @@ async function selectCompaniesWithMidcaps(): Promise<CompanySelection[]> {
   const smallMidTarget = 80;
   const smallMidStep = Math.max(1, Math.floor(smallMidCaps.length / smallMidTarget));
 
-  smallMidCaps.filter((_, i) => i % smallMidStep === 0).slice(0, smallMidTarget).forEach((c, i) => {
+  const selectedSmallMidCaps = smallMidCaps.filter((_, i) => i % smallMidStep === 0).slice(0, smallMidTarget);
+  selectedSmallMidCaps.forEach((c, i) => {
     globalRank++;
     const capB = (c.marketCap! / 1_000_000_000).toFixed(0);
     if (i < 10) console.log(`  ${c.ticker.padEnd(6)} ${c.name.padEnd(40)} $${capB}B`);
@@ -115,7 +118,8 @@ async function selectCompaniesWithMidcaps(): Promise<CompanySelection[]> {
   const midCapTarget = 30;
   const midCapStep = Math.max(1, Math.floor(midCaps.length / midCapTarget));
 
-  midCaps.filter((_, i) => i % midCapStep === 0).slice(0, midCapTarget).forEach((c, i) => {
+  const selectedMidCaps = midCaps.filter((_, i) => i % midCapStep === 0).slice(0, midCapTarget);
+  selectedMidCaps.forEach((c, i) => {
     globalRank++;
     const capB = (c.marketCap! / 1_000_000_000).toFixed(0);
     if (i < 10) console.log(`  ${c.ticker.padEnd(6)} ${c.name.padEnd(40)} $${capB}B`);
@@ -133,7 +137,8 @@ async function selectCompaniesWithMidcaps(): Promise<CompanySelection[]> {
   const smallCapTarget = 20;
   const smallCapStep = Math.max(1, Math.floor(smallCaps.length / smallCapTarget));
 
-  smallCaps.filter((_, i) => i % smallCapStep === 0).slice(0, smallCapTarget).forEach((c, i) => {
+  const selectedSmallCaps = smallCaps.filter((_, i) => i % smallCapStep === 0).slice(0, smallCapTarget);
+  selectedSmallCaps.forEach((c, i) => {
     globalRank++;
     const capB = (c.marketCap! / 1_000_000_000).toFixed(0);
     if (i < 10) console.log(`  ${c.ticker.padEnd(6)} ${c.name.padEnd(40)} $${capB}B`);

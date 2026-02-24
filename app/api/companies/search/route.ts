@@ -1,3 +1,33 @@
+/**
+ * @module app/api/companies/search/route
+ * @description Next.js API route handler providing typeahead search for companies by ticker symbol or company name with intelligent result ranking
+ *
+ * PURPOSE:
+ * - Query Prisma database for companies matching ticker prefix or name substring case-insensitively
+ * - Filter results to only include companies with at least one associated filing
+ * - Rank results prioritizing exact ticker matches first, then by market capitalization descending
+ * - Return top 10 companies with ticker, name, market cap, and filing count for autocomplete UI
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextResponse for JSON API responses
+ * - @/lib/prisma - Database client for querying Company and Filing models
+ *
+ * EXPORTS:
+ * - dynamic (const) - Forces dynamic rendering to prevent route caching
+ * - GET (function) - Handles GET /api/companies/search?q={query} returning ranked company suggestions
+ *
+ * PATTERNS:
+ * - Call GET /api/companies/search?q=AAPL from client to get autocomplete suggestions
+ * - Query parameter 'q' is required with minimum 1 character; returns empty array if missing
+ * - Response shape: { companies: [{ ticker, name, marketCap, filingCount }] } limited to 10 results
+ * - Use for ticker input fields with real-time search as user types
+ *
+ * CLAUDE NOTES:
+ * - Fetches 50 companies then sorts and slices to 10 to ensure accurate ranking after database query
+ * - Sorting algorithm: exact ticker prefix match beats name match, then market cap DESC, then ticker alphabetically
+ * - Only returns companies that have filings via 'filings: { some: {} }' constraint to filter incomplete data
+ * - Query is uppercased and trimmed to normalize ticker symbol searches (tickers are uppercase by convention)
+ */
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 

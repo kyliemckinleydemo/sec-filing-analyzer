@@ -1,40 +1,37 @@
 /**
- * @module api/chat/query/route
- * 
- * @description
- * Natural Language Query API endpoint for converting natural language queries into 
- * database operations. Supports pattern matching for company financials, SEC filings, 
- * analyst estimates, and complex multi-condition screening queries.
- * 
+ * @module app/api/query/route
+ * @description API endpoint that converts natural language financial queries into Prisma database operations for company screening, SEC filings, and analyst data
+ *
  * PURPOSE:
- * - Process natural language queries and convert them to Prisma database queries
- * - Support compound queries with AND/OR operators for complex financial screening
- * - Enable time-series analysis of analyst estimates and company metrics
- * - Provide SEC filing search and filtering capabilities
- * - Handle pagination for large result sets
- * - Return structured data compatible with frontend visualization components
- * 
+ * - Parse natural language queries with compound AND/OR logic into Prisma where clauses
+ * - Execute database queries for company financials, SEC filings, analyst estimates with pagination (50 results per page)
+ * - Convert financial units (B/M/K/T suffixes, percentages) and map natural language field names to database schema
+ * - Serialize BigInt market caps and Date objects to JSON-compatible formats
+ *
+ * DEPENDENCIES:
+ * - next/server - Provides NextResponse for API route responses
+ * - @/lib/prisma - Prisma client instance for database queries on Company and Filing models
+ *
  * EXPORTS:
- * - POST: Processes natural language query and returns matching companies/filings
- * - dynamic: Force-dynamic Next.js route configuration
- * 
+ * - POST (function) - Processes natural language query and returns paginated companies/filings with metadata
+ * - dynamic (const) - Forces Next.js dynamic rendering to prevent static optimization caching
+ *
+ * PATTERNS:
+ * - Send POST to /api/query with { query: 'PE < 15 and dividend yield > 3%', page: 1 }
+ * - Response includes { companies, totalCount, pageSize, currentPage, totalPages } for pagination
+ * - Compound queries support: 'field operator value [and|or] field operator value' with sector filters
+ * - Field names accept natural language: 'PE', 'dividend yield', 'market cap', etc. mapped to database columns
+ * - Value units auto-convert: '%' to decimal, 'B'/'M'/'K'/'T' to numeric multipliers
+ *
  * CLAUDE NOTES:
- * - Pattern matching uses RegExp hierarchy (most specific patterns first)
- * - Compound query parser supports nested AND/OR logic with field mappings
- * - BigInt serialization required for marketCap and other large numeric values
- * - Date objects converted to ISO strings for JSON compatibility
- * - Pagination implemented with skip/take pattern (page size: 50)
- * - COMPANY_SELECT_FIELDS optimized for hover tooltip data requirements
- * - Sector mappings handle common variations (tech->Technology, finance->Financial)
- * - Unit conversions support B/M/K/T suffixes and percentage formatting
- * - Snapshot queries enable before/after filing comparison analysis
- * - Target price history tracks analyst estimate changes over time
- * - Undervalued stock queries calculate upside percentage dynamically
- * - 52-week high proximity filter uses 5% threshold
- * - Market cap filters support multiple unit formats ($100B, $1M, etc.)
- * - Query result includes pagination metadata (totalCount, totalPages, currentPage)
- * - Fallback pattern ensures graceful handling of unmatched queries
- * - Error responses include helpful query syntax suggestions
+ * - Pattern matching hierarchy prioritizes compound AND/OR queries first before simple patterns
+ * - Field mappings handle 20+ natural language variations: 'pe ratio'/'p/e'/'price to earnings' all map to peRatio
+ * - Operator parsing supports symbols (>, <, =) and words ('greater than', 'below') with consistent normalization
+ * - Sector filter uses case-insensitive contains matching with common aliases (tech->Technology, finance->Financial)
+ * - BigInt serialization uses Number() conversion rather than toString() to maintain numeric JSON types
+ * - COMPANY_SELECT_FIELDS optimized specifically for frontend hover tooltip data requirements
+ * - Mixed AND/OR precedence evaluates left-to-right with AND having implicit higher precedence
+ * - Pagination metadata calculation: currentPage = Math.floor(skip / pageSize) + 1, totalPages from count
  */
 
 import { NextResponse } from 'next/server';

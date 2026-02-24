@@ -1,4 +1,35 @@
 /**
+ * @module lib/format-utils
+ * @description Defensive number formatting utilities preventing runtime crashes from invalid numeric values (NaN, Infinity, null, undefined) by returning 'N/A' fallbacks
+ *
+ * PURPOSE:
+ * - Format prices, percentages, and market cap values with automatic 'N/A' handling for invalid inputs
+ * - Provide scale-aware formatting converting billions/millions/thousands to abbreviated units (T/B/M/K)
+ * - Validate numeric values using isFinite() checks before applying formatters
+ * - Enable custom formatting logic with safe wrapper handling null/undefined/Infinity edge cases
+ *
+ * EXPORTS:
+ * - safeToFixed (function) - Formats number to fixed decimals or returns 'N/A' for null/undefined/non-finite values
+ * - safeFormatPrice (function) - Formats number as $X.XX price with configurable decimals, returning 'N/A' for invalid values
+ * - safeFormatPercent (function) - Formats number as percentage with optional +/- sign prefix, returning 'N/A' for invalid values
+ * - safeFormatMarketCap (function) - Formats large numbers with T/B/M/K suffixes for trillion/billion/million/thousand values
+ * - safeFormatLargeNumber (function) - Formats dollar amounts with B/M/K suffixes and configurable decimal precision
+ * - isValidNumber (function) - Returns boolean checking if value is non-null, non-undefined, and finite
+ * - safeFormat (function) - Higher-order formatter accepting custom formatter function and optional fallback string
+ *
+ * PATTERNS:
+ * - Import specific formatters: `import { safeFormatPrice, safeFormatPercent } from '@/lib/format-utils'`
+ * - Use for API data: `safeFormatPrice(data?.price, 2)` handles missing fields without crashes
+ * - Apply to volatile calculations: `safeFormatPercent(change24h, 2, true)` adds +/- sign for positive values
+ * - Custom formatting: `safeFormat(value, (v) => v.toFixed(4), '--')` uses '--' instead of default 'N/A'
+ *
+ * CLAUDE NOTES:
+ * - All formatters use isFinite() which rejects NaN and ±Infinity, preventing display of 'NaN%' or '$Infinity'
+ * - Market cap formatter uses exact thresholds (1e12, 1e9, 1e6, 1e3) matching financial notation standards
+ * - Percentage formatter's includeSign parameter adds '+' only for positive values, not zero or negative
+ * - safeFormat enables composition with custom formatters while maintaining defensive null/undefined handling
+ */
+/**
  * Safe number formatting utilities
  * Prevents crashes from NaN, Infinity, null, or undefined values
  */

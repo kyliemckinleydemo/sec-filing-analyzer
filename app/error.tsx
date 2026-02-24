@@ -1,3 +1,32 @@
+/**
+ * @module app/error
+ * @description Next.js error boundary component that catches and displays application errors with recovery options and dark-themed UI
+ *
+ * PURPOSE:
+ * - Catches unhandled errors in Next.js app router and displays user-friendly error screen
+ * - Logs error details to console via useEffect for debugging purposes
+ * - Provides 'Try again' button to reset error boundary and retry failed operation
+ * - Offers 'Go home' button for full navigation reset to root path
+ *
+ * DEPENDENCIES:
+ * - @/components/ui/button - Provides styled Button component for reset and navigation actions
+ * - @/components/ui/card - Provides Card container components for structured error message layout
+ *
+ * EXPORTS:
+ * - Error (default component) - Renders error boundary UI with error message, reset handler, and navigation options
+ *
+ * PATTERNS:
+ * - Next.js automatically renders this component when errors occur in app router segments
+ * - Component receives error object with message/digest and reset function as props
+ * - Call reset() to attempt re-rendering the failed component tree without full page reload
+ * - Access error.digest for Next.js-specific error tracking identifier if available
+ *
+ * CLAUDE NOTES:
+ * - Must be client component ('use client') to use useEffect and interactive event handlers
+ * - Uses radial gradient background matching app theme with semi-transparent card overlay
+ * - Error logging happens on mount and when error object changes to capture all error states
+ * - Reset button triggers Next.js error boundary recovery while home button forces full navigation
+ */
 'use client';
 
 import { useEffect } from 'react';

@@ -1,4 +1,33 @@
 /**
+ * @module lib/stock-client
+ * @description HTTP client for Alpha Vantage stock market API providing historical price data, current quotes, and return calculations with rate limit handling
+ *
+ * PURPOSE:
+ * - Fetch daily historical OHLCV (open/high/low/close/volume) stock prices via TIME_SERIES_DAILY_ADJUSTED endpoint
+ * - Retrieve real-time stock quotes with price, change, and percent change via GLOBAL_QUOTE endpoint
+ * - Calculate 7-day return percentage from a specific date using sorted historical prices
+ * - Handle Alpha Vantage API errors including rate limits (25 calls/day free tier, 5 calls/minute)
+ *
+ * EXPORTS:
+ * - StockPrice (interface) - Daily stock data shape with date, OHLCV values, and volume
+ * - CurrentQuote (interface) - Real-time quote shape with symbol, price, change, changePercent, and timestamp
+ * - stockClient (const) - Singleton StockClient instance configured with ALPHA_VANTAGE_API_KEY from environment
+ *
+ * PATTERNS:
+ * - Import singleton: import { stockClient } from '@/lib/stock-client'
+ * - Fetch recent prices: const prices = await stockClient.getHistoricalPrices('AAPL', 'compact') // last 100 days
+ * - Get current quote: const quote = await stockClient.getCurrentQuote('AAPL')
+ * - Calculate return: const return7d = stockClient.calculate7DayReturn(prices, '2024-01-01')
+ * - Handle rate limits: Wrap calls in try/catch to detect 'API rate limit exceeded' errors
+ *
+ * CLAUDE NOTES:
+ * - Uses 'demo' API key as fallback if ALPHA_VANTAGE_API_KEY environment variable missing
+ * - Historical prices automatically sorted descending (most recent first) after fetching
+ * - Returns adjusted close price (field '5. adjusted close') which accounts for splits and dividends
+ * - calculate7DayReturn returns null when insufficient data exists 7 days after specified date
+ * - API responses checked for three error states: HTTP status, 'Error Message' field, and 'Note' field for rate limits
+ */
+/**
  * Stock Price Client using Alpha Vantage API
  *
  * Free tier: 25 API calls/day, 5 calls/minute
@@ -77,18 +106,15 @@ class StockClient {
         throw new Error(`No data found for ticker: ${ticker}`);
       }
 
-      const prices: StockPrice[] = [];
-
-      for (const [date, values] of Object.entries<any>(timeSeries)) {
-        prices.push({
-          date,
-          open: parseFloat(values['1. open']),
-          high: parseFloat(values['2. high']),
-          low: parseFloat(values['3. low']),
-          close: parseFloat(values['5. adjusted close']),
-          volume: parseInt(values['6. volume']),
-        });
-      }
+      const timeSeriesEntries = Object.entries<any>(timeSeries);
+      const prices: StockPrice[] = timeSeriesEntries.map(([date, values]) => ({
+        date,
+        open: parseFloat(values['1. open']),
+        high: parseFloat(values['2. high']),
+        low: parseFloat(values['3. low']),
+        close: parseFloat(values['5. adjusted close']),
+        volume: parseInt(values['6. volume']),
+      }));
 
       // Sort by date descending (most recent first)
       prices.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
