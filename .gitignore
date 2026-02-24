@@ -5,6 +5,8 @@
 
 # Testing
 /coverage
+/playwright-report/
+/test-results/
 
 # Next.js
 /.next/
@@ -29,7 +31,9 @@ yarn-error.log*
 # Env backups
 .env.backup-*
 .env.*.bak
+.env.*.backup-*
 .env.bak
+.env.vercel-*
 *.env.check
 
 # Vercel
