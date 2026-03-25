@@ -80,6 +80,14 @@ data/sec-bulk/
 # AI/ML outputs
 ai-discovery-outputs/
 
+# Claude Code / Claude Flow tool state (local only)
+.claude/
+.claude-flow/
+.swarm/
+
+# Generated planning docs (AI-produced, not product docs)
+docs/
+
 # Python
 __pycache__/
 *.pyc

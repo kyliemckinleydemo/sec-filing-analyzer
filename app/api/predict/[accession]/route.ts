@@ -196,7 +196,7 @@ export async function GET(
         { upgradesLast30d: upgradeCount, majorDowngradesLast30d: majorDowngradeCount },
       );
 
-      alphaPrediction = predictAlpha(alphaFeatures);
+      alphaPrediction = predictAlpha(alphaFeatures, filing.company.sector);
       console.log(`[Predict API] Alpha prediction: signal=${alphaPrediction.signal} (${alphaPrediction.confidence}), alpha=${alphaPrediction.expectedAlpha}%, 30d return=${alphaPrediction.predicted30dReturn}%`);
     } else {
       // Last-resort fallback: use legacy rule-based engine (rare — only if no Yahoo Finance data)

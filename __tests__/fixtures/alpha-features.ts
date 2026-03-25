@@ -40,6 +40,8 @@ export const TRAINING_MEAN_FEATURES: AlphaFeatures = {
   marketCap: 682_892_847_207,
   sentimentScore: 0.0236,
   upgradesLast30d: 0.1941,
+  filingTypeFactor: 0.5,
+  toneChangeDelta: 0.0,
 };
 
 /**
@@ -55,6 +57,8 @@ export const BULLISH_FEATURES: AlphaFeatures = {
   marketCap: 2_000_000_000_000, // Large-cap
   sentimentScore: 0.8,        // Positive sentiment
   upgradesLast30d: 0,         // Low upgrades (negligible weight)
+  filingTypeFactor: 1,        // 10-Q
+  toneChangeDelta: 0.2,       // Improving tone vs prior filing
 };
 
 /**
@@ -70,4 +74,6 @@ export const BEARISH_FEATURES: AlphaFeatures = {
   marketCap: 50_000_000,      // Small-cap (negative size effect)
   sentimentScore: -0.8,       // Negative sentiment
   upgradesLast30d: 3,         // Lots of upgrades (slightly negative weight)
+  filingTypeFactor: 0,        // 10-K
+  toneChangeDelta: -0.3,      // Worsening tone vs prior filing
 };

@@ -1,3 +1,27 @@
+/**
+ * @module alpha-model.test
+ * @description Test suite for the alpha prediction model functions
+ *
+ * PURPOSE:
+ * Validates the correctness of the alpha prediction model (predictAlpha) and feature 
+ * extraction logic (extractAlphaFeatures). Ensures proper signal classification, confidence 
+ * assignment, feature contribution calculation, and fallback behavior for missing data.
+ *
+ * EXPORTS:
+ * None (test file)
+ *
+ * CLAUDE NOTES:
+ * - Tests verify signal classification (LONG/SHORT/NEUTRAL) based on score thresholds
+ * - Confidence levels (high/medium/low) are validated against percentile boundaries
+ * - Feature contributions must sum to rawScore for model transparency
+ * - Ratio calculations (priceToLow, priceToHigh) are tested as ratios, not percentages
+ * - Fallback behavior to training means is validated for all nullable features
+ * - Numeric precision is enforced (rawScore: 4 decimals, returns: 2 decimals)
+ * - Uses test fixtures (TRAINING_MEAN_FEATURES, BULLISH_FEATURES, BEARISH_FEATURES)
+ * - All 10 model features are validated for presence in featureContributions output
+ * - Market baseline of 0.8% is added to expectedAlpha for predicted30dReturn
+ */
+
 import { describe, it, expect } from 'vitest';
 import { predictAlpha, extractAlphaFeatures } from '@/lib/alpha-model';
 import type { AlphaFeatures } from '@/lib/alpha-model';
@@ -90,10 +114,10 @@ describe('predictAlpha', () => {
     expect(result.predicted30dReturn).toBeCloseTo(result.expectedAlpha + 0.8, 2);
   });
 
-  it('includes all 8 features in featureContributions', () => {
+  it('includes all 10 features in featureContributions', () => {
     const result = predictAlpha(TRAINING_MEAN_FEATURES);
     const keys = Object.keys(result.featureContributions);
-    expect(keys).toHaveLength(8);
+    expect(keys).toHaveLength(10);
     expect(keys).toContain('priceToLow');
     expect(keys).toContain('majorDowngrades');
     expect(keys).toContain('analystUpsidePotential');
@@ -102,6 +126,8 @@ describe('predictAlpha', () => {
     expect(keys).toContain('marketCap');
     expect(keys).toContain('sentimentScore');
     expect(keys).toContain('upgradesLast30d');
+    expect(keys).toContain('filingTypeFactor');
+    expect(keys).toContain('toneChangeDelta');
   });
 
   it('feature contributions sum to rawScore', () => {

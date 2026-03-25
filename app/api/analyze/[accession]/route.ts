@@ -1022,7 +1022,7 @@ Note: Base analysis on general knowledge. Do not mention data access limitations
             { upgradesLast30d: upgradeCount, majorDowngradesLast30d: majorDowngradeCount },
           );
 
-          alphaPrediction = predictAlpha(alphaFeatures);
+          alphaPrediction = predictAlpha(alphaFeatures, filing.company.sector);
           console.log(`[Alpha Model] ✅ Prediction: signal=${alphaPrediction.signal} (${alphaPrediction.confidence}), alpha=${alphaPrediction.expectedAlpha}%, 30d return=${alphaPrediction.predicted30dReturn}%`);
         }
       } catch (error: any) {
