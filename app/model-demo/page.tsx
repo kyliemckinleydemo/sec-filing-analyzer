@@ -10,6 +10,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ReferenceLine, Cell, ResponsiveContainer,
+  type TooltipContentProps,
 } from 'recharts';
 import type { AlphaFeatures, AlphaPrediction } from '@/lib/alpha-model';
 import { Button } from '@/components/ui/button';
@@ -122,6 +123,24 @@ interface LivePrediction {
 interface Summary {
   total: number; withActual: number;
   dirAccuracy: number | null; avgPredicted: number | null; avgActual: number | null;
+}
+
+// ─── Custom bar-chart tooltip ────────────────────────────────────────────────
+
+function ContributionTooltip({ active, payload, label }: TooltipContentProps<number, string>) {
+  if (!active || !payload?.length) return null;
+  const val = typeof payload[0].value === 'number' ? payload[0].value : 0;
+  return (
+    <div style={{
+      background: '#0f172a', border: '1px solid rgba(255,255,255,0.2)',
+      borderRadius: 6, padding: '6px 10px',
+    }}>
+      <p style={{ color: '#e5e7eb', fontSize: 12, marginBottom: 2 }}>{label}</p>
+      <p style={{ color: val >= 0 ? '#4ade80' : '#f87171', fontFamily: 'monospace', fontSize: 13, fontWeight: 600 }}>
+        {val >= 0 ? '+' : ''}{val.toFixed(4)}
+      </p>
+    </div>
+  );
 }
 
 // ─── Main component ──────────────────────────────────────────────────────────
@@ -337,11 +356,7 @@ export default function ModelDemoPage() {
                           tickFormatter={v => v.toFixed(3)} />
                         <YAxis type="category" dataKey="name" width={135}
                           tick={{ fill: '#d1d5db', fontSize: 11 }} />
-                        <Tooltip
-                          formatter={(v: number) => [v.toFixed(4), 'Contribution']}
-                          contentStyle={{ background: '#0f172a', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 6 }}
-                          labelStyle={{ color: '#e5e7eb' }}
-                        />
+                        <Tooltip content={ContributionTooltip} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
                         <ReferenceLine x={0} stroke="rgba(255,255,255,0.25)" />
                         <Bar dataKey="value" radius={[0, 3, 3, 0]}>
                           {chartData.map((entry, i) => (
