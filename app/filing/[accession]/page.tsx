@@ -509,7 +509,7 @@ export default function FilingPage() {
                 <h3 className="font-semibold text-lg mb-3 text-slate-900">What you get with a free account:</h3>
                 <ul className="text-left space-y-2 text-sm text-slate-700">
                   <li>✅ <strong className="text-slate-900">100 AI analyses per day</strong> - Comprehensive risk & sentiment analysis</li>
-                  <li>✅ <strong className="text-slate-900">ML-powered predictions</strong> - 7-day return forecasts</li>
+                  <li>✅ <strong className="text-slate-900">ML-powered predictions</strong> - 30-day alpha forecasts</li>
                   <li>✅ <strong className="text-slate-900">Interactive AI chat</strong> - Ask questions about any filing</li>
                   <li>✅ <strong className="text-slate-900">Real-time alerts</strong> - Get notified when watched companies file</li>
                   <li>✅ <strong className="text-slate-900">Custom watchlists</strong> - Track your portfolio companies</li>
@@ -826,46 +826,6 @@ export default function FilingPage() {
             </CardContent>
           </Card>
         )}
-
-        {/* Legacy ML Prediction Card (backward compat — only show if no alpha prediction) */}
-        {data.mlPrediction && !data.prediction && data.filing.hasFinancials && (
-          <Card className="mb-6 border-2 border-emerald-300 bg-gradient-to-r from-emerald-50 to-blue-50 shadow-lg" data-print-section="prediction">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl">🎯 ML Price Prediction (Legacy)</CardTitle>
-                <span className="text-xs bg-amber-100 text-amber-700 px-3 py-1 rounded-full font-semibold">
-                  Legacy Model
-                </span>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-6 mb-4">
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">Predicted 7-Day Return</p>
-                  <p className={`text-4xl font-bold ${data.mlPrediction.predicted7dReturn > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {data.mlPrediction.predicted7dReturn > 0 ? '+' : ''}{data.mlPrediction.predicted7dReturn.toFixed(2)}%
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">Confidence</p>
-                  <p className="text-4xl font-bold text-emerald-600">
-                    {(data.mlPrediction.predictionConfidence * 100).toFixed(0)}%
-                  </p>
-                  <p className="text-xs text-slate-500 mt-1">{data.mlPrediction.confidenceLabel}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">Trading Signal</p>
-                  <p className="text-2xl font-bold">
-                    {data.mlPrediction.tradingSignal === 'BUY' && '🟢 BUY'}
-                    {data.mlPrediction.tradingSignal === 'SELL' && '🔴 SELL'}
-                    {data.mlPrediction.tradingSignal === 'HOLD' && '🟡 HOLD'}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
 
         {/* Stock Price Performance Chart */}
         {stockPrices && stockPrices.prices && stockPrices.prices.length > 0 && data.filing.hasFinancials && (
