@@ -122,7 +122,7 @@ function directionAccuracy(yTrue: number[], yPred: number[]): number {
 const FEATURE_NAMES = [
   'priceToLow', 'majorDowngrades', 'analystUpsidePotential', 'priceToHigh',
   'concernLevel', 'marketCap', 'sentimentScore', 'upgradesLast30d',
-  'filingTypeFactor', 'toneChangeDelta',
+  'filingTypeFactor', 'toneChangeDelta', 'epsSurprise',
 ];
 
 const FILING_TYPE_MAP: Record<string, number> = { '10-K': 0, '10-Q': 1, '8-K': 2 };
@@ -159,6 +159,7 @@ async function extractTrainingData(): Promise<TrainingRow[]> {
       sentimentScore: true,
       concernLevel: true,
       actual30dAlpha: true,
+      epsSurprise: true,
       company: {
         select: {
           ticker: true,
@@ -299,10 +300,15 @@ async function extractTrainingData(): Promise<TrainingRow[]> {
       a.actionType === 'downgrade' && MAJOR_FIRMS.some(firm => a.firm.includes(firm)),
     ).length;
 
+    // Winsorize EPS surprise to [-50, 50]; use 0 when missing (neutral)
+    const epsSurprise = filing.epsSurprise != null
+      ? Math.max(-50, Math.min(50, filing.epsSurprise))
+      : 0;
+
     const features = [
       priceToLow, majorDowngrades, analystUpsidePotential,
       priceToHigh, concernLevel, marketCap, sentimentScore, upgradesLast30d,
-      filingTypeFactor, toneChangeDelta,
+      filingTypeFactor, toneChangeDelta, epsSurprise,
     ];
 
     rows.push({
@@ -322,22 +328,30 @@ async function extractTrainingData(): Promise<TrainingRow[]> {
 
 // ── Walk-forward cross-validation ─────────────────────────────────────────
 
-function walkForwardCV(rows: TrainingRow[], lambda: number, folds: number = 5): {
+function walkForwardCV(rows: TrainingRow[], lambda: number, folds: number = 5, gapDays: number = 0): {
   r2Scores: number[];
   dirAccScores: number[];
 } {
   const n = rows.length;
   const foldSize = Math.floor(n / (folds + 1)); // min training set = 1 fold
+  const gapMs = gapDays * 24 * 60 * 60 * 1000;
   const r2Scores: number[] = [];
   const dirAccScores: number[] = [];
 
   for (let fold = 0; fold < folds; fold++) {
     const trainEnd = (fold + 1) * foldSize;
-    const testEnd = Math.min(trainEnd + foldSize, n);
-    if (testEnd <= trainEnd) break;
+
+    // With gapDays: skip any test rows within gapDays of the last training date
+    let testStart = trainEnd;
+    if (gapDays > 0 && trainEnd > 0) {
+      const cutoffMs = rows[trainEnd - 1].filingDate.getTime() + gapMs;
+      while (testStart < n && rows[testStart].filingDate.getTime() < cutoffMs) testStart++;
+    }
+    const testEnd = Math.min(testStart + foldSize, n);
+    if (testEnd <= testStart) break;
 
     const trainRows = rows.slice(0, trainEnd);
-    const testRows = rows.slice(trainEnd, testEnd);
+    const testRows = rows.slice(testStart, testEnd);
 
     const Xtrain = trainRows.map(r => r.features);
     const ytrain = trainRows.map(r => r.target);
@@ -494,15 +508,22 @@ async function main() {
   }, {} as Record<string, number>);
   console.log('By filing type:', JSON.stringify(byType));
 
-  // Walk-forward CV
-  console.log('\nRunning 5-fold walk-forward CV...');
-  const { r2Scores, dirAccScores } = walkForwardCV(rows, 100, 5);
+  // Walk-forward CV (standard)
+  console.log('\nRunning 5-fold walk-forward CV (standard)...');
+  const { r2Scores, dirAccScores } = walkForwardCV(rows, 100, 5, 0);
   const cvR2 = mean(r2Scores);
   const cvR2Std = stdDev(r2Scores, cvR2);
   const cvDirAcc = mean(dirAccScores);
-
   console.log(`CV R²:               ${cvR2.toFixed(3)} ± ${cvR2Std.toFixed(3)}`);
   console.log(`CV direction acc:    ${(cvDirAcc * 100).toFixed(1)}%`);
+
+  // Walk-forward CV (strict: 90-day gap between train and test)
+  console.log('\nRunning 5-fold walk-forward CV (strict 90-day gap)...');
+  const { r2Scores: r2Strict, dirAccScores: dirStrict } = walkForwardCV(rows, 100, 5, 90);
+  const strictR2 = mean(r2Strict);
+  const strictDirAcc = mean(dirStrict);
+  console.log(`Strict CV R²:        ${strictR2.toFixed(3)} ± ${stdDev(r2Strict, strictR2).toFixed(3)}`);
+  console.log(`Strict CV dir acc:   ${(strictDirAcc * 100).toFixed(1)}%`);
   console.log(`\nv1 baseline: R²=0.043 ± 0.056, dir_acc=56.3%`);
 
   // Final model: train on all data

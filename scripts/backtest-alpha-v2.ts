@@ -160,6 +160,7 @@ async function main() {
       sentimentScore: true,
       concernLevel: true,
       actual30dAlpha: true,
+      epsSurprise: true,
       company: {
         select: {
           ticker: true,
@@ -259,6 +260,7 @@ async function main() {
         sentimentScore: filing.sentimentScore,
         filingType: filing.filingType,
         priorSentimentScore: priorSentimentAtTime,
+        epsSurprise: filing.epsSurprise,
       },
       { upgradesLast30d, majorDowngradesLast30d },
     );

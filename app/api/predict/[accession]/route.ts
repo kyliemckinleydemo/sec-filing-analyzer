@@ -192,6 +192,7 @@ export async function GET(
         {
           concernLevel: filing.concernLevel,
           sentimentScore: filing.sentimentScore,
+          epsSurprise: (filing as any).epsSurprise ?? null,
         },
         { upgradesLast30d: upgradeCount, majorDowngradesLast30d: majorDowngradeCount },
       );

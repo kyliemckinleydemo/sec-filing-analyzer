@@ -42,6 +42,7 @@ export const TRAINING_MEAN_FEATURES: AlphaFeatures = {
   upgradesLast30d: 0.1941,
   filingTypeFactor: 0.5,
   toneChangeDelta: 0.0,
+  epsSurprise: 0,
 };
 
 /**
@@ -59,6 +60,7 @@ export const BULLISH_FEATURES: AlphaFeatures = {
   upgradesLast30d: 0,         // Low upgrades (negligible weight)
   filingTypeFactor: 1,        // 10-Q
   toneChangeDelta: 0.2,       // Improving tone vs prior filing
+  epsSurprise: 15,            // Strong EPS beat
 };
 
 /**
@@ -76,4 +78,5 @@ export const BEARISH_FEATURES: AlphaFeatures = {
   upgradesLast30d: 3,         // Lots of upgrades (slightly negative weight)
   filingTypeFactor: 0,        // 10-K
   toneChangeDelta: -0.3,      // Worsening tone vs prior filing
+  epsSurprise: -20,           // EPS miss
 };
