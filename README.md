@@ -18,10 +18,14 @@ An AI-powered platform for analyzing SEC filings and predicting stock price move
 - **Executive Summaries** — Investor-focused bullet points generated from filing content
 - **8-K Event Classification** — Automated categorization of current event filings
 
-### Stock Price Prediction (Alpha Model v1.0)
+### Stock Price Prediction (Alpha Model v2)
 - **Stepwise+Ridge regression** predicting 30-day market-relative alpha (stock return minus S&P 500)
-- **8 features** selected from 29 candidates via forward stepwise selection: price momentum, analyst activity (contrarian signals), Claude AI concern/sentiment, market cap
-- **Backtested accuracy**: 56.3% directional (62.5% high-confidence), +7.64pp LONG-SHORT spread
+- **13 features** across **44 Mixture-of-Experts (MoE) models** — global + 11 sector experts + 4 cap-tier experts + 29 sector×cap-tier combined experts
+- **4,009 training samples** from 500+ companies (10x expansion from v1's 340 samples)
+- **Historical price snapshots** at filing date (99% coverage) — eliminates stale-price bias from prior model
+- **Macro regime features** — S&P 500 30-day trend and VIX level at filing date for bull/bear market adjustment
+- **EPS surprise** — strongest new feature (actual vs. consensus EPS), winsorized to [-50%, +50%]
+- **Backtested accuracy**: 56.2% directional (77.5% high-confidence), Sharpe ratio 2.22 (90-day strict walk-forward CV)
 - **Paper Trading** — Automated virtual portfolio validates live performance (30-day hold period)
 - See [`MODEL.md`](MODEL.md) for full model documentation
 

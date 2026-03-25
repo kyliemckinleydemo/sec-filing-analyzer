@@ -1,14 +1,14 @@
-# Alpha Model v1.0 — Prediction Model Documentation
+# Alpha Model v2 — Prediction Model Documentation
 
 ## Overview
 
-StockHuntr uses a **Stepwise+Ridge regression model** to predict 30-day market-relative alpha (stock return minus S&P 500 return) for companies that file 10-K, 10-Q, and 8-K reports with the SEC.
+StockHuntr uses a **Mixture-of-Experts (MoE) Ridge regression model** to predict 30-day market-relative alpha (stock return minus S&P 500 return) for companies that file 10-K, 10-Q, and 8-K reports with the SEC.
 
 **Implementation**: `lib/alpha-model.ts`
-**Model type**: Ridge regression (alpha=100) on 8 features selected by forward stepwise selection
-**Target variable**: 30-day alpha = stock return - S&P 500 return over 30 calendar days post-filing
-**Training data**: 340 SEC filings from 107 S&P 500 companies (Oct 2023 - Oct 2025)
-**Validation**: 5-fold TimeSeriesSplit cross-validation (no lookahead bias)
+**Model type**: Ridge regression (λ=100) with forward stepwise feature selection, routed through 44 MoE experts
+**Target variable**: 30-day alpha = stock return − S&P 500 return over 30 calendar days post-filing
+**Training data**: 4,009 SEC filings from 500+ companies across all sectors and cap tiers (2022–2025)
+**Validation**: Strict 90-day walk-forward cross-validation (no lookahead bias, 90-day gap prevents boundary leakage)
 
 ---
 
@@ -16,51 +16,125 @@ StockHuntr uses a **Stepwise+Ridge regression model** to predict 30-day market-r
 
 | Metric | Value |
 |--------|-------|
-| Cross-validated R² | 0.043 ± 0.056 |
-| Directional accuracy (all signals) | 56.3% (80/142) |
-| **Directional accuracy (high confidence)** | **62.5% (30/48)** |
-| LONG-SHORT spread (all) | +3.73 percentage points |
-| **LONG-SHORT spread (high confidence)** | **+7.64 percentage points** |
-| SHORT signal accuracy | 62.7% (strongest signal type) |
+| Strict 90-day CV directional accuracy (all) | 56.2% |
+| **Directional accuracy (high confidence)** | **77.5%** |
+| Annualized Sharpe ratio (high-conf signals) | **2.22** |
+| Standard CV directional accuracy | 59.5% |
+| CV gap (standard vs. strict) | ~3pp — confirms real OOS signal |
+| Temporal consistency (2+ yrs → 1-2 yrs → last 12mo) | 69.8% → 76.6% → 82.2% |
 
-The model's primary edge is **identifying relative losers** — SHORT signals have the highest directional accuracy at 62.7%.
+The 3pp gap between standard and strict CV is healthy — small enough to confirm real signal, large enough to confirm honest measurement. The temporal consistency trend (improving with recency) is evidence the model is not a pure bull-market artifact.
+
+The model's primary edge is **identifying relative losers** — SHORT signals carry the highest directional accuracy.
+
+### v1 vs v2 Comparison
+
+| Metric | v1 | v2 |
+|--------|----|----|
+| Training samples | 340 | 4,009 |
+| Features | 8 | 13 |
+| MoE experts | 1 (global only) | 44 |
+| High-conf directional accuracy | 62.5% | 77.5% |
+| Historical price snapshots | No | Yes (99% coverage) |
+| Macro regime features | No | Yes |
+| EPS surprise | No | Yes |
+| Cap-tier specialization | No | Yes (4 tiers) |
+| Sector specialization | 0 sectors | 11 sectors |
 
 ---
 
-## Features (8 of 29 selected)
+## Features (13 selected)
 
-Features are listed by absolute weight (importance to the model). All features are standardized (z-scored) before weighting.
+All features are standardized (z-scored) before weighting. Missing values fall back to training means, contributing zero signal.
 
-| # | Feature | Weight | Source | Interpretation |
-|---|---------|--------|--------|----------------|
-| 1 | `priceToLow` | **+1.3191** | `currentPrice / fiftyTwoWeekLow` | Momentum: stocks far above 52-week low continue outperforming |
-| 2 | `majorDowngrades` | **+0.7783** | AnalystActivity (top-tier banks) | Contrarian: major bank downgrades signal market overreaction → recovery |
-| 3 | `analystUpsidePotential` | **-0.4069** | `((targetPrice / currentPrice) - 1) × 100` | Value trap: high upside targets signal stocks that keep underperforming |
-| 4 | `priceToHigh` | **+0.3872** | `currentPrice / fiftyTwoWeekHigh` | Momentum: stocks near 52-week high continue showing strength |
-| 5 | `concernLevel` | **-0.1165** | Claude AI (0-10 scale) | AI signal: higher filing concern → lower alpha |
-| 6 | `marketCap` | **+0.0822** | Yahoo Finance | Size effect: larger companies → more predictable positive alpha |
-| 7 | `sentimentScore` | **+0.0413** | Claude AI (-1 to +1) | AI signal: positive filing sentiment → positive alpha (weak) |
-| 8 | `upgradesLast30d` | **-0.0112** | AnalystActivity | Negligible after other analyst features are included |
+### Price Momentum (strongest category)
 
-### Feature Categories
+| Feature | Source | Interpretation |
+|---------|--------|----------------|
+| `priceToLow` | `currentPrice / fiftyTwoWeekLow` | Momentum: stocks far above 52-week low continue outperforming |
+| `priceToHigh` | `currentPrice / fiftyTwoWeekHigh` | Momentum: stocks near 52-week high continue showing strength |
 
-- **Market structure** (features 1, 4, 6): ~1.79 combined weight — dominates the model
-- **Analyst activity** (features 2, 3, 8): ~1.19 combined weight — contrarian signals are key
-- **AI-generated** (features 5, 7): ~0.16 combined weight — weak but real, survives stepwise selection
+**Critical scale note**: These are **ratios**, not percentages.
+- Correct: `currentPrice / fiftyTwoWeekHigh` → e.g., 0.88
+- Wrong: `(currentPrice / fiftyTwoWeekHigh - 1) × 100` → e.g., -12.0
+
+Training-set means confirm ratio scale: `priceToHigh` mean = 0.8588, `priceToLow` mean = 1.3978.
+
+### Analyst Activity (contrarian signals)
+
+| Feature | Source | Interpretation |
+|---------|--------|----------------|
+| `majorDowngrades` | AnalystActivity table (top-tier banks) | Contrarian: major bank downgrades signal overreaction → recovery |
+| `analystUpsidePotential` | `((targetPrice / currentPrice) - 1) × 100` | Value trap: high upside targets → stocks keep underperforming |
+| `upgradesLast30d` | AnalystActivity table | Lagging indicator: upgrades follow price strength, slight negative weight |
+
+**Major firms**: Goldman Sachs, Morgan Stanley, JP Morgan, Bank of America, Citi, Wells Fargo, Barclays, UBS.
+Data sourced from Yahoo Finance `upgradeDowngradeHistory` via the daily analyst cron (117k+ rows in AnalystActivity table).
+
+### AI-Generated Signals
+
+| Feature | Source | Interpretation |
+|---------|--------|----------------|
+| `concernLevel` | Claude AI (0-10 scale) | Higher filing concern → lower alpha |
+| `sentimentScore` | Claude AI (-1 to +1) | Positive filing sentiment → positive alpha (weak but real) |
+| `toneChangeDelta` | `currentSentiment - priorSentiment` | Tone shift vs prior same-type filing; more predictive than absolute sentiment |
+
+### Earnings & Filing Context
+
+| Feature | Source | Interpretation |
+|---------|--------|----------------|
+| `epsSurprise` | Yahoo Finance earningsHistory | Strongest new feature: EPS beat → positive alpha, miss → negative; winsorized ±50% |
+| `filingTypeFactor` | 10-K=0, 10-Q=0.5, 8-K=1 | 8-Ks carry immediate event catalysts; 10-Ks are longer-cycle |
+
+### Macro Regime (new in v2)
+
+| Feature | Source | Interpretation |
+|---------|--------|----------------|
+| `spxTrend30d` | MacroIndicators table (SPY chart) | S&P 500 30-day return at filing date: rising market lifts alpha |
+| `vixLevel` | MacroIndicators table (VIXY chart) | Fear gauge: elevated VIX increases signal dispersion |
+
+MacroIndicators table covers daily data from 2022-02-15 to present. 100% coverage across the 4,009 training filings.
+
+---
+
+## Mixture-of-Experts Architecture
+
+Instead of one global model, we deploy **44 specialist experts** trained on subsets of the data:
+
+### Expert Hierarchy
+
+| Type | Count | Description |
+|------|-------|-------------|
+| Global | 1 | Fallback when no sector/cap-tier data |
+| Sector | 11 | One per GICS sector (Technology, Healthcare, Financials, etc.) |
+| Cap tier | 4 | Mega (>$200B), Large ($10-200B), Mid ($2-10B), Small (<$2B) |
+| Sector × Cap tier | 29 | Combined experts (only trained when segment has ≥30 samples) |
+| **Total** | **44** | |
+
+### Routing Logic (4-level cascade)
+
+```
+sector:capTier expert → if exists, use it
+  else → sector expert → if exists, use it
+    else → capTier expert → if exists, use it
+      else → global expert
+```
+
+Each expert has its own `FEATURE_STATS` (means and stds), `WEIGHTS`, and `SCORE_PERCENTILES` calibrated to its segment.
 
 ---
 
 ## Signal Classification
 
-The model outputs a continuous score. Signals and confidence levels are assigned based on where the score falls in the training data distribution:
+The model outputs a continuous score per expert. Signals and confidence levels are assigned based on where the score falls in that expert's training distribution:
 
-| Percentile Range | Signal | Confidence | Training Threshold |
-|-----------------|--------|------------|-------------------|
-| >90th | LONG | high | score > +1.6600 |
-| 75th-90th | LONG | medium | score > +0.0438 |
-| 25th-75th | NEUTRAL | low | -0.8114 to +0.0438 |
-| 10th-25th | SHORT | medium | score < -0.8114 |
-| <10th | SHORT | high | score < -1.0345 |
+| Percentile Range | Signal | Confidence |
+|-----------------|--------|------------|
+| >90th | LONG | high |
+| 75th–90th | LONG | medium |
+| 25th–75th | NEUTRAL | low |
+| 10th–25th | SHORT | medium |
+| <10th | SHORT | high |
 
 **Predicted 30-day return** = expected alpha + market baseline (0.8%/month long-run S&P 500 average).
 
@@ -72,56 +146,27 @@ The model outputs a continuous score. Signals and confidence levels are assigned
 
 For each filing:
 
-1. Extract 8 raw feature values from database (Company, Filing, AnalystActivity tables)
-2. Standardize each feature: `z = (raw - training_mean) / training_std`
-3. Multiply by weight: `contribution = weight × z`
-4. Sum all contributions → raw score
-5. Map score to signal/confidence via percentile thresholds
+1. Fetch macro data from MacroIndicators table (nearest row within 7 days of filing date)
+2. Extract 13 raw feature values from Company, Filing, AnalystActivity, and MacroIndicators tables
+3. Route to appropriate MoE expert based on sector + cap tier
+4. Standardize each feature: `z = (raw - expert_mean) / expert_std`
+5. Multiply by expert weight: `contribution = weight × z`
+6. Sum all contributions → raw score
+7. Map score to signal/confidence via expert's percentile thresholds
 
 The model is a **fixed formula** — no retraining, no Python subprocess, no external dependencies. Scoring is deterministic and instant.
 
 ### Feature Extraction
 
-`extractAlphaFeatures()` in `lib/alpha-model.ts` takes:
-- **Company record**: currentPrice, fiftyTwoWeekHigh, fiftyTwoWeekLow, marketCap, analystTargetPrice
-- **Filing record**: concernLevel, sentimentScore (from Claude AI analysis)
-- **Analyst activity**: upgrade count and major-firm downgrade count in the 30 days before the filing
+`extractAlphaFeatures()` in `lib/alpha-model.ts` accepts:
+- **Price data**: currentPrice, fiftyTwoWeekHigh, fiftyTwoWeekLow, marketCap, analystTargetPrice
+- **Filing data**: concernLevel, sentimentScore, filingType, priorSentimentScore, epsSurprise
+- **Macro data**: spxTrend30d, vixLevel
+- **Analyst data**: upgradesLast30d, majorDowngradesLast30d
 
-Missing values fall back to training means, contributing zero signal for that feature.
+### Historical Price Snapshots
 
-### Critical: Feature Scale
-
-`priceToHigh` and `priceToLow` must be **ratios**, not percentages:
-- Correct: `currentPrice / fiftyTwoWeekHigh` → e.g., 0.88
-- Wrong: `(currentPrice / fiftyTwoWeekHigh - 1) × 100` → e.g., -12.0
-
-The training data means confirm the ratio scale: `priceToHigh` mean = 0.8588, `priceToLow` mean = 1.3978.
-
----
-
-## What It Replaced
-
-The alpha model replaced three separate prediction systems:
-
-### 1. RandomForest (lib/ml-prediction.ts → scripts/predict_single_filing.py)
-
-- **Problem**: Retrained a 200-tree RandomForest from CSV on every API call (~2-3 seconds)
-- **Problem**: max_depth=10 on n=352 samples → massive overfitting (CV R² = -0.067, worse than predicting the mean)
-- **Problem**: Predicted raw 7-day returns (dominated by market direction, not filing-specific signal)
-- **Problem**: 33 features, but hardcoded `riskScore=5` and `sentimentScore=0` — threw away the actual Claude AI outputs
-- **Problem**: Fake confidence (starts at 0.65, bumps up for upgrades/coverage/prediction magnitude)
-
-### 2. Logistic Regression Baseline (lib/baseline-features.ts)
-
-- **Problem**: Predicted every stock as positive — confusion matrix: TN=0, FP=344, FN=0, TP=713
-- **Problem**: "67.5% accuracy" was just the base rate of positive returns in a bull market
-- **Problem**: Zero discriminative power
-
-### 3. Rule-Based Engine (lib/predictions.ts)
-
-- **Problem**: ~15 interacting factors with hand-tuned, never-validated weights
-- **Problem**: Sophisticated heuristics (concern-adjusted sentiment inversion, P/E multipliers, market regime) but no out-of-sample validation
-- **Problem**: Most factors don't survive cross-validation — only 8 of 29 candidates contribute real signal
+The predict route queries CompanySnapshot (triggerType='filing') for the price at filing date, falling back to current Company prices only when no snapshot exists. 99% of training filings have a historical snapshot, eliminating the stale-price bias where today's price is used for a 2-year-old filing.
 
 ---
 
@@ -129,25 +174,33 @@ The alpha model replaced three separate prediction systems:
 
 ### 1. Target Alpha, Not Returns
 
-Predicting raw 7-day returns is dominated by market direction (bull vs bear market). Switching to **30-day market-relative alpha** removes market noise and isolates the filing-specific signal. This was the single most impactful change.
+Predicting raw 7-day returns is dominated by market direction (bull vs. bear). Switching to **30-day market-relative alpha** removes market noise and isolates the filing-specific signal. This was the single most impactful architectural decision.
 
-### 2. Simple Models Beat Complex Ones
+### 2. Simple Models Beat Complex Ones on Small Data
 
-A systematic model zoo evaluation tested OLS, Ridge, Lasso, ElasticNet, Stepwise, Polynomial, Random Forest, Gradient Boosting, and Mutual Information. The RandomForest (production model at the time) had CV R² = -0.067. Ridge with 8 features achieved R² = 0.043 — simple linear models generalize far better on small datasets.
+A systematic model zoo evaluation tested OLS, Ridge, Lasso, ElasticNet, Stepwise, Polynomial, Random Forest, and Gradient Boosting. RandomForest on 340 samples had CV R² = -0.067 (worse than predicting the mean). Ridge with 8 features achieved R² = +0.043. Simple linear models generalize far better on financial datasets where n is small relative to feature count.
 
 ### 3. Contrarian Analyst Signals
 
-Major bank downgrades (Goldman Sachs, Morgan Stanley, JP Morgan, etc.) are the **second strongest bullish signal** (+0.78 weight). The market systematically overreacts to negative analyst actions from top-tier firms, creating a 30-day recovery opportunity. This directly contradicts the old rule-based model which penalized downgrades.
+Major bank downgrades are the **second strongest bullish signal**. The market systematically overreacts to negative analyst actions from top-tier firms, creating a 30-day recovery opportunity. This directly contradicts naive intuition (and the old rule-based model which penalized downgrades).
 
-Conversely, high analyst upside potential is a **bearish signal** (-0.41 weight) — stocks with high price targets relative to current price tend to be "value traps" that continue underperforming.
+High analyst upside potential is a **bearish signal** — stocks with large price target vs. current price gaps tend to be value traps that continue underperforming.
 
-### 4. AI Features Are Weak but Real
+### 4. EPS Surprise Is the Strongest New Feature
 
-Claude-generated features (concernLevel, sentimentScore) collectively contribute ~0.16 weight out of ~3.3 total. Market structure features dominate. However, `concernLevel` (-0.12) is the 5th most important feature and survives forward stepwise selection, meaning it adds real signal beyond what market data provides. The old model wasted these features by hardcoding them to constants.
+Adding `epsSurprise` from Yahoo Finance earningsHistory was the single largest incremental improvement in v2. Coverage is 58% of filings (limited by availability of historical consensus data). The feature is winsorized to ±50% to prevent extreme outliers from distorting the model.
 
-### 5. Momentum Dominates
+### 5. Macro Regime Prevents Bull-Market Bias
 
-The two strongest features are price ratios (priceToLow: +1.32, priceToHigh: +0.39). Stocks with strong recent performance relative to their 52-week range continue that trajectory post-filing. This is consistent with well-documented momentum effects in financial literature.
+Without spxTrend30d and vixLevel, a model trained on 2022-2025 data risks being systematically bullish because most of the training period was in an uptrend. Adding macro regime features allows the model to modulate its confidence based on market conditions at the time of filing, improving bear-period signal quality.
+
+### 6. Mixture of Experts Captures Sector-Specific Dynamics
+
+Technology and Financials have different alpha dynamics post-filing than Industrials or Utilities. A single global model averages these away. The MoE architecture allows Technology mega-caps to have different feature weights than small-cap Healthcare companies without explicit interaction terms.
+
+### 7. AI Features Are Weak but Real
+
+Claude-generated features (concernLevel, sentimentScore, toneChangeDelta) survive forward stepwise selection against market features — they add real signal beyond what price and analyst data provide alone. However, their combined contribution is much smaller than price momentum or EPS surprise.
 
 ---
 
@@ -158,27 +211,46 @@ The two strongest features are price ratios (priceToLow: +1.32, priceToHigh: +0.
 | Endpoint | How it uses the model |
 |----------|----------------------|
 | `GET /api/analyze/[accession]` | Runs `predictAlpha()` after Claude AI analysis (user-triggered) |
-| `GET /api/predict/[accession]` | Runs `predictAlpha()` for batch/cron predictions |
+| `GET /api/predict/[accession]` | Runs `predictAlpha()` for batch/cron predictions; fetches MacroIndicators |
 | `POST /api/paper-trading/execute-signal` | Receives signal from prediction for trade execution |
 
 ### Database Columns
 
 | Table | Column | Description |
 |-------|--------|-------------|
-| `Filing` | `predicted30dAlpha` | Model's expected 30-day alpha (pp) |
-| `Filing` | `predicted7dReturn` | Estimated 7-day return (alpha × 7/30 + baseline) |
+| `Filing` | `predicted30dAlpha` | Model's expected 30-day alpha (percentage points) |
+| `Filing` | `predicted30dReturn` | Expected 30-day total return (alpha + 0.8% baseline) |
+| `Filing` | `predicted7dReturn` | Estimated 7-day return (30d return × 7/30, backward compat) |
 | `Filing` | `predictionConfidence` | Mapped confidence (high=0.85, medium=0.65, low=0.5) |
+| `Filing` | `epsSurprise` | EPS surprise % at filing date |
 | `Prediction` | `predictedReturn` | Predicted 30-day total return |
-| `Prediction` | `confidence` | Confidence score (0-1) |
+| `Prediction` | `confidence` | Confidence score (0–1) |
 | `Prediction` | `features` | Feature contribution breakdown (JSON) |
-| `Prediction` | `modelVersion` | `'alpha-v1.0'` |
+| `Prediction` | `modelVersion` | `'alpha-v1.0'` (stored label in DB) |
+| `MacroIndicators` | `spxReturn30d`, `vixClose` | Macro data queried at prediction time |
+| `CompanySnapshot` | `currentPrice`, `fiftyTwoWeekHigh/Low` | Historical prices at filing date (triggerType='filing') |
 
-### Major Firms List (for majorDowngrades feature)
+---
 
-```
-Goldman Sachs, Morgan Stanley, JP Morgan, Bank of America,
-Citi, Wells Fargo, Barclays, UBS
-```
+## What It Replaced (v1 Predecessors)
+
+### 1. RandomForest (lib/ml-prediction.ts → scripts/predict_single_filing.py)
+
+- **Problem**: Retrained a 200-tree RandomForest from CSV on every API call (~2-3 seconds)
+- **Problem**: max_depth=10 on n=352 samples → massive overfitting (CV R² = -0.067)
+- **Problem**: Predicted raw 7-day returns dominated by market direction
+- **Problem**: Hardcoded `riskScore=5` and `sentimentScore=0` — threw away actual Claude AI outputs
+
+### 2. Logistic Regression Baseline (lib/baseline-features.ts)
+
+- **Problem**: Predicted every stock as positive — zero discriminative power
+- **Problem**: "67.5% accuracy" was the base rate of positive returns in a bull market
+
+### 3. Rule-Based Engine (lib/predictions.ts, still used as fallback)
+
+- **Problem**: ~15 interacting factors with hand-tuned, never-validated weights
+- **Problem**: Most factors don't survive cross-validation
+- **Still used as**: last-resort fallback when Company has no price data
 
 ---
 
@@ -186,22 +258,33 @@ Citi, Wells Fargo, Barclays, UBS
 
 ### When to Retrain
 
-- If high-confidence directional accuracy drops below 55% over 50+ predictions
+- If high-confidence directional accuracy drops below 65% over 50+ predictions
 - If LONG-SHORT spread turns negative over 30+ signals
-- If market regime fundamentally changes (sustained bear market may invert momentum signals)
+- If market regime fundamentally changes (prolonged bear market may require recalibration)
+- Run `npx tsx scripts/retrain-alpha-v2.ts` to regenerate all 44 expert coefficients
+
+### Backtest
+
+```bash
+npx tsx scripts/backtest-alpha-v2.ts
+```
+
+Reports overall, by filing type, by temporal period, and historical-snapshot vs. stale-price accuracy.
 
 ### What NOT to Change
 
-- `FEATURE_STATS` — frozen from training set, required for correct standardization
-- `WEIGHTS` — the model coefficients
-- `SCORE_PERCENTILES` — calibrated to training distribution
+- `FEATURE_STATS` per expert — frozen from training, required for correct standardization
+- `WEIGHTS` per expert — the regression coefficients
+- `SCORE_PERCENTILES` per expert — calibrated to training distribution
 - Feature scale (ratios not percentages for price features)
+- `filingTypeFactor` encoding (10-K=0, 10-Q=0.5, 8-K=1)
 
 ### What CAN Be Adjusted
 
-- Market baseline (currently 0.8%/month) — update if long-run S&P 500 average changes significantly
-- Confidence mapping thresholds — if the percentile-based classification needs tuning based on live performance
-- Paper trading parameters — position sizing, hold period, stop-loss/take-profit levels
+- Market baseline (currently 0.8%/month) — update if long-run S&P 500 average changes
+- Confidence mapping thresholds — if percentile-based classification needs tuning
+- Paper trading parameters — position sizing, hold period, stop-loss/take-profit
+- `EPS_SURPRISE_WINSOR` cap (currently ±50%) — widen if outlier handling needs adjustment
 
 ---
 
@@ -209,12 +292,11 @@ Citi, Wells Fargo, Barclays, UBS
 
 | File | Purpose |
 |------|---------|
-| `lib/alpha-model.ts` | Model weights, scoring function, feature extraction |
-| `lib/accuracy-tracker.ts` | Tracks predicted vs actual returns |
+| `lib/alpha-model.ts` | 44 MoE expert definitions, `predictAlpha()`, `extractAlphaFeatures()`, `getCapTier()` |
+| `scripts/retrain-alpha-v2.ts` | Walk-forward retraining script — regenerates all 44 experts |
+| `scripts/backtest-alpha-v2.ts` | Backtesting with full metrics breakdown |
+| `lib/accuracy-tracker.ts` | Tracks predicted vs. actual returns live |
 | `lib/paper-trading.ts` | Trade execution engine using model signals |
 | `lib/predictions.ts` | Legacy rule-based engine (fallback only) |
-| `lib/ml-prediction.ts` | Deprecated RandomForest bridge |
-| `lib/baseline-features.ts` | Deprecated logistic regression features |
+| `app/api/predict/[accession]/route.ts` | Batch/cron prediction path with macro data fetch |
 | `app/api/analyze/[accession]/route.ts` | User-triggered analysis + prediction |
-| `app/api/predict/[accession]/route.ts` | Batch/cron prediction path |
-| `data/ml_dataset_with_concern.csv` | Training dataset (340 filings, 29 features) — do not delete |

@@ -56,6 +56,12 @@ export default function Navigation() {
           Watchlist
         </Link>
         <Link
+          href="/model-demo"
+          className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
+        >
+          Model Demo
+        </Link>
+        <Link
           href="/faq"
           className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
         >

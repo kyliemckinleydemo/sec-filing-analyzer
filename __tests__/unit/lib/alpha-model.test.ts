@@ -18,7 +18,7 @@
  * - Fallback behavior to training means is validated for all nullable features
  * - Numeric precision is enforced (rawScore: 4 decimals, returns: 2 decimals)
  * - Uses test fixtures (TRAINING_MEAN_FEATURES, BULLISH_FEATURES, BEARISH_FEATURES)
- * - All 10 model features are validated for presence in featureContributions output
+ * - All 13 model features are validated for presence in featureContributions output
  * - Market baseline of 0.8% is added to expectedAlpha for predicted30dReturn
  */
 
@@ -56,53 +56,53 @@ describe('predictAlpha', () => {
     expect(result.signal).toBe('SHORT');
   });
 
-  it('assigns high confidence when score > p90 (1.66)', () => {
-    // Construct features that push the score well above p90
+  it('assigns high confidence when score > p90 (0.0288)', () => {
+    // Construct features that push the score well above p90 via strong analystUpsidePotential + EPS beat
     const features: AlphaFeatures = {
       ...BULLISH_FEATURES,
-      priceToLow: 3.0,
-      majorDowngrades: 3,
+      analystUpsidePotential: 120,  // Far above mean → large positive contribution
+      epsSurprise: 40,
     };
     const result = predictAlpha(features);
-    expect(result.rawScore).toBeGreaterThan(1.66);
+    expect(result.rawScore).toBeGreaterThan(0.0288);
     expect(result.signal).toBe('LONG');
     expect(result.confidence).toBe('high');
     expect(result.percentile).toBe('>90th');
   });
 
   it('assigns medium confidence when score is between p75 and p90', () => {
-    // Need score between 0.0438 and 1.66
-    // Use features slightly above mean
+    // Need score between p75 (0.0114) and p90 (0.0288)
+    // Use features with moderate analystUpsidePotential above mean
     const features: AlphaFeatures = {
       ...TRAINING_MEAN_FEATURES,
-      priceToLow: 1.7, // Slightly above mean of 1.3978
+      analystUpsidePotential: 50, // Moderately above mean of 29.569
+      epsSurprise: 10,
     };
     const result = predictAlpha(features);
-    if (result.rawScore > 0.0438 && result.rawScore <= 1.66) {
+    if (result.rawScore > 0.0114 && result.rawScore <= 0.0288) {
       expect(result.signal).toBe('LONG');
       expect(result.confidence).toBe('medium');
       expect(result.percentile).toBe('75th-90th');
     }
   });
 
-  it('assigns high confidence SHORT when score < p10 (-1.0345)', () => {
+  it('assigns high confidence SHORT when score < p10 (-0.0290)', () => {
     const result = predictAlpha(BEARISH_FEATURES);
-    expect(result.rawScore).toBeLessThan(-1.0345);
+    expect(result.rawScore).toBeLessThan(-0.0290);
     expect(result.signal).toBe('SHORT');
     expect(result.confidence).toBe('high');
     expect(result.percentile).toBe('<10th');
   });
 
   it('assigns medium confidence SHORT when score between p10 and p25', () => {
-    // Need score between -1.0345 and -0.8114
+    // Need score between p25 (-0.0158) and p10 (-0.0290)
     const features: AlphaFeatures = {
       ...TRAINING_MEAN_FEATURES,
-      priceToLow: 1.05,       // Below mean → negative contribution from top weight
-      analystUpsidePotential: 20, // Above mean → negative contribution
-      concernLevel: 7,         // Above mean → negative contribution
+      analystUpsidePotential: 5,  // Below mean → negative contribution
+      epsSurprise: -8,            // Miss → negative contribution
     };
     const result = predictAlpha(features);
-    if (result.rawScore < -0.8114 && result.rawScore >= -1.0345) {
+    if (result.rawScore < -0.0158 && result.rawScore >= -0.0290) {
       expect(result.signal).toBe('SHORT');
       expect(result.confidence).toBe('medium');
       expect(result.percentile).toBe('10th-25th');
@@ -114,10 +114,10 @@ describe('predictAlpha', () => {
     expect(result.predicted30dReturn).toBeCloseTo(result.expectedAlpha + 0.8, 2);
   });
 
-  it('includes all 10 features in featureContributions', () => {
+  it('includes all 13 features in featureContributions', () => {
     const result = predictAlpha(TRAINING_MEAN_FEATURES);
     const keys = Object.keys(result.featureContributions);
-    expect(keys).toHaveLength(10);
+    expect(keys).toHaveLength(13);
     expect(keys).toContain('priceToLow');
     expect(keys).toContain('majorDowngrades');
     expect(keys).toContain('analystUpsidePotential');
@@ -128,6 +128,9 @@ describe('predictAlpha', () => {
     expect(keys).toContain('upgradesLast30d');
     expect(keys).toContain('filingTypeFactor');
     expect(keys).toContain('toneChangeDelta');
+    expect(keys).toContain('epsSurprise');
+    expect(keys).toContain('spxTrend30d');
+    expect(keys).toContain('vixLevel');
   });
 
   it('feature contributions sum to rawScore', () => {
@@ -192,7 +195,7 @@ describe('extractAlphaFeatures', () => {
       { concernLevel: 5, sentimentScore: 0.1 },
       { upgradesLast30d: 0, majorDowngradesLast30d: 0 },
     );
-    expect(features.priceToLow).toBeCloseTo(1.3978, 4);
+    expect(features.priceToLow).toBeCloseTo(1.3638, 3);
   });
 
   it('falls back to training mean for priceToHigh when fiftyTwoWeekHigh is 0', () => {
@@ -201,7 +204,7 @@ describe('extractAlphaFeatures', () => {
       { concernLevel: 5, sentimentScore: 0.1 },
       { upgradesLast30d: 0, majorDowngradesLast30d: 0 },
     );
-    expect(features.priceToHigh).toBeCloseTo(0.8588, 4);
+    expect(features.priceToHigh).toBeCloseTo(0.8381, 3);
   });
 
   it('falls back to training mean for analystUpsidePotential when analystTargetPrice is null', () => {
@@ -210,7 +213,7 @@ describe('extractAlphaFeatures', () => {
       { concernLevel: 5, sentimentScore: 0.1 },
       { upgradesLast30d: 0, majorDowngradesLast30d: 0 },
     );
-    expect(features.analystUpsidePotential).toBeCloseTo(13.518, 3);
+    expect(features.analystUpsidePotential).toBeCloseTo(29.569, 2);
   });
 
   it('falls back to training mean for concernLevel when null', () => {
@@ -219,7 +222,7 @@ describe('extractAlphaFeatures', () => {
       { concernLevel: null, sentimentScore: 0.1 },
       { upgradesLast30d: 0, majorDowngradesLast30d: 0 },
     );
-    expect(features.concernLevel).toBeCloseTo(5.345, 3);
+    expect(features.concernLevel).toBeCloseTo(5.3333, 3);
   });
 
   it('falls back to training mean for sentimentScore when null', () => {
@@ -228,7 +231,7 @@ describe('extractAlphaFeatures', () => {
       { concernLevel: 5, sentimentScore: null },
       { upgradesLast30d: 0, majorDowngradesLast30d: 0 },
     );
-    expect(features.sentimentScore).toBeCloseTo(0.0236, 4);
+    expect(features.sentimentScore).toBeCloseTo(0.1095, 3);
   });
 
   it('passes through marketCap directly', () => {

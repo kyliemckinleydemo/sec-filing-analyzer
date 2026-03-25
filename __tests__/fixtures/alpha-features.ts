@@ -30,59 +30,62 @@ import type { AlphaFeatures } from '@/lib/alpha-model';
 
 /**
  * Training mean features — should produce rawScore ~0, NEUTRAL signal
+ * Values are exact global training means from FEATURE_STATS in lib/alpha-model.ts (v2, 4009 samples)
  */
 export const TRAINING_MEAN_FEATURES: AlphaFeatures = {
-  priceToLow: 1.3978,
-  majorDowngrades: 0.1029,
-  analystUpsidePotential: 13.518,
-  priceToHigh: 0.8588,
-  concernLevel: 5.345,
-  marketCap: 682_892_847_207,
-  sentimentScore: 0.0236,
-  upgradesLast30d: 0.1941,
-  filingTypeFactor: 0.5,
-  toneChangeDelta: 0.0,
-  epsSurprise: 0,
-  spxTrend30d: 1.5,
-  vixLevel: 20,
+  priceToLow: 1.3638,
+  majorDowngrades: 0.0409,
+  analystUpsidePotential: 29.569,
+  priceToHigh: 0.8381,
+  concernLevel: 5.3333,
+  marketCap: 98_179_000_000,
+  sentimentScore: 0.1095,
+  upgradesLast30d: 0.1130,
+  filingTypeFactor: 0.7378,
+  toneChangeDelta: -0.0113,
+  epsSurprise: 3.8894,
+  spxTrend30d: 1.8286,
+  vixLevel: 18.1503,
 };
 
 /**
- * Bullish features — high priceToLow (momentum), near priceToHigh (strength),
- * major downgrades (contrarian recovery), low concern
+ * Bullish features — v2 global model signal drivers:
+ * high analystUpsidePotential (+0.0239 weight), strong EPS beat (+0.0104),
+ * high concernLevel (+0.0050), elevated VIX (+0.0058), bull market (+0.0100)
  */
 export const BULLISH_FEATURES: AlphaFeatures = {
-  priceToLow: 2.5,           // Far above 52W low — strong momentum
-  majorDowngrades: 2,         // Major bank downgrades → contrarian recovery signal
-  analystUpsidePotential: 5,  // Low upside target (not a value trap)
-  priceToHigh: 0.98,          // Near 52W high — strength continues
-  concernLevel: 2,            // Low AI concern
-  marketCap: 2_000_000_000_000, // Large-cap
-  sentimentScore: 0.8,        // Positive sentiment
-  upgradesLast30d: 0,         // Low upgrades (negligible weight)
-  filingTypeFactor: 1,        // 10-Q
-  toneChangeDelta: 0.2,       // Improving tone vs prior filing
-  epsSurprise: 15,            // Strong EPS beat
-  spxTrend30d: 3.0,           // Market in mild uptrend
-  vixLevel: 14,               // Low fear
+  priceToLow: 1.0,              // Below mean (negative weight → positive contribution)
+  majorDowngrades: 0,
+  analystUpsidePotential: 80,   // High upside target (positive weight in v2)
+  priceToHigh: 0.70,            // Below mean
+  concernLevel: 8,              // High concern (positive weight in v2)
+  marketCap: 100_000_000_000,
+  sentimentScore: 0.8,          // Positive sentiment
+  upgradesLast30d: 0,
+  filingTypeFactor: 0.5,        // 10-Q
+  toneChangeDelta: 0.2,         // Improving tone vs prior filing
+  epsSurprise: 25,              // Strong EPS beat
+  spxTrend30d: 4.0,             // Market in uptrend
+  vixLevel: 25,                 // Elevated fear
 };
 
 /**
- * Bearish features — low priceToLow, high analyst upside (value trap),
- * high concern, negative sentiment
+ * Bearish features — v2 global model signal drivers:
+ * low analystUpsidePotential (+0.0239 weight → negative contribution), big EPS miss (+0.0104),
+ * low concernLevel (+0.0050 → negative contribution), bear market (+0.0100), low VIX (+0.0058)
  */
 export const BEARISH_FEATURES: AlphaFeatures = {
-  priceToLow: 1.02,          // Barely above 52W low — weak
-  majorDowngrades: 0,         // No contrarian signal
-  analystUpsidePotential: 40, // High upside target → value trap
-  priceToHigh: 0.65,          // Far from 52W high — weakness
-  concernLevel: 9,            // High AI concern
-  marketCap: 50_000_000,      // Small-cap (negative size effect)
-  sentimentScore: -0.8,       // Negative sentiment
-  upgradesLast30d: 3,         // Lots of upgrades (slightly negative weight)
-  filingTypeFactor: 0,        // 10-K
-  toneChangeDelta: -0.3,      // Worsening tone vs prior filing
-  epsSurprise: -20,           // EPS miss
-  spxTrend30d: -3.0,          // Market in drawdown
-  vixLevel: 28,               // Elevated fear
+  priceToLow: 2.5,              // Above mean (negative weight → negative contribution)
+  majorDowngrades: 0,
+  analystUpsidePotential: 5,    // Low upside target (positive weight → negative contribution)
+  priceToHigh: 0.98,            // Above mean
+  concernLevel: 2,              // Low concern (positive weight → negative contribution)
+  marketCap: 50_000_000,
+  sentimentScore: -0.5,         // Negative sentiment
+  upgradesLast30d: 0,
+  filingTypeFactor: 0.5,        // 10-Q
+  toneChangeDelta: -0.2,        // Worsening tone vs prior filing
+  epsSurprise: -40,             // Large EPS miss
+  spxTrend30d: -4.0,            // Market in drawdown
+  vixLevel: 14,                 // Low fear (positive weight → negative contribution)
 };
