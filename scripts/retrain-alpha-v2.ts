@@ -342,7 +342,7 @@ function serializeSectorModels(
   const entries = Object.entries(sectorModels).map(([sector, model]) => {
     const statsLines = featureNames.map((name, i) => {
       const m = model.featureMeans[i];
-      const s = model.featureStds[i];
+      const s = Math.max(model.featureStds[i], 1e-8) < 1e-7 ? 1 : model.featureStds[i]; // guard zero-variance
       const mStr = Math.abs(m) > 1e9 ? m.toExponential(4) : m.toFixed(4);
       const sStr = Math.abs(s) > 1e9 ? s.toExponential(4) : s.toFixed(4);
       return `      ${name.padEnd(24)}: { mean: ${mStr.padStart(14)}, std: ${sStr.padStart(14)} },`;
@@ -380,7 +380,7 @@ function updateAlphaModelFile(
   // Build new FEATURE_STATS block
   const statsLines = featureNames.map((name, i) => {
     const m = featureMeans[i];
-    const s = featureStds[i];
+    const s = Math.max(featureStds[i], 1e-8) < 1e-7 ? 1 : featureStds[i]; // guard zero-variance features
     const mStr = Math.abs(m) > 1e9
       ? m.toExponential(4)
       : m.toFixed(4);
