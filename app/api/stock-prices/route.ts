@@ -141,14 +141,13 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Calculate 7 business days after filing date
+    // Calculate 7 business days after filing date (kept for backward compat)
     let businessDaysCount = 0;
     let currentDate = new Date(filing);
     let sevenBdDate: string | null = null;
 
     while (businessDaysCount < 7) {
       currentDate.setDate(currentDate.getDate() + 1);
-      // Check if it's a weekday (0 = Sunday, 6 = Saturday)
       const dayOfWeek = currentDate.getDay();
       if (dayOfWeek !== 0 && dayOfWeek !== 6) {
         businessDaysCount++;
@@ -157,6 +156,15 @@ export async function GET(request: NextRequest) {
         }
       }
     }
+
+    // Calculate 30 calendar days after filing date (matches model prediction horizon)
+    const thirtyDayTarget = new Date(filing);
+    thirtyDayTarget.setDate(thirtyDayTarget.getDate() + 30);
+    const thirtyDayTargetStr = thirtyDayTarget.toISOString().split('T')[0];
+    // Find the first trading day on or after the 30-day target
+    const thirtyDayDate = stockData
+      .map(p => new Date(p.date).toISOString().split('T')[0])
+      .find(d => d >= thirtyDayTargetStr) ?? null;
 
     // Create a map of SPY data by date for O(1) lookup
     const spyDataMap = new Map<string, { close: number }>();
@@ -185,7 +193,8 @@ export async function GET(request: NextRequest) {
         pctChange: Math.round(stockPctChange * 100) / 100,
         spyPctChange: Math.round(spyPctChange * 100) / 100,
         isFilingDate: dateStr === filingStr,
-        is7BdDate: dateStr === sevenBdDate
+        is7BdDate: dateStr === sevenBdDate,
+        is30DayDate: dateStr === thirtyDayDate
       };
     });
 
@@ -193,6 +202,7 @@ export async function GET(request: NextRequest) {
       ticker,
       filingDate: filingStr,
       sevenBdDate,
+      thirtyDayDate,
       prices
     };
 

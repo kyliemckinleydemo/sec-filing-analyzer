@@ -864,7 +864,7 @@ export default function FilingPage() {
                         const stockChange = dataPoint.pctChange;
                         const spyChange = dataPoint.spyPctChange;
                         const isFilingDate = dataPoint.isFilingDate;
-                        const is7BdDate = dataPoint.is7BdDate;
+                        const is30DayDate = dataPoint.is30DayDate;
 
                         return (
                           <div className="bg-white border border-slate-300 rounded-lg shadow-lg p-3" style={{ fontSize: 12 }}>
@@ -872,9 +872,9 @@ export default function FilingPage() {
                             {isFilingDate && (
                               <p className="text-amber-600 font-semibold mb-1">📄 Filing Date</p>
                             )}
-                            {is7BdDate && data.prediction && (
+                            {is30DayDate && data.prediction && (
                               <p className="text-blue-600 font-semibold mb-1">
-                                🎯 7-Day Target: {data.prediction.predicted7dReturn > 0 ? '+' : ''}{data.prediction.predicted7dReturn.toFixed(2)}%
+                                🎯 30-Day Target: {(data.prediction.predicted30dReturn ?? 0) > 0 ? '+' : ''}{(data.prediction.predicted30dReturn ?? 0).toFixed(2)}%
                               </p>
                             )}
                             <p className="text-purple-600">
@@ -883,9 +883,9 @@ export default function FilingPage() {
                             <p className="text-slate-600">
                               <strong>S&P 500:</strong> {spyChange > 0 ? '+' : ''}{spyChange.toFixed(2)}%
                             </p>
-                            {is7BdDate && data.prediction && (
+                            {is30DayDate && data.prediction && (
                               <p className="text-slate-500 text-xs mt-2 pt-2 border-t border-slate-200">
-                                Predicted vs Actual: {stockChange > 0 ? '+' : ''}{stockChange.toFixed(2)}% (actual) vs {data.prediction.predicted7dReturn > 0 ? '+' : ''}{data.prediction.predicted7dReturn.toFixed(2)}% (predicted)
+                                Predicted vs Actual: {stockChange > 0 ? '+' : ''}{stockChange.toFixed(2)}% (actual) vs {(data.prediction.predicted30dReturn ?? 0) > 0 ? '+' : ''}{(data.prediction.predicted30dReturn ?? 0).toFixed(2)}% (predicted 30d)
                               </p>
                             )}
                           </div>
@@ -928,16 +928,16 @@ export default function FilingPage() {
                         strokeWidth={2}
                       />
                     )}
-                    {/* 7-business-day prediction marker */}
-                    {data.prediction && stockPrices.prices.find((p: any) => p.is7BdDate) && (
+                    {/* 30-day prediction marker */}
+                    {data.prediction && data.prediction.predicted30dReturn != null && stockPrices.prices.find((p: any) => p.is30DayDate) && (
                       <>
                         <ReferenceLine
-                          y={data.prediction.predicted7dReturn}
+                          y={data.prediction.predicted30dReturn}
                           stroke="#3b82f6"
                           strokeDasharray="3 3"
                           strokeWidth={2}
                           label={{
-                            value: `Predicted: ${data.prediction.predicted7dReturn > 0 ? '+' : ''}${data.prediction.predicted7dReturn.toFixed(1)}%`,
+                            value: `30d Target: ${data.prediction.predicted30dReturn > 0 ? '+' : ''}${data.prediction.predicted30dReturn.toFixed(1)}%`,
                             position: 'right',
                             fill: '#3b82f6',
                             fontSize: 11,
@@ -945,8 +945,8 @@ export default function FilingPage() {
                           }}
                         />
                         <ReferenceDot
-                          x={stockPrices.prices.find((p: any) => p.is7BdDate)?.date}
-                          y={data.prediction.predicted7dReturn}
+                          x={stockPrices.prices.find((p: any) => p.is30DayDate)?.date}
+                          y={data.prediction.predicted30dReturn}
                           r={10}
                           fill="#3b82f6"
                           stroke="#fff"
@@ -961,10 +961,10 @@ export default function FilingPage() {
                     <span className="inline-block w-3 h-3 rounded-full bg-amber-500"></span>
                     <span>Filing Date: {new Date(data.filing.filingDate).toLocaleDateString()}</span>
                   </div>
-                  {data.prediction && stockPrices.sevenBdDate && (
+                  {data.prediction?.predicted30dReturn != null && stockPrices.thirtyDayDate && (
                     <div className="flex items-center gap-2">
                       <span className="inline-block w-3 h-3 rounded-full bg-blue-500"></span>
-                      <span>7-Day Prediction: {new Date(stockPrices.sevenBdDate).toLocaleDateString()}</span>
+                      <span>30-Day Target: {new Date(stockPrices.thirtyDayDate).toLocaleDateString()}</span>
                     </div>
                   )}
                 </div>
