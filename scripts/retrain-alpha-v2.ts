@@ -127,6 +127,9 @@ const FEATURE_NAMES = [
 
 const FILING_TYPE_MAP: Record<string, number> = { '10-K': 0, '10-Q': 1, '8-K': 2 };
 
+const MAJOR_FIRMS = ['Goldman Sachs', 'Morgan Stanley', 'JP Morgan', 'Bank of America',
+                     'Citi', 'Wells Fargo', 'Barclays', 'UBS'];
+
 // ── Training data extraction ──────────────────────────────────────────────
 
 interface TrainingRow {
@@ -205,6 +208,25 @@ async function extractTrainingData(): Promise<TrainingRow[]> {
   }
   const idToCompanyId = new Map(withCompanyId.map(f => [f.id, f.companyId]));
 
+  // Bulk-fetch analyst activity for all training companies
+  console.log('Loading analyst activity...');
+  const trainingCompanyIds = [...new Set(withCompanyId.map(f => f.companyId))];
+  const analystActivityRaw = await prisma.analystActivity.findMany({
+    where: { companyId: { in: trainingCompanyIds } },
+    select: { companyId: true, activityDate: true, actionType: true, firm: true },
+  });
+  // Index by companyId for O(1) per-filing lookup
+  const analystByCompany = new Map<string, { date: Date; actionType: string; firm: string }[]>();
+  for (const act of analystActivityRaw) {
+    if (!analystByCompany.has(act.companyId)) analystByCompany.set(act.companyId, []);
+    analystByCompany.get(act.companyId)!.push({
+      date: act.activityDate,
+      actionType: act.actionType,
+      firm: act.firm,
+    });
+  }
+  console.log(`Loaded ${analystActivityRaw.length} analyst activity rows for ${trainingCompanyIds.length} companies`);
+
   const rows: TrainingRow[] = [];
 
   for (const filing of filings) {
@@ -264,9 +286,22 @@ async function extractTrainingData(): Promise<TrainingRow[]> {
       ? sentimentScore - priorEntry.sentiment
       : 0;
 
+    // Analyst activity in 30d prior to filing date
+    const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+    const filingMs = filing.filingDate.getTime();
+    const companyActs = analystByCompany.get(companyId) ?? [];
+    const priorActs = companyActs.filter(a => {
+      const ms = a.date.getTime();
+      return ms >= filingMs - thirtyDaysMs && ms < filingMs;
+    });
+    const upgradesLast30d = priorActs.filter(a => a.actionType === 'upgrade').length;
+    const majorDowngrades = priorActs.filter(a =>
+      a.actionType === 'downgrade' && MAJOR_FIRMS.some(firm => a.firm.includes(firm)),
+    ).length;
+
     const features = [
-      priceToLow, 0 /* majorDowngrades — no historical data, use 0 */, analystUpsidePotential,
-      priceToHigh, concernLevel, marketCap, sentimentScore, 0 /* upgradesLast30d */,
+      priceToLow, majorDowngrades, analystUpsidePotential,
+      priceToHigh, concernLevel, marketCap, sentimentScore, upgradesLast30d,
       filingTypeFactor, toneChangeDelta,
     ];
 

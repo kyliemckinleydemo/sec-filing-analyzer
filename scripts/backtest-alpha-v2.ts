@@ -26,6 +26,8 @@ import {
 const MAJOR_FIRMS = ['Goldman Sachs', 'Morgan Stanley', 'JP Morgan', 'Bank of America',
   'Citi', 'Wells Fargo', 'Barclays', 'UBS'];
 
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
 interface BacktestRecord {
   filingId: string;
   ticker: string;
@@ -186,6 +188,19 @@ async function main() {
 
   console.log(`Total filings with actual30dAlpha: ${filings.length}`);
 
+  // Bulk-load analyst activity for backtest companies
+  const backtestCompanyIds = [...new Set(filings.map(f => f.companyId))];
+  const analystActivityRaw = await prisma.analystActivity.findMany({
+    where: { companyId: { in: backtestCompanyIds } },
+    select: { companyId: true, activityDate: true, actionType: true, firm: true },
+  });
+  const analystByCompany = new Map<string, { date: Date; actionType: string; firm: string }[]>();
+  for (const act of analystActivityRaw) {
+    if (!analystByCompany.has(act.companyId)) analystByCompany.set(act.companyId, []);
+    analystByCompany.get(act.companyId)!.push({ date: act.activityDate, actionType: act.actionType, firm: act.firm });
+  }
+  console.log(`Loaded ${analystActivityRaw.length} analyst activity rows`);
+
   // Build prior-sentiment map (most recent prior same-type filing per company)
   const priorSentimentMap = new Map<string, number>();
   const sortedForPrior = [...filings].sort(
@@ -226,6 +241,17 @@ async function main() {
 
     if (priceData.currentPrice <= 0) continue;
 
+    const filingMs = filing.filingDate.getTime();
+    const companyActs = analystByCompany.get(filing.companyId) ?? [];
+    const priorActs = companyActs.filter(a => {
+      const ms = a.date.getTime();
+      return ms >= filingMs - THIRTY_DAYS_MS && ms < filingMs;
+    });
+    const upgradesLast30d = priorActs.filter(a => a.actionType === 'upgrade').length;
+    const majorDowngradesLast30d = priorActs.filter(a =>
+      a.actionType === 'downgrade' && MAJOR_FIRMS.some(firm => a.firm.includes(firm)),
+    ).length;
+
     const features = extractAlphaFeatures(
       priceData,
       {
@@ -234,7 +260,7 @@ async function main() {
         filingType: filing.filingType,
         priorSentimentScore: priorSentimentAtTime,
       },
-      { upgradesLast30d: 0, majorDowngradesLast30d: 0 },
+      { upgradesLast30d, majorDowngradesLast30d },
     );
 
     const pred = predictAlpha(features, coy.sector);
