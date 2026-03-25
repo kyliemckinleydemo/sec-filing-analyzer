@@ -1,3 +1,31 @@
+/**
+ * @module page
+ * @description SEC Filing Analysis Page - Individual filing detail view with AI-powered analysis
+ * 
+ * PURPOSE:
+ * Displays comprehensive analysis of a single SEC filing, including risk assessment,
+ * sentiment analysis, financial metrics extraction, ML-based price predictions, and
+ * interactive AI chat. Integrates multiple data sources (SEC EDGAR, Yahoo Finance,
+ * proprietary ML models) to provide actionable investment insights.
+ * 
+ * EXPORTS:
+ * - default (FilingPage): Main page component for /filings/[accession] route
+ * 
+ * CLAUDE NOTES:
+ * - Authentication gate: Free users see signup CTA, authenticated users get 100 analyses/day
+ * - Multi-stage loading UI shows 9-step analysis pipeline (fetch → parse → AI → ML → render)
+ * - Alpha Model v2: 44-expert MoE ensemble predicting 30-day market-relative alpha
+ *   • 77.5% directional accuracy on high-confidence SHORT signals
+ *   • Key features: 52W price momentum, EPS surprise, major bank downgrades (contrarian)
+ * - Backward compat: Legacy ML prediction card shown if no alpha prediction available
+ * - Financial data conditional: 10-K/10-Q always show financials, 8-K only if earnings-related
+ * - Real-time stock chart: 30d before/after filing with prediction overlay & accuracy tracking
+ * - Analyst activity: 30-day window before filing, major firm downgrades = #2 bullish signal
+ * - FilingChat: Floating AI assistant for filing-specific Q&A (authenticated users only)
+ * - Re-analyze button: Force fresh analysis (bypasses cache, useful after model updates)
+ * - Print-optimized: data-print-section attributes for clean PDF generation
+ */
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -107,7 +135,7 @@ interface FilingAnalysisData {
     actual7dAlpha?: number;
     modelVersion?: string;
     percentile?: number;
-    featureContributions?: Array<{ feature: string; contribution: number }>;
+    featureContributions?: Record<string, number>;
     features?: {
       riskScoreDelta?: number;
       sentimentScore?: number;
@@ -194,7 +222,6 @@ function hasFinancialData(filing: { filingType: string }, financialMetrics?: any
 }
 
 export default function FilingPage() {
-  console.log('🚀 FilingPage component loaded - NEW VERSION with renderComplete + progress bar at 95%');
   const params = useParams();
   const router = useRouter();
   const accession = params.accession as string;
@@ -341,7 +368,6 @@ export default function FilingPage() {
         if (priceData.prices && data.prediction) {
           const sevenBdPoint = priceData.prices.find((p: any) => p.is7BdDate);
           if (sevenBdPoint) {
-            console.log(`[Stock Prices] Found 7BD actual return: ${sevenBdPoint.pctChange}%`);
             // Inject accuracy data calculated from stock prices
             setData((prevData: any) => {
               if (!prevData) return prevData;
@@ -392,62 +418,10 @@ export default function FilingPage() {
 
   // Mark render as complete when all data is loaded AND charts have time to render
   useEffect(() => {
-    console.log('🔍 RENDER STATE CHECK:', { data: !!data, loading, loadingStockPrices, renderComplete });
     if (data && !loading && !loadingStockPrices) {
-      console.log('✅ ALL DATA LOADED - Waiting 1.5s for charts to render...');
-      // Add delay to ensure charts are fully rendered before hiding spinner
-      setTimeout(() => {
-        console.log('✅ RENDER COMPLETE SET TO TRUE');
-        setRenderComplete(true);
-      }, 1500); // 1.5 second delay to ensure charts render
+      setTimeout(() => setRenderComplete(true), 1500);
     }
   }, [data, loading, loadingStockPrices]);
-
-  // Helper function to determine if this is a Strong Buy signal
-  const isStrongBuy = (prediction: any, features: any) => {
-    if (!prediction || !features) return false;
-
-    // Quantitative criteria: High confidence bullish prediction
-    const hasBullishPrediction =
-      prediction.predicted7dReturn > 1.5 &&
-      prediction.predictionConfidence > 0.6;
-
-    if (!hasBullishPrediction) return false;
-
-    // Fundamental confirmation: At least one strong signal
-    const hasEpsBeat = features.epsSurprise === 'beat';
-    const hasGuidanceSupport =
-      features.guidanceChange === 'raised' ||
-      features.guidanceChange === 'maintained';
-    const hasAnalystSupport =
-      (features.analystNetUpgrades && features.analystNetUpgrades > 0);
-    const hasStrongConsensus =
-      (features.analystConsensus && features.analystConsensus > 65);
-
-    return hasEpsBeat || hasGuidanceSupport || hasAnalystSupport || hasStrongConsensus;
-  };
-
-  // Get list of bullish signals that triggered Strong Buy
-  const getStrongBuySignals = (features: any) => {
-    const signals: string[] = [];
-
-    if (features.epsSurprise === 'beat') {
-      signals.push('EPS Beat Consensus');
-    }
-    if (features.guidanceChange === 'raised') {
-      signals.push('Guidance Raised');
-    } else if (features.guidanceChange === 'maintained') {
-      signals.push('Guidance Maintained');
-    }
-    if (features.analystNetUpgrades && features.analystNetUpgrades > 0) {
-      signals.push(`${features.analystNetUpgrades} Net Analyst Upgrade${features.analystNetUpgrades > 1 ? 's' : ''}`);
-    }
-    if (features.analystConsensus && features.analystConsensus > 65) {
-      signals.push(`Strong Analyst Consensus (${features.analystConsensus.toFixed(0)}/100)`);
-    }
-
-    return signals;
-  };
 
   const getStepDetails = (step: AnalysisStep) => {
     const steps = {
@@ -495,8 +469,8 @@ export default function FilingPage() {
       },
       'running-ml-model': {
         emoji: '🧠',
-        title: 'Running ML Prediction Model',
-        description: 'Generating 7-day return forecast...',
+        title: 'Running Alpha Model v2',
+        description: 'Generating 30-day alpha forecast via Ridge + MoE...',
         progress: 86,
       },
       'generating-prediction': {
@@ -761,11 +735,11 @@ export default function FilingPage() {
               <div className="flex items-center justify-between">
                 <CardTitle className="text-2xl">🎯 Alpha Prediction</CardTitle>
                 <span className="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-semibold">
-                  Alpha Model v1.0
+                  Alpha Model v2
                 </span>
               </div>
               <CardDescription>
-                Stepwise+Ridge regression predicting 30-day market-relative alpha. 62.5% directional accuracy on high-confidence signals.
+                Ridge regression + 44-expert Mixture-of-Experts predicting 30-day market-relative alpha. 77.5% directional accuracy on high-confidence signals.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -844,9 +818,9 @@ export default function FilingPage() {
               <div className="bg-white p-4 rounded-lg border border-emerald-200">
                 <h4 className="font-semibold text-slate-800 mb-2">📊 About This Model</h4>
                 <p className="text-sm text-slate-700">
-                  Predicts 30-day market-relative alpha using 8 features selected by forward stepwise selection from 29 candidates.
-                  Top features: price momentum (52W high/low), analyst downgrades (contrarian signal), analyst upside potential, and Claude AI concern level.
-                  <strong className="text-emerald-700"> SHORT signals are strongest: 62.7% accuracy identifying relative losers.</strong>
+                  Predicts 30-day market-relative alpha using 13 features across a 44-expert Mixture-of-Experts ensemble (routed by sector and market-cap tier).
+                  Top features: price momentum (52W high/low), EPS surprise, major bank downgrades (contrarian signal), and macro regime (SPX trend, VIX).
+                  <strong className="text-emerald-700"> SHORT signals are strongest: 77.5% high-confidence directional accuracy.</strong>
                 </p>
               </div>
             </CardContent>
@@ -892,635 +866,6 @@ export default function FilingPage() {
           </Card>
         )}
 
-        {/* Old Prediction Card (Legacy - For Comparison) */}
-        {data.prediction && !data.mlPrediction && data.filing.hasFinancials && (
-          <Card className="mb-6 border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50">
-            <CardHeader>
-              <CardTitle className="text-2xl">
-                📈 7-Day Price Prediction
-                {data.prediction.modelVersion && (
-                  <span className="text-sm ml-2 text-blue-600">
-                    ({data.prediction.modelVersion})
-                  </span>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-6">
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">Predicted Return</p>
-                  <p
-                    className={`text-4xl font-bold ${
-                      data.prediction.predicted7dReturn > 0
-                        ? 'text-green-600'
-                        : 'text-red-600'
-                    }`}
-                  >
-                    {data.prediction.predicted7dReturn > 0 ? '+' : ''}
-                    {data.prediction.predicted7dReturn.toFixed(2)}%
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">Confidence</p>
-                  <p className="text-4xl font-bold text-blue-600">
-                    {(data.prediction.confidence * 100).toFixed(0)}%
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">Signal</p>
-                  <p className="text-2xl font-bold">
-                    {data.prediction.predicted7dReturn > 1
-                      ? '🟢 Strong Buy'
-                      : data.prediction.predicted7dReturn >= 0.5
-                      ? '🟢 Buy'
-                      : data.prediction.predicted7dReturn > -1
-                      ? '🟡 Hold'
-                      : '🔴 Sell'}
-                  </p>
-                </div>
-              </div>
-              {data.prediction.reasoning && (
-                <div className="mt-4 bg-white p-4 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
-                    🧠 Model Reasoning
-                    {data.prediction.modelVersion && (
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
-                        {data.prediction.modelVersion}
-                      </span>
-                    )}
-                    {/* Data Quality Indicator */}
-                    {data.prediction.confidence < 0.6 && (
-                      <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">
-                        ⚠️ Limited Data
-                      </span>
-                    )}
-                  </h4>
-                  <p className="text-sm text-slate-700">{data.prediction.reasoning}</p>
-
-                  {/* Warning when confidence is low */}
-                  {data.prediction.confidence < 0.6 && (
-                    <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
-                      <strong>⚠️ Low Confidence:</strong> This filing contains minimal narrative content (may cross-reference prior filings).
-                      The model has limited data for analysis. Consider reviewing the full 10-K or earnings call for complete guidance.
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Model Transparency - Feature Breakdown */}
-              {data.prediction.features && (
-                <div className="mt-4 bg-white p-4 rounded-lg border-2 border-purple-200">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold text-slate-800 flex items-center gap-2">
-                      🔬 Prediction Model Breakdown
-                    </h4>
-                    <button
-                      onClick={() => {
-                        const modal = document.getElementById('model-info-modal');
-                        if (modal) modal.classList.remove('hidden');
-                      }}
-                      className="text-xs text-blue-600 hover:text-blue-800 underline"
-                    >
-                      How does this work?
-                    </button>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-3 text-sm">
-                    {/* Major Price Drivers */}
-                    {data.prediction.features.guidanceChange && data.prediction.features.guidanceChange !== 'maintained' && data.prediction.features.guidanceChange !== 'not_provided' && (
-                      <div className="bg-gradient-to-r from-green-50 to-blue-50 p-3 rounded border border-green-200">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-slate-700">📊 Guidance Change</span>
-                          <span className={`font-bold ${
-                            data.prediction.features.guidanceChange === 'raised' ? 'text-green-600' :
-                            data.prediction.features.guidanceChange === 'lowered' ? 'text-red-600' :
-                            'text-blue-600'
-                          }`}>
-                            {data.prediction.features.guidanceChange === 'raised' ? '+3.5%' :
-                             data.prediction.features.guidanceChange === 'lowered' ? '-4.0%' :
-                             '+1.0%'} impact
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1">
-                          {data.prediction.features.guidanceChange === 'raised' ? '⬆️ Raised' :
-                           data.prediction.features.guidanceChange === 'lowered' ? '⬇️ Lowered' :
-                           '🆕 New'} vs prior period (major driver)
-                        </p>
-                      </div>
-                    )}
-
-                    {data.prediction.features.epsSurprise && data.prediction.features.epsSurprise !== 'unknown' && (
-                      <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-3 rounded border border-yellow-200">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-slate-700">💰 EPS Surprise</span>
-                          <span className={`font-bold ${
-                            data.prediction.features.epsSurprise === 'beat' ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {(() => {
-                              // Calculate actual impact with P/E and market cap multipliers
-                              const peMultiplier = data.prediction.features.peRatio
-                                ? (data.prediction.features.peRatio < 15 ? 0.8 :
-                                   data.prediction.features.peRatio < 25 ? 1.0 :
-                                   data.prediction.features.peRatio < 40 ? 1.2 : 1.5)
-                                : 1.0;
-                              const mcMultiplier = data.prediction.features.marketCap
-                                ? (data.prediction.features.marketCap < 2 ? 0.9 :
-                                   data.prediction.features.marketCap < 10 ? 1.0 :
-                                   data.prediction.features.marketCap < 50 ? 1.1 :
-                                   data.prediction.features.marketCap < 200 ? 1.2 : 1.3)
-                                : 1.0;
-                              const combined = peMultiplier * mcMultiplier;
-                              const base = data.prediction.features.epsSurprise === 'beat' ? 1.0 : -1.0;
-                              const magnitude = Math.abs(data.prediction.features.epsSurpriseMagnitude || 0);
-                              const largeSurpriseBonus = magnitude > 5 ? (data.prediction.features.epsSurprise === 'beat' ? 0.8 : -0.7) * combined : 0;
-                              const impact = base * combined + largeSurpriseBonus;
-                              return `${impact > 0 ? '+' : ''}${impact.toFixed(1)}% impact`;
-                            })()}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1">
-                          {data.prediction.features.epsSurprise === 'beat' ? '✅ Beat' : '❌ Missed'} by {Math.abs(data.prediction.features.epsSurpriseMagnitude || 0).toFixed(1)}%
-                          {data.prediction.features.peRatio && data.prediction.features.marketCap && (
-                            <span className="text-indigo-600">
-                              {' '}• {(() => {
-                                const peM = data.prediction.features.peRatio < 15 ? 0.8 : data.prediction.features.peRatio < 25 ? 1.0 : data.prediction.features.peRatio < 40 ? 1.2 : 1.5;
-                                const mcM = data.prediction.features.marketCap < 2 ? 0.9 : data.prediction.features.marketCap < 10 ? 1.0 : data.prediction.features.marketCap < 50 ? 1.1 : data.prediction.features.marketCap < 200 ? 1.2 : 1.3;
-                                return `${(peM * mcM).toFixed(2)}x adj`;
-                              })()}
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    )}
-
-                    {data.prediction.features.revenueSurprise && data.prediction.features.revenueSurprise !== 'unknown' && (
-                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 rounded border border-purple-200">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-slate-700">📈 Revenue Surprise</span>
-                          <span className={`font-bold ${
-                            data.prediction.features.revenueSurprise === 'beat' ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {data.prediction.features.revenueSurprise === 'beat' ? '+0.8%' : '-1.5%'} impact
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1">
-                          {data.prediction.features.revenueSurprise === 'beat' ? '✅ Beat' : '❌ Missed'} expectations
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Sentiment & Risk */}
-                    {typeof data.prediction.features.sentimentScore === 'number' && (
-                      <div className="bg-slate-50 p-3 rounded border border-slate-200">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-slate-700">
-                            {(() => {
-                              const concern = data.prediction.features.concernLevel ?? 5.0;
-                              const sentiment = data.prediction.features.sentimentScore;
-                              if (concern >= 7 && sentiment > 0) {
-                                return '⚠️ Management Tone Misalignment';
-                              }
-                              return '😊 Management Sentiment';
-                            })()}
-                          </span>
-                          <span className={`font-bold ${(() => {
-                            const concern = data.prediction.features.concernLevel ?? 5.0;
-                            const sentiment = data.prediction.features.sentimentScore;
-                            let multiplier = 2.0;
-                            if (concern >= 7 && sentiment > 0) multiplier = -1.0;
-                            else if (concern >= 5 && concern < 7 && sentiment > 0) multiplier = 1.0;
-                            const impact = sentiment * multiplier;
-                            return impact > 0 ? 'text-green-600' : impact < 0 ? 'text-red-600' : 'text-slate-600';
-                          })()}`}>
-                            {(() => {
-                              const concern = data.prediction.features.concernLevel ?? 5.0;
-                              const sentiment = data.prediction.features.sentimentScore;
-                              let multiplier = 2.0;
-                              if (concern >= 7 && sentiment > 0) multiplier = -1.0;
-                              else if (concern >= 5 && concern < 7 && sentiment > 0) multiplier = 1.0;
-                              return (sentiment * multiplier).toFixed(1) + '% impact';
-                            })()}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1">
-                          {(() => {
-                            const concern = data.prediction.features.concernLevel ?? 5.0;
-                            const sentiment = data.prediction.features.sentimentScore;
-                            if (concern >= 7 && sentiment > 0) {
-                              return `Optimistic tone (${sentiment.toFixed(2)}) contradicts HIGH concern (${concern.toFixed(1)}/10) - red flag`;
-                            } else if (concern >= 5 && concern < 7 && sentiment > 0) {
-                              return `Score: ${sentiment.toFixed(2)} (1x weight, dampened by concern)`;
-                            }
-                            return `Score: ${sentiment.toFixed(2)} (2x weight)`;
-                          })()}
-                        </p>
-                      </div>
-                    )}
-
-                    {typeof data.prediction.features.riskScoreDelta === 'number' && (
-                      <div className="bg-slate-50 p-3 rounded border border-slate-200">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-slate-700">⚠️ Risk Factor Change</span>
-                          <span className={`font-bold ${
-                            data.prediction.features.riskScoreDelta < 0 ? 'text-green-600' :
-                            data.prediction.features.riskScoreDelta > 0 ? 'text-red-600' : 'text-slate-600'
-                          }`}>
-                            {(-data.prediction.features.riskScoreDelta * 0.8).toFixed(1)}% impact
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1">
-                          Delta: {data.prediction.features.riskScoreDelta.toFixed(1)} (0.8x weight)
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Valuation Metrics - P/E and Market Cap */}
-                    {data.prediction.features.peRatio && (
-                      <div className="bg-cyan-50 p-3 rounded border border-cyan-200">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-slate-700">📊 P/E Ratio</span>
-                          <span className="font-bold text-cyan-700">
-                            {data.prediction.features.peRatio.toFixed(1)}x
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1">
-                          {(() => {
-                            const pe = data.prediction.features.peRatio;
-                            const mult = pe < 15 ? 0.8 : pe < 25 ? 1.0 : pe < 40 ? 1.2 : 1.5;
-                            const type = pe < 15 ? 'Value' : pe < 25 ? 'Normal' : pe < 40 ? 'Growth' : 'High Growth';
-                            return `${type} stock • ${mult}x surprise sensitivity`;
-                          })()}
-                        </p>
-                      </div>
-                    )}
-
-                    {data.prediction.features.marketCap && (
-                      <div className="bg-emerald-50 p-3 rounded border border-emerald-200">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-slate-700">💎 Market Cap</span>
-                          <span className="font-bold text-emerald-700">
-                            ${data.prediction.features.marketCap.toFixed(0)}B
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1">
-                          {(() => {
-                            const mc = data.prediction.features.marketCap;
-                            const mult = mc < 2 ? 0.9 : mc < 10 ? 1.0 : mc < 50 ? 1.1 : mc < 200 ? 1.2 : 1.3;
-                            const type = mc < 2 ? 'Micro' : mc < 10 ? 'Small' : mc < 50 ? 'Mid' : mc < 200 ? 'Large' : 'Mega';
-                            return `${type} cap • ${mult}x momentum factor`;
-                          })()}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Company-Specific Pattern */}
-                    {data.prediction.features.ticker && typeof data.prediction.features.avgHistoricalReturn === 'number' && (
-                      <div className="bg-indigo-50 p-3 rounded border border-indigo-200">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-slate-700">📊 {data.prediction.features.ticker} Pattern</span>
-                          <span className="font-bold text-indigo-600">
-                            {(data.prediction.features.avgHistoricalReturn * 0.4).toFixed(1)}% impact
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1">
-                          Historical avg: {data.prediction.features.avgHistoricalReturn.toFixed(1)}% (40% weight)
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Concern Level Assessment */}
-                    {typeof data.prediction.features.concernLevel === 'number' && Math.abs(data.prediction.features.concernLevel - 5.0) > 0.5 && (
-                      <div className="bg-orange-50 p-3 rounded border border-orange-200">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-slate-700">⚠️ Concern Level</span>
-                          <span className={`font-bold ${
-                            data.prediction.features.concernLevel < 3 ? 'text-green-600' :
-                            data.prediction.features.concernLevel < 5 ? 'text-blue-600' :
-                            data.prediction.features.concernLevel < 7 ? 'text-yellow-600' :
-                            data.prediction.features.concernLevel < 9 ? 'text-orange-600' : 'text-red-600'
-                          }`}>
-                            {(-(data.prediction.features.concernLevel - 5.0) * 0.6).toFixed(1)}% impact
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1">
-                          {data.prediction.features.concernLevel.toFixed(1)}/10 {
-                            data.prediction.features.concernLevel < 3 ? '(LOW)' :
-                            data.prediction.features.concernLevel < 5 ? '(MODERATE)' :
-                            data.prediction.features.concernLevel < 7 ? '(ELEVATED)' :
-                            data.prediction.features.concernLevel < 9 ? '(HIGH)' : '(CRITICAL)'
-                          } (0.6x weight)
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Analyst Activity */}
-                    {typeof data.prediction.features.analystNetUpgrades === 'number' && data.prediction.features.analystNetUpgrades !== 0 && (
-                      <div className="bg-teal-50 p-3 rounded border border-teal-200">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-slate-700">📊 Analyst Momentum</span>
-                          <span className={`font-bold ${
-                            data.prediction.features.analystNetUpgrades > 0 ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {(data.prediction.features.analystNetUpgrades * 0.3).toFixed(1)}% impact
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1">
-                          {data.prediction.features.analystNetUpgrades > 0 ? '+' : ''}{data.prediction.features.analystNetUpgrades} net upgrades in 30d
-                          {(data.prediction.features.analystMajorUpgrades ?? 0) > 0 && (
-                            <span className="text-teal-700"> • {data.prediction.features.analystMajorUpgrades} major firm{(data.prediction.features.analystMajorUpgrades ?? 0) > 1 ? 's' : ''}</span>
-                          )}
-                        </p>
-                      </div>
-                    )}
-
-                    {/* Analyst Target Upside */}
-                    {typeof data.prediction.features.analystUpsidePotential === 'number' && Math.abs(data.prediction.features.analystUpsidePotential) > 10 && (
-                      <div className="bg-indigo-50 p-3 rounded border border-indigo-200">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium text-slate-700">🎯 Analyst Target</span>
-                          <span className={`font-bold ${
-                            data.prediction.features.analystUpsidePotential > 0 ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {(() => {
-                              const impact = data.prediction.features.analystUpsidePotential > 0
-                                ? Math.min(1.0, data.prediction.features.analystUpsidePotential * 0.05)
-                                : Math.max(-1.0, data.prediction.features.analystUpsidePotential * 0.05);
-                              return `${impact > 0 ? '+' : ''}${impact.toFixed(1)}% impact`;
-                            })()}
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-600 mt-1">
-                          {data.prediction.features.analystUpsidePotential.toFixed(1)}% {data.prediction.features.analystUpsidePotential > 0 ? 'upside' : 'downside'} to consensus target (capped at ±1%)
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-3 pt-3 border-t border-slate-200">
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      <strong>Research-backed model v2.0:</strong> Weights based on 2024-2025 academic studies and S&P 500 earnings data.
-                      Guidance changes and earnings surprises have asymmetric impact (negative news ≈ 2x impact vs positive).
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Model Info Modal */}
-              <div id="model-info-modal" className="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-                <div className="bg-white rounded-lg max-w-3xl max-h-[90vh] overflow-y-auto p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-2xl font-bold text-slate-800">🔬 Prediction Model Explained</h3>
-                    <button
-                      onClick={() => {
-                        const modal = document.getElementById('model-info-modal');
-                        if (modal) modal.classList.add('hidden');
-                      }}
-                      className="text-slate-400 hover:text-slate-600 text-2xl"
-                    >
-                      ×
-                    </button>
-                  </div>
-
-                  <div className="space-y-4 text-sm">
-                    <div>
-                      <h4 className="font-semibold text-lg mb-2">Model Version: v3.1 Baseline</h4>
-                      <p className="text-slate-600">
-                        Our production model uses earnings surprise data only. After testing multiple approaches,
-                        we found the simple baseline model performs best: 67.5% accuracy with positive returns.
-                      </p>
-                    </div>
-
-                    <div className="border-t pt-4">
-                      <h4 className="font-semibold mb-3">Model Features (6 total):</h4>
-
-                      <div className="space-y-3">
-                        <div className="bg-green-50 p-3 rounded">
-                          <p className="font-medium text-green-900">EPS Surprise</p>
-                          <p className="text-xs text-slate-600 mt-1">
-                            Raw percentage difference between actual and estimated EPS.
-                          </p>
-                        </div>
-
-                        <div className="bg-yellow-50 p-3 rounded">
-                          <p className="font-medium text-yellow-900">Surprise Magnitude</p>
-                          <p className="text-xs text-slate-600 mt-1">
-                            Absolute value of surprise. Larger surprises drive bigger reactions.
-                          </p>
-                        </div>
-
-                        <div className="bg-blue-50 p-3 rounded">
-                          <p className="font-medium text-blue-900">EPS Beat</p>
-                          <p className="text-xs text-slate-600 mt-1">
-                            Binary flag for surprises greater than 2 percent.
-                          </p>
-                        </div>
-
-                        <div className="bg-orange-50 p-3 rounded">
-                          <p className="font-medium text-orange-900">EPS Miss</p>
-                          <p className="text-xs text-slate-600 mt-1">
-                            Binary flag for surprises less than negative 2 percent.
-                          </p>
-                        </div>
-
-                        <div className="bg-purple-50 p-3 rounded">
-                          <p className="font-medium text-purple-900">Large Beat</p>
-                          <p className="text-xs text-slate-600 mt-1">
-                            Major positive surprise over 10 percent. Moderate bullish signal.
-                          </p>
-                        </div>
-
-                        <div className="bg-red-50 p-3 rounded">
-                          <p className="font-medium text-red-900">Large Miss - STRONGEST SIGNAL</p>
-                          <p className="text-xs text-slate-600 mt-1">
-                            Major negative surprise below negative 10 percent. Model is 2.6x better at avoiding these disasters.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="border-t pt-4">
-                      <h4 className="font-semibold mb-2">Why This Model Works</h4>
-                      <p className="text-slate-600 text-xs">
-                        We tested 5 experimental approaches including volume features, short interest, and multi-factor models.
-                        All failed to improve over the simple baseline. The biggest improvement came from data quality, not complexity.
-                        Model is asymmetric: much better at avoiding disasters than picking winners.
-                      </p>
-                    </div>
-
-                    <div className="border-t pt-4 bg-slate-50 p-3 rounded">
-                      <h4 className="font-semibold mb-2 text-red-700">⚠️ Important Disclaimer</h4>
-                      <p className="text-xs text-slate-600">
-                        This model is for educational and research purposes only. <strong>Not financial advice.</strong>
-                        Past performance does not guarantee future results. Markets are unpredictable and influenced by
-                        countless factors beyond SEC filings. Always consult a qualified financial advisor before making
-                        investment decisions.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Accuracy Comparison */}
-              {data.accuracy && (
-                <div className="mt-4">
-                  {data.accuracy.hasData ? (
-                    <div className="bg-white border-2 border-green-200 p-4 rounded-lg">
-                      <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                        ✅ Prediction vs Actual Results
-                        <span
-                          className={`text-sm px-2 py-1 rounded ${
-                            data.accuracy.accuracy === 'Excellent'
-                              ? 'bg-green-100 text-green-800'
-                              : data.accuracy.accuracy === 'Good'
-                              ? 'bg-blue-100 text-blue-800'
-                              : data.accuracy.accuracy === 'Fair'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}
-                        >
-                          {data.accuracy.accuracy}
-                        </span>
-                      </h3>
-                      <div className="grid grid-cols-3 gap-4 mb-3">
-                        <div>
-                          <p className="text-xs text-slate-600">Predicted</p>
-                          <p className="text-xl font-bold text-blue-600">
-                            {data.accuracy.predicted7dReturn > 0 ? '+' : ''}
-                            {data.accuracy.predicted7dReturn.toFixed(2)}%
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-slate-600">Actual</p>
-                          <p
-                            className={`text-xl font-bold ${
-                              (data.accuracy.actual7dReturn || 0) > 0
-                                ? 'text-green-600'
-                                : 'text-red-600'
-                            }`}
-                          >
-                            {(data.accuracy.actual7dReturn || 0) > 0 ? '+' : ''}
-                            {(data.accuracy.actual7dReturn || 0).toFixed(2)}%
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-slate-600">Error</p>
-                          <p className="text-xl font-bold text-slate-700">
-                            {(data.accuracy.error || 0).toFixed(2)}%
-                          </p>
-                        </div>
-                      </div>
-                      <p className="text-sm text-slate-600">
-                        {data.accuracy.daysElapsed} days after filing •{' '}
-                        {data.accuracy.message}
-                      </p>
-
-                      {/* Simple Bar Chart Comparison */}
-                      <div className="mt-4 bg-white p-4 rounded-lg border-2 border-purple-200">
-                        <h4 className="text-sm font-semibold mb-3">📊 Prediction vs Reality</h4>
-                        <ResponsiveContainer width="100%" height={200}>
-                          <BarChart
-                            data={[
-                              {
-                                name: 'Predicted',
-                                value: data.accuracy.predicted7dReturn,
-                                fill: '#3b82f6'
-                              },
-                              {
-                                name: 'Actual',
-                                value: data.accuracy.actual7dReturn || 0,
-                                fill: (data.accuracy.actual7dReturn || 0) > 0 ? '#22c55e' : '#ef4444'
-                              }
-                            ]}
-                            margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                            <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                            <YAxis
-                              domain={[0, 'auto']}
-                              label={{ value: 'Return (%)', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
-                              tick={{ fontSize: 12 }}
-                            />
-                            <Tooltip
-                              formatter={(value: number) => `${value.toFixed(2)}%`}
-                              contentStyle={{ fontSize: 12 }}
-                            />
-                            <Bar dataKey="value">
-                              {[
-                                { name: 'Predicted', value: data.accuracy.predicted7dReturn, fill: '#3b82f6' },
-                                { name: 'Actual', value: data.accuracy.actual7dReturn || 0, fill: (data.accuracy.actual7dReturn || 0) > 0 ? '#22c55e' : '#ef4444' }
-                              ].map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.fill} />
-                              ))}
-                            </Bar>
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-
-                      {/* Performance Graph */}
-                      <div className="mt-4 bg-slate-50 p-4 rounded-lg">
-                        <h4 className="text-sm font-semibold mb-3">📈 Performance Over Time</h4>
-                        <ResponsiveContainer width="100%" height={250}>
-                          <LineChart
-                            data={[
-                              { day: 0, predicted: 0, actual: 0 },
-                              {
-                                day: 7,
-                                predicted: data.accuracy.predicted7dReturn,
-                                actual: data.accuracy.actual7dReturn || 0
-                              }
-                            ]}
-                            margin={{ top: 5, right: 20, left: 0, bottom: 30 }}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                            <XAxis
-                              dataKey="day"
-                              label={{ value: 'Days Since Filing', position: 'insideBottom', offset: -10, style: { fontSize: 12 } }}
-                              tick={{ fontSize: 12 }}
-                            />
-                            <YAxis
-                              label={{ value: 'Return (%)', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
-                              tick={{ fontSize: 12 }}
-                            />
-                            <Tooltip
-                              formatter={(value: number) => `${value.toFixed(2)}%`}
-                              contentStyle={{ fontSize: 12 }}
-                            />
-                            <Legend
-                              wrapperStyle={{ fontSize: 12, paddingTop: '10px' }}
-                              verticalAlign="top"
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="predicted"
-                              stroke="#3b82f6"
-                              strokeWidth={2}
-                              name="Predicted Return"
-                              dot={{ r: 4 }}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="actual"
-                              stroke={data.accuracy.actual7dReturn && data.accuracy.actual7dReturn > 0 ? '#22c55e' : '#ef4444'}
-                              strokeWidth={2}
-                              name="Actual Return"
-                              dot={{ r: 4 }}
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-slate-50 border border-slate-200 p-3 rounded">
-                      <p className="text-sm text-slate-600">
-                        ⏳ {data.accuracy?.message || 'Waiting for sufficient time to pass'} to compare prediction with actual stock movement
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
 
         {/* Stock Price Performance Chart */}
         {stockPrices && stockPrices.prices && stockPrices.prices.length > 0 && data.filing.hasFinancials && (
@@ -2069,7 +1414,7 @@ export default function FilingPage() {
               <CardHeader>
                 <CardTitle>📊 Analyst Activity & Sentiment (30 Days Before Filing)</CardTitle>
                 <CardDescription>
-                  Most important feature in ML prediction model • Street momentum signals
+                  Contrarian signals feed Alpha Model v2 • Major-firm downgrades = recovery opportunity
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -2150,10 +1495,10 @@ export default function FilingPage() {
                     </div>
                   )}
 
-                  {/* ML Model Note */}
+                  {/* Alpha Model Note */}
                   <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
                     <p className="text-sm text-purple-900">
-                      <strong>📈 ML Model Impact:</strong> Net analyst upgrades in the 30 days before filing is the <strong>most important feature</strong> in our RandomForest ML prediction model. Upgrades signal positive street momentum and often predict short-term price gains.
+                      <strong>📈 Alpha Model v2:</strong> Major bank downgrades (Goldman, MS, JPM, BofA) are the <strong>second-strongest bullish signal</strong> — the market systematically overreacts to top-tier downgrades, creating 30-day recovery opportunities. High analyst upside targets are bearish (value trap signal).
                     </p>
                   </div>
                 </div>
@@ -2161,11 +1506,12 @@ export default function FilingPage() {
             </Card>
           )}
 
-          {/* Top Changes */}
-          {data.analysis && (
+          {/* Top Changes (risk factor changes vs prior filing) */}
+          {data.analysis && data.analysis.risks.topChanges.length > 0 && (
             <Card>
               <CardHeader>
-                <CardTitle>🔍 Top Changes</CardTitle>
+                <CardTitle>🔍 Notable Changes vs Prior Filing</CardTitle>
+                <CardDescription>Key shifts in risk factors and disclosures since the last filing</CardDescription>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
