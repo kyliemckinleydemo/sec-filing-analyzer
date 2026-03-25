@@ -43,6 +43,8 @@ export const TRAINING_MEAN_FEATURES: AlphaFeatures = {
   filingTypeFactor: 0.5,
   toneChangeDelta: 0.0,
   epsSurprise: 0,
+  spxTrend30d: 1.5,
+  vixLevel: 20,
 };
 
 /**
@@ -61,6 +63,8 @@ export const BULLISH_FEATURES: AlphaFeatures = {
   filingTypeFactor: 1,        // 10-Q
   toneChangeDelta: 0.2,       // Improving tone vs prior filing
   epsSurprise: 15,            // Strong EPS beat
+  spxTrend30d: 3.0,           // Market in mild uptrend
+  vixLevel: 14,               // Low fear
 };
 
 /**
@@ -79,4 +83,6 @@ export const BEARISH_FEATURES: AlphaFeatures = {
   filingTypeFactor: 0,        // 10-K
   toneChangeDelta: -0.3,      // Worsening tone vs prior filing
   epsSurprise: -20,           // EPS miss
+  spxTrend30d: -3.0,          // Market in drawdown
+  vixLevel: 28,               // Elevated fear
 };

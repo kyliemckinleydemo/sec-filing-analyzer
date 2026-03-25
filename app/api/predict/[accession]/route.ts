@@ -138,6 +138,26 @@ export async function GET(
 
     // No alpha prediction yet — generate one using the alpha model
 
+    // Fetch macro regime data for filing date
+    let macroData: { spxReturn30d: number | null; vixClose: number | null } | null = null;
+    try {
+      const sevenDayWindow = new Date(filing.filingDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const sevenDayAhead = new Date(filing.filingDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+      const macroRows = await (prisma as any).macroIndicators.findMany({
+        where: { date: { gte: sevenDayWindow, lte: sevenDayAhead } },
+        select: { date: true, spxReturn30d: true, vixClose: true },
+        orderBy: { date: 'asc' },
+      });
+      if (macroRows.length > 0) {
+        const filingMs = filing.filingDate.getTime();
+        macroData = macroRows.reduce((best: any, m: any) =>
+          Math.abs(m.date.getTime() - filingMs) < Math.abs(best.date.getTime() - filingMs) ? m : best
+        );
+      }
+    } catch (macroError) {
+      console.error('Error fetching macro data:', macroError);
+    }
+
     // Query analyst activity from AnalystActivity table (30 days before filing)
     let upgradeCount = 0;
     let majorDowngradeCount = 0;
@@ -193,6 +213,8 @@ export async function GET(
           concernLevel: filing.concernLevel,
           sentimentScore: filing.sentimentScore,
           epsSurprise: (filing as any).epsSurprise ?? null,
+          spxTrend30d: macroData?.spxReturn30d ?? null,
+          vixLevel: macroData?.vixClose ?? null,
         },
         { upgradesLast30d: upgradeCount, majorDowngradesLast30d: majorDowngradeCount },
       );

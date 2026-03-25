@@ -123,6 +123,7 @@ const FEATURE_NAMES = [
   'priceToLow', 'majorDowngrades', 'analystUpsidePotential', 'priceToHigh',
   'concernLevel', 'marketCap', 'sentimentScore', 'upgradesLast30d',
   'filingTypeFactor', 'toneChangeDelta', 'epsSurprise',
+  'spxTrend30d', 'vixLevel',
 ];
 
 const FILING_TYPE_MAP: Record<string, number> = { '10-K': 0, '10-Q': 1, '8-K': 2 };
@@ -228,6 +229,27 @@ async function extractTrainingData(): Promise<TrainingRow[]> {
   }
   console.log(`Loaded ${analystActivityRaw.length} analyst activity rows for ${trainingCompanyIds.length} companies`);
 
+  // Load macro indicators for regime features
+  console.log('Loading macro indicators...');
+  const macroRows = await prisma.macroIndicators.findMany({
+    select: { date: true, spxReturn30d: true, vixClose: true },
+    orderBy: { date: 'asc' },
+  });
+  // Build sorted array for binary-search lookup by date
+  const macroSorted = macroRows.filter(m => m.spxReturn30d != null || m.vixClose != null);
+  function findClosestMacro(date: Date): { spxReturn30d: number | null; vixClose: number | null } | null {
+    if (macroSorted.length === 0) return null;
+    const ms = date.getTime();
+    let best = macroSorted[0], bestDiff = Math.abs(macroSorted[0].date.getTime() - ms);
+    for (const m of macroSorted) {
+      const diff = Math.abs(m.date.getTime() - ms);
+      if (diff < bestDiff) { bestDiff = diff; best = m; }
+      if (m.date.getTime() > ms + 7 * 86400000) break; // stop if >7d ahead
+    }
+    return bestDiff < 7 * 86400000 ? best : null;
+  }
+  console.log(`Loaded ${macroSorted.length} macro indicator rows`);
+
   const rows: TrainingRow[] = [];
 
   for (const filing of filings) {
@@ -305,10 +327,16 @@ async function extractTrainingData(): Promise<TrainingRow[]> {
       ? Math.max(-50, Math.min(50, filing.epsSurprise))
       : 0;
 
+    // Macro regime features at filing date
+    const macro = findClosestMacro(filing.filingDate);
+    const spxTrend30d = macro?.spxReturn30d ?? 0;
+    const vixLevel = macro?.vixClose ?? 20; // fallback to neutral 20
+
     const features = [
       priceToLow, majorDowngrades, analystUpsidePotential,
       priceToHigh, concernLevel, marketCap, sentimentScore, upgradesLast30d,
       filingTypeFactor, toneChangeDelta, epsSurprise,
+      spxTrend30d, vixLevel,
     ];
 
     rows.push({

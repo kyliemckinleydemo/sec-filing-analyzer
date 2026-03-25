@@ -202,6 +202,24 @@ async function main() {
   }
   console.log(`Loaded ${analystActivityRaw.length} analyst activity rows`);
 
+  // Load macro indicators for regime features
+  const macroRows = await prisma.macroIndicators.findMany({
+    select: { date: true, spxReturn30d: true, vixClose: true },
+    orderBy: { date: 'asc' },
+  });
+  const macroSorted = macroRows.filter(m => m.spxReturn30d != null || m.vixClose != null);
+  function findClosestMacro(date: Date) {
+    if (macroSorted.length === 0) return null;
+    const ms = date.getTime();
+    let best = macroSorted[0], bestDiff = Math.abs(macroSorted[0].date.getTime() - ms);
+    for (const m of macroSorted) {
+      const diff = Math.abs(m.date.getTime() - ms);
+      if (diff < bestDiff) { bestDiff = diff; best = m; }
+      if (m.date.getTime() > ms + 7 * 86400000) break;
+    }
+    return bestDiff < 7 * 86400000 ? best : null;
+  }
+
   // Build prior-sentiment map (most recent prior same-type filing per company)
   const priorSentimentMap = new Map<string, number>();
   const sortedForPrior = [...filings].sort(
@@ -253,6 +271,7 @@ async function main() {
       a.actionType === 'downgrade' && MAJOR_FIRMS.some(firm => a.firm.includes(firm)),
     ).length;
 
+    const macro = findClosestMacro(filing.filingDate);
     const features = extractAlphaFeatures(
       priceData,
       {
@@ -261,6 +280,8 @@ async function main() {
         filingType: filing.filingType,
         priorSentimentScore: priorSentimentAtTime,
         epsSurprise: filing.epsSurprise,
+        spxTrend30d: macro?.spxReturn30d ?? null,
+        vixLevel: macro?.vixClose ?? null,
       },
       { upgradesLast30d, majorDowngradesLast30d },
     );
