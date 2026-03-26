@@ -116,7 +116,10 @@ export async function GET(
           signal: (filing as any).predicted30dAlpha > 0 ? 'LONG' : (filing as any).predicted30dAlpha < 0 ? 'SHORT' : 'NEUTRAL',
           confidence: confidenceVal >= 0.80 ? 'high' : confidenceVal >= 0.60 ? 'medium' : 'low',
           expectedAlpha: (filing as any).predicted30dAlpha,
-          predicted30dReturn: filing.predicted30dReturn,
+          predicted30dReturn: filing.predicted30dReturn
+            ?? ((filing as any).predicted30dAlpha != null
+              ? (filing as any).predicted30dAlpha + 0.8
+              : null),
           predicted7dReturn: filing.predicted7dReturn,
           featureContributions: storedFeatures,
           actual7dReturn: filing.actual7dReturn || accuracyResult?.actual7dReturn,
