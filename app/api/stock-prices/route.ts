@@ -95,12 +95,14 @@ export async function GET(request: NextRequest) {
 
     console.log(`[Stock Prices API] Fetching data for ${ticker} around ${filingDate}`);
 
-    // Calculate date range (30 days before/after filing)
+    // Calculate date range: 30 days before, 35 days after filing.
+    // Extra 5 days ensures the 30-day marker always has a trading day even
+    // when day 30 falls on a weekend or market holiday.
     const filing = new Date(filingDate);
     const startDate = new Date(filing);
     startDate.setDate(startDate.getDate() - 30);
     const endDate = new Date(filing);
-    endDate.setDate(endDate.getDate() + 30);
+    endDate.setDate(endDate.getDate() + 35);
 
     const filingStr = filing.toISOString().split('T')[0];
 
