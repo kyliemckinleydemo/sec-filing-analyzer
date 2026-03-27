@@ -105,6 +105,14 @@ interface CompanySuggestion {
   filingCount: number;
 }
 
+interface ModelStats {
+  total: number;
+  withActual: number;
+  dirAccuracy: number | null;
+  avgPredicted: number | null;
+  avgActual: number | null;
+}
+
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -112,6 +120,7 @@ export default function Home() {
   const [recentFilings, setRecentFilings] = useState<RecentFiling[]>([]);
   const [stockPrices, setStockPrices] = useState<Record<string, StockPrice>>({});
   const [topSignals, setTopSignals] = useState<TopSignal[]>([]);
+  const [modelStats, setModelStats] = useState<ModelStats | null>(null);
   const [searchInput, setSearchInput] = useState('');
   const [suggestions, setSuggestions] = useState<CompanySuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -126,6 +135,7 @@ export default function Home() {
       fetchWatchlist();
       fetchRecentFilings();
       fetchTopSignals();
+      fetchModelStats();
     }
   }, [user]);
 
@@ -206,6 +216,16 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Error fetching top signals:', error);
+    }
+  };
+
+  const fetchModelStats = async () => {
+    try {
+      const response = await fetch('/api/model-demo?confidence=high&hasActual=true&limit=500');
+      const data = await response.json();
+      if (data.summary) setModelStats(data.summary);
+    } catch (error) {
+      console.error('Error fetching model stats:', error);
     }
   };
 
@@ -342,6 +362,52 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Model Track Record */}
+          {modelStats && (
+            <Card className="bg-[rgba(15,23,42,0.96)] border-white/[0.18] mb-8">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg text-white">Model Track Record</CardTitle>
+                    <CardDescription>Alpha Model v2 · High-confidence signals · Verified against actual 30d returns</CardDescription>
+                  </div>
+                  <button
+                    onClick={() => router.push('/model-demo')}
+                    className="text-xs text-primary hover:underline whitespace-nowrap"
+                  >
+                    Full analysis →
+                  </button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-white/5 rounded-lg p-4 text-center">
+                    <div className={`text-3xl font-bold ${modelStats.dirAccuracy != null && modelStats.dirAccuracy >= 60 ? 'text-green-400' : 'text-yellow-400'}`}>
+                      {modelStats.dirAccuracy != null ? `${modelStats.dirAccuracy.toFixed(1)}%` : '—'}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">Directional Accuracy</div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 text-center">
+                    <div className="text-3xl font-bold text-white">{modelStats.withActual}</div>
+                    <div className="text-xs text-muted-foreground mt-1">Verified Predictions</div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 text-center">
+                    <div className={`text-3xl font-bold ${modelStats.avgPredicted != null && modelStats.avgPredicted >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {modelStats.avgPredicted != null ? `${modelStats.avgPredicted > 0 ? '+' : ''}${modelStats.avgPredicted.toFixed(1)}%` : '—'}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">Avg Predicted Alpha</div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 text-center">
+                    <div className={`text-3xl font-bold ${modelStats.avgActual != null && modelStats.avgActual >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {modelStats.avgActual != null ? `${modelStats.avgActual > 0 ? '+' : ''}${modelStats.avgActual.toFixed(1)}%` : '—'}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">Avg Actual Alpha</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <div className="grid lg:grid-cols-2 gap-6 mb-8">
             {/* Quick Actions */}
