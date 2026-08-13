@@ -64,9 +64,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { ticker, name } = filing.company;
   const title = `${ticker} ${filing.filingType} — ${dateStr} | AI Analysis & 30-Day Prediction`;
 
-  const summary = filing.aiSummary?.trim();
-  const description = summary
-    ? summary.slice(0, 155)
+  // Strip markdown (bold, bullets, headings) so the AI summary reads cleanly
+  // as a plain-text search/AI snippet.
+  const cleanSummary = filing.aiSummary
+    ?.replace(/[*_#`]+/g, '')
+    .replace(/[•\-]\s+/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const description = cleanSummary
+    ? cleanSummary.slice(0, 155)
     : `AI analysis of ${name} (${ticker}) ${filing.filingType} filed ${dateStr}: financial highlights, risk assessment, and a 30-day market-relative stock prediction. Sourced from SEC EDGAR.`;
 
   const canonical = `/filing/${filing.accessionNumber}`;
