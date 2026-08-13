@@ -36,6 +36,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { secRSSClient } from '@/lib/sec-rss-client';
 import { runSupervisorChecks } from '@/lib/supervisor';
+import { submitToIndexNow } from '@/lib/indexnow';
 
 // Mark route as dynamic to prevent static generation at build time
 export const dynamic = 'force-dynamic';
@@ -223,6 +224,7 @@ export async function GET(request: Request) {
 
     // Store companies and filings in database, tracking affected company IDs
     const affectedCompanyIds = new Set<string>();
+    const newFilingPaths: string[] = [];
     for (const filing of allFilings) {
       try {
         // Check if company exists in our fetched map, otherwise upsert
@@ -276,6 +278,7 @@ export async function GET(request: Request) {
         });
 
         affectedCompanyIds.add(company.id);
+        newFilingPaths.push(`/filing/${filing.accessionNumber}`);
         results.stored++;
       } catch (error: any) {
         results.errors.push(`${filing.ticker}: ${error.message}`);
@@ -339,6 +342,12 @@ export async function GET(request: Request) {
         companiesProcessed: results.companiesProcessed,
       },
     });
+
+    // Notify search engines about new/updated filing pages via IndexNow
+    // (fail-soft — never fails the cron job)
+    if (newFilingPaths.length > 0) {
+      await submitToIndexNow([...newFilingPaths, '/latest-filings', '/']);
+    }
 
     // Run supervisor health checks after successful completion
     console.log('[Cron RSS] Running supervisor health checks...');

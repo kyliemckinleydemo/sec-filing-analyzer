@@ -29,16 +29,19 @@
  * - Model trained on 4,009 filings from 500+ companies with strict walk-forward validation preventing lookahead bias
  * - 30-day alpha target (stock return minus S&P 500) isolates filing-specific signal from broad market direction
  */
-'use client';
-
+import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useRouter } from 'next/navigation';
 
-export default function FAQPage() {
-  const router = useRouter();
+export const metadata: Metadata = {
+  title: 'FAQ — How Our SEC Filing Prediction Model Works',
+  description:
+    'How StockHuntr predicts 30-day alpha from SEC filings: Ridge regression MoE model, 13 features, 77.5% high-confidence directional accuracy, strict walk-forward validation, and full data source documentation.',
+  alternates: { canonical: '/faq' },
+};
 
-  const faqs = [
+const faqs = [
     {
       category: "Purpose & Overview",
       questions: [
@@ -228,16 +231,33 @@ export default function FAQPage() {
     }
   ];
 
+// FAQPage structured data — static site-authored Q&A content only.
+// JSON is escaped ("<" -> <) per Next.js guidance before injection.
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.flatMap((section) =>
+    section.questions.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    }))
+  ),
+};
+
+const faqJsonLdString = JSON.stringify(faqJsonLd).replace(/</g, '\\u003c');
+
+export default function FAQPage() {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#0f172a_0%,#020617_50%)] text-foreground">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: faqJsonLdString }}
+      />
       {/* Header */}
       <div className="container mx-auto px-4 py-8">
-        <Button
-          variant="outline"
-          onClick={() => router.push('/')}
-          className="mb-4 border-white/45"
-        >
-          ← Back to Home
+        <Button asChild variant="outline" className="mb-4 border-white/45">
+          <Link href="/">← Back to Home</Link>
         </Button>
         <h1 className="text-4xl font-bold mb-2 text-white">Frequently Asked Questions</h1>
         <p className="text-gray-300 mb-8">
@@ -275,19 +295,14 @@ export default function FAQPage() {
           </CardHeader>
           <CardContent className="flex justify-center gap-4">
             <Button
+              asChild
               size="lg"
-              onClick={() => router.push('/latest-filings')}
               className="bg-gradient-to-br from-primary to-secondary text-[#0b1120] font-semibold shadow-[0_14px_30px_rgba(34,197,94,0.36)] hover:brightness-110"
             >
-              View Latest Filings
+              <Link href="/latest-filings">View Latest Filings</Link>
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => router.push('/')}
-              className="border-white/45"
-            >
-              Search by Ticker
+            <Button asChild size="lg" variant="outline" className="border-white/45">
+              <Link href="/">Search by Ticker</Link>
             </Button>
           </CardContent>
         </Card>

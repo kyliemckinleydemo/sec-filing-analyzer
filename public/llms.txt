@@ -1,0 +1,22 @@
+# StockHuntr
+
+> StockHuntr (stockhuntr.net) is an AI-powered SEC filing intelligence platform. It analyzes 10-K, 10-Q, and 8-K filings from SEC EDGAR using Anthropic's Claude AI and a Ridge-regression mixture-of-experts model, and predicts 30-day market-relative alpha (stock return minus S&P 500) for each filing. It covers 640+ US companies including all S&P 500 constituents.
+
+Key facts:
+- Predictions target 30-day alpha, not raw returns; high-confidence signals achieve 77.5% directional accuracy (strict 90-day walk-forward cross-validation, 4,009-filing training set, Sharpe 2.22).
+- All filing data comes from SEC EDGAR (primary source, with accession numbers and filing URLs cited); market data from Yahoo Finance; macro data from FRED.
+- The model uses 13 features: price momentum, analyst activity (major-bank downgrades are a contrarian bullish signal), Claude AI concern/sentiment scores, EPS surprise, filing type, tone shift vs prior filing, and macro regime (S&P trend, VIX).
+- StockHuntr is an educational and research tool. Nothing on the site is investment advice.
+
+## Main pages
+
+- [Home](https://www.stockhuntr.net/): Dashboard with latest analyzed filings and top prediction signals
+- [Latest Filings](https://www.stockhuntr.net/latest-filings): Recent 10-K, 10-Q, and 8-K filings with AI analysis, filterable by ticker and form type
+- [FAQ / Methodology](https://www.stockhuntr.net/faq): Full documentation of the prediction model, features, backtesting methodology, accuracy, and data sources
+- [Model Demo](https://www.stockhuntr.net/model-demo): Live track record of predictions vs actual 30-day outcomes
+- [Ask the Market](https://www.stockhuntr.net/query): Natural-language querying over the filing corpus
+
+## Page patterns
+
+- Filing detail: https://www.stockhuntr.net/filing/{accession-number} — AI analysis, financials, risk assessment, and 30-day alpha prediction for a single SEC filing
+- Company detail: https://www.stockhuntr.net/company/{ticker} — company snapshot, filing history, and fundamentals
