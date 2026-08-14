@@ -15,7 +15,7 @@
  * - next/navigation - Provides useRouter for navigation and useSearchParams for reading URL ticker parameter
  *
  * EXPORTS:
- * - QueryPage (component) - Suspense-wrapped default export for Next.js page routing with QueryPageContent inside
+ * - QueryPage (component) - Default export for Next.js page routing, rendering QueryPageContent
  * - QueryPageContent (component) - Main query interface with search input, mode toggle, ticker/sector filters, and adaptive results display
  *
  * PATTERNS:
@@ -39,10 +39,10 @@
 
 'use client';
 
-import { useState, useRef, useEffect, Suspense, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Search, Sparkles, TrendingUp, Calendar, Building2, FileText, MessageSquare, Brain, BarChart3, ChevronDown, ChevronUp } from 'lucide-react';
 import { CompanySnapshotTooltip } from '@/components/CompanySnapshotTooltip';
 
@@ -93,7 +93,6 @@ function formatMarkdown(text: string): string {
 }
 
 function QueryPageContent() {
-  const searchParams = useSearchParams();
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<QueryResult | null>(null);
@@ -108,15 +107,17 @@ function QueryPageContent() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // Auto-fill ticker from URL parameter
+  // Auto-fill ticker from URL parameter. Read from window.location instead of
+  // useSearchParams so the page isn't forced behind a Suspense fallback (which
+  // hides all content, including the H1, from crawlers). Runs client-side only.
   useEffect(() => {
-    const tickerParam = searchParams.get('ticker');
+    const tickerParam = new URLSearchParams(window.location.search).get('ticker');
     if (tickerParam) {
       setTicker(tickerParam.toUpperCase());
       setSector('');
       setShowFilters(true);
     }
-  }, [searchParams]);
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -1139,13 +1140,5 @@ function QueryPageContent() {
 }
 
 export default function QueryPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 flex items-center justify-center">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    }>
-      <QueryPageContent />
-    </Suspense>
-  );
+  return <QueryPageContent />;
 }
