@@ -97,3 +97,8 @@ requirements-ml.txt
 /check-*.ts
 /clean-*.py
 /clean-*.sql
+
+# Generated dataset data files (regenerate with: npm run export-dataset)
+dataset/*.csv
+dataset/*.jsonl
+.next_stale_*
