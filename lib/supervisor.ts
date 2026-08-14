@@ -38,6 +38,10 @@ export interface SupervisorReport {
   jobsTriggered: string[];
   alerts: string[];
   actions: string[];
+  // Data-population health (added to detect analysis/prediction pipeline stalls)
+  analysisCoverage30d?: number;
+  lowAnalysisCoverage?: boolean;
+  analyzedWithoutPrediction30d?: number;
 }
 
 async function sendEmailAlert(subject: string, body: string): Promise<boolean> {
@@ -143,7 +147,7 @@ export async function runSupervisorChecks(autoTriggerMissing: boolean = false): 
       const cronSecret = process.env.CRON_SECRET;
       const baseUrl = process.env.VERCEL_URL
         ? `https://${process.env.VERCEL_URL}`
-        : 'https://sec-filing-analyzer-indol.vercel.app';
+        : 'https://www.stockhuntr.net';
 
       const retryPromises = stuckJobs.map(async (stuckJob) => {
         const jobPath = stuckJob.jobName === 'daily-filings-rss'
@@ -234,7 +238,7 @@ export async function runSupervisorChecks(autoTriggerMissing: boolean = false): 
           const cronSecret = process.env.CRON_SECRET;
           const baseUrl = process.env.VERCEL_URL
             ? `https://${process.env.VERCEL_URL}`
-            : 'https://sec-filing-analyzer-indol.vercel.app';
+            : 'https://www.stockhuntr.net';
 
           const triggerResponse = await fetch(`${baseUrl}/api/cron/daily-filings-rss`, {
             method: 'GET',
@@ -300,6 +304,47 @@ export async function runSupervisorChecks(autoTriggerMissing: boolean = false): 
     if (recentRuns.length >= 5 && failures / recentRuns.length > 0.5) {
       report.alerts.push(`⚠️ High failure rate: ${failures}/${recentRuns.length} recent jobs failed`);
       console.log(`[Supervisor] ALERT: High failure rate detected`);
+    }
+
+    // 5. Check AI analysis coverage of recent filings. Filings are ingested continuously
+    // but must also be analyzed (concernLevel populated) to be useful. If coverage of the
+    // last 30 days drops low, the analysis pipeline has fallen behind or stopped.
+    try {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const recentTotal = await prisma.filing.count({
+        where: { filingDate: { gte: thirtyDaysAgo } },
+      });
+      const recentAnalyzed = await prisma.filing.count({
+        where: { filingDate: { gte: thirtyDaysAgo }, concernLevel: { not: null } },
+      });
+      const coverage = recentTotal > 0 ? recentAnalyzed / recentTotal : 1;
+      report.analysisCoverage30d = Math.round(coverage * 1000) / 1000;
+      // Alert only once there is a meaningful sample and coverage is low.
+      if (recentTotal >= 50 && coverage < 0.5) {
+        report.lowAnalysisCoverage = true;
+        report.alerts.push(
+          `⚠️ Low analysis coverage: only ${recentAnalyzed}/${recentTotal} (${Math.round(coverage * 100)}%) of last-30-day filings are analyzed. Check the analyze-filings cron / ANALYSIS_ENABLED.`
+        );
+        console.log('[Supervisor] ALERT: Low AI analysis coverage');
+      }
+
+      // Prediction coverage: analyzed filings that still lack a prediction.
+      const analyzedNoPrediction = await prisma.filing.count({
+        where: {
+          filingDate: { gte: thirtyDaysAgo },
+          concernLevel: { not: null },
+          predicted30dAlpha: null,
+        },
+      });
+      report.analyzedWithoutPrediction30d = analyzedNoPrediction;
+      if (analyzedNoPrediction >= 25) {
+        report.alerts.push(
+          `⚠️ ${analyzedNoPrediction} analyzed filings (last 30d) have no prediction. Check the backfill-predictions cron.`
+        );
+        console.log('[Supervisor] ALERT: Analyzed filings missing predictions');
+      }
+    } catch (coverageError: any) {
+      console.error('[Supervisor] Coverage check failed:', coverageError.message);
     }
 
     // 5. Send email if there are critical alerts or jobs were triggered

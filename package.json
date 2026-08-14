@@ -22,6 +22,7 @@
     "set-alias": "vercel alias set stockhuntr.net",
     "trigger-cron": "npx tsx scripts/manual-cron-trigger.ts",
     "export-dataset": "npx tsx scripts/export-dataset.ts",
+    "backfill-predictions": "npx tsx scripts/backfill-predictions.ts",
     "test:count": "bash scripts/count-tests.sh",
     "test:count:run": "bash scripts/count-tests.sh --run"
   },

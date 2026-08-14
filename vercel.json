@@ -47,6 +47,22 @@
     {
       "path": "/api/cron/watchlist-alerts?time=evening",
       "schedule": "0 23 * * *"
+    },
+    {
+      "path": "/api/cron/analyze-filings",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron/analyze-filings",
+      "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/cron/analyze-filings",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/cron/backfill-predictions",
+      "schedule": "0 8 * * *"
     }
   ]
 }
