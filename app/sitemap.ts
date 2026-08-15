@@ -62,9 +62,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }));
 
-    return [...staticPages, ...companyPages, ...filingPages];
+    return [...staticPages, ...explainerPages, ...companyPages, ...filingPages];
   } catch (error) {
     console.error('sitemap: database unavailable, serving static pages only', error);
-    return staticPages;
+    return [...staticPages, ...explainerPages];
   }
 }
