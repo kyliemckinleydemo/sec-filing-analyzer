@@ -732,7 +732,7 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
 
   // Show marketing page for non-authenticated users
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#0f172a_0%,#020617_50%)] text-foreground">
+    <div className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,#0f172a_0%,#020617_50%)] text-foreground">
 
       <main className="container mx-auto px-6 py-12 pb-16">
         {/* Hero Section */}

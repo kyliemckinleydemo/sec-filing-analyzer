@@ -384,9 +384,9 @@ export default function LatestFilingsClient({ initialData }: { initialData: Late
           <div className="space-y-4">
             {filings.map((filing) => (
               <Card key={filing.accessionNumber} className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center flex-wrap gap-2 mb-2">
                       <CompanySnapshotTooltip
                         ticker={filing.ticker}
                         companyName={filing.companyName}
@@ -412,7 +412,7 @@ export default function LatestFilingsClient({ initialData }: { initialData: Late
                         )}
                       </div>
                       <p className="text-sm text-slate-600 mb-1">{filing.companyName}</p>
-                      <div className="flex gap-4 text-sm text-slate-500">
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
                         <span>Filed: {new Date(filing.filingDate).toLocaleDateString()}</span>
                         <span>•</span>
                         <span>{getDaysSinceFiling(filing.filingDate)} days ago</span>
@@ -448,11 +448,11 @@ export default function LatestFilingsClient({ initialData }: { initialData: Late
           <>
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="mt-6 flex items-center justify-between border-t pt-4">
+              <div className="mt-6 flex flex-col gap-4 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="text-sm text-slate-600">
                   Showing page {currentPage} of {totalPages} ({totalCount} total filings)
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap justify-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
