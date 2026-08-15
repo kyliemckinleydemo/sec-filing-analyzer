@@ -744,13 +744,14 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
             </div>
 
             <h1 className="text-5xl font-bold tracking-tight mb-3">
-              Chat with SEC filings. Get risk scores. See 30-day alpha predictions.
+              Chat with SEC filings. Get cited answers and risk scores — free.
             </h1>
 
             <p className="text-muted-foreground mb-5 max-w-xl">
-              Analyze <strong className="text-gray-200">10-K, 10-Q, and 8-K</strong> filings in plain English. Get
-              AI-powered risk analysis, watchlist alerts, and 30-day alpha
-              predictions across <strong className="text-gray-200">640+ US companies</strong>.
+              Ask about any <strong className="text-gray-200">10-K, 10-Q, or 8-K</strong> in plain English and get
+              clear, <strong className="text-gray-200">cited answers</strong> straight from the filing — plus AI risk
+              and concern scoring across <strong className="text-gray-200">640+ US companies</strong>.
+              30-day alpha signals included.
             </p>
 
             <div className="flex flex-wrap gap-2 mb-5">
@@ -1108,28 +1109,26 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
           <div className="mb-5">
             <h2 className="text-3xl font-bold tracking-tight mb-2">Why use StockHuntr?</h2>
             <p className="text-muted-foreground max-w-lg">
-              Traditional terminals are expensive and don't explain their
-              signals. Free tools just dump raw filings. StockHuntr sits in
-              between.
+              Paid AI research tools chat with filings but sit behind a subscription. Raw
+              EDGAR is free but has no analysis. StockHuntr gives you cited AI answers and
+              risk scoring on primary-source SEC filings — free.
             </p>
           </div>
 
           <div className="grid md:grid-cols-[1.3fr_1fr] gap-5">
             <div className="text-sm text-muted-foreground">
               <p className="mb-3">
-                <strong className="text-gray-200">Bloomberg costs $2K+/month</strong> with no built-in ML
-                predictions or conversational AI analysis of filings.
+                <strong className="text-gray-200">Paid AI tools</strong> (AlphaSense, Fintool) deliver strong AI
+                research, but behind enterprise or subscription pricing.
               </p>
               <p className="mb-4">
-                <strong className="text-gray-200">Free tools</strong> show raw SEC documents with little or no
-                financial insight, making it hard to quickly see what changed.
+                <strong className="text-gray-200">Free EDGAR</strong> gives you the raw filings with no analysis, so
+                it's slow to see what actually changed.
               </p>
               <div className="mt-3 p-3 rounded-xl bg-[rgba(15,23,42,0.95)] border border-gray-700">
-                <strong className="text-gray-200">Our tool:</strong> AI risk scoring + stock predictions +
-                smart alerts + natural language chat.<br />
-                <span className="text-muted-foreground">
-                  All at a fraction of traditional terminal costs.
-                </span>
+                <strong className="text-gray-200">StockHuntr:</strong> cited AI answers, risk &amp; concern scoring,
+                and a real-time SEC feed — plus 30-day alpha signals.<br />
+                <span className="text-muted-foreground">Free.</span>
               </div>
             </div>
 
@@ -1139,16 +1138,28 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
                   <tr className="border-b border-[rgba(31,41,55,0.9)]">
                     <th className="text-left py-2 text-muted-foreground uppercase tracking-wider">Feature</th>
                     <th className="text-left py-2 text-muted-foreground uppercase tracking-wider">StockHuntr</th>
-                    <th className="text-left py-2 text-muted-foreground uppercase tracking-wider">Terminals</th>
+                    <th className="text-left py-2 text-muted-foreground uppercase tracking-wider">Paid AI tools</th>
                     <th className="text-left py-2 text-muted-foreground uppercase tracking-wider">Free EDGAR</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr className="border-b border-[rgba(31,41,55,0.9)]">
-                    <td className="py-2">AI risk scoring</td>
+                    <td className="py-2">Chat with cited answers</td>
+                    <td className="text-primary">✓</td>
                     <td className="text-primary">✓</td>
                     <td className="text-white/70">–</td>
+                  </tr>
+                  <tr className="border-b border-[rgba(31,41,55,0.9)]">
+                    <td className="py-2">AI risk &amp; concern scoring</td>
+                    <td className="text-primary">✓</td>
+                    <td className="text-white/70">Varies</td>
                     <td className="text-white/70">–</td>
+                  </tr>
+                  <tr className="border-b border-[rgba(31,41,55,0.9)]">
+                    <td className="py-2">Primary-source SEC filings</td>
+                    <td className="text-primary">✓</td>
+                    <td className="text-primary">✓</td>
+                    <td className="text-primary">✓</td>
                   </tr>
                   <tr className="border-b border-[rgba(31,41,55,0.9)]">
                     <td className="py-2">30-day alpha predictions</td>
@@ -1156,22 +1167,10 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
                     <td className="text-white/70">–</td>
                     <td className="text-white/70">–</td>
                   </tr>
-                  <tr className="border-b border-[rgba(31,41,55,0.9)]">
-                    <td className="py-2">Ask the Market (AI chat)</td>
-                    <td className="text-primary">✓</td>
-                    <td className="text-white/70">–</td>
-                    <td className="text-white/70">–</td>
-                  </tr>
-                  <tr className="border-b border-[rgba(31,41,55,0.9)]">
-                    <td className="py-2">Real-time SEC feed</td>
-                    <td className="text-primary">✓</td>
-                    <td className="text-primary">✓</td>
-                    <td className="text-primary">✓</td>
-                  </tr>
                   <tr>
                     <td className="py-2">Price</td>
                     <td className="text-primary">Free</td>
-                    <td className="text-white/70">$2K+/month</td>
+                    <td className="text-white/70">Subscription</td>
                     <td className="text-primary">Free (raw)</td>
                   </tr>
                 </tbody>

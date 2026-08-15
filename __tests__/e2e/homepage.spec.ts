@@ -45,11 +45,12 @@ test.describe('Homepage — unauthenticated view', () => {
     await expect(headline).toContainText('Chat with SEC filings');
   });
 
-  test('hero headline references 30-day alpha predictions, not 7-day', async ({ page }) => {
+  test('hero leads with chat + cited answers (alpha demoted), no 7-day', async ({ page }) => {
     const headline = page.locator('h1');
     await expect(headline).toBeVisible({ timeout: 10000 });
-    await expect(headline).toContainText('30-day alpha predictions');
-    // Verify no "7-day" text remains anywhere on the page
+    // Positioning leads with the chat/cited-answers value prop; alpha is secondary.
+    await expect(headline).toContainText('Chat with SEC filings');
+    // Guard against the old 7-day/30-day confusion bug.
     const body = await page.textContent('body');
     expect(body).not.toContain('7-day');
     expect(body).not.toContain('7-Day');

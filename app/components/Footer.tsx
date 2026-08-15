@@ -57,6 +57,8 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link href="/" className="hover:text-white">Home</Link></li>
               <li><Link href="/faq" className="hover:text-white">FAQ & Methodology</Link></li>
+              <li><Link href="/compare" className="hover:text-white">Compare tools</Link></li>
+              <li><Link href="/compare/free-sec-filing-ai-tools" className="hover:text-white">Free SEC filing AI</Link></li>
             </ul>
           </div>
         </div>

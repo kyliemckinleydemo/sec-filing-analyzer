@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     template: "%s | StockHuntr",
   },
   description:
-    "StockHuntr analyzes SEC filings (10-K, 10-Q, 8-K) with Claude AI and machine learning to predict 30-day market-relative stock performance. Covering 640+ US companies with data from SEC EDGAR.",
+    "Chat with SEC filings and get cited answers, plus AI risk and concern scoring — free. StockHuntr analyzes 10-K, 10-Q, and 8-K filings from 640+ US companies, grounded in primary-source SEC EDGAR data.",
   keywords: [
     "SEC filings",
     "SEC filing analysis",
@@ -78,14 +78,14 @@ export const metadata: Metadata = {
     siteName: "StockHuntr",
     title: "StockHuntr - AI-Powered SEC Filing Intelligence",
     description:
-      "AI analysis of SEC filings with 30-day alpha predictions. 640+ companies, primary-source EDGAR data, transparent methodology.",
+      "Chat with SEC filings, get cited AI answers and risk scoring \u2014 free. 640+ companies, primary-source EDGAR data.",
     locale: "en_US",
   },
   twitter: {
     card: "summary",
     title: "StockHuntr - AI-Powered SEC Filing Intelligence",
     description:
-      "AI analysis of SEC filings with 30-day alpha predictions. 640+ companies, primary-source EDGAR data, transparent methodology.",
+      "Chat with SEC filings, get cited AI answers and risk scoring \u2014 free. 640+ companies, primary-source EDGAR data.",
   },
 };
 
@@ -107,7 +107,7 @@ const jsonLd = {
       name: "StockHuntr",
       url: SITE_URL,
       description:
-        "AI-powered SEC filing intelligence platform analyzing 10-K, 10-Q, and 8-K filings to predict 30-day market-relative stock performance.",
+        "Free AI tool to chat with SEC filings and get cited answers and risk scoring, across 640+ US companies. Also generates 30-day alpha signals.",
     },
     {
       "@type": "WebSite",
@@ -124,7 +124,7 @@ const jsonLd = {
       applicationCategory: "FinanceApplication",
       operatingSystem: "Web",
       description:
-        "Analyzes SEC filings with Claude AI and a Ridge-regression mixture-of-experts model to predict 30-day alpha. Data from SEC EDGAR, Yahoo Finance, and FRED.",
+        "Chat with SEC filings for cited AI answers and risk scoring, free; optional 30-day alpha signals. Data from SEC EDGAR, Yahoo Finance, and FRED.",
       offers: {
         "@type": "Offer",
         price: "0",

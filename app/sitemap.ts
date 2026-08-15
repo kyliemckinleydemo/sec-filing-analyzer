@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
 import { explainers } from './learn/explainers';
 import { CANONICAL_SECTORS } from '@/lib/sectors';
+import { comparisons } from './compare/comparisons';
 
 /**
  * @module app/sitemap
@@ -26,7 +27,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/learn`, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/sectors`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/pulse`, changeFrequency: 'daily', priority: 0.8 },
+    { url: `${BASE_URL}/compare`, changeFrequency: 'monthly', priority: 0.7 },
   ];
+
+  // Comparison-query pages (alternatives / vs). High-intent GEO landing pages.
+  const comparePages: MetadataRoute.Sitemap = comparisons.map((c) => ({
+    url: `${BASE_URL}/compare/${c.slug}`,
+    lastModified: c.updated ? new Date(c.updated) : undefined,
+    changeFrequency: 'monthly',
+    priority: 0.7,
+  }));
 
   // Curated explainer library — evergreen GEO content.
   const explainerPages: MetadataRoute.Sitemap = explainers.map((e) => ({
@@ -72,9 +82,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }));
 
-    return [...staticPages, ...explainerPages, ...sectorPages, ...companyPages, ...filingPages];
+    return [...staticPages, ...explainerPages, ...sectorPages, ...comparePages, ...companyPages, ...filingPages];
   } catch (error) {
     console.error('sitemap: database unavailable, serving static pages only', error);
-    return [...staticPages, ...explainerPages, ...sectorPages];
+    return [...staticPages, ...explainerPages, ...sectorPages, ...comparePages];
   }
 }
