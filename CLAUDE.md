@@ -1,10 +1,12 @@
 # SEC Filing Analyzer (StockHuntr)
 
-StockHuntr is an AI-powered financial intelligence platform that analyzes SEC filings to predict stock price movements and deliver actionable trading signals. The app ingests daily SEC filings via RSS, processes them through Anthropic's Claude AI to extract financial insights, generates 30-day alpha predictions, and manages user watchlists with automated alerts for significant filing events.
+StockHuntr is a free AI tool for reading and analyzing SEC filings. It leads with **"Chat with SEC filings. Get cited answers and risk scores — free."** — users ask about any 10-K, 10-Q, or 8-K in plain English and get cited answers straight from the filing, plus AI risk/concern scoring (0–10) across 640+ US companies (all S&P 500 constituents), all grounded in primary-source SEC EDGAR data. It positions against paid AI research tools (Fintool, AlphaSense) and free raw EDGAR — NOT Bloomberg. The 30-day alpha prediction is a **secondary** feature. The app ingests daily SEC filings via RSS (matched to companies by CIK), processes them through Anthropic's Claude AI, and manages watchlists with automated alerts.
 
-**Target Users:** Active traders, financial analysts, and investors seeking data-driven insights from SEC filings
+Beyond the core app it ships SEO/GEO content (explainer library, sector insight pages, a recurring "SEC Filing Pulse" report, and tool-comparison landing pages), a remote MCP server at `/api/mcp`, and an open CC-BY-4.0 dataset export — all so the product is discoverable and citable by search engines and AI answer engines.
 
-**Core Flow:** Users authenticate via magic link → add companies to watchlist → receive automated alerts when watched companies file → view AI analysis with price predictions → execute paper trades or use signals for real trading
+**Target Users:** Active traders, financial analysts, and investors who want fast, cited answers from SEC filings without reading hundreds of pages
+
+**Core Flow:** Users chat with a filing / browse the feed → read AI risk scoring and cited answers → optionally sign in via magic link, add companies to a watchlist, and receive automated alerts → view the secondary 30-day prediction and paper-trading track record
 
 ## Tech Stack
 
@@ -40,14 +42,18 @@ sec-filing-analyzer/
 │   │   │   ├── verify-magic-link/
 │   │   │   ├── signout/
 │   │   │   └── me/
+│   │   ├── mcp/                  # Remote MCP server (Streamable HTTP)
 │   │   ├── cron/                 # Scheduled job endpoints
-│   │   │   ├── daily-filings-rss/ # RSS ingestion
+│   │   │   ├── daily-filings-rss/ # RSS ingestion (CIK-matched) + supervisor + IndexNow
+│   │   │   ├── analyze-filings/   # Automated AI analysis (bounded, cost-guarded)
+│   │   │   ├── backfill-predictions/ # Persist 30-day predictions
+│   │   │   ├── ticker-audit/      # Weekly ticker-universe drift audit
 │   │   │   ├── daily-filings/     # Filing processing
 │   │   │   ├── watchlist-alerts/  # Alert generation
 │   │   │   ├── update-stock-prices/
 │   │   │   ├── update-analyst-data/
 │   │   │   ├── paper-trading-close-positions/
-│   │   │   └── supervisor/        # Job orchestration
+│   │   │   └── supervisor/        # Health checks (coverage + price freshness)
 │   │   ├── analyze/[accession]/   # Claude AI filing analysis
 │   │   ├── predict/[accession]/   # Price prediction generation
 │   │   ├── reanalyze/[accession]/ # Re-trigger analysis
@@ -61,24 +67,44 @@ sec-filing-analyzer/
 │   │   ├── paper-trading/         # Simulated portfolio
 │   │   └── company/[ticker]/snapshot/ # Company metrics
 │   ├── components/               # Shared React components
-│   │   └── Navigation.tsx        # Main nav with auth state
-│   ├── filing/[accession]/       # Filing detail page
+│   │   ├── Navigation.tsx        # Sticky site header/nav
+│   │   ├── Footer.tsx            # Site-wide footer
+│   │   └── QASection.tsx         # Grounded Q&A block (FAQPage JSON-LD)
+│   ├── filing/[accession]/       # Filing detail page (+ grounded Q&A)
+│   ├── company/[ticker]/         # Company page (+ grounded Q&A)
 │   ├── latest-filings/           # Browse all filings
+│   ├── learn/                    # Explainer library (+ [slug])
+│   ├── sectors/                  # Sector insight pages (+ [sector])
+│   ├── pulse/                    # SEC Filing Pulse report
+│   ├── compare/                  # Tool-comparison landing pages (+ [slug])
+│   ├── model-demo/               # Track record (predicted vs actual)
 │   ├── chat/                     # Natural language interface
-│   ├── query/                    # Advanced search
+│   ├── query/                    # Ask the Market
 │   ├── alerts/                   # Alert management UI
 │   ├── backtest/                 # Backtesting dashboard
 │   ├── paper-trading/            # Portfolio simulation
 │   ├── profile/                  # User settings
-│   ├── faq/                      # Help documentation
-│   ├── layout.tsx                # Root layout with Navigation
-│   ├── page.tsx                  # Home dashboard
+│   ├── faq/                      # Help / methodology / legal
+│   ├── sitemap.ts                # Dynamic sitemap.xml
+│   ├── robots.ts                 # robots.txt (allows AI crawlers)
+│   ├── layout.tsx                # Root layout: nav, JSON-LD, MS Clarity
+│   ├── page.tsx                  # Home dashboard (SSR initial data)
 │   └── error.tsx                 # Error boundary
+├── lib/
+│   ├── qa-builders.ts            # Grounded Q&A pair builders
+│   ├── filings-server.ts         # Server-side latest-filings query
+│   ├── sector-insights.ts        # Sector aggregate stats
+│   ├── pulse.ts                  # Pulse report computation
+│   ├── indexnow.ts               # IndexNow URL submission
+│   └── sec-rss-client.ts         # RSS + daily-index client (CIK matching)
+├── public/
+│   └── llms.txt                  # LLM/AI-crawler site summary
 ├── prisma/
 │   └── schema.prisma             # Database schema
-├── __tests__/                    # Test suites
+├── __tests__/                    # Test suites (244 Vitest + 108 Playwright)
 ├── scripts/
-│   └── manual-cron-trigger.ts    # Dev cron testing
+│   ├── manual-cron-trigger.ts    # Dev cron testing
+│   └── export-dataset.ts         # Open CC-BY-4.0 dataset export
 ├── prefiling-volume-summary.json # Filing volume analysis
 ├── selected-companies-with-midcaps.json # Watchlist seed data
 └── clean-filing-ids.json         # Filing metadata cache

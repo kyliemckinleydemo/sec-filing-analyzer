@@ -1,0 +1,265 @@
+{
+  "title": "StockHuntr — Chat with SEC Filings",
+  "output": "stockhuntr-screencast.mp4",
+  "brand": { "name": "StockHuntr", "tagline": "chat with SEC filings", "footer": "StockHuntr — chat with SEC filings, cited" },
+  "parts": {
+    "intro": [1, "The Problem"],
+    "why": [2, "Meet StockHuntr"],
+    "features": [3, "What You Get"],
+    "demo": [4, "Live Demo"],
+    "architecture": [5, "Under the Hood"],
+    "summary": [6, "Get Started"]
+  },
+  "voiceGuidance": "Warm, confident, grounded — a sharp analyst friend showing you something they genuinely find useful, not a hype reel. Measured pace ~150 words per minute, a slight slow-down on the key claims (cited answers, free, not investment advice). Let short sentences land; a beat between sections. Rising energy through the problem, calm clarity through the features and demo, a touch more warmth in the close. Never breathless, never salesy. Numbers spoken plainly so a first-time listener catches them.",
+  "segments": [
+    {
+      "id": "cover",
+      "section": "intro",
+      "visualKind": "title",
+      "slideTitle": "Chat with SEC filings — Get cited answers.",
+      "tagline": "AI SEC-filing intelligence — free",
+      "intro": "Ask any 10-K, 10-Q, or 8-K a question and get an answer grounded in the actual filing — plus AI risk scores and 30-day signals. Free.",
+      "narration": ""
+    },
+    {
+      "id": "problem",
+      "section": "intro",
+      "visualKind": "slide",
+      "partTotal": 6,
+      "slideTitle": "Public filings hold the truth. Reading them is the problem.",
+      "slideBullets": [
+        "A single 10-K can run past three hundred pages of dense legal and financial text.",
+        "Professionals pay thousands a year for tools like AlphaSense and Fintool.",
+        "Everyone else gets raw EDGAR — the documents, with none of the answers."
+      ],
+      "narration": "Every public company tells you the truth about its business — in its SEC filings. The catch is reading them. A single annual report can run past three hundred pages of dense legal and financial language. Professionals pay thousands a year for research tools to cut through it. Everyone else is left with raw EDGAR — the filings themselves, and none of the answers.",
+      "narrationSpoken": "Every public company tells you the truth about its business — in its S-E-C filings. The catch is reading them. A single annual report can run past three hundred pages of dense legal and financial language. Professionals pay thousands a year for research tools to cut through it. Everyone else is left with raw EDGAR — the filings themselves, and none of the answers."
+    },
+    {
+      "id": "meet",
+      "section": "why",
+      "visualKind": "title",
+      "slideTitle": "StockHuntr reads the filing — so you can just ask.",
+      "tagline": "chat with SEC filings",
+      "intro": "Type a question in plain English. Get a direct, cited answer, drawn straight from the document. See the risks. Free.",
+      "narration": "That's the idea behind StockHuntr. It reads the filing for you, so you can just ask. Type a question in plain English and get a direct, cited answer, drawn straight from the document. It scores the risks. It flags what changed. And it's free.",
+      "narrationSpoken": "That's the idea behind StockHuntr. It reads the filing for you, so you can just ask. Type a question in plain English and get a direct, cited answer, drawn straight from the document. It scores the risks. It flags what changed. And it's free."
+    },
+    {
+      "id": "who-for",
+      "section": "why",
+      "visualKind": "slide",
+      "partTotal": 6,
+      "slideTitle": "Built for anyone who needs the filing's answer.",
+      "slideBullets": [
+        "Active traders — catch the material 8-K the moment it files.",
+        "Analysts — jump straight to the risk factors and MD&A shifts.",
+        "Long-term investors — track a watchlist and read the concern, not the boilerplate.",
+        "AI agents — query filings directly through the MCP server."
+      ],
+      "narration": "And it's built for anyone who needs a filing's answer. Active traders, watching for the material 8-K that moves a stock. Analysts, who need the risk factors and the shift in tone, fast. Long-term investors tracking a watchlist. And increasingly, AI agents — querying filings straight through our MCP server.",
+      "narrationSpoken": "And it's built for anyone who needs a filing's answer. Active traders, watching for the material eight-K that moves a stock. Analysts, who need the risk factors and the shift in tone, fast. Long-term investors tracking a watchlist. And increasingly, A.I. agents — querying filings straight through our M-C-P server."
+    },
+    {
+      "id": "feat-chat",
+      "section": "features",
+      "visualKind": "slide",
+      "partTotal": 6,
+      "slideTitle": "Ask a filing anything — and see the receipts.",
+      "slideBullets": [
+        "Plain-English questions, answered from the filing's own text.",
+        "Every answer is grounded and cited — no hand-wavy hallucinations.",
+        "Powered by Claude, Anthropic's frontier AI model."
+      ],
+      "narration": "Start with the core feature: you can ask any filing a question. What are the biggest new risks this year? How did margins move? What did management actually say about guidance? StockHuntr answers in plain English, grounded in the filing's own words — with the receipts, so you can verify every claim. It's powered by Claude, Anthropic's frontier model.",
+      "narrationSpoken": "Start with the core feature: you can ask any filing a question. What are the biggest new risks this year? How did margins move? What did management actually say about guidance? StockHuntr answers in plain English, grounded in the filing's own words — with the receipts, so you can verify every claim. It's powered by Claude, Anthropic's frontier model."
+    },
+    {
+      "id": "feat-risk",
+      "section": "features",
+      "visualKind": "slide",
+      "partTotal": 6,
+      "slideTitle": "AI risk and concern scoring on every filing.",
+      "slideBullets": [
+        "Claude compares risk factors across filings — new, removed, escalating.",
+        "Management sentiment, read from the MD&A on a clear scale.",
+        "One concern score tells you where to look first."
+      ],
+      "narration": "Beyond questions, StockHuntr scores every filing. It compares the risk factors against the company's previous report — surfacing risks that are new, that quietly disappeared, or that are escalating in tone. It reads management sentiment from the discussion section. And it rolls all of that up into a single concern score, so you instantly know which filings deserve a closer look.",
+      "narrationSpoken": "Beyond questions, StockHuntr scores every filing. It compares the risk factors against the company's previous report — surfacing risks that are new, that quietly disappeared, or that are escalating in tone. It reads management sentiment from the discussion section. And it rolls all of that up into a single concern score, so you instantly know which filings deserve a closer look."
+    },
+    {
+      "id": "feat-signal",
+      "section": "features",
+      "visualKind": "slide",
+      "partTotal": 6,
+      "slideTitle": "A research signal: 30-day alpha, not hype.",
+      "slideBullets": [
+        "A model estimates each filing's 30-day return versus the S&P 500.",
+        "Trained on thousands of historical filings, backtested walk-forward.",
+        "A starting point for research — never investment advice."
+      ],
+      "narration": "For the market-minded, each analyzed filing also carries a thirty-day signal — the model's estimate of how the stock might move relative to the S&P 500 over the next month. It's trained on thousands of historical filings and backtested carefully. And we're deliberately honest about it: it's a research starting point, not a promise, and never investment advice.",
+      "narrationSpoken": "For the market-minded, each analyzed filing also carries a thirty-day signal — the model's estimate of how the stock might move relative to the S and P five hundred over the next month. It's trained on thousands of historical filings and backtested carefully. And we're deliberately honest about it: it's a research starting point, not a promise, and never investment advice."
+    },
+    {
+      "id": "feat-macro",
+      "section": "features",
+      "visualKind": "slide",
+      "partTotal": 6,
+      "slideTitle": "Zoom out: sector insights and a daily market pulse.",
+      "slideBullets": [
+        "Aggregate concern and filing activity across eleven sectors.",
+        "The SEC Filing Pulse: what filed today, and why it matters.",
+        "Comparisons, watchlist alerts, and a paper-trading portfolio."
+      ],
+      "narration": "And you can zoom out. Sector pages aggregate concern and filing activity across the whole market. The SEC Filing Pulse gives you a running read on what companies filed and why it matters. Add watchlist alerts, side-by-side comparisons, and a paper-trading portfolio, and StockHuntr becomes a full filing-intelligence workflow.",
+      "narrationSpoken": "And you can zoom out. Sector pages aggregate concern and filing activity across the whole market. The S-E-C Filing Pulse gives you a running read on what companies filed and why it matters. Add watchlist alerts, side-by-side comparisons, and a paper-trading portfolio, and StockHuntr becomes a full filing-intelligence workflow."
+    },
+    {
+      "id": "demo-home",
+      "section": "demo",
+      "visualKind": "demo",
+      "partTotal": 6,
+      "slideTitle": "The live product",
+      "narration": "Here's the live product. The home page leads with the promise — chat with SEC filings, get cited answers and risk scores, free. Below it, an honest comparison against paid AI tools and raw EDGAR, the day's top signals, and a live feed of the latest filings across the companies we track.",
+      "narrationSpoken": "Here's the live product. The home page leads with the promise — chat with S-E-C filings, get cited answers and risk scores, free. Below it, an honest comparison against paid A.I. tools and raw EDGAR, the day's top signals, and a live feed of the latest filings across the companies we track.",
+      "demoSteps": [
+        { "action": "navigate", "target": "/", "note": "home" },
+        { "action": "wait", "value": 1600 },
+        { "action": "scroll", "value": 700 },
+        { "action": "wait", "value": 1200 },
+        { "action": "scroll", "value": 800 },
+        { "action": "wait", "value": 1200 },
+        { "action": "scroll", "value": 800 },
+        { "action": "wait", "value": 1000 }
+      ]
+    },
+    {
+      "id": "demo-filing",
+      "section": "demo",
+      "visualKind": "demo",
+      "partTotal": 6,
+      "slideTitle": "A filing, already analyzed",
+      "narration": "Open any filing and StockHuntr's analysis is already there: an executive summary, the concern score, and the risk breakdown — new risks, resolved risks, and shifts in management's tone — each tied back to the source. No reading three hundred pages to find the one paragraph that matters.",
+      "narrationSpoken": "Open any filing and StockHuntr's analysis is already there: an executive summary, the concern score, and the risk breakdown — new risks, resolved risks, and shifts in management's tone — each tied back to the source. No reading three hundred pages to find the one paragraph that matters.",
+      "demoSteps": [
+        { "action": "navigate", "target": "/filing/0000012659-26-000026", "note": "analyzed filing" },
+        { "action": "wait", "value": 1800 },
+        { "action": "scroll", "value": 600 },
+        { "action": "wait", "value": 1200 },
+        { "action": "scroll", "value": 700 },
+        { "action": "wait", "value": 1200 }
+      ]
+    },
+    {
+      "id": "demo-qa",
+      "section": "demo",
+      "visualKind": "demo",
+      "partTotal": 6,
+      "slideTitle": "The key questions, answered",
+      "narration": "Scroll down and you'll find the key questions, answered. These are the exact questions an analyst would ask this filing — and each answer is grounded in the document, with a plain not-advice note. This is the cited-answer experience, and it's on every analyzed filing.",
+      "narrationSpoken": "Scroll down and you'll find the key questions, answered. These are the exact questions an analyst would ask this filing — and each answer is grounded in the document, with a plain not-advice note. This is the cited-answer experience, and it's on every analyzed filing.",
+      "demoSteps": [
+        { "action": "scroll", "value": 950 },
+        { "action": "wait", "value": 1300 },
+        { "action": "scroll", "value": 850 },
+        { "action": "wait", "value": 1500 }
+      ]
+    },
+    {
+      "id": "demo-company",
+      "section": "demo",
+      "visualKind": "demo",
+      "partTotal": 6,
+      "slideTitle": "Every company, one page",
+      "narration": "Every company gets a page too — the latest fundamentals and market data alongside its filing history, plus the same grounded question-and-answer block for the company as a whole. Here's Apple.",
+      "narrationSpoken": "Every company gets a page too — the latest fundamentals and market data alongside its filing history, plus the same grounded question-and-answer block for the company as a whole. Here's Apple.",
+      "demoSteps": [
+        { "action": "navigate", "target": "/company/AAPL", "note": "company page" },
+        { "action": "wait", "value": 1600 },
+        { "action": "scroll", "value": 700 },
+        { "action": "wait", "value": 1200 },
+        { "action": "scroll", "value": 800 },
+        { "action": "wait", "value": 1200 }
+      ]
+    },
+    {
+      "id": "demo-sector",
+      "section": "demo",
+      "visualKind": "demo",
+      "partTotal": 6,
+      "slideTitle": "A whole sector at a glance",
+      "narration": "Step up a level, to a sector. Financials, here — aggregate concern, filing volume, and the standout filings, all in one view. It's a read on an entire slice of the market that you simply can't get from EDGAR.",
+      "narrationSpoken": "Step up a level, to a sector. Financials, here — aggregate concern, filing volume, and the standout filings, all in one view. It's a read on an entire slice of the market that you simply can't get from EDGAR.",
+      "demoSteps": [
+        { "action": "navigate", "target": "/sectors/financials", "note": "sector insight" },
+        { "action": "wait", "value": 1600 },
+        { "action": "scroll", "value": 700 },
+        { "action": "wait", "value": 1200 },
+        { "action": "scroll", "value": 700 },
+        { "action": "wait", "value": 1200 }
+      ]
+    },
+    {
+      "id": "demo-pulse",
+      "section": "demo",
+      "visualKind": "demo",
+      "partTotal": 6,
+      "slideTitle": "The SEC Filing Pulse",
+      "narration": "And the SEC Filing Pulse ties it together — a written narrative of what filed, the headline numbers, where concern is running hot, and the filings worth your attention. It refreshes as new filings come in.",
+      "narrationSpoken": "And the S-E-C Filing Pulse ties it together — a written narrative of what filed, the headline numbers, where concern is running hot, and the filings worth your attention. It refreshes as new filings come in.",
+      "demoSteps": [
+        { "action": "navigate", "target": "/pulse", "note": "pulse report" },
+        { "action": "wait", "value": 1600 },
+        { "action": "scroll", "value": 800 },
+        { "action": "wait", "value": 1200 },
+        { "action": "scroll", "value": 800 },
+        { "action": "wait", "value": 1200 }
+      ]
+    },
+    {
+      "id": "demo-compare",
+      "section": "demo",
+      "visualKind": "demo",
+      "partTotal": 6,
+      "slideTitle": "Straight comparisons",
+      "narration": "We even answer the question people actually search — how StockHuntr compares to tools like Fintool. Straight, honest, side-by-side, so you can decide for yourself.",
+      "narrationSpoken": "We even answer the question people actually search — how StockHuntr compares to tools like Fintool. Straight, honest, side-by-side, so you can decide for yourself.",
+      "demoSteps": [
+        { "action": "navigate", "target": "/compare/fintool-vs-stockhuntr", "note": "comparison page" },
+        { "action": "wait", "value": 1600 },
+        { "action": "scroll", "value": 700 },
+        { "action": "wait", "value": 1200 }
+      ]
+    },
+    {
+      "id": "arch",
+      "section": "architecture",
+      "visualKind": "slide",
+      "partTotal": 6,
+      "slideTitle": "Built on primary sources — and open to developers.",
+      "slideBullets": [
+        "SEC EDGAR filings, Yahoo Finance market data, Claude analysis.",
+        "A mixture-of-experts model behind the 30-day signal.",
+        "An MCP server and an open dataset — plug StockHuntr into your agents."
+      ],
+      "narration": "Under the hood, StockHuntr is built on primary sources — filings straight from SEC EDGAR, market data from Yahoo Finance, and analysis from Claude. The thirty-day signal comes from a mixture-of-experts model trained per sector and company size. And because this is as useful to machines as to people, there's an MCP server and an open dataset — so you can plug StockHuntr's filing intelligence straight into your own AI agents.",
+      "narrationSpoken": "Under the hood, StockHuntr is built on primary sources — filings straight from S-E-C EDGAR, market data from Yahoo Finance, and analysis from Claude. The thirty-day signal comes from a mixture-of-experts model trained per sector and company size. And because this is as useful to machines as to people, there's an M-C-P server and an open dataset — so you can plug StockHuntr's filing intelligence straight into your own A.I. agents."
+    },
+    {
+      "id": "close",
+      "section": "summary",
+      "visualKind": "slide",
+      "partTotal": 6,
+      "slideTitle": "Stop reading filings. Start asking them.",
+      "slideBullets": [
+        "Chat with any 10-K, 10-Q, or 8-K — with cited answers.",
+        "AI risk scoring, 30-day signals, sectors, and the Pulse.",
+        "Free, live now at stockhuntr.net."
+      ],
+      "narration": "So stop reading filings, and start asking them. Chat with any 10-K, 10-Q, or 8-K and get cited answers. See the risks, the signals, the sectors, and the daily pulse. It's free, it's live now at stockhuntr dot net — and it's ready for your first question.",
+      "narrationSpoken": "So stop reading filings, and start asking them. Chat with any ten-K, ten-Q, or eight-K and get cited answers. See the risks, the signals, the sectors, and the daily pulse. It's free, it's live now at stockhuntr dot net — and it's ready for your first question."
+    }
+  ]
+}

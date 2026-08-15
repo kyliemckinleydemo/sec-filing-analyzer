@@ -102,3 +102,7 @@ requirements-ml.txt
 dataset/*.csv
 dataset/*.jsonl
 .next_stale_*
+
+# Screencast / marketing-deck build output (large media; regenerate via scripts/screencast/)
+/screencast/
+/deck/

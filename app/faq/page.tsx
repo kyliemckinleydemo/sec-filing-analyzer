@@ -55,7 +55,32 @@ const faqs = [
         },
         {
           q: "How is this different from other tools?",
-          a: "Most tools either show raw filings with no analysis (like SEC EDGAR) or provide generic summaries. Our app goes further by: (1) extracting specific financial metrics and comparing them to analyst expectations, (2) analyzing management sentiment and tone changes vs prior filings, (3) identifying new risks, and (4) predicting 30-day market-relative alpha — how much the stock will outperform or underperform the S&P 500 following the filing."
+          a: "Most tools either show raw filings with no analysis (like SEC EDGAR) or sit behind a paid subscription (like AlphaSense or Fintool). StockHuntr gives you cited AI answers and risk scoring on primary-source SEC filings — free. It goes further than a generic summary by: (1) letting you chat with any filing and get answers cited straight from the document, (2) scoring each filing for risk and concern (0–10), (3) extracting financial metrics and comparing them to analyst expectations, (4) analyzing management sentiment and tone changes vs prior filings, and (5) generating a secondary 30-day market-relative alpha prediction."
+        }
+      ]
+    },
+    {
+      category: "Chat, Risk Scoring & Access",
+      questions: [
+        {
+          q: "Is StockHuntr free?",
+          a: "Yes. Chatting with filings, cited answers, AI risk and concern scoring, the real-time filing feed, sector insights, the Pulse report, and the 30-day alpha signals are all free. StockHuntr is a research and educational tool, not a paid data terminal. Nothing on the site is investment advice."
+        },
+        {
+          q: "How do I chat with a filing and get cited answers?",
+          a: "Use 'Ask the Market' (the /query page) or open any filing and ask a question in plain English — for example, 'What were the key risk factors?' or 'Did management change guidance?'. Answers are grounded in the actual SEC filing text and cite the source filing (accession number and EDGAR link), so you can verify every claim against the primary document rather than trusting an unsourced summary."
+        },
+        {
+          q: "What is the AI risk / concern score?",
+          a: "Every analyzed filing gets a concern score from 0 to 10 (LOW → CRITICAL) that summarizes how worrying the filing is. Claude analyzes the whole document — not just the 'Risk Factors' section — to flag material events such as data breaches, litigation, executive departures, regulatory investigations, restructuring charges, covenant breaches, and restatements, then rolls them into the score with a factor-by-factor breakdown. A higher concern level is also a bearish input to the 30-day prediction model."
+        },
+        {
+          q: "What are Sector Insights and the SEC Filing Pulse?",
+          a: "Sector Insights (/sectors) compare filing risk, average concern, and model accuracy across market sectors, computed from StockHuntr's corpus of analyzed filings. The SEC Filing Pulse (/pulse) is a recurring cross-market report that surfaces which sectors are flashing the most concern, the period's most significant filings, and the strongest 30-day signals. Both are original aggregate data refreshed on a schedule."
+        },
+        {
+          q: "Do you have an MCP server or an open dataset for developers?",
+          a: "Yes. StockHuntr runs a remote Model Context Protocol (MCP) server at /api/mcp so MCP-aware clients (Claude, ChatGPT, agents) can query filings, filing analysis, company snapshots, top prediction signals, and the model's track record directly. We also publish an open, CC-BY-4.0 dataset of AI-analyzed filings — one row per filing with concern/sentiment features and, where the 30-day window has elapsed, the realized market-relative outcome — for research and model evaluation."
         }
       ]
     },

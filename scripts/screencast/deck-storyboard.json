@@ -1,0 +1,176 @@
+{
+  "title": "StockHuntr — Marketing Deck",
+  "output": "stockhuntr-deck.pdf",
+  "brand": { "name": "StockHuntr", "tagline": "chat with SEC filings", "footer": "StockHuntr — chat with SEC filings, cited" },
+  "parts": {
+    "intro": [1, "The Problem"],
+    "why": [2, "The Solution"],
+    "how": [3, "How It Works"],
+    "features": [4, "What You Get"],
+    "dev": [5, "For Developers"],
+    "edge": [6, "Why StockHuntr"],
+    "status": [7, "Where We Are"],
+    "summary": [8, "Get Started"]
+  },
+  "segments": [
+    {
+      "id": "cover",
+      "section": "intro",
+      "visualKind": "title",
+      "slideTitle": "Chat with SEC filings — Get cited answers.",
+      "tagline": "AI SEC-filing intelligence — free",
+      "intro": "Ask any 10-K, 10-Q, or 8-K a question and get an answer grounded in the actual filing — plus AI risk scoring and 30-day signals. Live at stockhuntr.net."
+    },
+    {
+      "id": "problem",
+      "section": "intro",
+      "visualKind": "slide",
+      "partTotal": 8,
+      "slideTitle": "Public filings hold the truth. Reading them is the problem.",
+      "slideBullets": [
+        "A single 10-K can run past 300 pages of dense legal and financial text.",
+        "Millions of 10-K, 10-Q, and 8-K filings hit SEC EDGAR every year.",
+        "Professionals pay thousands a year for AlphaSense, Bloomberg, or Fintool.",
+        "Everyone else gets raw EDGAR — the documents, with none of the answers."
+      ]
+    },
+    {
+      "id": "solution",
+      "section": "why",
+      "visualKind": "title",
+      "slideTitle": "StockHuntr reads the filing — so you can just ask.",
+      "tagline": "the answer layer for SEC filings",
+      "intro": "Type a question in plain English. Get a direct, cited answer, drawn straight from the document — plus AI risk scores and a 30-day research signal. Free."
+    },
+    {
+      "id": "how",
+      "section": "how",
+      "visualKind": "slide",
+      "partTotal": 8,
+      "slideTitle": "From raw filing to cited answer — automatically.",
+      "slideBullets": [
+        "Ingest — new 10-K, 10-Q, and 8-K filings pulled from SEC EDGAR, 3x daily.",
+        "Analyze — Claude extracts risks, sentiment, financials, and a concern score.",
+        "Enrich — Yahoo Finance market data and a 30-day alpha signal are attached.",
+        "Ask — you (or an AI agent) query the filing and get grounded, cited answers."
+      ]
+    },
+    {
+      "id": "feat-chat",
+      "section": "features",
+      "visualKind": "slide",
+      "partTotal": 8,
+      "slideTitle": "Ask a filing anything — and see the receipts.",
+      "slideBullets": [
+        "Plain-English questions, answered from the filing's own text.",
+        "Every answer is grounded and cited — designed against hallucination.",
+        "Powered by Claude, Anthropic's frontier AI model.",
+        "Grounded 'key questions' Q&A on every analyzed filing and company."
+      ]
+    },
+    {
+      "id": "feat-risk",
+      "section": "features",
+      "visualKind": "slide",
+      "partTotal": 8,
+      "slideTitle": "AI risk and concern scoring on every filing.",
+      "slideBullets": [
+        "Risk factors compared across filings — new, removed, and escalating risks.",
+        "Management sentiment read from the MD&A on a clear scale.",
+        "A single concern score tells you which filings to read first.",
+        "8-K events auto-classified so material news never slips past you."
+      ]
+    },
+    {
+      "id": "feat-signal",
+      "section": "features",
+      "visualKind": "slide",
+      "partTotal": 8,
+      "slideTitle": "A 30-day research signal — honest, not hype.",
+      "slideBullets": [
+        "A model estimates each filing's 30-day return versus the S&P 500 (alpha).",
+        "Mixture-of-experts: global + per-sector + per-cap-tier models.",
+        "Trained on thousands of historical filings; walk-forward backtested.",
+        "A paper-trading portfolio tracks live performance — and it is never advice."
+      ]
+    },
+    {
+      "id": "feat-macro",
+      "section": "features",
+      "visualKind": "slide",
+      "partTotal": 8,
+      "slideTitle": "Zoom out: sectors, a daily pulse, and comparisons.",
+      "slideBullets": [
+        "Sector pages aggregate concern and filing activity across 11 sectors.",
+        "The SEC Filing Pulse: a written read on what filed today and why it matters.",
+        "Watchlist email alerts on high-concern filings and analyst moves.",
+        "Straight side-by-side comparisons vs the tools people actually search."
+      ]
+    },
+    {
+      "id": "dev",
+      "section": "dev",
+      "visualKind": "slide",
+      "partTotal": 8,
+      "slideTitle": "Built for humans — and for AI agents.",
+      "slideBullets": [
+        "MCP server — plug StockHuntr's filing intelligence into any AI agent.",
+        "Open dataset — analyzed filings and signals, published for research.",
+        "Server-rendered and structured (JSON-LD) so LLMs can cite us directly.",
+        "Primary sources throughout: SEC EDGAR, Yahoo Finance, Claude."
+      ]
+    },
+    {
+      "id": "edge",
+      "section": "edge",
+      "visualKind": "slide",
+      "partTotal": 8,
+      "slideTitle": "Cited answers, agent-ready, free — that's the wedge.",
+      "slideBullets": [
+        "vs raw EDGAR — StockHuntr gives answers and scores, not just documents.",
+        "vs AlphaSense / Fintool — comparable filing Q&A, at no cost to start.",
+        "vs generic chatbots — grounded in primary filings, with citations.",
+        "Uniquely: an MCP server + open dataset make us the agent-native option."
+      ]
+    },
+    {
+      "id": "status",
+      "section": "status",
+      "visualKind": "slide",
+      "partTotal": 8,
+      "slideTitle": "Live today at stockhuntr.net.",
+      "slideBullets": [
+        "800+ US public companies tracked across all 11 sectors.",
+        "Fully automated daily pipeline: ingest, analyze, price, alert.",
+        "10 scheduled jobs with a self-healing supervisor and health checks.",
+        "352 automated tests (244 unit/integration + 108 end-to-end)."
+      ]
+    },
+    {
+      "id": "roadmap",
+      "section": "status",
+      "visualKind": "slide",
+      "partTotal": 8,
+      "slideTitle": "Where we're headed.",
+      "slideBullets": [
+        "Deeper conversational research across a company's full filing history.",
+        "More form types and richer XBRL-driven financial comparisons.",
+        "A public API and expanded MCP tools for agent developers.",
+        "Continued model calibration, validated live by paper trading."
+      ]
+    },
+    {
+      "id": "close",
+      "section": "summary",
+      "visualKind": "slide",
+      "partTotal": 8,
+      "slideTitle": "Stop reading filings. Start asking them.",
+      "slideBullets": [
+        "Chat with any 10-K, 10-Q, or 8-K — with cited answers.",
+        "AI risk scoring, a 30-day signal, sectors, and the daily Pulse.",
+        "An MCP server and open dataset for developers and AI agents.",
+        "Free, live now at stockhuntr.net."
+      ]
+    }
+  ]
+}
