@@ -9,7 +9,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const LINKS = [
   { href: '/latest-filings', label: 'Latest Filings' },
@@ -28,6 +28,16 @@ function isActive(pathname: string, href: string): boolean {
 export default function Navigation() {
   const pathname = usePathname() || '/';
   const [open, setOpen] = useState(false);
+
+  // Close the mobile menu on Escape (WCAG 2.1.2 — no keyboard trap / dismissible).
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#020617]/85 backdrop-blur print:hidden">

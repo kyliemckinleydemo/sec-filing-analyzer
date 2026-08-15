@@ -155,7 +155,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: jsonLdString }}
         />
         <Navigation />
-        {children}
+        <main id="main-content">{children}</main>
         <Footer />
       </body>
     </html>

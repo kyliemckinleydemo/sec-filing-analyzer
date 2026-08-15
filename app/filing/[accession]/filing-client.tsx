@@ -221,7 +221,14 @@ function hasFinancialData(filing: { filingType: string }, financialMetrics?: any
   return false;
 }
 
-export default function FilingPage() {
+interface InitialFiling {
+  ticker: string;
+  companyName: string;
+  filingType: string;
+  filingDate: string;
+}
+
+export default function FilingPage({ initialFiling }: { initialFiling?: InitialFiling } = {}) {
   const params = useParams();
   const router = useRouter();
   const accession = params.accession as string;
@@ -491,8 +498,29 @@ export default function FilingPage() {
 
   // Show signup CTA for unauthenticated users
   if (!checkingAuth && isAuthenticated === false && !loading) {
+    // Filing identity for the header: prefer loaded data, else fall back to the
+    // URL query params the page was linked with (ticker/companyName/filingType/filingDate).
+    const gateParams =
+      typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
+    const gateCompanyName = data?.filing?.company?.name || initialFiling?.companyName || gateParams.get('companyName') || '';
+    const gateTicker = data?.filing?.company?.ticker || initialFiling?.ticker || gateParams.get('ticker') || '';
+    const gateFilingType = data?.filing?.filingType || initialFiling?.filingType || gateParams.get('filingType') || 'SEC Filing';
+    const gateFilingDateRaw = data?.filing?.filingDate || initialFiling?.filingDate || gateParams.get('filingDate') || '';
+    const gateFilingDate = gateFilingDateRaw
+      ? new Date(gateFilingDateRaw).toLocaleDateString()
+      : '';
+    const gateHeading =
+      [gateCompanyName, gateTicker ? `(${gateTicker})` : ''].filter(Boolean).join(' ') || 'SEC Filing';
+
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 py-8">
+        <div className="w-full max-w-2xl mx-4 mb-6 text-center">
+          <h1 className="text-4xl font-bold text-slate-900">{gateHeading}</h1>
+          <p className="text-lg text-slate-600 mt-2">
+            {gateFilingType}
+            {gateFilingDate ? ` Filed on ${gateFilingDate}` : ''}
+          </p>
+        </div>
         <Card className="w-full max-w-2xl mx-4">
           <CardHeader>
             <div className="text-center space-y-4">

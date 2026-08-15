@@ -76,6 +76,7 @@ export default function WatchlistPage() {
   const [sectorWatchlist, setSectorWatchlist] = useState<SectorWatch[]>([]);
   const [validSectors, setValidSectors] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [needsAuth, setNeedsAuth] = useState(false);
   const [newTicker, setNewTicker] = useState('');
   const [newSector, setNewSector] = useState('');
   const [adding, setAdding] = useState(false);
@@ -102,10 +103,11 @@ export default function WatchlistPage() {
       const response = await fetch('/api/watchlist');
 
       if (response.status === 401) {
-        router.push('/');
+        setNeedsAuth(true);
         return;
       }
 
+      setNeedsAuth(false);
       const data = await response.json();
       setWatchlist(data.watchlist || []);
       setSectorWatchlist(data.sectorWatchlist || []);
@@ -208,6 +210,58 @@ export default function WatchlistPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  // Show sign-in gate for unauthenticated users
+  if (needsAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <Card className="w-full max-w-2xl mx-4">
+          <CardHeader>
+            <div className="text-center space-y-4">
+              <div className="text-6xl">🔒</div>
+              <CardTitle className="text-3xl">Watchlists Require a Free Account</CardTitle>
+              <CardDescription className="text-lg text-slate-600">
+                Sign in to track your favorite stocks and sectors for new filings and predictions
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 space-y-4">
+              <div className="text-center">
+                <h3 className="font-semibold text-lg mb-3 text-slate-900">What you get with a free account:</h3>
+                <ul className="text-left space-y-2 text-sm text-slate-700">
+                  <li>✅ <strong className="text-slate-900">Custom watchlists</strong> - Track your portfolio companies</li>
+                  <li>✅ <strong className="text-slate-900">Sector tracking</strong> - Watch entire sectors at once</li>
+                  <li>✅ <strong className="text-slate-900">Real-time alerts</strong> - Get notified when watched companies file</li>
+                  <li>✅ <strong className="text-slate-900">ML-powered predictions</strong> - 30-day alpha forecasts</li>
+                </ul>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              <Button
+                onClick={() => {
+                  window.location.href = '/profile';
+                }}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg py-6"
+              >
+                Sign Up Free - No Credit Card Required
+              </Button>
+              <Button
+                onClick={() => router.push('/latest-filings')}
+                variant="outline"
+                className="w-full text-slate-700"
+              >
+                ← Back to Filings
+              </Button>
+            </div>
+            <p className="text-center text-xs text-slate-500">
+              Already have an account? <a href="/?signin=true" className="text-blue-600 hover:underline">Sign in</a>
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }

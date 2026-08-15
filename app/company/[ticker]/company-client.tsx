@@ -521,7 +521,7 @@ export default function CompanySnapshotPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="h-80">
+                <div className="h-80" role="img" aria-label={`${company.ticker} 30-day price and prediction chart`}>
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={chartData}

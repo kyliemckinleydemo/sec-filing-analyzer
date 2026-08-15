@@ -128,9 +128,35 @@ export default function PaperTradingPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-            Error: {error}
+        <div className="max-w-7xl mx-auto space-y-8">
+          <div className="bg-white shadow rounded-lg p-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Paper Trading</h1>
+            <p className="text-gray-600">Performance Tracker</p>
+          </div>
+
+          <div className="bg-white shadow rounded-lg p-8 text-center">
+            <div className="text-5xl mb-4">📊</div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">
+              Portfolio Unavailable
+            </h2>
+            <p className="text-gray-600 max-w-md mx-auto mb-6">
+              The paper-trading portfolio isn't available right now. Check back
+              soon, or explore the latest SEC filings in the meantime.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <a
+                href="/latest-filings"
+                className="inline-flex items-center justify-center rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 transition-colors"
+              >
+                View Latest Filings
+              </a>
+              <a
+                href="/"
+                className="inline-flex items-center justify-center rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-5 py-2.5 transition-colors"
+              >
+                Back to Home
+              </a>
+            </div>
           </div>
         </div>
       </div>

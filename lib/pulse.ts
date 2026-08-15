@@ -31,6 +31,7 @@ export interface PulseSignal {
   ticker: string;
   companyName: string;
   filingType: string;
+  filingDate: string;
   accessionNumber: string;
   predicted30dAlpha: number;
   confidence: number;
@@ -138,22 +139,28 @@ export async function getPulse(): Promise<Pulse | null> {
       netAssessment: netMap.get(f.accessionNumber) ?? null,
     }));
 
-    // Top signals: highest |alpha| * confidence.
-    const topSignals: PulseSignal[] = rows
+    // Top signals: highest |alpha| * confidence, de-duped to one row per ticker.
+    const scoreOf = (s: PulseSignal) => Math.abs(s.predicted30dAlpha) * s.confidence;
+    const allSignals: PulseSignal[] = rows
       .filter((r) => r.predicted30dAlpha != null && r.predictionConfidence != null)
       .map((r) => ({
         ticker: r.company.ticker,
         companyName: r.company.name,
         filingType: r.filingType,
+        filingDate: r.filingDate.toISOString(),
         accessionNumber: r.accessionNumber,
         predicted30dAlpha: r.predicted30dAlpha as number,
         confidence: r.predictionConfidence as number,
         direction: (r.predicted30dAlpha as number) >= 0 ? ('bullish' as const) : ('bearish' as const),
-      }))
-      .sort(
-        (a, b) =>
-          Math.abs(b.predicted30dAlpha) * b.confidence - Math.abs(a.predicted30dAlpha) * a.confidence
-      )
+      }));
+    // Keep only the single highest-scoring filing per ticker so rows are distinct.
+    const bestByTicker = new Map<string, PulseSignal>();
+    for (const s of allSignals) {
+      const existing = bestByTicker.get(s.ticker);
+      if (!existing || scoreOf(s) > scoreOf(existing)) bestByTicker.set(s.ticker, s);
+    }
+    const topSignals: PulseSignal[] = [...bestByTicker.values()]
+      .sort((a, b) => scoreOf(b) - scoreOf(a))
       .slice(0, 8);
 
     const narrativeInput = {

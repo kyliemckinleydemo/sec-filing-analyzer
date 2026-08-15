@@ -219,7 +219,7 @@ export default function ProfilePage() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary text-lg">✓</span>
-                    <span>7-day stock performance predictions with ML models</span>
+                    <span>30-day alpha (market-relative) predictions</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary text-lg">✓</span>

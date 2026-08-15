@@ -244,6 +244,12 @@ export default function LatestFilingsClient({ initialData }: { initialData: Late
     return days;
   };
 
+  const formatDaysSinceFiling = (days: number) => {
+    if (days <= 0) return 'Today';
+    if (days === 1) return '1 day ago';
+    return `${days} days ago`;
+  };
+
   const getFilingTypeBadge = (filingType: string) => {
     const colors: Record<string, string> = {
       '10-K': 'bg-blue-100 text-blue-700 border-blue-300',
@@ -415,7 +421,7 @@ export default function LatestFilingsClient({ initialData }: { initialData: Late
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
                         <span>Filed: {new Date(filing.filingDate).toLocaleDateString()}</span>
                         <span>•</span>
-                        <span>{getDaysSinceFiling(filing.filingDate)} days ago</span>
+                        <span>{formatDaysSinceFiling(getDaysSinceFiling(filing.filingDate))}</span>
                         {filing.reportDate && (
                           <>
                             <span>•</span>

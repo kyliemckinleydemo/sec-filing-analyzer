@@ -134,13 +134,19 @@ export default async function Page() {
 
             {pulse.topSignals.length > 0 && (
               <section className="mb-10">
-                <h2 className="text-2xl font-bold text-white mb-4">Strongest 30-day signals</h2>
+                <h2 className="text-2xl font-bold text-white mb-4">
+                  Strongest 30-day signals
+                  {Math.abs(pulse.topSignals[0].predicted30dAlpha) < 0.25 && (
+                    <span className="ml-2 text-sm font-normal text-gray-500">· low-conviction window</span>
+                  )}
+                </h2>
                 <ul className="space-y-2">
                   {pulse.topSignals.map((s) => (
                     <li key={s.accessionNumber} className="text-gray-300">
                       <Link href={`/filing/${s.accessionNumber}`} className="text-teal-400 hover:underline font-medium">
                         {s.ticker} {s.filingType}
                       </Link>{' '}
+                      <span className="text-gray-500">— {fmtDate(s.filingDate)}</span>{' '}
                       <span className={s.direction === 'bullish' ? 'text-green-400' : 'text-red-400'}>
                         {s.direction} {s.predicted30dAlpha >= 0 ? '+' : ''}{s.predicted30dAlpha.toFixed(1)}% alpha
                       </span>

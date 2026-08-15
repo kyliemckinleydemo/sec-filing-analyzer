@@ -19,6 +19,28 @@ function clip(s: string, n = 320): string {
   return t.length > n ? t.slice(0, n).replace(/\s+\S*$/, '') + '…' : t;
 }
 
+/**
+ * Strips markdown markers from a summary/answer so it renders as clean prose
+ * (mirrors the approach in app/filing/[accession]/page.tsx). Drops leading
+ * heading lines (`# ...`), inline emphasis (`**`/`__`/backticks), and bullet
+ * markers, then collapses whitespace. Safe to run before clip().
+ */
+function stripMd(s: string): string {
+  return s
+    .split('\n')
+    .filter((line) => !/^\s*#{1,6}\s/.test(line))
+    .join(' ')
+    .replace(/[*_#`]+/g, '')
+    .replace(/[•]\s+/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** Strip markdown then clip. Use for any answer sourced from AI-written prose. */
+function clipMd(s: string, n = 320): string {
+  return clip(stripMd(s), n);
+}
+
 /** Loose shape of the parsed analysisData JSON (see lib/claude-client FilingAnalysis). */
 interface ParsedAnalysis {
   summary?: string;
@@ -61,14 +83,14 @@ export function buildFilingQA(f: FilingQAInput): QAItem[] {
   if (overview) {
     items.push({
       question: `What does ${who}'s ${f.filingType} filed ${dateStr} say?`,
-      answer: clip(overview, 400),
+      answer: clipMd(overview, 400),
     });
   }
 
   // 2. Overall assessment (bullish/bearish/neutral)
   if (a?.concernAssessment?.netAssessment) {
     const net = a.concernAssessment.netAssessment;
-    const reasoning = a.concernAssessment.reasoning ? ` ${clip(a.concernAssessment.reasoning, 260)}` : '';
+    const reasoning = a.concernAssessment.reasoning ? ` ${clipMd(a.concernAssessment.reasoning, 260)}` : '';
     items.push({
       question: `Is ${f.ticker}'s ${f.filingType} bullish or bearish?`,
       answer: clip(`Our analysis rates this filing ${net}.${reasoning}`, 420),

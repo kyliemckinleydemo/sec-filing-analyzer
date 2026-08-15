@@ -275,7 +275,7 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
     return (
       <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,#0f172a_0%,#020617_50%)] text-foreground">
 
-        <main className="container mx-auto px-6 py-8">
+        <div className="container mx-auto px-6 py-8">
           {/* Welcome Section */}
           <div className="mb-8">
             <h1 className="text-4xl font-bold mb-2">
@@ -725,7 +725,7 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
               )}
             </CardContent>
           </Card>
-        </main>
+        </div>
       </div>
     );
   }
@@ -734,7 +734,7 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
   return (
     <div className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,#0f172a_0%,#020617_50%)] text-foreground">
 
-      <main className="container mx-auto px-6 py-12 pb-16">
+      <div className="container mx-auto px-6 py-12 pb-16">
         {/* Hero Section */}
         <section className="py-12 grid md:grid-cols-[1.15fr_1fr] gap-10 items-center">
           <div>
@@ -1255,7 +1255,7 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
             </div>
           </div>
         </section>
-      </main>
+      </div>
       {/* Site-wide footer (app/components/Footer) is rendered by the root layout. */}
     </div>
   );

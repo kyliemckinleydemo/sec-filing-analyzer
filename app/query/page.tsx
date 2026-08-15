@@ -402,7 +402,7 @@ function QueryPageContent() {
                 </div>
                 <Button
                   size="lg"
-                  className="h-14 px-8 text-lg bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                  className="h-14 px-8 text-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                   onClick={() => handleQuery()}
                   disabled={!query.trim() || loading || isStreaming}
                 >

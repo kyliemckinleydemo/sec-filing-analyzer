@@ -18,7 +18,7 @@ export default function Footer() {
       <div className="container mx-auto px-6 py-12 max-w-5xl">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
           <div>
-            <h3 className="text-xs uppercase tracking-wider text-gray-500 mb-3">Explore</h3>
+            <h3 className="text-xs uppercase tracking-wider text-gray-400 mb-3">Explore</h3>
             <ul className="space-y-2">
               <li><Link href="/latest-filings" className="hover:text-white">Latest Filings</Link></li>
               <li><Link href="/pulse" className="hover:text-white">SEC Filing Pulse</Link></li>
@@ -29,7 +29,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-xs uppercase tracking-wider text-gray-500 mb-3">Sectors</h3>
+            <h3 className="text-xs uppercase tracking-wider text-gray-400 mb-3">Sectors</h3>
             <ul className="space-y-2">
               {topSectors.map((s) => (
                 <li key={s.slug}>
@@ -41,7 +41,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-xs uppercase tracking-wider text-gray-500 mb-3">Learn</h3>
+            <h3 className="text-xs uppercase tracking-wider text-gray-400 mb-3">Learn</h3>
             <ul className="space-y-2">
               {topExplainers.map((e) => (
                 <li key={e.slug}>
@@ -53,7 +53,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-xs uppercase tracking-wider text-gray-500 mb-3">StockHuntr</h3>
+            <h3 className="text-xs uppercase tracking-wider text-gray-400 mb-3">StockHuntr</h3>
             <ul className="space-y-2">
               <li><Link href="/" className="hover:text-white">Home</Link></li>
               <li><Link href="/faq" className="hover:text-white">FAQ & Methodology</Link></li>
@@ -63,7 +63,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-white/5 text-xs text-gray-600">
+        <div className="mt-10 pt-6 border-t border-white/5 text-xs text-gray-400">
           <p className="mb-1">
             StockHuntr analyzes SEC filings with AI to generate 30-day stock predictions. Data from SEC EDGAR,
             Yahoo Finance, and FRED.

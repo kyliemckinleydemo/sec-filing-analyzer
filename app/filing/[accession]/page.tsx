@@ -137,7 +137,22 @@ async function getFilingQAData(accessionParam: string) {
 }
 
 export default async function Page({ params }: PageProps) {
-  const qaItems = await getFilingQAData(params.accession);
+  const [qaItems, filing] = await Promise.all([
+    getFilingQAData(params.accession),
+    getFiling(params.accession),
+  ]);
+
+  // Server-known filing identity, passed to the client so the (client-rendered)
+  // signup gate can always show WHICH filing you're on — even on a direct/SEO landing
+  // where the URL carries no ticker/company query params.
+  const initialFiling = filing
+    ? {
+        ticker: filing.company?.ticker ?? '',
+        companyName: filing.company?.name ?? '',
+        filingType: filing.filingType ?? '',
+        filingDate: filing.filingDate ? filing.filingDate.toISOString() : '',
+      }
+    : undefined;
 
   return (
     <>
@@ -150,7 +165,7 @@ export default async function Page({ params }: PageProps) {
           />
         </div>
       )}
-      <FilingClient />
+      <FilingClient initialFiling={initialFiling} />
     </>
   );
 }
