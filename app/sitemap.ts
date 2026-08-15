@@ -25,6 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/backtest`, changeFrequency: 'weekly', priority: 0.5 },
     { url: `${BASE_URL}/learn`, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/sectors`, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${BASE_URL}/pulse`, changeFrequency: 'daily', priority: 0.8 },
   ];
 
   // Curated explainer library — evergreen GEO content.
