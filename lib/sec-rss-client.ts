@@ -78,9 +78,8 @@ export class SECRSSClient {
     'CTRA': '0000858470', 'HOLX': '0000859737', 'IPG': '0000051644', 'SEE': '0001012100',
     'HBI': '0001359841', 'THS': '0001320695', 'DENN': '0000852772', 'SCVL': '0000895447',
     'GES': '0000912463', 'JHG': '0001274173', 'ALE': '0000066756', 'BK': '0001390777',
-    'CMA': '0000028412', 'TPX': '0001206264', 'SNV': '0000018349', 'KIRK': '0001056285',
-    'CADE': '0001299939', 'IBTX': '0001564618', 'SJW': '0000766829', 'BLD': '0001633931',
-    'FI': '0000798354', 'PSTG': '0001474432', 'SATS': '0001415404', 'DAY': '0001725057',
+    'CMA': '0000028412', 'SNV': '0000018349', 'KIRK': '0001056285', 'SJW': '0000766829',
+    'FI': '0000798354', 'SATS': '0001415404', 'DAY': '0001725057',
   };
 
   /**
@@ -379,6 +378,16 @@ export class SECRSSClient {
    */
   private getTrackedTicker(cik: string): string | null {
     return this.cikToOurTicker.get(cik.padStart(10, '0')) || null;
+  }
+
+  /** Ensure the CIK mapping is loaded (for callers that need the resolved data). */
+  public async ensureCIKMappingLoaded(): Promise<void> {
+    if (this.cikToTickerMap.size === 0) await this.loadCIKMapping();
+  }
+
+  /** CIK -> our-ticker map of all tracked companies (call ensureCIKMappingLoaded first). */
+  public get trackedCIKMap(): ReadonlyMap<string, string> {
+    return this.cikToOurTicker;
   }
 
   /**
