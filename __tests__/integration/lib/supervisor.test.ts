@@ -41,6 +41,12 @@ describe('runSupervisorChecks()', () => {
     fetchSpy = vi.spyOn(global, 'fetch').mockResolvedValue(
       new Response(JSON.stringify({ id: 'email-001' }), { status: 200 })
     );
+    // Data-health checks (analysis coverage, prediction coverage, stock-price
+    // freshness) call filing.count / company.count. Default them to 0 so the healthy
+    // path has no spurious alerts and results are deterministic regardless of any
+    // mock state bled from other test files (clearAllMocks keeps implementations).
+    prismaMock.filing.count.mockResolvedValue(0);
+    prismaMock.company.count.mockResolvedValue(0);
     // Default: no stuck jobs, recent successful runs, no high failure rate
     prismaMock.cronJobRun.findMany.mockResolvedValue([]);
     prismaMock.cronJobRun.updateMany.mockResolvedValue({ count: 0 });

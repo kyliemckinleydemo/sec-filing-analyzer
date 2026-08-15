@@ -42,6 +42,7 @@ export interface SupervisorReport {
   analysisCoverage30d?: number;
   lowAnalysisCoverage?: boolean;
   analyzedWithoutPrediction30d?: number;
+  stalePriceShare?: number;
 }
 
 async function sendEmailAlert(subject: string, body: string): Promise<boolean> {
@@ -345,6 +346,30 @@ export async function runSupervisorChecks(autoTriggerMissing: boolean = false): 
       }
     } catch (coverageError: any) {
       console.error('[Supervisor] Coverage check failed:', coverageError.message);
+    }
+
+    // 6. Stock-price freshness — data-level check (catches a stalled or under-scheduled
+    // update-stock-prices-batch even if the job itself doesn't report a failure).
+    try {
+      const totalCompanies = await prisma.company.count();
+      const stalePrices = await prisma.company.count({
+        where: {
+          OR: [
+            { yahooLastUpdated: null },
+            { yahooLastUpdated: { lt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) } },
+          ],
+        },
+      });
+      const staleShare = totalCompanies > 0 ? stalePrices / totalCompanies : 0;
+      report.stalePriceShare = Math.round(staleShare * 1000) / 1000;
+      if (totalCompanies > 0 && staleShare > 0.4) {
+        report.alerts.push(
+          `⚠️ ${stalePrices}/${totalCompanies} companies (${Math.round(staleShare * 100)}%) have stale stock prices (>2 days old). Check update-stock-prices-batch.`
+        );
+        console.log('[Supervisor] ALERT: Stale stock prices');
+      }
+    } catch (priceError: any) {
+      console.error('[Supervisor] Stock-price freshness check failed:', priceError.message);
     }
 
     // 5. Send email if there are critical alerts or jobs were triggered

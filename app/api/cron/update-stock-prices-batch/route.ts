@@ -64,18 +64,28 @@ export async function GET(request: Request) {
     );
   }
 
+  let jobRunId: string | null = null;
   try {
     console.log('[Cron] Starting batch stock price update...');
 
-    // Determine which batch to process based on day of year
-    // Runs once/day, cycling through 6 batches over 6 days
-    const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 0);
-    const dayOfYear = Math.floor((now.getTime() - startOfYear.getTime()) / 86400000);
-    const totalBatches = 6;
-    const batchNumber = dayOfYear % totalBatches; // 0-5, rotates daily
+    const jobRun = await prisma.cronJobRun.create({
+      data: { jobName: 'update-stock-prices-batch', status: 'running' },
+    });
+    jobRunId = jobRun.id;
 
-    console.log(`[Cron] Processing batch ${batchNumber + 1}/${totalBatches} (day ${dayOfYear})`);
+    // Batch selection advances every 4 hours so a 6x/day (every-4h) schedule covers all
+    // 6 batches within a single day — every company refreshes daily, not every 6 days.
+    // An explicit ?batch=N (0-5) overrides the slot (for manual/targeted runs).
+    const now = new Date();
+    const totalBatches = 6;
+    const fourHourSlot = Math.floor(now.getTime() / (4 * 60 * 60 * 1000));
+    const batchOverride = new URL(request.url).searchParams.get('batch');
+    const batchNumber =
+      batchOverride != null && /^[0-5]$/.test(batchOverride)
+        ? parseInt(batchOverride, 10)
+        : fourHourSlot % totalBatches; // 0-5, advances each 4h run
+
+    console.log(`[Cron] Processing batch ${batchNumber + 1}/${totalBatches} (slot ${fourHourSlot})`);
 
     // Get all companies, ordered by ID for consistent batching
     const allCompanies = await prisma.company.findMany({
@@ -137,6 +147,11 @@ export async function GET(request: Request) {
 
     console.log(`[Cron] Batch ${batchNumber + 1} complete: ${updated} updated, ${errors} errors`);
 
+    await prisma.cronJobRun.update({
+      where: { id: jobRunId },
+      data: { status: 'success', completedAt: new Date(), companiesProcessed: updated },
+    });
+
     return NextResponse.json({
       success: true,
       batch: batchNumber + 1,
@@ -148,6 +163,14 @@ export async function GET(request: Request) {
 
   } catch (error: any) {
     console.error('[Cron] Error in batch stock price update:', error);
+    if (jobRunId) {
+      await prisma.cronJobRun
+        .update({
+          where: { id: jobRunId },
+          data: { status: 'failed', completedAt: new Date(), errorMessage: String(error?.message || error) },
+        })
+        .catch(() => {});
+    }
     return NextResponse.json(
       { error: error.message },
       { status: 500 }

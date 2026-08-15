@@ -47,8 +47,9 @@ function makeRequest(headers: Record<string, string> = {}) {
   return new NextRequest(CRON_URL, { headers });
 }
 
-function makeAuthRequest() {
-  return makeRequest({ authorization: 'Bearer test-cron-secret' });
+function makeAuthRequest(batch?: number) {
+  const url = batch != null ? `${CRON_URL}?batch=${batch}` : CRON_URL;
+  return new NextRequest(url, { headers: { authorization: 'Bearer test-cron-secret' } });
 }
 
 describe('GET /api/cron/update-stock-prices-batch', () => {
@@ -56,6 +57,9 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
     vi.clearAllMocks();
     prismaMock.company.findMany.mockResolvedValue([]);
     prismaMock.company.update.mockResolvedValue({});
+    // The route now records its run in cronJobRun for monitorability.
+    prismaMock.cronJobRun.create.mockResolvedValue({ id: 'run-sp-1' });
+    prismaMock.cronJobRun.update.mockResolvedValue({});
     mockQuote.mockResolvedValue(MOCK_YAHOO_QUOTE);
     mockQuoteSummary.mockResolvedValue(MOCK_YAHOO_QUOTE_SUMMARY_FINANCIAL_DATA);
   });
@@ -99,15 +103,16 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
     }));
     prismaMock.company.findMany.mockResolvedValue(companies);
 
+    // Batch advances every 4 hours; two runs in different 4h slots pick different batches.
     vi.setSystemTime(new Date('2024-12-01T05:00:00Z'));
     const res1 = await GET(makeAuthRequest());
     const body1 = await res1.json();
 
-    vi.setSystemTime(new Date('2024-12-02T05:00:00Z'));
+    vi.setSystemTime(new Date('2024-12-01T13:00:00Z'));
     const res2 = await GET(makeAuthRequest());
     const body2 = await res2.json();
 
-    // Different days should pick different batches
+    // Different time slots should pick different batches
     expect(body1.batch).not.toBe(body2.batch);
   });
 
@@ -132,12 +137,9 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
   // --- Updates ---
 
   it('updates price, market cap, volume on company records', async () => {
-    // Day 336, 336 % 6 = 0 → batch 0 (first company included)
-    vi.setSystemTime(new Date('2024-12-01T05:00:00Z'));
-
     prismaMock.company.findMany.mockResolvedValue([{ id: 'c1', ticker: 'AAPL' }]);
 
-    await GET(makeAuthRequest());
+    await GET(makeAuthRequest(0)); // force batch 0 so the single company is included
 
     expect(prismaMock.company.update).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -196,13 +198,10 @@ describe('GET /api/cron/update-stock-prices-batch', () => {
   });
 
   it('handles 404 delisted tickers gracefully', async () => {
-    // Day 336, 336 % 6 = 0 → batch 0 (first company included)
-    vi.setSystemTime(new Date('2024-12-01T05:00:00Z'));
-
     prismaMock.company.findMany.mockResolvedValue([{ id: 'c1', ticker: 'DEAD' }]);
     mockQuote.mockRejectedValue(new Error('Not Found'));
 
-    const res = await GET(makeAuthRequest());
+    const res = await GET(makeAuthRequest(0)); // force batch 0 so the single company is included
     const body = await res.json();
 
     expect(body.success).toBe(true);
