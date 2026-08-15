@@ -1257,23 +1257,7 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
           </div>
         </section>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-[rgba(31,41,55,0.9)] py-6 mt-8 text-muted-foreground text-xs">
-        <div className="container mx-auto px-6 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <strong>StockHuntr</strong> · AI-powered SEC filing intelligence.<br />
-            <span>SEC data sourced from EDGAR. Not investment advice.</span>
-          </div>
-          <nav className="flex flex-wrap gap-4">
-            <button onClick={() => router.push('/')}>Home</button>
-            <button onClick={() => router.push('/latest-filings')}>Latest Filings</button>
-            <button onClick={() => router.push('/faq')}>FAQ</button>
-            <button onClick={() => router.push('/faq')}>Terms</button>
-            <button onClick={() => router.push('/faq')}>Privacy</button>
-          </nav>
-        </div>
-      </footer>
+      {/* Site-wide footer (app/components/Footer) is rendered by the root layout. */}
     </div>
   );
 }

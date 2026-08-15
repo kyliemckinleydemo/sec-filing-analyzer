@@ -1,73 +1,101 @@
 /**
  * @module app/components/Navigation
- * @description Fixed-position navigation component rendering primary site navigation with five main routes using Next.js Link components
- *
- * PURPOSE:
- * - Render fixed top-right navigation bar with Home, Latest Filings, Watchlist, Query, and FAQ links
- * - Apply glassmorphism styling with white/80 opacity background and backdrop blur for modern visual effect
- * - Hide navigation from printed pages using print:hidden utility class
- * - Provide hover state transitions with color change from gray-700 to blue-600 on link interaction
- *
- * DEPENDENCIES:
- * - next/link - Provides Link component for client-side navigation without full page reloads
- *
- * EXPORTS:
- * - Navigation (component) - Default export returning fixed navigation bar with five styled navigation links
- *
- * PATTERNS:
- * - Import and place in root layout or page component: <Navigation />
- * - Navigation automatically positions itself at top-right with z-50 stacking context
- * - Use alongside other page content; fixed positioning ensures visibility during scroll
- *
- * CLAUDE NOTES:
- * - Fixed positioning (top-0 right-0) keeps navigation visible during scroll but may overlap content on small screens
- * - Glassmorphism effect (bg-white/80 backdrop-blur-sm) requires content behind nav to be visible for blur effect
- * - All five links share identical styling classes; could be refactored to mapping pattern if link configuration grows
- * - Print utility (print:hidden) ensures navigation doesn't appear in PDF exports or printed documents
+ * @description Primary site header: sticky, full-width, dark-themed to match the app.
+ * Shows the StockHuntr wordmark and the main sections with active-state highlighting,
+ * and collapses to a toggle menu on mobile. Replaces the old floating top-right pill
+ * (which overlapped content, had no branding, and didn't scale on small screens).
  */
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+
+const LINKS = [
+  { href: '/latest-filings', label: 'Latest Filings' },
+  { href: '/pulse', label: 'Pulse' },
+  { href: '/sectors', label: 'Sectors' },
+  { href: '/query', label: 'Ask the Market' },
+  { href: '/model-demo', label: 'Track Record' },
+  { href: '/watchlist', label: 'Watchlist' },
+  { href: '/faq', label: 'FAQ' },
+];
+
+function isActive(pathname: string, href: string): boolean {
+  return pathname === href || pathname.startsWith(href + '/');
+}
 
 export default function Navigation() {
+  const pathname = usePathname() || '/';
+  const [open, setOpen] = useState(false);
+
   return (
-    <nav className="fixed top-0 right-0 p-6 z-50 print:hidden">
-      <div className="flex gap-6 bg-white/80 backdrop-blur-sm rounded-lg px-4 py-2 shadow-sm">
-        <Link
-          href="/"
-          className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-        >
-          Home
-        </Link>
-        <Link
-          href="/query"
-          className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-        >
-          Ask the Market
-        </Link>
-        <Link
-          href="/latest-filings"
-          className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-        >
-          Latest Filings
-        </Link>
-        <Link
-          href="/watchlist"
-          className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-        >
-          Watchlist
-        </Link>
-        <Link
-          href="/model-demo"
-          className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-        >
-          Model Demo
-        </Link>
-        <Link
-          href="/faq"
-          className="text-gray-700 hover:text-blue-600 font-medium transition-colors"
-        >
-          FAQ
-        </Link>
-      </div>
-    </nav>
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#020617]/85 backdrop-blur print:hidden">
+      <nav className="mx-auto max-w-6xl px-4">
+        <div className="flex h-14 items-center justify-between">
+          {/* Wordmark */}
+          <Link href="/" className="flex items-center gap-1.5 font-bold text-white" onClick={() => setOpen(false)}>
+            <span className="text-lg tracking-tight">StockHuntr</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-teal-400" aria-hidden />
+          </Link>
+
+          {/* Desktop links */}
+          <div className="hidden items-center gap-1 md:flex">
+            {LINKS.map((l) => {
+              const active = isActive(pathname, l.href);
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  aria-current={active ? 'page' : undefined}
+                  className={
+                    'rounded-md px-3 py-1.5 text-sm font-medium transition-colors ' +
+                    (active ? 'bg-white/10 text-white' : 'text-gray-300 hover:text-white hover:bg-white/5')
+                  }
+                >
+                  {l.label}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* Mobile toggle */}
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            className="inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:bg-white/5 hover:text-white md:hidden"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              {open ? <path d="M6 6l12 12M18 6L6 18" /> : <><path d="M4 7h16" /><path d="M4 12h16" /><path d="M4 17h16" /></>}
+            </svg>
+          </button>
+        </div>
+
+        {/* Mobile menu */}
+        {open && (
+          <div className="grid gap-1 pb-3 md:hidden">
+            {LINKS.map((l) => {
+              const active = isActive(pathname, l.href);
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  onClick={() => setOpen(false)}
+                  aria-current={active ? 'page' : undefined}
+                  className={
+                    'rounded-md px-3 py-2 text-sm font-medium ' +
+                    (active ? 'bg-white/10 text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white')
+                  }
+                >
+                  {l.label}
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </nav>
+    </header>
   );
 }
