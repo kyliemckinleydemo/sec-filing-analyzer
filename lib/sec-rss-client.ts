@@ -60,8 +60,28 @@ export class SECRSSClient {
   // Create a Set for fast ticker lookups
   private readonly TICKER_SET = new Set(TOP_1000_TICKERS.map(t => t.toUpperCase()));
 
-  // Create a map of CIK to ticker for quick lookups
+  // Create a map of CIK to ticker for quick lookups (SEC's ticker field — unreliable
+  // for some companies, hence the CIK-based matching below).
   private cikToTickerMap = new Map<string, string>();
+
+  // Authoritative CIK -> our canonical ticker for companies we track. Built once from
+  // SEC's company_tickers.json (normalized to handle dot/dash class shares) PLUS the
+  // overrides below. Filtering matches incoming filings by CIK against this map, which
+  // is robust to SEC listing a company under a wrong ticker (e.g. Marsh McLennan as
+  // "MRSH") or omitting it from company_tickers.json entirely.
+  private cikToOurTicker = new Map<string, string>();
+
+  // Correct CIKs for tracked companies that SEC's company_tickers.json mislabels or
+  // omits. Verified 2026-08 against SEC per-ticker lookup / submissions API.
+  private readonly TICKER_CIK_OVERRIDES: Record<string, string> = {
+    'BRK.B': '0001067983', 'MMC': '0000062709', 'AEP': '0000004904', 'K': '0000055067',
+    'CTRA': '0000858470', 'HOLX': '0000859737', 'IPG': '0000051644', 'SEE': '0001012100',
+    'HBI': '0001359841', 'THS': '0001320695', 'DENN': '0000852772', 'SCVL': '0000895447',
+    'GES': '0000912463', 'JHG': '0001274173', 'ALE': '0000066756', 'BK': '0001390777',
+    'CMA': '0000028412', 'TPX': '0001206264', 'SNV': '0000018349', 'KIRK': '0001056285',
+    'CADE': '0001299939', 'IBTX': '0001564618', 'SJW': '0000766829', 'BLD': '0001633931',
+    'FI': '0000798354', 'PSTG': '0001474432', 'SATS': '0001415404', 'DAY': '0001725057',
+  };
 
   /**
    * Fetch URL using curl as a fallback when fetch() is blocked
@@ -234,9 +254,9 @@ export class SECRSSClient {
         if (!titleMatch) continue;
 
         const [, form, companyName, cik] = titleMatch;
-        const ticker = await this.getCIKToTicker(cik.padStart(10, '0'));
+        const ticker = this.getTrackedTicker(cik.padStart(10, '0'));
 
-        if (!ticker || !this.TICKER_SET.has(ticker.toUpperCase())) {
+        if (!ticker) {
           continue; // Skip if not in our top 1,000
         }
 
@@ -279,9 +299,9 @@ export class SECRSSClient {
       // Filter by form type
       if (!formTypes.includes(formType)) continue;
 
-      const ticker = await this.getCIKToTicker(cik.padStart(10, '0'));
-      if (!ticker || !this.TICKER_SET.has(ticker.toUpperCase())) {
-        continue; // Skip if not in our top 1,000
+      const ticker = this.getTrackedTicker(cik.padStart(10, '0'));
+      if (!ticker) {
+        continue; // Skip if not one of our tracked CIKs
       }
 
       const accessionNumber = fileName.split('/').pop()?.replace('.txt', '') || '';
@@ -330,15 +350,35 @@ export class SECRSSClient {
       const data = JSON.parse(jsonText);
 
       // Format: { "0": {"cik_str": 320193, "ticker": "AAPL", "title": "Apple Inc."}, ... }
+      // Build CIK -> SEC ticker, and a normalized SEC-ticker -> CIK reverse map.
+      const norm = (t: string) => t.toUpperCase().replace(/[.\-]/g, '');
+      const secTickerToCik = new Map<string, string>();
       for (const key in data) {
         const entry = data[key];
         const cik = String(entry.cik_str).padStart(10, '0');
         const ticker = entry.ticker;
         this.cikToTickerMap.set(cik, ticker);
+        if (ticker) secTickerToCik.set(norm(ticker), cik);
+      }
+
+      // Build the authoritative CIK -> our-ticker map for every tracked ticker:
+      // override CIK first (SEC data wrong/missing), else normalized SEC match.
+      this.cikToOurTicker.clear();
+      for (const t of TOP_1000_TICKERS) {
+        const cik = this.TICKER_CIK_OVERRIDES[t] || secTickerToCik.get(norm(t));
+        if (cik) this.cikToOurTicker.set(cik.padStart(10, '0'), t);
       }
     } catch (error) {
       console.error('Error loading CIK mapping:', error);
     }
+  }
+
+  /**
+   * Resolve a CIK to our canonical tracked ticker, or null if we don't track it.
+   * This is the CIK-based filter that replaces the fragile SEC-ticker matching.
+   */
+  private getTrackedTicker(cik: string): string | null {
+    return this.cikToOurTicker.get(cik.padStart(10, '0')) || null;
   }
 
   /**
