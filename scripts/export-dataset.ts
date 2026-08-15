@@ -90,6 +90,18 @@ async function main() {
 
   mkdirSync(OUT_DIR, { recursive: true });
 
+  // CC-BY-4.0 license notice for the published package.
+  writeFileSync(
+    join(OUT_DIR, 'LICENSE'),
+    `This dataset is released under the Creative Commons Attribution 4.0 International License (CC BY 4.0).
+You are free to share and adapt the material for any purpose, even commercially, provided you give
+appropriate credit to StockHuntr (https://www.stockhuntr.net).
+
+Underlying SEC filing data is sourced from SEC EDGAR (public domain, U.S. government work).
+Full license text: https://creativecommons.org/licenses/by/4.0/
+`
+  );
+
   // --- CSV ---
   const csv = [
     COLUMNS.join(','),
@@ -215,6 +227,20 @@ ${formLines}
 | \`actual_30d_alpha\` | **Realized** 30-day return minus S&P 500 (%), if the window has elapsed |
 | \`actual_30d_return\` | **Realized** 30-day raw return (%), if the window has elapsed |
 | \`outcome_known\` | 1 if the realized outcome is present, else 0 |
+
+## Loading the dataset
+
+\`\`\`python
+import pandas as pd
+df = pd.read_csv("stockhuntr-filings.csv")
+
+# Rows suitable for supervised learning (AI features -> realized outcome):
+labeled = df[df["outcome_known"] == 1]
+print(len(labeled), "filings with a realized 30-day alpha outcome")
+
+# Or stream the JSONL:
+# import pandas as pd; df = pd.read_json("stockhuntr-filings.jsonl", lines=True)
+\`\`\`
 
 ## Methodology
 

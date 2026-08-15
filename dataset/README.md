@@ -29,18 +29,18 @@ of AI features with the **realized** outcome.
 
 | Metric | Value |
 |--------|-------|
-| Total analyzed filings | 15402 |
-| With AI concern/sentiment features | 15402 |
+| Total analyzed filings | 15407 |
+| With AI concern/sentiment features | 15407 |
 | With a realized 30-day outcome (label) | 4009 |
-| With a persisted live prediction | 8 |
+| With a persisted live prediction | 2174 |
 | Distinct companies | 527 |
-| Filing date range | 2023-12-13 to 2026-08-13 |
+| Filing date range | 2023-12-13 to 2026-08-14 |
 
 ### Filings by form type
 
 | Form | Count |
 |------|-------|
-| 8-K | 11387 |
+| 8-K | 11392 |
 | 10-Q | 2962 |
 | 10-K | 1052 |
 | 10 | 1 |
@@ -73,6 +73,20 @@ of AI features with the **realized** outcome.
 | `actual_30d_return` | **Realized** 30-day raw return (%), if the window has elapsed |
 | `outcome_known` | 1 if the realized outcome is present, else 0 |
 
+## Loading the dataset
+
+```python
+import pandas as pd
+df = pd.read_csv("stockhuntr-filings.csv")
+
+# Rows suitable for supervised learning (AI features -> realized outcome):
+labeled = df[df["outcome_known"] == 1]
+print(len(labeled), "filings with a realized 30-day alpha outcome")
+
+# Or stream the JSONL:
+# import pandas as pd; df = pd.read_json("stockhuntr-filings.jsonl", lines=True)
+```
+
 ## Methodology
 
 Predictions come from a Ridge-regression mixture-of-experts model (13 features:
@@ -96,6 +110,6 @@ contain errors, delays, or restatements.
 ## Citation
 
 ```
-StockHuntr (2026-08-13). AI-Analyzed SEC Filings with 30-Day
+StockHuntr (2026-08-14). AI-Analyzed SEC Filings with 30-Day
 Predictions & Outcomes. https://www.stockhuntr.net
 ```
