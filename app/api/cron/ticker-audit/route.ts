@@ -55,16 +55,21 @@ export async function GET(request: Request) {
   try {
     // Only surface ACTIVE companies (filed in last 180 days) missing from the file —
     // avoids flagging delisted DB records as things to add.
-    const cutoff = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000);
+    const activeCutoff = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000);
     const fileNorm = new Set([...seen].map(norm));
     const companies = await prisma.company.findMany({
-      where: { filings: { some: { filingDate: { gte: cutoff } } } },
+      where: { filings: { some: { filingDate: { gte: activeCutoff } } } },
       select: { ticker: true },
     });
     dbNotInFile = companies.map((c) => c.ticker).filter((t) => !fileNorm.has(norm(t)));
+
+    // Delisting detection is deliberately conservative: only flag a ticker with NO
+    // filing in a FULL YEAR. Lingering delisted tickers are harmless; being late to
+    // remove one is fine. Report-only — never auto-removed.
+    const delistCutoff = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
     const tracked = await prisma.company.findMany({
       where: { ticker: { in: [...seen] } },
-      select: { ticker: true, filings: { where: { filingDate: { gte: cutoff } }, select: { id: true }, take: 1 } },
+      select: { ticker: true, filings: { where: { filingDate: { gte: delistCutoff } }, select: { id: true }, take: 1 } },
     });
     staleTracked = tracked.filter((c) => c.filings.length === 0).map((c) => c.ticker);
   } catch (e: any) {

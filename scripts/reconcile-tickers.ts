@@ -35,20 +35,23 @@ async function main() {
   // Additions: DB companies that are ACTIVE (filed in the last 180 days) and missing
   // from the file. Requiring a recent filing avoids re-adding delisted companies whose
   // DB records still linger.
-  const cutoff = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000);
+  const activeCutoff = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000);
   const dedupedNorm = new Set(deduped.map(norm));
   const companies = await prisma.company.findMany({
-    where: { filings: { some: { filingDate: { gte: cutoff } } } },
+    where: { filings: { some: { filingDate: { gte: activeCutoff } } } },
     select: { ticker: true },
     orderBy: { ticker: 'asc' },
   });
   const additions = companies.map((c) => c.ticker).filter((t) => !dedupedNorm.has(norm(t)));
 
-  // Report-only: tracked companies with NO filing in 180 days AND no company_tickers
-  // resolution — genuine delisting candidates (still verify against SEC before removing).
+  // Delisting detection is DELIBERATELY CONSERVATIVE: only flag a ticker with NO filing
+  // in a FULL YEAR. A delisted company lingering in the file is harmless (the RSS cron
+  // just finds nothing); wrongly removing an active one loses coverage. It stays a
+  // report-only signal that a human verifies against SEC — never auto-removed.
+  const delistCutoff = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
   const tracked = await prisma.company.findMany({
     where: { ticker: { in: deduped } },
-    select: { ticker: true, filings: { where: { filingDate: { gte: cutoff } }, select: { id: true }, take: 1 } },
+    select: { ticker: true, filings: { where: { filingDate: { gte: delistCutoff } }, select: { id: true }, take: 1 } },
   });
   const staleCandidates = tracked.filter((c) => c.filings.length === 0).map((c) => c.ticker);
 
@@ -56,7 +59,7 @@ async function main() {
   console.log(`Current: ${TOP_1000_TICKERS.length} | dupes: ${dupes} | additions(DB): ${additions.length} | -> ${final.length}`);
   if (additions.length) console.log(`Adding: ${additions.join(', ')}`);
   const stalePct = deduped.length ? Math.round((staleCandidates.length / deduped.length) * 100) : 0;
-  console.log(`\nDelisting candidates — no filing ingested in 180d (${staleCandidates.length}, ${stalePct}% of file):`);
+  console.log(`\nDelisting candidates — no filing ingested in 365d (${staleCandidates.length}, ${stalePct}% of file):`);
   if (stalePct > 20) {
     console.log(`  ⚠️ Signal UNRELIABLE right now — a high fraction means filing ingestion is still`);
     console.log(`     catching up, not that these are delisted. Re-check once coverage is current.`);
