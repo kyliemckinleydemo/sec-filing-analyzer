@@ -9,6 +9,8 @@
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import FilingClient from './filing-client';
+import QASection from '@/app/components/QASection';
+import { buildFilingQA } from '@/lib/qa-builders';
 
 interface PageProps {
   params: { accession: string };
@@ -91,6 +93,64 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default function Page() {
-  return <FilingClient />;
+/** Fetch the analysis fields needed to server-render a grounded Q&A block. */
+async function getFilingQAData(accessionParam: string) {
+  const accession = dashedAccession(accessionParam);
+  try {
+    const filing = await prisma.filing.findUnique({
+      where: { accessionNumber: accession },
+      select: {
+        filingType: true,
+        filingDate: true,
+        aiSummary: true,
+        analysisData: true,
+        predicted30dAlpha: true,
+        predictionConfidence: true,
+        company: { select: { ticker: true, name: true } },
+      },
+    });
+    if (!filing) return null;
+
+    let analysis = null;
+    if (filing.analysisData) {
+      try {
+        analysis = JSON.parse(filing.analysisData);
+      } catch {
+        /* leave null on malformed JSON */
+      }
+    }
+
+    return buildFilingQA({
+      ticker: filing.company.ticker,
+      companyName: filing.company.name,
+      filingType: filing.filingType,
+      filingDate: filing.filingDate,
+      aiSummary: filing.aiSummary,
+      analysis,
+      predicted30dAlpha: filing.predicted30dAlpha,
+      predictionConfidence: filing.predictionConfidence,
+    });
+  } catch (error) {
+    console.error('filing QA: db lookup failed', error);
+    return null;
+  }
+}
+
+export default async function Page({ params }: PageProps) {
+  const qaItems = await getFilingQAData(params.accession);
+
+  return (
+    <>
+      {qaItems && qaItems.length > 0 && (
+        <div className="bg-[#020617]">
+          <QASection
+            heading="Filing analysis — key questions"
+            items={qaItems}
+            note="Answers are generated from this SEC filing and StockHuntr's analysis. Not investment advice."
+          />
+        </div>
+      )}
+      <FilingClient />
+    </>
+  );
 }

@@ -8,6 +8,8 @@
 import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import CompanyClient from './company-client';
+import QASection from '@/app/components/QASection';
+import { buildCompanyQA } from '@/lib/qa-builders';
 
 interface PageProps {
   params: { ticker: string };
@@ -60,6 +62,89 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default function Page() {
-  return <CompanyClient />;
+/** Fetch company + recent filings to server-render a grounded Q&A block. */
+async function getCompanyQAData(tickerParam: string) {
+  const ticker = decodeURIComponent(tickerParam).toUpperCase();
+  try {
+    const company = await prisma.company.findUnique({
+      where: { ticker },
+      select: {
+        ticker: true,
+        name: true,
+        sector: true,
+        industry: true,
+        currentPrice: true,
+        marketCap: true,
+        filings: {
+          orderBy: { filingDate: 'desc' },
+          take: 5,
+          select: {
+            filingType: true,
+            filingDate: true,
+            concernLevel: true,
+            predicted30dAlpha: true,
+            analysisData: true,
+          },
+        },
+      },
+    });
+    if (!company) return null;
+
+    const filings = company.filings;
+    const latestRaw = filings[0];
+    let latest = null;
+    if (latestRaw) {
+      let netAssessment: string | null = null;
+      let concernLabel: string | null = null;
+      if (latestRaw.analysisData) {
+        try {
+          const a = JSON.parse(latestRaw.analysisData);
+          netAssessment = a?.concernAssessment?.netAssessment ?? null;
+          concernLabel = a?.concernAssessment?.concernLabel ?? null;
+        } catch {
+          /* ignore malformed JSON */
+        }
+      }
+      latest = {
+        filingType: latestRaw.filingType,
+        filingDate: latestRaw.filingDate,
+        concernLabel,
+        netAssessment,
+        predicted30dAlpha: latestRaw.predicted30dAlpha,
+      };
+    }
+
+    return buildCompanyQA({
+      ticker: company.ticker,
+      name: company.name,
+      sector: company.sector,
+      industry: company.industry,
+      currentPrice: company.currentPrice,
+      marketCap: company.marketCap,
+      recentFilings: filings.map((f) => ({ filingType: f.filingType, filingDate: f.filingDate })),
+      latest,
+    });
+  } catch (error) {
+    console.error('company QA: db lookup failed', error);
+    return null;
+  }
+}
+
+export default async function Page({ params }: PageProps) {
+  const qaItems = await getCompanyQAData(params.ticker);
+
+  return (
+    <>
+      {qaItems && qaItems.length > 0 && (
+        <div className="bg-[#020617]">
+          <QASection
+            heading="Company overview — key questions"
+            items={qaItems}
+            note="Answers are generated from SEC filings and StockHuntr's analysis. Not investment advice."
+          />
+        </div>
+      )}
+      <CompanyClient />
+    </>
+  );
 }
