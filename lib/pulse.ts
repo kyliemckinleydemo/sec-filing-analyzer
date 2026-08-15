@@ -10,6 +10,7 @@
  * recent data as coverage improves. A templated narrative summarizes the computed stats
  * (deterministic, no LLM call).
  */
+import Anthropic from '@anthropic-ai/sdk';
 import { prisma } from '@/lib/prisma';
 import { canonicalForRaw, CANONICAL_SECTORS } from '@/lib/sectors';
 
@@ -155,7 +156,7 @@ export async function getPulse(): Promise<Pulse | null> {
       )
       .slice(0, 8);
 
-    const narrative = buildNarrative({
+    const narrativeInput = {
       windowDays,
       n,
       avgConcern,
@@ -164,7 +165,10 @@ export async function getPulse(): Promise<Pulse | null> {
       significantFilings,
       epsBeats,
       epsMisses,
-    });
+    };
+    // Prefer an LLM-written editorial summary grounded in the computed stats; fall back
+    // to the deterministic template if the model is unavailable or errors.
+    const narrative = (await generateLlmNarrative(narrativeInput)) ?? buildNarrative(narrativeInput);
 
     return {
       windowDays,
@@ -184,7 +188,7 @@ export async function getPulse(): Promise<Pulse | null> {
   }
 }
 
-function buildNarrative(d: {
+interface NarrativeInput {
   windowDays: number;
   n: number;
   avgConcern: number | null;
@@ -193,7 +197,72 @@ function buildNarrative(d: {
   significantFilings: PulseFiling[];
   epsBeats: number;
   epsMisses: number;
-}): string {
+}
+
+/**
+ * LLM-written editorial summary grounded strictly in the computed stats. Uses Haiku
+ * (cheap), ~1 call per ISR revalidation. Returns null on any failure so the caller
+ * falls back to the deterministic template. The model is told to use ONLY the provided
+ * figures — no invented facts, no advice.
+ */
+async function generateLlmNarrative(d: NarrativeInput): Promise<string | null> {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key || key.includes('placeholder')) return null;
+  if (d.n === 0) return null;
+
+  const period = d.windowDays >= 365 ? 'the trailing 12 months' : `the last ${d.windowDays} days`;
+  const facts = {
+    period,
+    filingsAnalyzed: d.n,
+    avgConcern: d.avgConcern,
+    highConcernPct: d.highConcernShare != null ? Math.round(d.highConcernShare * 100) : null,
+    hottestSector: d.sectorHeat[0] ? { name: d.sectorHeat[0].name, concern: d.sectorHeat[0].avgConcern, filings: d.sectorHeat[0].n } : null,
+    coolestSector: d.sectorHeat.length > 1 ? { name: d.sectorHeat[d.sectorHeat.length - 1].name, concern: d.sectorHeat[d.sectorHeat.length - 1].avgConcern } : null,
+    epsBeats: d.epsBeats,
+    epsMisses: d.epsMisses,
+    mostConcerningFiling: d.significantFilings[0]
+      ? { ticker: d.significantFilings[0].ticker, formType: d.significantFilings[0].filingType, concern: d.significantFilings[0].concernLevel }
+      : null,
+  };
+
+  const prompt = `You are writing the opening summary of "SEC Filing Pulse," a data report by StockHuntr.
+Write 2-3 tight, factual, journalistic sentences summarizing the market's SEC-filing activity.
+
+STRICT RULES:
+- Output ONLY the 2-3 summary sentences as plain prose. No title, no heading, no markdown, no bullet points.
+- Use ONLY the numbers in the JSON below. Do not invent any figures, names, or events.
+- Neutral, analytical tone. No hype, no investment advice, no recommendations.
+- Refer to concern on a 0-10 scale where higher = more material risk.
+- Do not add a disclaimer (one is shown separately).
+
+DATA:
+${JSON.stringify(facts, null, 2)}`;
+
+  try {
+    const client = new Anthropic({ apiKey: key });
+    const resp = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 240,
+      messages: [{ role: 'user', content: prompt }],
+    });
+    const block = resp.content.find((b) => b.type === 'text');
+    const raw = block && block.type === 'text' ? block.text : '';
+    // Defensive cleanup: drop any stray markdown heading/bold the model may add.
+    const text = raw
+      .split('\n')
+      .filter((line) => !line.trim().startsWith('#'))
+      .join(' ')
+      .replace(/\*\*/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    return text.length > 0 ? text : null;
+  } catch (error) {
+    console.error('pulse: LLM narrative failed, using template', error);
+    return null;
+  }
+}
+
+function buildNarrative(d: NarrativeInput): string {
   const period = d.windowDays >= 365 ? 'the trailing 12 months' : `the last ${d.windowDays} days`;
   const parts: string[] = [];
   parts.push(
