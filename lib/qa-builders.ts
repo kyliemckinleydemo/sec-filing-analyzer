@@ -6,6 +6,7 @@
  * filler — so the pages carry genuine substance for AI extraction and search.
  */
 import type { QAItem } from '@/app/components/QASection';
+import type { SectorInsights } from '@/lib/sector-insights';
 
 const NOT_ADVICE = 'This is model analysis for research, not investment advice.';
 
@@ -195,6 +196,55 @@ export function buildCompanyQA(c: CompanyQAInput): QAItem[] {
         `Based on ${c.ticker}'s latest filing, the model predicts it will ${dir} the S&P 500 by about ${Math.abs(
           c.latest.predicted30dAlpha
         ).toFixed(1)}% over 30 days. ${NOT_ADVICE}`,
+        400
+      ),
+    });
+  }
+
+  return items;
+}
+
+export function buildSectorQA(s: SectorInsights): QAItem[] {
+  const items: QAItem[] = [];
+
+  items.push({
+    question: `How many ${s.name} SEC filings has StockHuntr analyzed?`,
+    answer: clip(
+      `StockHuntr has analyzed ${s.analyzedFilings.toLocaleString()} SEC filings from ${s.companyCount} ${s.name} companies, scoring each for risk, sentiment, and 30-day stock impact.`,
+      400
+    ),
+  });
+
+  if (s.avgConcern != null) {
+    const label =
+      s.avgConcern <= 2.5 ? 'low' : s.avgConcern <= 5 ? 'moderate' : s.avgConcern <= 7.5 ? 'elevated' : 'high';
+    items.push({
+      question: `What is the average concern level for ${s.name} filings?`,
+      answer: clip(
+        `The average concern level across analyzed ${s.name} filings is ${s.avgConcern}/10 (${label}). ` +
+          `Of these, ${s.concernDistribution.elevated + s.concernDistribution.high} filings scored elevated-to-high concern.`,
+        400
+      ),
+    });
+  }
+
+  if (s.model.directionalAccuracy != null && s.model.pairs > 0) {
+    items.push({
+      question: `How accurate is StockHuntr's model in the ${s.name} sector?`,
+      answer: clip(
+        `On ${s.model.pairs} ${s.name} filings with a known 30-day outcome, the model's directional accuracy is ${Math.round(
+          s.model.directionalAccuracy * 100
+        )}%. This is research analysis, not investment advice.`,
+        400
+      ),
+    });
+  }
+
+  if (s.eightKShare != null) {
+    items.push({
+      question: `What kinds of filings do ${s.name} companies submit most?`,
+      answer: clip(
+        `Of analyzed ${s.name} filings, ${Math.round(s.eightKShare * 100)}% are 8-Ks (current events), alongside ${s.filingTypeMix.tenK} annual reports (10-K) and ${s.filingTypeMix.tenQ} quarterly reports (10-Q).`,
         400
       ),
     });
