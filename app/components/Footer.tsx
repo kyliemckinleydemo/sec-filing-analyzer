@@ -71,6 +71,16 @@ export default function Footer() {
             Yahoo Finance, and FRED.
           </p>
           <p>For research and education only. Nothing here is investment advice.</p>
+          <p className="mt-2">
+            StockHuntr is in beta — found a bug or have an idea?{' '}
+            <a
+              href="mailto:support@stockhuntr.net?subject=StockHuntr%20beta%20feedback"
+              className="text-teal-400 hover:underline"
+            >
+              Send feedback
+            </a>
+            .
+          </p>
         </div>
       </div>
     </footer>
