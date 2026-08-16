@@ -98,6 +98,7 @@ class SECClient {
         'User-Agent': this.userAgent,
         'Accept': 'application/json',
       },
+      signal: AbortSignal.timeout(20_000),
     });
 
     if (!response.ok) {
@@ -149,6 +150,7 @@ class SECClient {
               'User-Agent': this.userAgent,
               'Accept': 'application/json',
             },
+            signal: AbortSignal.timeout(20_000),
           });
 
           if (!response.ok) {

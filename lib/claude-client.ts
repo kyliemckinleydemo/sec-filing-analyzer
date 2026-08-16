@@ -136,7 +136,9 @@ class ClaudeClient {
         'ANTHROPIC_API_KEY is required. Please set it in your .env.local file.'
       );
     }
-    this.client = new Anthropic({ apiKey });
+    // Cap per-request time so a hung/slow call fails gracefully within the serverless function
+    // budget instead of the SDK's 10-minute default (which would 504 the whole function).
+    this.client = new Anthropic({ apiKey, timeout: 120_000, maxRetries: 2 });
   }
 
   /**

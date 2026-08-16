@@ -122,6 +122,7 @@ export class SECRSSClient {
           'User-Agent': this.USER_AGENT,
           'Accept': 'application/atom+xml',
         },
+        signal: AbortSignal.timeout(20_000),
       });
 
       if (!response.ok) {

@@ -103,7 +103,7 @@ async function fredFetch(
   url.searchParams.set('observation_end', endDate);
 
   try {
-    const response = await fetch(url.toString());
+    const response = await fetch(url.toString(), { signal: AbortSignal.timeout(15_000) });
     if (!response.ok) {
       console.error(`[FRED] HTTP ${response.status} for ${seriesId}`);
       return [];
