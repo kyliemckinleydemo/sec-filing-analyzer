@@ -79,7 +79,7 @@ export default async function Page() {
 
       <div className="container mx-auto px-4 py-10 max-w-4xl">
         <h1 className="text-4xl font-bold text-white mb-2">SEC Filing Pulse</h1>
-        <p className="text-sm text-gray-500 mb-6">Updated {asOf}{pulse ? ` · ${periodLabel}` : ''}</p>
+        <p className="text-sm text-gray-400 mb-6">Updated {asOf}{pulse ? ` · ${periodLabel}` : ''}</p>
 
         {!pulse ? (
           <p className="text-gray-300">The pulse is being generated. Please check back shortly.</p>
@@ -106,7 +106,7 @@ export default async function Page() {
                           <Link href={`/sectors/${s.slug}`} className="text-teal-400 hover:underline">{s.name}</Link>
                         </td>
                         <td className="py-2 text-right text-white font-medium w-24">{s.avgConcern}/10</td>
-                        <td className="py-2 text-right text-gray-500 w-24">{s.n} filings</td>
+                        <td className="py-2 text-right text-gray-400 w-24">{s.n} filings</td>
                       </tr>
                     ))}
                   </tbody>
@@ -123,9 +123,9 @@ export default async function Page() {
                       <Link href={`/filing/${f.accessionNumber}`} className="text-teal-400 hover:underline font-medium">
                         {f.ticker} {f.filingType}
                       </Link>{' '}
-                      <span className="text-gray-500">— {fmtDate(f.filingDate)}</span>
+                      <span className="text-gray-400">— {fmtDate(f.filingDate)}</span>
                       {f.concernLevel != null && <span className="text-gray-400"> · concern {f.concernLevel.toFixed(1)}/10</span>}
-                      {f.netAssessment && <span className="text-gray-500"> · {f.netAssessment}</span>}
+                      {f.netAssessment && <span className="text-gray-400"> · {f.netAssessment}</span>}
                     </li>
                   ))}
                 </ul>
@@ -137,7 +137,7 @@ export default async function Page() {
                 <h2 className="text-2xl font-bold text-white mb-4">
                   Strongest 30-day signals
                   {Math.abs(pulse.topSignals[0].predicted30dAlpha) < 0.25 && (
-                    <span className="ml-2 text-sm font-normal text-gray-500">· low-conviction window</span>
+                    <span className="ml-2 text-sm font-normal text-gray-400">· low-conviction window</span>
                   )}
                 </h2>
                 <ul className="space-y-2">
@@ -146,11 +146,11 @@ export default async function Page() {
                       <Link href={`/filing/${s.accessionNumber}`} className="text-teal-400 hover:underline font-medium">
                         {s.ticker} {s.filingType}
                       </Link>{' '}
-                      <span className="text-gray-500">— {fmtDate(s.filingDate)}</span>{' '}
+                      <span className="text-gray-400">— {fmtDate(s.filingDate)}</span>{' '}
                       <span className={s.direction === 'bullish' ? 'text-green-400' : 'text-red-400'}>
                         {s.direction} {s.predicted30dAlpha >= 0 ? '+' : ''}{s.predicted30dAlpha.toFixed(1)}% alpha
                       </span>
-                      <span className="text-gray-500"> · {Math.round(s.confidence * 100)}% conf</span>
+                      <span className="text-gray-400"> · {Math.round(s.confidence * 100)}% conf</span>
                     </li>
                   ))}
                 </ul>
@@ -175,9 +175,9 @@ export default async function Page() {
 function Stat({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
     <div className="bg-[rgba(15,23,42,0.7)] border border-white/10 rounded-lg p-4">
-      <div className="text-xs uppercase tracking-wide text-gray-500">{label}</div>
+      <div className="text-xs uppercase tracking-wide text-gray-400">{label}</div>
       <div className="text-2xl font-bold text-white mt-1">{value}</div>
-      <div className="text-xs text-gray-500 mt-1">{sub}</div>
+      <div className="text-xs text-gray-400 mt-1">{sub}</div>
     </div>
   );
 }

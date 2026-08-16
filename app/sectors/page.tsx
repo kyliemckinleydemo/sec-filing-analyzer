@@ -36,7 +36,7 @@ export default async function Page() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-gray-500 border-b border-white/10">
+              <tr className="text-left text-xs uppercase tracking-wide text-gray-400 border-b border-white/10">
                 <th className="py-3 pr-4">Sector</th>
                 <th className="py-3 px-2 text-right">Filings analyzed</th>
                 <th className="py-3 px-2 text-right">Avg concern</th>
@@ -60,7 +60,7 @@ export default async function Page() {
           </table>
         </div>
 
-        <p className="text-xs text-gray-500 mt-6">
+        <p className="text-xs text-gray-400 mt-6">
           Model accuracy is directional accuracy on filings whose 30-day window has elapsed. For research and
           education only — not investment advice.
         </p>

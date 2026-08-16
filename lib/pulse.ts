@@ -282,8 +282,15 @@ function buildNarrative(d: NarrativeInput): string {
   if (d.sectorHeat.length >= 2) {
     const hot = d.sectorHeat[0];
     const cool = d.sectorHeat[d.sectorHeat.length - 1];
+    // Name every sector tied at the coolest concern level, so a reader scanning the heat
+    // table below doesn't see an apparent contradiction when two sectors share the low.
+    const coolestTied = d.sectorHeat.filter((s) => s.avgConcern === cool.avgConcern);
+    const coolClause =
+      coolestTied.length > 1
+        ? `${coolestTied.slice(0, -1).map((s) => s.name).join(', ')} and ${coolestTied[coolestTied.length - 1].name} tied coolest`
+        : `${cool.name} was coolest`;
     parts.push(
-      `The ${hot.name} sector ran hottest on concern (${hot.avgConcern}/10 across ${hot.n} filings), while ${cool.name} was coolest (${cool.avgConcern}/10).`
+      `The ${hot.name} sector ran hottest on concern (${hot.avgConcern}/10 across ${hot.n} filings), while ${coolClause} (${cool.avgConcern}/10).`
     );
   }
   if (d.epsBeats + d.epsMisses > 0) {

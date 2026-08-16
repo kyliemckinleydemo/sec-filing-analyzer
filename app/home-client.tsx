@@ -809,7 +809,7 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
               <div className="grid md:grid-cols-[1.35fr_0.9fr] gap-4">
                 {/* Filing Snippet */}
                 <div className="rounded-xl bg-[rgba(15,23,42,0.9)] border border-gray-600 p-4 text-xs text-muted-foreground relative">
-                  <div className="absolute top-2 right-3 text-[0.7rem] text-gray-500 bg-[rgba(15,23,42,0.95)] px-2 py-0.5 rounded-full border border-gray-600">
+                  <div className="absolute top-2 right-3 text-[0.7rem] text-gray-400 bg-[rgba(15,23,42,0.95)] px-2 py-0.5 rounded-full border border-gray-600">
                     SEC Filing · 10-Q
                   </div>
                   <p className="mb-3">

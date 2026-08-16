@@ -130,9 +130,9 @@ export default async function Page({ params }: { params: { sector: string } }) {
                   <Link href={`/filing/${f.accessionNumber}`} className="text-teal-400 hover:underline font-medium">
                     {f.ticker} {f.filingType}
                   </Link>{' '}
-                  <span className="text-gray-500">— {fmtDate(f.filingDate)}</span>
+                  <span className="text-gray-400">— {fmtDate(f.filingDate)}</span>
                   {f.netAssessment && <span className="text-gray-400"> · {f.netAssessment}</span>}
-                  {f.concernLevel != null && <span className="text-gray-500"> · concern {f.concernLevel.toFixed(1)}/10</span>}
+                  {f.concernLevel != null && <span className="text-gray-400"> · concern {f.concernLevel.toFixed(1)}/10</span>}
                 </li>
               ))}
             </ul>
@@ -159,9 +159,9 @@ export default async function Page({ params }: { params: { sector: string } }) {
 function Stat({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
     <div className="bg-[rgba(15,23,42,0.7)] border border-white/10 rounded-lg p-4">
-      <div className="text-xs uppercase tracking-wide text-gray-500">{label}</div>
+      <div className="text-xs uppercase tracking-wide text-gray-400">{label}</div>
       <div className="text-2xl font-bold text-white mt-1">{value}</div>
-      <div className="text-xs text-gray-500 mt-1">{sub}</div>
+      <div className="text-xs text-gray-400 mt-1">{sub}</div>
     </div>
   );
 }

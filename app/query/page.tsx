@@ -348,6 +348,7 @@ function QueryPageContent() {
                           setTicker(e.target.value.toUpperCase());
                           if (e.target.value) setSector('');
                         }}
+                        aria-label="Filter by ticker symbol"
                         placeholder="e.g., AAPL, MSFT"
                         className="w-40 px-3 py-1.5 border border-slate-200 rounded-md text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none"
                       />
@@ -388,6 +389,7 @@ function QueryPageContent() {
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="text"
+                    aria-label="Ask the Market: search filings or screen stocks"
                     placeholder={mode === 'ai'
                       ? "Ask about any company's filings, risk factors, revenue trends..."
                       : mode === 'screen'

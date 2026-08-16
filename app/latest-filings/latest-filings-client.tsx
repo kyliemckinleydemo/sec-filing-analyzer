@@ -283,6 +283,7 @@ export default function LatestFilingsClient({ initialData }: { initialData: Late
           <form onSubmit={handleSearch} className="max-w-3xl mx-auto">
             <div className="relative">
               <Input
+                aria-label="Search SEC filings by ticker symbol or company name"
                 placeholder="Enter ticker symbol (e.g., AAPL, MSFT, GOOGL) or company name..."
                 value={searchInput}
                 onChange={(e) => {
