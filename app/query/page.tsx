@@ -1130,7 +1130,7 @@ function QueryPageContent() {
                   <li>Filing dates & ranges</li>
                   <li>Company-specific search</li>
                   <li>Date-based filtering</li>
-                  <li>640+ companies tracked</li>
+                  <li>800+ companies tracked</li>
                 </ul>
               </CardContent>
             </Card>

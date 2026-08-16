@@ -4,7 +4,7 @@
  *
  * PURPOSE:
  * - GET fetches user's watchlist with joined company financial data (price, PE ratio, margins, revenue) and sector watchlist ordered by creation date
- * - POST adds normalized ticker to watchlist with upsert to prevent duplicates, validates company exists in 640+ tracked set, and auto-creates 4 alert types ('new_filing', 'prediction_result', 'analyst_change', 'sector_filing') on first watchlist item
+ * - POST adds normalized ticker to watchlist with upsert to prevent duplicates, validates company exists in 800+ tracked set, and auto-creates 4 alert types ('new_filing', 'prediction_result', 'analyst_change', 'sector_filing') on first watchlist item
  * - DELETE removes ticker from watchlist using query parameter with normalized uppercase matching
  * - Enforces authentication via getSession() returning 401 for unauthenticated requests across all endpoints
  *
@@ -28,7 +28,7 @@
  * - Watchlist uses composite unique key userId_ticker for upsert operations preventing duplicate entries per user
  * - GET performs two separate queries (watchlist items then companies) and client-side joins via Array.find() rather than Prisma relation includes
  * - Auto-alert creation only checks total alert count - if user manually deletes all alerts then adds ticker, 4 new alerts are recreated
- * - Company validation returns specific error message 'We don't track ${ticker}. We track 640+ companies by market cap.' indicating finite company dataset
+ * - Company validation returns specific error message 'We don't track ${ticker}. We track 800+ companies by market cap.' indicating finite company dataset
  * - DELETE uses deleteMany instead of delete to handle case where ticker doesn't exist without throwing error
  */
 import { NextRequest, NextResponse } from 'next/server';
@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
 
     if (!company) {
       return NextResponse.json(
-        { error: `We don't track ${normalizedTicker}. We track 640+ companies by market cap.` },
+        { error: `We don't track ${normalizedTicker}. We track 800+ companies by market cap.` },
         { status: 404 }
       );
     }

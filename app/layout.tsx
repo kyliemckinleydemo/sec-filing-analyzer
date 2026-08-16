@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     template: "%s | StockHuntr",
   },
   description:
-    "Chat with SEC filings and get cited answers, plus AI risk and concern scoring — free. StockHuntr analyzes 10-K, 10-Q, and 8-K filings from 640+ US companies, grounded in primary-source SEC EDGAR data.",
+    "Chat with SEC filings and get cited answers, plus AI risk and concern scoring — free. StockHuntr analyzes 10-K, 10-Q, and 8-K filings from 800+ US companies, grounded in primary-source SEC EDGAR data.",
   keywords: [
     "SEC filings",
     "SEC filing analysis",
@@ -78,14 +78,14 @@ export const metadata: Metadata = {
     siteName: "StockHuntr",
     title: "StockHuntr - AI-Powered SEC Filing Intelligence",
     description:
-      "Chat with SEC filings, get cited AI answers and risk scoring \u2014 free. 640+ companies, primary-source EDGAR data.",
+      "Chat with SEC filings, get cited AI answers and risk scoring \u2014 free. 800+ companies, primary-source EDGAR data.",
     locale: "en_US",
   },
   twitter: {
     card: "summary",
     title: "StockHuntr - AI-Powered SEC Filing Intelligence",
     description:
-      "Chat with SEC filings, get cited AI answers and risk scoring \u2014 free. 640+ companies, primary-source EDGAR data.",
+      "Chat with SEC filings, get cited AI answers and risk scoring \u2014 free. 800+ companies, primary-source EDGAR data.",
   },
 };
 
@@ -107,7 +107,7 @@ const jsonLd = {
       name: "StockHuntr",
       url: SITE_URL,
       description:
-        "Free AI tool to chat with SEC filings and get cited answers and risk scoring, across 640+ US companies. Also generates 30-day alpha signals.",
+        "Free AI tool to chat with SEC filings and get cited answers and risk scoring, across 800+ US companies. Also generates 30-day alpha signals.",
     },
     {
       "@type": "WebSite",

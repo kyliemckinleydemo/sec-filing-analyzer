@@ -229,7 +229,7 @@ export async function GET(
       }
 
       return NextResponse.json({
-        error: `We don't track ${ticker.toUpperCase()} yet. We track the top 640 companies by market cap. Here are some similar companies we track:`,
+        error: `We don't track ${ticker.toUpperCase()} yet. We track the top 800 companies by market cap. Here are some similar companies we track:`,
         tracked: false,
         suggestions,
       }, { status: 404 });

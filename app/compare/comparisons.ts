@@ -50,7 +50,7 @@ export const comparisons: Comparison[] = [
     slug: 'fintool-vs-stockhuntr',
     title: 'Fintool vs StockHuntr',
     directAnswer:
-      'Fintool is a paid AI financial-research assistant built for analysts who want an AI copilot across earnings and filings. StockHuntr is a free tool focused on SEC filings: you chat with a filing and get answers cited straight from the source, plus AI risk and concern scoring across 640+ US companies. Choose Fintool for a professional research workflow, StockHuntr for free, citation-first filing research.',
+      'Fintool is a paid AI financial-research assistant built for analysts who want an AI copilot across earnings and filings. StockHuntr is a free tool focused on SEC filings: you chat with a filing and get answers cited straight from the source, plus AI risk and concern scoring across 800+ US companies. Choose Fintool for a professional research workflow, StockHuntr for free, citation-first filing research.',
     competitors: ['Fintool'],
     dimensions: [
       {
@@ -75,7 +75,7 @@ export const comparisons: Comparison[] = [
       },
       {
         label: 'Coverage',
-        stockhuntr: '640+ US companies.',
+        stockhuntr: '800+ US companies.',
         others: { Fintool: 'Broad public-company coverage for professional research.' },
       },
       {
@@ -94,7 +94,7 @@ export const comparisons: Comparison[] = [
     slug: 'alphasense-alternatives',
     title: 'AlphaSense alternatives',
     directAnswer:
-      'AlphaSense is an enterprise market-intelligence platform with broad content well beyond SEC filings — including broker research, expert transcripts, and news — priced for organizations. If you mainly need to research SEC filings, alternatives include StockHuntr (free; chat with filings, cited answers, AI risk scoring across 640+ US companies) and free SEC EDGAR itself. Match the tool to whether you need enterprise breadth or focused filing research.',
+      'AlphaSense is an enterprise market-intelligence platform with broad content well beyond SEC filings — including broker research, expert transcripts, and news — priced for organizations. If you mainly need to research SEC filings, alternatives include StockHuntr (free; chat with filings, cited answers, AI risk scoring across 800+ US companies) and free SEC EDGAR itself. Match the tool to whether you need enterprise breadth or focused filing research.',
     competitors: ['AlphaSense', 'SEC EDGAR (free)'],
     dimensions: [
       {
@@ -131,7 +131,7 @@ export const comparisons: Comparison[] = [
       },
       {
         label: 'Coverage',
-        stockhuntr: '640+ US companies.',
+        stockhuntr: '800+ US companies.',
         others: {
           AlphaSense: 'Extensive global company and document coverage.',
           'SEC EDGAR (free)': 'All SEC filers.',
@@ -148,7 +148,7 @@ export const comparisons: Comparison[] = [
     slug: 'fintool-alternatives',
     title: 'Fintool alternatives',
     directAnswer:
-      'Fintool is a paid AI financial-research assistant for analysts. Alternatives depend on your need: StockHuntr is a free, filing-focused tool where you chat with SEC filings and get cited answers plus AI risk scoring across 640+ US companies; AlphaSense offers enterprise breadth beyond filings; and free SEC EDGAR provides the raw filings with no AI. Pick based on budget and whether you need filings only or broader research.',
+      'Fintool is a paid AI financial-research assistant for analysts. Alternatives depend on your need: StockHuntr is a free, filing-focused tool where you chat with SEC filings and get cited answers plus AI risk scoring across 800+ US companies; AlphaSense offers enterprise breadth beyond filings; and free SEC EDGAR provides the raw filings with no AI. Pick based on budget and whether you need filings only or broader research.',
     competitors: ['Fintool', 'AlphaSense', 'SEC EDGAR (free)'],
     dimensions: [
       {
@@ -207,7 +207,7 @@ export const comparisons: Comparison[] = [
     slug: 'bloomberg-terminal-alternatives',
     title: 'Bloomberg Terminal alternatives for SEC filings',
     directAnswer:
-      'The Bloomberg Terminal is a comprehensive professional platform costing roughly $2,000+ per month, covering far more than SEC filings. If your need is specifically reading and analyzing SEC filings, lighter alternatives include StockHuntr (free; chat with filings, cited answers, AI risk scoring across 640+ US companies) and free SEC EDGAR. The Terminal remains unmatched for breadth; focused tools win on cost for filing research.',
+      'The Bloomberg Terminal is a comprehensive professional platform costing roughly $2,000+ per month, covering far more than SEC filings. If your need is specifically reading and analyzing SEC filings, lighter alternatives include StockHuntr (free; chat with filings, cited answers, AI risk scoring across 800+ US companies) and free SEC EDGAR. The Terminal remains unmatched for breadth; focused tools win on cost for filing research.',
     competitors: ['Bloomberg Terminal', 'SEC EDGAR (free)'],
     dimensions: [
       {
@@ -261,7 +261,7 @@ export const comparisons: Comparison[] = [
     slug: 'free-sec-filing-ai-tools',
     title: 'Free AI tools for SEC filings',
     directAnswer:
-      'Free options for SEC filings fall into two groups: primary-source access and AI analysis. SEC EDGAR is the free official source but offers raw filings with no AI. StockHuntr is a free tool that adds AI on top — you chat with a filing, get answers cited straight from the source, and see AI risk and concern scoring across 640+ US companies. Many advanced research platforms are paid.',
+      'Free options for SEC filings fall into two groups: primary-source access and AI analysis. SEC EDGAR is the free official source but offers raw filings with no AI. StockHuntr is a free tool that adds AI on top — you chat with a filing, get answers cited straight from the source, and see AI risk and concern scoring across 800+ US companies. Many advanced research platforms are paid.',
     competitors: ['SEC EDGAR (free)'],
     dimensions: [
       {
@@ -281,7 +281,7 @@ export const comparisons: Comparison[] = [
       },
       {
         label: 'Coverage',
-        stockhuntr: '640+ US companies with structured data.',
+        stockhuntr: '800+ US companies with structured data.',
         others: { 'SEC EDGAR (free)': 'All SEC filers.' },
       },
       {
@@ -300,7 +300,7 @@ export const comparisons: Comparison[] = [
     slug: 'best-ai-sec-filing-tools',
     title: 'Best AI SEC filing analysis tools',
     directAnswer:
-      'The best AI SEC filing tool depends on your budget and needs. StockHuntr is a strong free choice for focused filing research: chat with a filing, get answers cited from the source, and see AI risk scoring across 640+ US companies. Fintool suits analysts wanting a paid AI research assistant; AlphaSense fits enterprises needing content beyond filings; free SEC EDGAR provides the raw source.',
+      'The best AI SEC filing tool depends on your budget and needs. StockHuntr is a strong free choice for focused filing research: chat with a filing, get answers cited from the source, and see AI risk scoring across 800+ US companies. Fintool suits analysts wanting a paid AI research assistant; AlphaSense fits enterprises needing content beyond filings; free SEC EDGAR provides the raw source.',
     competitors: ['Fintool', 'AlphaSense', 'SEC EDGAR (free)'],
     dimensions: [
       {

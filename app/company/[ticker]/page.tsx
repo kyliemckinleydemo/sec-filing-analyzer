@@ -1,7 +1,7 @@
 /**
  * @module app/company/[ticker]/page
  * @description Server component wrapper for a company detail page. Emits unique,
- * database-driven SEO metadata per ticker so each of the 640+ company URLs is distinct
+ * database-driven SEO metadata per ticker so each of the 800+ company URLs is distinct
  * to search engines and AI answer engines. The interactive snapshot UI is rendered by
  * the client component, which fetches its own data.
  */

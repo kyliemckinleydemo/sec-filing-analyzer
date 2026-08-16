@@ -3,7 +3,7 @@
  * @description Next.js API route handler that fetches comprehensive company data including live market data, price history, news, filings, and analyst activity with rate limiting and multi-source fallbacks
  *
  * PURPOSE:
- * - Validates ticker parameter and checks company exists in tracked list of 640+ companies
+ * - Validates ticker parameter and checks company exists in tracked list of 800+ companies
  * - Enforces 20 requests/day rate limit for unauthenticated users via fingerprinting
  * - Fetches live market data (price, volume, P/E, 52-week range) from Yahoo Finance with 5-minute cache
  * - Retrieves 180-day price history for both ticker and S&P 500 (SPY) via Yahoo Finance chart API
@@ -25,7 +25,7 @@
  *
  * PATTERNS:
  * - Access via GET /api/company/[ticker]/snapshot with uppercase or lowercase ticker symbol
- * - Returns 404 if ticker not in tracked company list with message about 640+ company coverage
+ * - Returns 404 if ticker not in tracked company list with message about 800+ company coverage
  * - Returns 429 with X-RateLimit-* headers when unauthenticated user exceeds 20 requests/day
  * - Promise.allSettled ensures partial Yahoo Finance failures don't block entire response
  * - Cache hit logs '[Snapshot] Cache hit for {TICKER}' and skips Yahoo Finance calls for 5 minutes
@@ -89,7 +89,7 @@ export async function GET(
 
     if (!company) {
       return NextResponse.json(
-        { error: `We don't track ${tickerUpper}. We track 640+ companies by market cap.` },
+        { error: `We don't track ${tickerUpper}. We track 800+ companies by market cap.` },
         { status: 404 }
       );
     }

@@ -303,7 +303,7 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
             <Card className="bg-[rgba(15,23,42,0.96)] border-white/[0.18]">
               <CardHeader className="pb-3">
                 <CardDescription className="text-xs text-muted-foreground">Coverage</CardDescription>
-                <CardTitle className="text-3xl font-bold text-white">640+</CardTitle>
+                <CardTitle className="text-3xl font-bold text-white">800+</CardTitle>
               </CardHeader>
             </Card>
             <Card className="bg-[rgba(15,23,42,0.96)] border-white/[0.18]">
@@ -750,7 +750,7 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
             <p className="text-muted-foreground mb-5 max-w-xl">
               Ask about any <strong className="text-gray-200">10-K, 10-Q, or 8-K</strong> in plain English and get
               clear, <strong className="text-gray-200">cited answers</strong> straight from the filing — plus AI risk
-              and concern scoring across <strong className="text-gray-200">640+ US companies</strong>.
+              and concern scoring across <strong className="text-gray-200">800+ US companies</strong>.
               30-day alpha signals included.
             </p>
 
@@ -786,7 +786,7 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
             <div className="flex flex-wrap gap-6 text-xs text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-secondary"></span>
-                640+ companies tracked
+                800+ companies tracked
               </span>
               <span>Real-time SEC feed</span>
               <span>0–10 AI concern score (LOW → CRITICAL)</span>
@@ -1019,7 +1019,7 @@ export default function HomeClient({ initialFilings, initialTopSignals }: HomeCl
                 <ul className="text-sm text-muted-foreground space-y-1 list-disc pl-4">
                   <li>Bar charts: predicted vs actual returns</li>
                   <li>Line charts: performance over time</li>
-                  <li>Real-time filing feed (640+ companies tracked)</li>
+                  <li>Real-time filing feed (800+ companies tracked)</li>
                   <li>Color-coded accuracy indicators</li>
                 </ul>
               </div>

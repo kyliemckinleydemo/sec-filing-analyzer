@@ -227,7 +227,7 @@ export default function ProfilePage() {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary text-lg">✓</span>
-                    <span>Access to 640+ tracked companies and real-time SEC feed</span>
+                    <span>Access to 800+ tracked companies and real-time SEC feed</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-primary text-lg">✓</span>

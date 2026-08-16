@@ -11,7 +11,7 @@ import LatestFilingsClient from './latest-filings-client';
 export const metadata: Metadata = {
   title: 'Latest SEC Filings — 10-K, 10-Q & 8-K with AI Analysis',
   description:
-    'Browse the latest SEC filings from 640+ US companies with AI-generated analysis and 30-day stock predictions. Filter 10-K, 10-Q, and 8-K forms by ticker, updated daily from SEC EDGAR.',
+    'Browse the latest SEC filings from 800+ US companies with AI-generated analysis and 30-day stock predictions. Filter 10-K, 10-Q, and 8-K forms by ticker, updated daily from SEC EDGAR.',
   alternates: { canonical: '/latest-filings' },
 };
 

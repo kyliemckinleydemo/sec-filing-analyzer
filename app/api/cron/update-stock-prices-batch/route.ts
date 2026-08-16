@@ -1,6 +1,6 @@
 /**
  * @module app/api/cron/update-stock-prices-batch/route
- * @description Cron endpoint that rotates through batches of companies to update their stock prices from Yahoo Finance API once every 4 hours, completing all 640+ companies over 6 batches daily
+ * @description Cron endpoint that rotates through batches of companies to update their stock prices from Yahoo Finance API once every 4 hours, completing all 800+ companies over 6 batches daily
  *
  * PURPOSE:
  * - Authenticate incoming requests via Vercel cron user-agent or CRON_SECRET bearer token
@@ -42,7 +42,7 @@ export const maxDuration = 300;
  *
  * Updates stock prices for a rotating batch of companies throughout the day.
  * Designed to run every 4 hours, updating ~107 companies per run.
- * All 640+ companies get updated daily through 6 runs.
+ * All 800+ companies get updated daily through 6 runs.
  *
  * Uses Yahoo Finance API (quote + quoteSummary) for market data.
  */
