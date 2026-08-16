@@ -1,3 +1,33 @@
+/**
+ * @module bulk-analyze-parallel
+ * 
+ * @description
+ * Parallel bulk filing analysis script that distributes workload across multiple workers
+ * for faster processing of SEC filings using Claude AI analysis.
+ * 
+ * PURPOSE:
+ * - Enables parallel processing of large volumes of SEC filings by dividing work among multiple worker processes
+ * - Analyzes recent filings (last 4 months) that haven't been processed yet
+ * - Extracts financial metrics, risk scores, sentiment analysis, and AI summaries from filing documents
+ * - Implements cost tracking with configurable limits to prevent excessive API usage
+ * - Provides robust error handling with automatic retries for database connection issues
+ * - Distributes filings using modulo-based work assignment (each worker processes every Nth filing)
+ * 
+ * EXPORTS:
+ * - No exports (executable script)
+ * 
+ * CLAUDE NOTES:
+ * - Uses Haiku model for bulk analysis (cost-effective option)
+ * - Processes first 50KB of each filing document for analysis
+ * - Estimates ~500 input tokens (prompt overhead) + content tokens
+ * - Estimates ~500 output tokens per analysis
+ * - Implements 1.5 second rate limiting between requests (faster than sequential)
+ * - Hard cost limit of $300 (configurable via BACKFILL_COST_LIMIT env var)
+ * - Token estimation uses 4 characters ≈ 1 token heuristic
+ * - Tracks usage per worker via cost-tracker module
+ * - Stores analysis results including riskScore, sentimentScore, concernLevel, and aiSummary
+ */
+
 #!/usr/bin/env npx tsx
 /**
  * Parallel Bulk Filing Analysis Script
@@ -9,6 +39,7 @@
  * Example: npx tsx scripts/bulk-analyze-parallel.ts 0 5
  */
 
+import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { claudeClient } from '../lib/claude-client';
 import { costTracker } from './cost-tracker';
@@ -24,7 +55,7 @@ const prisma = new PrismaClient({
 
 const WORKER_ID = parseInt(process.argv[2] || '0');
 const TOTAL_WORKERS = parseInt(process.argv[3] || '1');
-const COST_LIMIT = 300; // $300 limit (conservative)
+const COST_LIMIT = parseFloat(process.env.BACKFILL_COST_LIMIT || '300'); // hard stop (env-overridable)
 
 // Rough token estimation (1 token ≈ 4 characters)
 function estimateTokens(text: string): number {
