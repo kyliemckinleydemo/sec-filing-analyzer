@@ -1,3 +1,26 @@
+/**
+ * @module rate-limit.test
+ * @description Unit tests for rate limiting and quota management functionality
+ * 
+ * PURPOSE:
+ * Tests the rate limiting mechanisms that protect API endpoints from abuse by:
+ * - Validating fingerprint generation from request headers (IP, user-agent, etc.)
+ * - Verifying unauthenticated request rate limits (20 requests per window)
+ * - Verifying authenticated user AI quota limits (100 requests per window)
+ * - Ensuring proper request counting, remaining quota tracking, and blocking behavior
+ * 
+ * EXPORTS:
+ * - N/A (test suite only)
+ * 
+ * CLAUDE NOTES:
+ * - Uses Vitest testing framework with describe/it/expect/beforeEach
+ * - Tests generateFingerprint for deterministic SHA-256 hex output and collision resistance
+ * - Tests checkUnauthRateLimit with unique fingerprints per test to avoid state pollution
+ * - Tests checkAuthAIQuota with unique user IDs per test for isolation
+ * - Validates both allow/block behavior and accurate remaining count decrements
+ * - Rate limits: 20/window for unauth, 100/window for auth AI requests
+ */
+
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
   generateFingerprint,
@@ -47,27 +70,27 @@ describe('checkUnauthRateLimit', () => {
     fingerprint = `test-fp-${Date.now()}-${Math.random()}`;
   });
 
-  it('allows the first request', () => {
-    const result = checkUnauthRateLimit(fingerprint);
+  it('allows the first request', async () => {
+    const result = await checkUnauthRateLimit(fingerprint);
     expect(result.allowed).toBe(true);
     expect(result.remaining).toBe(19);
     expect(result.limit).toBe(20);
   });
 
-  it('allows 20 requests then blocks the 21st', () => {
+  it('allows 20 requests then blocks the 21st', async () => {
     for (let i = 0; i < 20; i++) {
-      const result = checkUnauthRateLimit(fingerprint);
+      const result = await checkUnauthRateLimit(fingerprint);
       expect(result.allowed).toBe(true);
     }
-    const result = checkUnauthRateLimit(fingerprint);
+    const result = await checkUnauthRateLimit(fingerprint);
     expect(result.allowed).toBe(false);
     expect(result.remaining).toBe(0);
   });
 
-  it('decrements remaining count on each request', () => {
-    const r1 = checkUnauthRateLimit(fingerprint);
+  it('decrements remaining count on each request', async () => {
+    const r1 = await checkUnauthRateLimit(fingerprint);
     expect(r1.remaining).toBe(19);
-    const r2 = checkUnauthRateLimit(fingerprint);
+    const r2 = await checkUnauthRateLimit(fingerprint);
     expect(r2.remaining).toBe(18);
   });
 });
@@ -78,19 +101,19 @@ describe('checkAuthAIQuota', () => {
     userId = `user-${Date.now()}-${Math.random()}`;
   });
 
-  it('allows the first request', () => {
-    const result = checkAuthAIQuota(userId);
+  it('allows the first request', async () => {
+    const result = await checkAuthAIQuota(userId);
     expect(result.allowed).toBe(true);
     expect(result.remaining).toBe(99);
     expect(result.limit).toBe(100);
   });
 
-  it('allows 100 requests then blocks the 101st', () => {
+  it('allows 100 requests then blocks the 101st', async () => {
     for (let i = 0; i < 100; i++) {
-      const result = checkAuthAIQuota(userId);
+      const result = await checkAuthAIQuota(userId);
       expect(result.allowed).toBe(true);
     }
-    const result = checkAuthAIQuota(userId);
+    const result = await checkAuthAIQuota(userId);
     expect(result.allowed).toBe(false);
     expect(result.remaining).toBe(0);
   });

@@ -64,7 +64,7 @@ export async function GET(
 
     // Get rate limit info for response headers
     const fingerprint = generateFingerprint(request);
-    const rateLimit = checkUnauthRateLimit(fingerprint);
+    const rateLimit = await checkUnauthRateLimit(fingerprint);
 
     // Check cache first
     const cacheKey = `company:${ticker.toUpperCase()}`;

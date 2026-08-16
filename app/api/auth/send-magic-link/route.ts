@@ -36,6 +36,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateMagicLinkToken } from '@/lib/auth';
+import { checkMagicLinkThrottle } from '@/lib/rate-limit';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -52,6 +53,17 @@ export async function POST(request: NextRequest) {
     }
 
     const normalizedEmail = email.toLowerCase().trim();
+
+    // Throttle sends (anti email-bomb / enumeration): 5/hr per email, 15/hr per IP.
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
+               request.headers.get('x-real-ip') || 'unknown';
+    const throttle = await checkMagicLinkThrottle(ip, normalizedEmail);
+    if (!throttle.allowed) {
+      return NextResponse.json(
+        { error: 'Too many sign-in link requests. Please wait a bit and try again.' },
+        { status: 429 }
+      );
+    }
 
     // Generate token
     const token = generateMagicLinkToken();

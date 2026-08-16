@@ -1,206 +1,122 @@
 /**
  * @module lib/rate-limit
- * @description Implements daily rate limiting for unauthenticated requests (20/day) and authenticated AI analyses (100/day) using browser fingerprinting and in-memory storage with midnight UTC reset
+ * @description Daily rate limiting for unauthenticated requests (20/day) and authenticated AI
+ * analyses (100/day), plus a magic-link send throttle. Backed by a durable REST Redis store
+ * (Vercel KV / Upstash) when configured, so limits hold across serverless instances; falls back
+ * to an in-memory Map when no store is configured (local dev / before KV is provisioned).
  *
- * PURPOSE:
- * - Generate SHA-256 hashed fingerprints from IP, User-Agent, and Accept-Language headers for anonymous user tracking
- * - Enforce 20 requests per day limit for unauthenticated users using fingerprint-based identification
- * - Enforce 100 AI analyses per day quota for authenticated users tracked by userId
- * - Automatically reset counters at end of day (23:59:59.999) and cleanup expired entries hourly
- *
- * DEPENDENCIES:
- * - next/server - Provides NextRequest type for accessing HTTP headers in middleware and API routes
- * - crypto - Uses createHash for SHA-256 fingerprint generation from concatenated header values
- *
- * EXPORTS:
- * - generateFingerprint (function) - Returns SHA-256 hash of IP, User-Agent, and Accept-Language headers for anonymous user identification
- * - checkUnauthRateLimit (function) - Returns { allowed, remaining, resetAt, limit } object after checking/incrementing unauthenticated user's daily request count
- * - checkAuthAIQuota (function) - Returns { allowed, remaining, resetAt, limit } object after checking/incrementing authenticated user's AI analysis quota
- * - cleanupExpiredEntries (function) - Removes entries from both stores where current time exceeds resetAt timestamp
- *
- * PATTERNS:
- * - Call generateFingerprint(request) in middleware, then checkUnauthRateLimit(fingerprint) before processing public API requests
- * - For authenticated AI routes: extract userId from JWT/session, call checkAuthAIQuota(userId), return 429 if allowed=false
- * - Check response.allowed before processing; use response.remaining and response.resetAt for X-RateLimit-* headers
- * - Run cleanupExpiredEntries() manually on server initialization if needed, or rely on automatic hourly cleanup
+ * EXPORTS (all counter checks are ASYNC — callers must await):
+ * - generateFingerprint(request) -> sha256(ip|ua|accept-language) for anonymous identification
+ * - checkUnauthRateLimit(fingerprint) -> { allowed, remaining, resetAt, limit }  (20/day)
+ * - checkAuthAIQuota(userId) -> { allowed, remaining, resetAt, limit }  (100/day)
+ * - checkMagicLinkThrottle(ip, email) -> { allowed, reason? }  (5/hr per email, 15/hr per ip)
+ * - cleanupExpiredEntries() -> prunes the in-memory fallback store
+ * - rateLimitBackend -> 'redis' | 'memory' (which store is active)
  *
  * CLAUDE NOTES:
- * - Uses in-memory Map storage - data lost on server restart; production needs Vercel KV or Redis for persistence across serverless function instances
- * - Reset time calculated as end of current day (23:59:59.999) means limits reset at midnight local server time, not per-user timezone
- * - Fingerprinting combines 3 headers but IP from x-forwarded-for can be spoofed; consider adding more entropy or moving to proper session tokens
- * - Automatic cleanup runs every hour only in server context (typeof window check) but won't run in serverless environments without persistent process
+ * - Provisioning: create a Vercel KV (or Upstash Redis) store and connect it to the project. It
+ *   injects KV_REST_API_URL/KV_REST_API_TOKEN (Vercel) or UPSTASH_REDIS_REST_URL/_TOKEN (Upstash);
+ *   both namings are supported. No env => in-memory fallback (per-instance, non-durable).
+ * - Keys embed the date/hour, so windows reset naturally; a TTL backstops cleanup.
  */
 import { NextRequest } from 'next/server';
 import crypto from 'crypto';
+import { Redis } from '@upstash/redis';
+
+// ---- Durable store (Vercel KV / Upstash) with graceful in-memory fallback ------------------
+const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+const redis = REDIS_URL && REDIS_TOKEN ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN }) : null;
+export const rateLimitBackend: 'redis' | 'memory' = redis ? 'redis' : 'memory';
+
+interface MemEntry { count: number; resetAt: number }
+const mem = new Map<string, MemEntry>();
 
 /**
- * Rate limiting system for unauthenticated and authenticated users
- *
- * Limits:
- * - Unauthenticated: 20 requests/day for non-AI endpoints
- * - Authenticated: 100 AI analyses/day
- *
- * Uses browser fingerprinting (IP + User-Agent + Accept-Language)
+ * Atomic increment of a windowed counter. Returns the post-increment count.
+ * Redis path: INCR + set TTL on first hit. Memory path: Map with resetAt.
  */
-
-interface RateLimitStore {
-  count: number;
-  resetAt: number; // Unix timestamp in ms
+async function incrWindow(key: string, ttlSeconds: number, resetAt: number): Promise<number> {
+  if (redis) {
+    try {
+      const count = await redis.incr(key);
+      if (count === 1) await redis.expire(key, ttlSeconds);
+      return count;
+    } catch (e) {
+      // Fail OPEN on store errors (don't block real users on a transient KV outage), but log.
+      console.error('[rate-limit] redis error, allowing request:', e);
+      return 1;
+    }
+  }
+  const now = Date.now();
+  const existing = mem.get(key);
+  if (!existing || now > existing.resetAt) {
+    mem.set(key, { count: 1, resetAt });
+    return 1;
+  }
+  existing.count += 1;
+  return existing.count;
 }
 
-// In-memory storage (in production, use Vercel KV or Redis)
-const unauthStore = new Map<string, RateLimitStore>();
-const authStore = new Map<string, RateLimitStore>();
+function endOfDayMs(): number {
+  const d = new Date();
+  d.setHours(23, 59, 59, 999);
+  return d.getTime();
+}
+const dayStamp = () => new Date().toISOString().slice(0, 10);       // YYYY-MM-DD
+const hourStamp = () => new Date().toISOString().slice(0, 13);      // YYYY-MM-DDTHH
 
-/**
- * Generate a fingerprint from request headers
- * Combines IP, User-Agent, and Accept-Language for uniqueness
- */
+/** SHA-256 fingerprint from IP + User-Agent + Accept-Language (privacy-preserving, stable). */
 export function generateFingerprint(request: NextRequest): string {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
              request.headers.get('x-real-ip') ||
              'unknown';
   const userAgent = request.headers.get('user-agent') || '';
   const acceptLang = request.headers.get('accept-language') || '';
-
-  const fingerprint = `${ip}|${userAgent}|${acceptLang}`;
-
-  // Hash for privacy and storage efficiency
-  return crypto.createHash('sha256').update(fingerprint).digest('hex');
+  return crypto.createHash('sha256').update(`${ip}|${userAgent}|${acceptLang}`).digest('hex');
 }
 
-/**
- * Check if an unauthenticated user has exceeded their daily limit
- * Returns { allowed: boolean, remaining: number, resetAt: number }
- */
-export function checkUnauthRateLimit(fingerprint: string): {
-  allowed: boolean;
-  remaining: number;
-  resetAt: number;
-  limit: number;
-} {
-  const DAILY_LIMIT = 20;
-  const now = Date.now();
-  const endOfDay = new Date();
-  endOfDay.setHours(23, 59, 59, 999);
-  const resetAt = endOfDay.getTime();
+interface LimitResult { allowed: boolean; remaining: number; resetAt: number; limit: number }
 
-  const existing = unauthStore.get(fingerprint);
-
-  if (!existing || now > existing.resetAt) {
-    // New day or first request
-    const newEntry: RateLimitStore = {
-      count: 1,
-      resetAt,
-    };
-    unauthStore.set(fingerprint, newEntry);
-    return {
-      allowed: true,
-      remaining: DAILY_LIMIT - 1,
-      resetAt,
-      limit: DAILY_LIMIT,
-    };
-  }
-
-  // Check if limit exceeded
-  if (existing.count >= DAILY_LIMIT) {
-    return {
-      allowed: false,
-      remaining: 0,
-      resetAt: existing.resetAt,
-      limit: DAILY_LIMIT,
-    };
-  }
-
-  // Increment count
-  existing.count += 1;
-  unauthStore.set(fingerprint, existing);
-
-  return {
-    allowed: true,
-    remaining: DAILY_LIMIT - existing.count,
-    resetAt: existing.resetAt,
-    limit: DAILY_LIMIT,
-  };
+/** Unauthenticated daily limit (20/day) for non-AI public endpoints. */
+export async function checkUnauthRateLimit(fingerprint: string): Promise<LimitResult> {
+  const limit = 20;
+  const resetAt = endOfDayMs();
+  const count = await incrWindow(`rl:unauth:${dayStamp()}:${fingerprint}`, 90000, resetAt);
+  return { allowed: count <= limit, remaining: Math.max(0, limit - count), resetAt, limit };
 }
 
-/**
- * Check if an authenticated user has exceeded their AI analysis quota
- * Returns { allowed: boolean, remaining: number, resetAt: number }
- */
-export function checkAuthAIQuota(userId: string): {
-  allowed: boolean;
-  remaining: number;
-  resetAt: number;
-  limit: number;
-} {
-  const DAILY_LIMIT = 100;
-  const now = Date.now();
-  const endOfDay = new Date();
-  endOfDay.setHours(23, 59, 59, 999);
-  const resetAt = endOfDay.getTime();
-
-  const existing = authStore.get(userId);
-
-  if (!existing || now > existing.resetAt) {
-    // New day or first request
-    const newEntry: RateLimitStore = {
-      count: 1,
-      resetAt,
-    };
-    authStore.set(userId, newEntry);
-    return {
-      allowed: true,
-      remaining: DAILY_LIMIT - 1,
-      resetAt,
-      limit: DAILY_LIMIT,
-    };
-  }
-
-  // Check if limit exceeded
-  if (existing.count >= DAILY_LIMIT) {
-    return {
-      allowed: false,
-      remaining: 0,
-      resetAt: existing.resetAt,
-      limit: DAILY_LIMIT,
-    };
-  }
-
-  // Increment count
-  existing.count += 1;
-  authStore.set(userId, existing);
-
-  return {
-    allowed: true,
-    remaining: DAILY_LIMIT - existing.count,
-    resetAt: existing.resetAt,
-    limit: DAILY_LIMIT,
-  };
+/** Authenticated AI-analysis quota (100/day) per user. */
+export async function checkAuthAIQuota(userId: string): Promise<LimitResult> {
+  const limit = 100;
+  const resetAt = endOfDayMs();
+  const count = await incrWindow(`rl:ai:${dayStamp()}:${userId}`, 90000, resetAt);
+  return { allowed: count <= limit, remaining: Math.max(0, limit - count), resetAt, limit };
 }
 
-/**
- * Clean up expired entries periodically (run on server start or cron)
- */
+/** Magic-link send throttle: 5/hour per email + 15/hour per IP (anti email-bomb / enumeration). */
+export async function checkMagicLinkThrottle(
+  ip: string,
+  email: string
+): Promise<{ allowed: boolean; reason?: 'email' | 'ip' }> {
+  const resetAt = Date.now() + 3600_000;
+  const emailKey = crypto.createHash('sha256').update(email.trim().toLowerCase()).digest('hex');
+  const emailCount = await incrWindow(`ml:email:${hourStamp()}:${emailKey}`, 3700, resetAt);
+  if (emailCount > 5) return { allowed: false, reason: 'email' };
+  const ipCount = await incrWindow(`ml:ip:${hourStamp()}:${ip}`, 3700, resetAt);
+  if (ipCount > 15) return { allowed: false, reason: 'ip' };
+  return { allowed: true };
+}
+
+/** Prune expired entries from the in-memory fallback store (no-op for the Redis backend). */
 export function cleanupExpiredEntries() {
   const now = Date.now();
-
-  // Clean unauth store
-  for (const [key, value] of unauthStore.entries()) {
-    if (now > value.resetAt) {
-      unauthStore.delete(key);
-    }
-  }
-
-  // Clean auth store
-  for (const [key, value] of authStore.entries()) {
-    if (now > value.resetAt) {
-      authStore.delete(key);
-    }
+  for (const [key, value] of mem.entries()) {
+    if (now > value.resetAt) mem.delete(key);
   }
 }
 
-// Cleanup expired entries every hour
-if (typeof window === 'undefined') {
+// Hourly cleanup of the in-memory fallback (only relevant when no Redis store is configured).
+if (typeof window === 'undefined' && !redis) {
   setInterval(cleanupExpiredEntries, 60 * 60 * 1000);
 }

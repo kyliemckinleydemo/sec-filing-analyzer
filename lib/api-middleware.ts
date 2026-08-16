@@ -63,7 +63,7 @@ export async function requireUnauthRateLimit(request: NextRequest): Promise<{
 
   // Unauthenticated users: check rate limit
   const fingerprint = generateFingerprint(request);
-  const rateLimit = checkUnauthRateLimit(fingerprint);
+  const rateLimit = await checkUnauthRateLimit(fingerprint);
 
   if (!rateLimit.allowed) {
     const resetDate = new Date(rateLimit.resetAt);
@@ -127,7 +127,7 @@ export async function requireAuthAndAIQuota(request: NextRequest): Promise<{
   }
 
   // Check AI quota
-  const quota = checkAuthAIQuota(session.userId);
+  const quota = await checkAuthAIQuota(session.userId);
 
   if (!quota.allowed) {
     const resetDate = new Date(quota.resetAt);
