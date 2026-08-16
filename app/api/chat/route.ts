@@ -54,6 +54,8 @@ const COMPANY_SELECT = {
   currentPrice: true,
   marketCap: true,
   peRatio: true,
+  forwardPE: true,
+  pegRatio: true,
   fiftyTwoWeekHigh: true,
   fiftyTwoWeekLow: true,
   analystTargetPrice: true,
@@ -133,6 +135,67 @@ async function fetchSectorCompanies(sectorNames: string[]) {
   });
 }
 
+// Common English / finance words that collide with real 1-5 letter tickers. Never treat these as a
+// ticker on their own — case-insensitive matching would otherwise bind "is"->IS, "for"->FOR, etc.
+const TICKER_STOPWORDS = new Set([
+  'A','I','AN','AS','AT','BE','BY','DO','GO','IF','IN','IS','IT','ME','MY','NO','OF','ON','OR','SO','TO','UP','US','WE',
+  'ALL','AND','ANY','ARE','BUY','CAN','DID','FOR','GET','HAS','HAD','HER','HIS','HOW','ITS','LOW','NEW','NOW','OFF','ONE',
+  'OUR','OUT','PER','PUT','SEE','THE','TOO','TOP','WAS','WHO','WHY','YOU','DOES','SELL','HOLD','GROW','RATE','RISK',
+  'BEST','FROM','GOOD','HIGH','INTO','LESS','LIKE','MORE','MUCH','OVER','THAN','THAT','THIS','WHAT','WHEN','WITH','YEAR',
+  'YOUR','GOOD','FAIR','CHEAP','WORTH','TREND','GUIDE','SHOW','TELL','GIVE','FIND','ITS',
+  'EPS','PE','PEG','CEO','CFO','YOY','SEC','ETF','USD','ROE','ROI','GAAP','CAGR',
+]);
+
+/**
+ * Resolve the company a free-text question is about. Users type naturally — the ticker may be
+ * lowercase ("is efx cheap?") or the company may be named ("is equifax's multiple fair?"). The old
+ * logic matched only UPPERCASE [A-Z]{1,5}, so any lowercase ticker silently fell through to a
+ * generic 20-filing sample (the "EFX not in dataset" bug, despite EFX being in the DB).
+ * Returns a resolved ticker (verified against the DB) or '' if none is confidently found.
+ *
+ * `allowNameMatch` gates the fuzzy name fallback. Exact ticker-token matching is high precision and
+ * always runs, but the name `contains` fallback is disabled when a sector was already detected —
+ * otherwise a generic "energy companies" question would wrongly bind to a random energy company.
+ */
+async function detectCompanyTicker(message: string, allowNameMatch: boolean): Promise<string> {
+  // 1) Ticker candidates: 1-5 letter tokens, normalized to uppercase, minus stopwords.
+  const tokens = message.match(/\b[A-Za-z]{1,5}\b/g) || [];
+  const upperInMsg = new Set(message.match(/\b[A-Z]{1,5}\b/g) || []);
+  const candidates = Array.from(new Set(tokens.map((t) => t.toUpperCase()))).filter(
+    (t) => !TICKER_STOPWORDS.has(t)
+  );
+  if (candidates.length > 0) {
+    const matches = await prisma.company.findMany({
+      where: { ticker: { in: candidates } },
+      select: { ticker: true },
+    });
+    if (matches.length === 1) return matches[0].ticker;
+    if (matches.length > 1) {
+      // Multiple valid tickers in one question is rare — prefer one the user wrote in uppercase
+      // (a strong intent signal), otherwise take the first match.
+      return (matches.find((m) => upperInMsg.has(m.ticker)) || matches[0]).ticker;
+    }
+  }
+
+  // 2) Company-name fallback: match a distinctive (5+ char) word against company names
+  //    ("equifax" -> EFX). Longest words first; stop at the first confident hit.
+  if (allowNameMatch) {
+    const nameWords = Array.from(new Set((message.match(/\b[A-Za-z]{5,}\b/g) || []).map((w) => w.toUpperCase())))
+      .filter((w) => !TICKER_STOPWORDS.has(w))
+      .sort((a, b) => b.length - a.length)
+      .slice(0, 3);
+    for (const w of nameWords) {
+      const byName = await prisma.company.findFirst({
+        where: { name: { contains: w, mode: 'insensitive' } },
+        select: { ticker: true },
+      });
+      if (byName) return byName.ticker;
+    }
+  }
+
+  return '';
+}
+
 function buildFilingContext(filings: any[]) {
   return filings.map((f) => {
     let analysisData;
@@ -182,6 +245,8 @@ function buildFilingContext(filings: any[]) {
       marketCap: f.company.marketCap,
       marketCapB: marketCapB ? `$${marketCapB}B` : null,
       peRatio: f.company.peRatio,
+      forwardPE: f.company.forwardPE,
+      pegRatio: f.company.pegRatio,
       dividendYield: f.company.dividendYield,
       beta: f.company.beta,
       fiftyTwoWeekHigh: f.company.fiftyTwoWeekHigh,
@@ -252,6 +317,8 @@ function buildCompanyContext(companies: any[]) {
       currentPrice: c.currentPrice,
       marketCapB: marketCapB ? `$${marketCapB}B` : null,
       peRatio: c.peRatio,
+      forwardPE: c.forwardPE,
+      pegRatio: c.pegRatio,
       dividendYield: c.dividendYield,
       beta: c.beta,
       analystTargetPrice: c.analystTargetPrice,
@@ -332,17 +399,12 @@ export async function POST(request: NextRequest) {
       sectorDbNames = SECTOR_ALIASES[sector] || [sector];
     }
 
-    // Detect ticker from message text if not explicitly provided (e.g., "AAPL's risk factors")
+    // Detect ticker/company from the message when not explicitly provided. Handles lowercase
+    // tickers ("efx") and company names ("equifax") — see detectCompanyTicker. Only runs when a
+    // sector wasn't matched above, so sector questions still fetch the broader sector set.
     let effectiveTicker = ticker || '';
     if (!effectiveTicker) {
-      const tickerMatch = message.match(/\b([A-Z]{1,5})\b(?:'s|'s|\s)/);
-      if (tickerMatch) {
-        // Verify it's a real ticker by checking the database
-        const company = await prisma.company.findFirst({ where: { ticker: tickerMatch[1] }, select: { ticker: true } });
-        if (company) {
-          effectiveTicker = company.ticker;
-        }
-      }
+      effectiveTicker = await detectCompanyTicker(message, /* allowNameMatch */ !sector);
     }
 
     console.log(`[Chat API] Query: "${message}"${effectiveTicker ? ` (ticker: ${effectiveTicker})` : ''}${sector ? ` (sector: ${sector})` : ''}`);
@@ -401,6 +463,8 @@ DATA FIELDS EXPLAINED:
 - eps/epsYoY: Earnings per share and YoY growth
 - grossMargin/operatingMargin: Profit margins
 - marketCapB: Market capitalization in billions (e.g., "$250.5B")
+- peRatio/forwardPE: Trailing and forward price-to-earnings multiples
+- pegRatio: P/E-to-growth ratio (~1 is fairly valued vs its growth; <1 cheap, >2 rich)
 - epsSurprise/revenueSurprise: Beat/miss vs analyst estimates
 - concernLevel: 0-10 scale (0=excellent, 10=critical concerns)
 - concernLabel: LOW/MODERATE/ELEVATED/HIGH/CRITICAL
