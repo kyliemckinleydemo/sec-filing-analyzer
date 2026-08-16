@@ -37,8 +37,19 @@
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const SESSION_COOKIE_NAME = 'stockhuntr_session';
+
+// Never fall back to a committed default secret in production — that would let anyone forge a
+// session for any userId/tier. In dev/test we allow a fixed local secret so the app and unit
+// tests run without a configured secret; production requires JWT_SECRET to be set.
+function getJwtSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (secret) return secret;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET is not set — refusing to sign or verify sessions without a configured secret.');
+  }
+  return 'dev-only-insecure-jwt-secret';
+}
 
 export interface SessionData {
   userId: string;
@@ -51,8 +62,9 @@ export interface SessionData {
  * Create a JWT token for the user session
  */
 export function createSessionToken(data: SessionData): string {
-  return jwt.sign(data, JWT_SECRET, {
+  return jwt.sign(data, getJwtSecret(), {
     expiresIn: '30d', // 30 days
+    algorithm: 'HS256',
   });
 }
 
@@ -61,7 +73,7 @@ export function createSessionToken(data: SessionData): string {
  */
 export function verifySessionToken(token: string): SessionData | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as SessionData;
+    return jwt.verify(token, getJwtSecret(), { algorithms: ['HS256'] }) as SessionData;
   } catch (error) {
     return null;
   }

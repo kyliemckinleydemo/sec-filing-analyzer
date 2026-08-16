@@ -175,13 +175,11 @@ export async function GET(request: Request) {
   const userAgent = request.headers.get('user-agent');
   const cronSecret = process.env.CRON_SECRET;
 
-  // Check multiple indicators that this is a Vercel cron request
-  const isVercelCron = userAgent?.includes('vercel-cron/') ||
-                       request.headers.get('x-vercel-cron') === '1' ||
-                       request.headers.get('user-agent')?.toLowerCase().includes('vercel');
-  const hasValidAuth = cronSecret && authHeader === `Bearer ${cronSecret}`;
+  // Require the shared secret only — Vercel Cron sends `Authorization: Bearer $CRON_SECRET` when
+  // CRON_SECRET is configured. Spoofable UA / x-vercel-cron headers must NOT grant access.
+  const hasValidAuth = !!cronSecret && authHeader === `Bearer ${cronSecret}`;
 
-  if (!isVercelCron && !hasValidAuth) {
+  if (!hasValidAuth) {
     console.error('[AnalystCron] Unauthorized request', {
       userAgent,
       hasAuthHeader: !!authHeader,

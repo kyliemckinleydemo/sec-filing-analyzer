@@ -44,6 +44,23 @@ const nextConfig = {
   swcMinify: true,
   // Configure output
   output: 'standalone',
+  // Baseline security headers on every response (defense-in-depth). A strict Content-Security-Policy
+  // is intentionally left as a follow-up (needs report-only tuning against Next inline scripts +
+  // Clarity/analytics before enforcing).
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig

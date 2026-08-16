@@ -22,14 +22,11 @@ export const maxDuration = 120;
 const norm = (t: string) => t.toUpperCase().replace(/[.\-]/g, '');
 
 function authorized(request: Request): boolean {
+  // Require the shared secret only — Vercel Cron sends `Authorization: Bearer $CRON_SECRET` when
+  // CRON_SECRET is configured. Spoofable UA / x-vercel-cron headers must NOT grant access.
   const authHeader = request.headers.get('authorization');
-  const userAgent = request.headers.get('user-agent') || '';
   const cronSecret = process.env.CRON_SECRET;
-  const isVercelCron =
-    userAgent.includes('vercel-cron/') ||
-    request.headers.get('x-vercel-cron') === '1' ||
-    userAgent.toLowerCase().includes('vercel');
-  return isVercelCron || (!!cronSecret && authHeader === `Bearer ${cronSecret}`);
+  return !!cronSecret && authHeader === `Bearer ${cronSecret}`;
 }
 
 export async function GET(request: Request) {

@@ -73,9 +73,10 @@ export async function POST(request: NextRequest) {
     });
 
     // Build magic link URL
+    // Explicit precedence: a configured canonical URL wins; else the Vercel deploy URL; else local.
+    // (The old form `A || B ? x : y` bound `||` tighter than `?:`, yielding `https://undefined`.)
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ||
-                    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` :
-                    'http://localhost:3000';
+                    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
     const magicLink = `${baseUrl}/api/auth/verify-magic-link?token=${token}`;
 
     // Send email via Resend

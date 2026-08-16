@@ -82,9 +82,33 @@ const VALID_SECTORS = [
   'Utilities',
 ];
 
+// Escape HTML so any markup in the (AI- and filing-derived, attacker-influenceable) content is
+// inert before we add our own markdown-derived tags — prevents XSS via the model's output.
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Only allow safe link targets (http/https/mailto/relative); reject javascript:/data:/etc.
+function safeHref(url: string): string | null {
+  const u = url.trim();
+  if (/^\s*javascript:/i.test(u) || /^\s*data:/i.test(u)) return null;
+  return /^(https?:\/\/|mailto:|\/)/i.test(u) ? u : null;
+}
+
 function formatMarkdown(text: string): string {
-  return text
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-blue-600 hover:text-blue-800 underline">$1</a>')
+  // Escape FIRST, then apply markdown, so injected HTML never reaches the DOM.
+  return escapeHtml(text)
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, label: string, url: string) => {
+      const href = safeHref(url);
+      return href
+        ? `<a href="${href}" class="text-blue-600 hover:text-blue-800 underline" rel="noopener noreferrer" target="_blank">${label}</a>`
+        : label;
+    })
     .replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900">$1</strong>')
     .replace(/\*(.*?)\*/g, '<em class="text-slate-900">$1</em>')
     .replace(/`(.*?)`/g, '<code class="bg-gray-100 text-slate-900 px-1 rounded">$1</code>')

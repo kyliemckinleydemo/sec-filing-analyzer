@@ -18,15 +18,11 @@ const LOOKBACK_DAYS = 200;
 const MAX_PER_RUN = 400; // predictions are fast; bounded to stay within timeout
 
 function authorized(request: Request): boolean {
+  // Require the shared secret only — Vercel Cron sends `Authorization: Bearer $CRON_SECRET` when
+  // CRON_SECRET is configured. Spoofable UA / x-vercel-cron headers must NOT grant access.
   const authHeader = request.headers.get('authorization');
-  const userAgent = request.headers.get('user-agent') || '';
   const cronSecret = process.env.CRON_SECRET;
-  const isVercelCron =
-    userAgent.includes('vercel-cron/') ||
-    request.headers.get('x-vercel-cron') === '1' ||
-    userAgent.toLowerCase().includes('vercel');
-  const hasValidAuth = !!cronSecret && authHeader === `Bearer ${cronSecret}`;
-  return isVercelCron || hasValidAuth;
+  return !!cronSecret && authHeader === `Bearer ${cronSecret}`;
 }
 
 export async function GET(request: Request) {

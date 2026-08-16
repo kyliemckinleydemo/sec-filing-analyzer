@@ -25,15 +25,11 @@ const LOOKBACK_DAYS = 45; // only keep the recent window current; backfill older
 const DEFAULT_MAX_PER_RUN = 6; // conservative; each filing ~30-60s and costs tokens
 
 function authorized(request: Request): boolean {
+  // Require the shared secret only — Vercel Cron sends `Authorization: Bearer $CRON_SECRET` when
+  // CRON_SECRET is configured. Spoofable UA / x-vercel-cron headers must NOT grant access.
   const authHeader = request.headers.get('authorization');
-  const userAgent = request.headers.get('user-agent') || '';
   const cronSecret = process.env.CRON_SECRET;
-  const isVercelCron =
-    userAgent.includes('vercel-cron/') ||
-    request.headers.get('x-vercel-cron') === '1' ||
-    userAgent.toLowerCase().includes('vercel');
-  const hasValidAuth = !!cronSecret && authHeader === `Bearer ${cronSecret}`;
-  return isVercelCron || hasValidAuth;
+  return !!cronSecret && authHeader === `Bearer ${cronSecret}`;
 }
 
 export async function GET(request: Request) {
