@@ -117,7 +117,7 @@ const MATERIAL_8K_ITEMS = new Set([
  * Conservative on purpose — if we can't classify the items, or any material item is present, we
  * analyze it. This targets the clearest noise (proxy/vote-result 8-Ks) with ~zero false skips.
  */
-function isProceduralEightK(text: string): boolean {
+export function isProceduralEightK(text: string): boolean {
   const items = new Set<string>();
   for (const m of text.matchAll(/Item\s+(\d\.\d{2})/gi)) items.add(m[1]);
   if (items.size === 0) return false;

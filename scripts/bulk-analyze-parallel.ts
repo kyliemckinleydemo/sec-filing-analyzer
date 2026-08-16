@@ -41,6 +41,7 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { claudeClient } from '../lib/claude-client';
+import { isProceduralEightK } from '../lib/pipeline';
 import { costTracker } from './cost-tracker';
 
 // Configure Prisma with larger connection pool for parallel processing
@@ -55,6 +56,9 @@ const prisma = new PrismaClient({
 const WORKER_ID = parseInt(process.argv[2] || '0');
 const TOTAL_WORKERS = parseInt(process.argv[3] || '1');
 const COST_LIMIT = parseFloat(process.env.BACKFILL_COST_LIMIT || '300'); // hard stop (env-overridable)
+// How far back to analyze. Default 120d (4mo); capped at 183d (6mo) — full analysis of older
+// filings isn't worth the spend (their 30d prediction windows are long realized). Env-overridable.
+const LOOKBACK_DAYS = Math.min(183, parseInt(process.env.BACKFILL_LOOKBACK_DAYS || '120'));
 
 // Rough token estimation (1 token ≈ 4 characters)
 function estimateTokens(text: string): number {
@@ -127,15 +131,15 @@ async function parallelAnalyzeFilings() {
   console.log(`WORKER ${WORKER_ID}/${TOTAL_WORKERS - 1} - Parallel Filing Analysis (Auto-Retry Enabled)`);
   console.log('='.repeat(80) + '\n');
 
-  // Find recent filings without analysis (skip filings older than 4 months)
-  const fourMonthsAgo = new Date();
-  fourMonthsAgo.setMonth(fourMonthsAgo.getMonth() - 4);
+  // Find recent filings without analysis (bounded by LOOKBACK_DAYS, capped at 6 months)
+  const since = new Date(Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000);
+  console.log(`Lookback: ${LOOKBACK_DAYS} days (since ${since.toISOString().split('T')[0]})`);
 
   const allFilings = await withRetry(async () => {
     return await prisma.filing.findMany({
       where: {
         analysisData: null,
-        filingDate: { gte: fourMonthsAgo },
+        filingDate: { gte: since },
       },
       select: {
         id: true,
@@ -187,6 +191,27 @@ async function parallelAnalyzeFilings() {
       const filingText = await fetchFilingContent(filing.filingUrl);
       if (!filingText) {
         errorCount++;
+        continue;
+      }
+
+      // Skip the full 6-call analysis for genuinely procedural 8-Ks (e.g. Item 5.07 vote results) —
+      // no financials, no material event. Mark processed cheaply. Same rule as lib/pipeline.ts.
+      if (filing.filingType === '8-K' && isProceduralEightK(filingText)) {
+        await withRetry(async () => {
+          return await prisma.filing.update({
+            where: { id: filing.id },
+            data: {
+              analysisData: JSON.stringify({ procedural: true }),
+              riskScore: 1,
+              sentimentScore: 0,
+              concernLevel: 1,
+              aiSummary:
+                'Procedural 8-K (routine disclosure such as annual-meeting vote results). No detailed AI analysis was performed.',
+            },
+          });
+        });
+        console.log(`  Procedural 8-K - skipped (no cost)`);
+        skipCount++;
         continue;
       }
 
