@@ -11,6 +11,17 @@ import CompanyClient from './company-client';
 import QASection from '@/app/components/QASection';
 import { buildCompanyQA } from '@/lib/qa-builders';
 
+// ISR: the server-rendered company shell (metadata + Q&A) changes slowly; prices refresh via
+// cron every few hours, so a 15-min revalidate is well within freshness and cuts TTFB from
+// ~900ms (dynamic) to ~cached. Interactive/live data still loads client-side.
+export const revalidate = 900;
+
+// No build-time prerender; company pages are generated on first request and cached via ISR
+// (revalidate above). Opting in makes ISR actually engage for this dynamic route.
+export async function generateStaticParams() {
+  return [] as { ticker: string }[];
+}
+
 interface PageProps {
   params: { ticker: string };
 }

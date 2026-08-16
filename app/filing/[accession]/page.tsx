@@ -12,6 +12,17 @@ import FilingClient from './filing-client';
 import QASection from '@/app/components/QASection';
 import { buildFilingQA } from '@/lib/qa-builders';
 
+// ISR: a filing's server-rendered content (metadata + cited Q&A) is essentially static once
+// analyzed, so cache it and revalidate hourly. Cuts TTFB from ~600ms (dynamic) to ~cached.
+// The interactive/authed data still loads client-side, so nothing user-specific is cached.
+export const revalidate = 3600;
+
+// No build-time prerender (there are thousands of filings); pages are generated on first
+// request and cached via ISR (revalidate above). Opting in makes ISR actually engage.
+export async function generateStaticParams() {
+  return [] as { accession: string }[];
+}
+
 interface PageProps {
   params: { accession: string };
 }
