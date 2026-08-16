@@ -333,7 +333,7 @@ export async function GET(
   } catch (error: any) {
     console.error('Error generating prediction:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to generate prediction' },
+      { error: 'Failed to generate prediction' },
       { status: 500 }
     );
   }

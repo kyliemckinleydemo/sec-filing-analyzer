@@ -481,7 +481,7 @@ Answer the question:`;
   } catch (error: any) {
     console.error('[Chat API] Error:', error);
     return new Response(
-      JSON.stringify({ error: error.message || 'Failed to process chat message' }),
+      JSON.stringify({ error: 'Failed to process chat message' }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }

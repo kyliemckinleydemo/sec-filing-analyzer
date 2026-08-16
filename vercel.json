@@ -50,15 +50,7 @@
     },
     {
       "path": "/api/cron/analyze-filings",
-      "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/api/cron/analyze-filings",
-      "schedule": "0 15 * * *"
-    },
-    {
-      "path": "/api/cron/analyze-filings",
-      "schedule": "0 21 * * *"
+      "schedule": "0 */2 * * *"
     },
     {
       "path": "/api/cron/backfill-predictions",

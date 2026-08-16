@@ -1198,7 +1198,7 @@ Note: Base analysis on general knowledge. Do not mention data access limitations
   } catch (error: any) {
     console.error('Error analyzing filing:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to analyze filing' },
+      { error: 'Failed to analyze filing' },
       { status: 500 }
     );
   }

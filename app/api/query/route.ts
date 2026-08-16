@@ -1267,7 +1267,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('[Query API] Error:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to process query' },
+      { error: 'Failed to process query' },
       { status: 500 }
     );
   }
