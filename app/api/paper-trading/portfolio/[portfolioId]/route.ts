@@ -33,6 +33,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PaperTradingEngine } from '@/lib/paper-trading';
 import { prisma } from '@/lib/prisma';
+import { getSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,6 +47,13 @@ export async function GET(
   { params }: { params: Promise<{ portfolioId: string }> }
 ) {
   try {
+    // Interim IDOR guard: require an authenticated session. (Portfolios aren't yet user-scoped —
+    // that needs a userId schema migration — but this closes anonymous read access by portfolio id.)
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
     const { portfolioId } = await params;
 
     const engine = new PaperTradingEngine(portfolioId);
@@ -88,7 +96,7 @@ export async function GET(
   } catch (error: any) {
     console.error('[Paper Trading] Error fetching portfolio:', error);
     return NextResponse.json(
-      { error: error.message },
+      { error: 'Failed to fetch portfolio' },
       { status: 500 }
     );
   }

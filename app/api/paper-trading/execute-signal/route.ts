@@ -30,6 +30,7 @@
  */
 import { NextResponse } from 'next/server';
 import { PaperTradingEngine, TradeSignal } from '@/lib/paper-trading';
+import { getSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -52,6 +53,14 @@ export const dynamic = 'force-dynamic';
  */
 export async function POST(request: Request) {
   try {
+    // Require an authenticated session — this route mutates a portfolio (executes trades) and must
+    // not be callable anonymously. Internal automation (e.g. /api/predict) uses the engine directly,
+    // not this HTTP route, so gating it here has no internal impact.
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { portfolioId, ...signal } = body as { portfolioId: string } & TradeSignal;
 
@@ -93,7 +102,7 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error('[Paper Trading] Error executing signal:', error);
     return NextResponse.json(
-      { error: error.message },
+      { error: 'Failed to execute signal' },
       { status: 500 }
     );
   }
