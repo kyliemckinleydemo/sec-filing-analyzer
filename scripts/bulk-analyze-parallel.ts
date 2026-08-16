@@ -28,7 +28,6 @@
  * - Stores analysis results including riskScore, sentimentScore, concernLevel, and aiSummary
  */
 
-#!/usr/bin/env npx tsx
 /**
  * Parallel Bulk Filing Analysis Script
  *
