@@ -32,11 +32,18 @@ export async function GET(request: Request) {
 
   const since = new Date(Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000);
 
+  // Only pull filings a prediction is meaningful for (mirrors isFinanciallySubstantive in the
+  // pipeline): 10-K/10-Q, or an 8-K carrying an EPS surprise. This keeps procedural 8-Ks — which the
+  // pipeline skips and would otherwise stay predicted30dAlpha=null forever — out of every run's budget.
   const filings = await prisma.filing.findMany({
     where: {
       filingDate: { gte: since },
       concernLevel: { not: null },
       predicted30dAlpha: null,
+      OR: [
+        { filingType: { in: ['10-K', '10-Q'] } },
+        { epsSurprise: { not: null } },
+      ],
     },
     include: {
       company: {
@@ -50,10 +57,11 @@ export async function GET(request: Request) {
     take: MAX_PER_RUN,
   });
 
-  let ok = 0, insufficient = 0, failed = 0;
+  let ok = 0, insufficient = 0, skipped = 0, failed = 0;
   for (const f of filings) {
     const r = await generateAndPersistPrediction({
       id: f.id,
+      filingType: f.filingType,
       filingDate: f.filingDate,
       companyId: f.companyId,
       concernLevel: f.concernLevel,
@@ -63,11 +71,20 @@ export async function GET(request: Request) {
     });
     if (r.status === 'ok') ok++;
     else if (r.status === 'insufficient-data') insufficient++;
+    else if (r.status === 'skipped-no-financials') skipped++;
     else failed++;
   }
 
   const remaining = await prisma.filing.count({
-    where: { filingDate: { gte: since }, concernLevel: { not: null }, predicted30dAlpha: null },
+    where: {
+      filingDate: { gte: since },
+      concernLevel: { not: null },
+      predicted30dAlpha: null,
+      OR: [
+        { filingType: { in: ['10-K', '10-Q'] } },
+        { epsSurprise: { not: null } },
+      ],
+    },
   });
 
   return NextResponse.json({
@@ -75,6 +92,7 @@ export async function GET(request: Request) {
     processed: filings.length,
     predicted: ok,
     insufficientData: insufficient,
+    skippedNoFinancials: skipped,
     failed,
     remainingUnpredicted: remaining,
   });

@@ -78,9 +78,51 @@ async function analystCounts(companyId: string, filingDate: Date) {
 }
 
 export interface PredictionResult {
-  status: 'ok' | 'insufficient-data' | 'error';
+  status: 'ok' | 'insufficient-data' | 'skipped-no-financials' | 'error';
   predicted30dAlpha?: number;
   confidence?: number;
+}
+
+/**
+ * A 30-day ALPHA prediction is only meaningful for filings with real financial signal — the model
+ * runs on EPS surprise + fundamentals. On a procedural filing it has nothing to work with and emits
+ * noise (the ±0.1% "low-conviction" signals). So we only predict for 10-K/10-Q (always financial
+ * reports) or an 8-K that carries an EPS surprise (an earnings 8-K). Risk/concern analysis still runs
+ * on everything; this only gates the prediction step.
+ */
+function isFinanciallySubstantive(filingType: string, epsSurprise?: number | null): boolean {
+  return filingType === '10-K' || filingType === '10-Q' || epsSurprise != null;
+}
+
+/** Numeric EPS surprise (%) from the analysis's structured metrics, if the filing had earnings. */
+function epsSurpriseFromAnalysis(analysis: { financialMetrics?: { structuredData?: any } }): number | null {
+  const sd = analysis.financialMetrics?.structuredData;
+  if (!sd || sd.epsSurprise == null) return null;
+  if (sd.epsSurprise === 'inline') return 0;
+  const mag = typeof sd.epsSurpriseMagnitude === 'number' ? Math.abs(sd.epsSurpriseMagnitude) : 1;
+  return sd.epsSurprise === 'miss' ? -mag : mag; // 'beat' => positive
+}
+
+// 8-K item codes that carry material events worth full analysis (agreements, bankruptcy, M&A,
+// earnings, obligations/impairments, delisting, unregistered sales, auditor/restatement, control
+// & exec/board changes, and the catch-all "other material event" 8.01).
+const MATERIAL_8K_ITEMS = new Set([
+  '1.01', '1.02', '1.03', '2.01', '2.02', '2.03', '2.04', '2.05', '2.06',
+  '3.01', '3.02', '3.03', '4.01', '4.02', '5.01', '5.02', '5.03', '5.08', '8.01',
+]);
+
+/**
+ * A genuinely procedural 8-K worth skipping: it contains item headers, NONE of them material, and
+ * it's limited to routine annual-meeting vote results (Item 5.07) plus optional exhibits (9.01).
+ * Conservative on purpose — if we can't classify the items, or any material item is present, we
+ * analyze it. This targets the clearest noise (proxy/vote-result 8-Ks) with ~zero false skips.
+ */
+function isProceduralEightK(text: string): boolean {
+  const items = new Set<string>();
+  for (const m of text.matchAll(/Item\s+(\d\.\d{2})/gi)) items.add(m[1]);
+  if (items.size === 0) return false;
+  for (const it of items) if (MATERIAL_8K_ITEMS.has(it)) return false;
+  return items.has('5.07') && [...items].every((it) => it === '5.07' || it === '9.01');
 }
 
 /**
@@ -89,6 +131,7 @@ export interface PredictionResult {
  */
 export async function generateAndPersistPrediction(filing: {
   id: string;
+  filingType: string;
   filingDate: Date;
   companyId: string;
   concernLevel: number | null;
@@ -103,6 +146,11 @@ export async function generateAndPersistPrediction(filing: {
     sector: string | null;
   };
 }): Promise<PredictionResult> {
+  // Skip prediction for filings with no financial signal (procedural 8-Ks) — see helper above.
+  if (!isFinanciallySubstantive(filing.filingType, filing.epsSurprise)) {
+    return { status: 'skipped-no-financials' };
+  }
+
   const c = filing.company;
   const hasMinimumData =
     !!c.currentPrice && c.currentPrice > 0 && (!!c.fiftyTwoWeekLow || filing.concernLevel != null);
@@ -195,6 +243,23 @@ export async function analyzeAndPersistFiling(filing: {
     const text = await fetchFilingText(filing.filingUrl);
     if (!text) return { status: 'fetch-failed' };
 
+    // Skip the full 6-call analysis for genuinely procedural 8-Ks (e.g. Item 5.07 vote results) —
+    // no financials, no material event. Mark processed with an honest low concern to save spend.
+    if (filing.filingType === '8-K' && isProceduralEightK(text)) {
+      await prisma.filing.update({
+        where: { id: filing.id },
+        data: {
+          analysisData: JSON.stringify({ procedural: true }),
+          riskScore: 1,
+          sentimentScore: 0,
+          concernLevel: 1,
+          aiSummary:
+            'Procedural 8-K (routine disclosure such as annual-meeting vote results). No detailed AI analysis was performed.',
+        },
+      });
+      return { status: 'ok', concernLevel: 1, predictionStatus: 'skipped-no-financials' };
+    }
+
     const sample = text.slice(0, 50000);
     const analysis = await claudeClient.analyzeFullFiling(
       sample,
@@ -217,16 +282,19 @@ export async function analyzeAndPersistFiling(filing: {
       },
     });
 
-    // Generate the prediction now that the filing has analysis features.
+    // Generate the prediction (gated to financially-substantive filings inside the helper). Feed the
+    // EPS surprise the analysis found instead of dropping it (this path used to hardcode null).
+    const epsSurprise = epsSurpriseFromAnalysis(analysis);
     let predictionStatus: PredictionResult['status'] = 'error';
     try {
       const pred = await generateAndPersistPrediction({
         id: filing.id,
+        filingType: filing.filingType,
         filingDate: filing.filingDate,
         companyId: filing.companyId,
         concernLevel: analysis.concernAssessment.concernLevel,
         sentimentScore: analysis.sentiment.sentimentScore,
-        epsSurprise: null,
+        epsSurprise,
         company: filing.company,
       });
       predictionStatus = pred.status;
