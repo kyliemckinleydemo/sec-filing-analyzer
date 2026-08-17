@@ -20,11 +20,11 @@ export default function Footer() {
           <div>
             <h3 className="text-xs uppercase tracking-wider text-gray-400 mb-3">Explore</h3>
             <ul className="space-y-2">
-              <li><Link href="/latest-filings" className="hover:text-white">Latest Filings</Link></li>
-              <li><Link href="/pulse" className="hover:text-white">SEC Filing Pulse</Link></li>
-              <li><Link href="/query" className="hover:text-white">Ask the Market</Link></li>
-              <li><Link href="/model-demo" className="hover:text-white">Model Track Record</Link></li>
-              <li><Link href="/sectors" className="hover:text-white">Filings by Sector</Link></li>
+              <li><Link href="/latest-filings" className="block py-1 hover:text-white">Latest Filings</Link></li>
+              <li><Link href="/pulse" className="block py-1 hover:text-white">SEC Filing Pulse</Link></li>
+              <li><Link href="/query" className="block py-1 hover:text-white">Ask the Market</Link></li>
+              <li><Link href="/model-demo" className="block py-1 hover:text-white">Model Track Record</Link></li>
+              <li><Link href="/sectors" className="block py-1 hover:text-white">Filings by Sector</Link></li>
             </ul>
           </div>
 
@@ -33,10 +33,10 @@ export default function Footer() {
             <ul className="space-y-2">
               {topSectors.map((s) => (
                 <li key={s.slug}>
-                  <Link href={`/sectors/${s.slug}`} className="hover:text-white">{s.name}</Link>
+                  <Link href={`/sectors/${s.slug}`} className="block py-1 hover:text-white">{s.name}</Link>
                 </li>
               ))}
-              <li><Link href="/sectors" className="text-teal-400 hover:underline">All sectors →</Link></li>
+              <li><Link href="/sectors" className="block py-1 text-teal-400 hover:underline">All sectors →</Link></li>
             </ul>
           </div>
 
@@ -45,22 +45,22 @@ export default function Footer() {
             <ul className="space-y-2">
               {topExplainers.map((e) => (
                 <li key={e.slug}>
-                  <Link href={`/learn/${e.slug}`} className="hover:text-white">{e.question}</Link>
+                  <Link href={`/learn/${e.slug}`} className="block py-1 hover:text-white">{e.question}</Link>
                 </li>
               ))}
-              <li><Link href="/learn" className="text-teal-400 hover:underline">All explainers →</Link></li>
+              <li><Link href="/learn" className="block py-1 text-teal-400 hover:underline">All explainers →</Link></li>
             </ul>
           </div>
 
           <div>
             <h3 className="text-xs uppercase tracking-wider text-gray-400 mb-3">StockHuntr</h3>
             <ul className="space-y-2">
-              <li><Link href="/" className="hover:text-white">Home</Link></li>
-              <li><Link href="/faq" className="hover:text-white">FAQ & Methodology</Link></li>
-              <li><Link href="/compare" className="hover:text-white">Compare tools</Link></li>
-              <li><Link href="/compare/free-sec-filing-ai-tools" className="hover:text-white">Free SEC filing AI</Link></li>
-              <li><Link href="/privacy" className="hover:text-white">Privacy</Link></li>
-              <li><Link href="/terms" className="hover:text-white">Terms</Link></li>
+              <li><Link href="/" className="block py-1 hover:text-white">Home</Link></li>
+              <li><Link href="/faq" className="block py-1 hover:text-white">FAQ & Methodology</Link></li>
+              <li><Link href="/compare" className="block py-1 hover:text-white">Compare tools</Link></li>
+              <li><Link href="/compare/free-sec-filing-ai-tools" className="block py-1 hover:text-white">Free SEC filing AI</Link></li>
+              <li><Link href="/privacy" className="block py-1 hover:text-white">Privacy</Link></li>
+              <li><Link href="/terms" className="block py-1 hover:text-white">Terms</Link></li>
             </ul>
           </div>
         </div>
