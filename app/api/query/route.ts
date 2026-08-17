@@ -127,31 +127,32 @@ function parseCompoundQuery(query: string): { conditions: ParsedCondition[], ope
     'average volume': 'averageVolume'
   };
 
-  // Parse conditions: field operator value
-  const conditionPattern = /([a-z\s\/\-0-9]+?)\s*([<>=!]+|greater than|less than|equals?|above|below|over|under)\s*\$?([0-9.]+)([%bBmMkKtT])?/gi;
-  const conditions: ParsedCondition[] = [];
-  let match;
+  // Map natural language operators to symbols
+  const operatorMap: Record<string, string> = {
+    'greater than': '>',
+    'less than': '<',
+    'equals': '=',
+    'equal': '=',
+    'above': '>',
+    'below': '<',
+    'over': '>',
+    'under': '<'
+  };
 
-  while ((match = conditionPattern.exec(query)) !== null) {
+  // Split on the and/or connectors FIRST, then parse ONE condition per segment. A single global
+  // regex over the whole query used to absorb the connector into the next field name (e.g.
+  // "and dividend yield"), which mapped to nothing — so every condition after the first was
+  // silently dropped and "PE < 15 and dividend yield > 3%" screened on PE alone.
+  const singleCondition = /([a-z\s\/\-0-9]+?)\s*([<>=!]+|greater than|less than|equals?|above|below|over|under)\s*\$?([0-9.]+)([%bBmMkKtT])?/i;
+  const conditions: ParsedCondition[] = [];
+  for (const segment of query.split(/\s+(?:and|or)\s+/i)) {
+    const match = segment.match(singleCondition);
+    if (!match) continue;
     const fieldName = match[1].trim().toLowerCase();
     let operator = match[2].trim();
     const value = parseFloat(match[3]);
     const unit = match[4]?.toLowerCase();
-
-    // Map natural language operators to symbols
-    const operatorMap: Record<string, string> = {
-      'greater than': '>',
-      'less than': '<',
-      'equals': '=',
-      'equal': '=',
-      'above': '>',
-      'below': '<',
-      'over': '>',
-      'under': '<'
-    };
     operator = operatorMap[operator] || operator;
-
-    // Find database field name
     const dbField = fieldMappings[fieldName];
     if (dbField) {
       conditions.push({ field: dbField, operator, value, unit });
