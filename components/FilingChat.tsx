@@ -54,14 +54,22 @@ export function FilingChat({ ticker, companyName, filingType, filingDate }: Fili
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [requiresAuth, setRequiresAuth] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const msgCountRef = useRef(0);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
+  // Keep the newest message in view WITHIN the chat's own scroll area — never scroll the page.
+  // The widget is fixed over a long filing page; the old scrollIntoView dragged the whole page to
+  // the bottom on every streamed token (the jitter). Scroll the container directly instead, and
+  // during streaming only pin when you're already near the bottom, so it never yanks you mid-read.
   useEffect(() => {
-    scrollToBottom();
+    const c = scrollContainerRef.current;
+    if (!c) return;
+    const messageAdded = messages.length !== msgCountRef.current;
+    msgCountRef.current = messages.length;
+    const nearBottom = c.scrollHeight - c.scrollTop - c.clientHeight < 120;
+    if (messageAdded || nearBottom) {
+      c.scrollTop = c.scrollHeight;
+    }
   }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -189,7 +197,7 @@ export function FilingChat({ ticker, companyName, filingType, filingDate }: Fili
         </div>
       </CardHeader>
 
-      <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
+      <CardContent ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.length === 0 && (
           <div className="text-center text-slate-500 mt-8">
             <p className="text-sm mb-4">Ask questions about this filing:</p>
@@ -245,8 +253,6 @@ export function FilingChat({ ticker, companyName, filingType, filingDate }: Fili
             </div>
           </div>
         )}
-
-        <div ref={messagesEndRef} />
       </CardContent>
 
       <form onSubmit={handleSubmit} className="border-t p-4">

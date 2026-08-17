@@ -575,8 +575,11 @@ export default function FilingPage({ initialFiling }: { initialFiling?: InitialF
     const stepDetails = getStepDetails(currentStep);
 
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
-        <Card className="w-full max-w-2xl mx-4">
+      // Fixed full-screen overlay (not just min-h-screen): the server component renders the SEO
+      // Q&A block ABOVE this client component, so an in-flow loader lands below the fold and the
+      // user can't tell the detailed analysis is still generating. Overlaying keeps it in view.
+      <div className="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <Card className="w-full max-w-2xl mx-4 my-8">
           <CardHeader>
             <div className="text-center space-y-4">
               <div className="text-6xl animate-bounce">{stepDetails.emoji}</div>

@@ -129,6 +129,7 @@ function QueryPageContent() {
   const [showFilters, setShowFilters] = useState(false);
   const [lastQueryType, setLastQueryType] = useState<'screen' | 'ai' | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const aiCountRef = useRef(0);
   const router = useRouter();
 
   // Auto-fill ticker from URL parameter. Read from window.location instead of
@@ -143,8 +144,23 @@ function QueryPageContent() {
     }
   }, []);
 
+  // Auto-scroll rules (avoids the jittery per-token page scroll):
+  // - When a message is ADDED (you submit, or the answer begins) scroll it into view once, smoothly.
+  // - While tokens stream into the SAME message, only keep it pinned if you're already near the
+  //   bottom — and instantly, not animated — so it never yanks the page while you read further up.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = messagesEndRef.current;
+    if (!el) return;
+    const messageAdded = aiMessages.length !== aiCountRef.current;
+    aiCountRef.current = aiMessages.length;
+
+    if (messageAdded) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      return;
+    }
+    const nearBottom =
+      window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 200;
+    if (nearBottom) el.scrollIntoView({ behavior: 'auto', block: 'end' });
   }, [aiMessages]);
 
   const sectorOptions = useMemo(() => {
@@ -442,6 +458,15 @@ function QueryPageContent() {
                   )}
                 </Button>
               </div>
+
+              {/* Streaming indicator — stays visible at the input so you know work is underway even
+                  before the answer (which streams into the section below) scrolls into view. */}
+              {isStreaming && (
+                <div className="mt-3 flex items-center gap-2 text-sm text-purple-700 bg-purple-50 border border-purple-200 rounded-lg px-4 py-2">
+                  <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                  Analyzing filings and writing your answer below…
+                </div>
+              )}
             </CardContent>
           </Card>
 
