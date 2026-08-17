@@ -32,6 +32,11 @@ const PRICING: Record<string, [number, number]> = {
   'openai/gpt-4o-mini': [0.15, 0.6],
   'google/gemini-2.0-flash-001': [0.1, 0.4],
   'deepseek/deepseek-chat': [0.28, 0.88],
+  // Chinese models (live OpenRouter pricing, Aug 2026)
+  'deepseek/deepseek-v4-flash': [0.083, 0.165],
+  'z-ai/glm-5.2': [0.447, 3.31],
+  'deepseek/deepseek-v3.2': [0.269, 0.4],
+  'qwen/qwen3.6-flash': [0.188, 1.125],
 };
 
 type ModelSpec = { id: string; label: string; provider: 'anthropic' | 'openai-compat' };
@@ -44,12 +49,12 @@ const OPENAI_COMPAT_BASE = process.env.OPENROUTER_API_KEY
 
 const MODELS: ModelSpec[] = [
   { id: 'claude-sonnet-4-5-20250929', label: 'Sonnet 4.5 (baseline)', provider: 'anthropic' },
-  { id: 'claude-haiku-4-5-20251001', label: 'Haiku 4.5 (current bulk)', provider: 'anthropic' },
-  { id: 'claude-3-5-haiku-20241022', label: 'Haiku 3.5', provider: 'anthropic' },
+  { id: 'claude-haiku-4-5-20251001', label: 'Haiku 4.5 (current bar)', provider: 'anthropic' },
   ...(OPENAI_COMPAT_KEY
     ? ([
-        { id: 'openai/gpt-4o-mini', label: 'GPT-4o-mini', provider: 'openai-compat' },
-        { id: 'google/gemini-2.0-flash-001', label: 'Gemini 2.0 Flash', provider: 'openai-compat' },
+        { id: 'deepseek/deepseek-v4-flash', label: 'DeepSeek V4 Flash', provider: 'openai-compat' },
+        { id: 'z-ai/glm-5.2', label: 'GLM-5.2', provider: 'openai-compat' },
+        { id: 'deepseek/deepseek-v3.2', label: 'DeepSeek V3.2', provider: 'openai-compat' },
       ] as ModelSpec[])
     : []),
 ];
