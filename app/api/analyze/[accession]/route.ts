@@ -74,11 +74,9 @@ export async function GET(
       );
     }
 
-    // Check authentication and AI quota (requires login, 100 analyses/day)
-    const authCheck = await requireAuthAndAIQuota(request);
-    if (!authCheck.allowed) {
-      return authCheck.response!;
-    }
+    // NOTE: the auth/quota gate is applied LOWER DOWN, only on the FRESH-analysis path. Returning
+    // already-stored analysis costs nothing (it's public data shown on the page anyway), so it must
+    // not consume an anonymous visitor's free-question allowance. Only paid re-generation is metered.
 
     // Disabled caching - always regenerate analysis for fresh results
     // const cacheKey = `analysis:${accession}`;
@@ -140,6 +138,13 @@ export async function GET(
       };
 
       return NextResponse.json(result);
+    }
+
+    // Past this point we're about to run FRESH (paid) Claude analysis — now enforce the auth/quota
+    // gate. Anonymous visitors get a small free allowance (shared with chat); exhausted -> signup.
+    const authCheck = await requireAuthAndAIQuota(request);
+    if (!authCheck.allowed) {
+      return authCheck.response!;
     }
 
     // If filing doesn't exist or has no analysis, we need to create/analyze it

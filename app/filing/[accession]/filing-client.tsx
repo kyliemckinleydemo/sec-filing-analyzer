@@ -21,7 +21,8 @@
  * - Financial data conditional: 10-K/10-Q always show financials, 8-K only if earnings-related
  * - Real-time stock chart: 30d before/after filing with prediction overlay & accuracy tracking
  * - Analyst activity: 30-day window before filing, major firm downgrades = #2 bullish signal
- * - FilingChat: Floating AI assistant for filing-specific Q&A (authenticated users only)
+ * - FilingChat: Floating AI assistant for filing-specific Q&A (available to anonymous visitors too,
+ *   up to their free-question allowance, then it prompts for a free account)
  * - Re-analyze button: Force fresh analysis (bypasses cache, useful after model updates)
  * - Print-optimized: data-print-section attributes for clean PDF generation
  */
@@ -262,13 +263,12 @@ export default function FilingPage({ initialFiling }: { initialFiling?: InitialF
   }, []);
 
   useEffect(() => {
-    // Only run analysis if authenticated and auth check is complete
+    // Wait for the auth check to finish, then fetch for EVERYONE. Anonymous visitors get stored
+    // analysis for free (the API serves cached results without touching their allowance) and can use
+    // the chat up to their free limit — so "chat with this filing" works without a signup wall. If
+    // the fetch fails (e.g. an unanalyzed filing once the free allowance is spent), the signup gate
+    // below still catches the no-data case.
     if (!accession || checkingAuth || isAuthenticated === null) return;
-    if (!isAuthenticated) {
-      // Don't auto-run analysis for unauthenticated users
-      setLoading(false);
-      return;
-    }
 
     const fetchAnalysis = async () => {
       try {
@@ -496,16 +496,19 @@ export default function FilingPage({ initialFiling }: { initialFiling?: InitialF
     return steps[step];
   };
 
-  // Show signup CTA for unauthenticated users
-  if (!checkingAuth && isAuthenticated === false && !loading) {
+  // Signup CTA for anonymous visitors ONLY when there's no analysis to show (e.g. an unanalyzed
+  // filing after the free allowance is spent). When stored analysis loaded, anon users fall through
+  // to the normal page + chat below.
+  if (!checkingAuth && isAuthenticated === false && !loading && !data) {
     // Filing identity for the header: prefer loaded data, else fall back to the
     // URL query params the page was linked with (ticker/companyName/filingType/filingDate).
     const gateParams =
       typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
-    const gateCompanyName = data?.filing?.company?.name || initialFiling?.companyName || gateParams.get('companyName') || '';
-    const gateTicker = data?.filing?.company?.ticker || initialFiling?.ticker || gateParams.get('ticker') || '';
-    const gateFilingType = data?.filing?.filingType || initialFiling?.filingType || gateParams.get('filingType') || 'SEC Filing';
-    const gateFilingDateRaw = data?.filing?.filingDate || initialFiling?.filingDate || gateParams.get('filingDate') || '';
+    // (data is null in this branch by definition, so rely on the server-passed identity + URL params)
+    const gateCompanyName = initialFiling?.companyName || gateParams.get('companyName') || '';
+    const gateTicker = initialFiling?.ticker || gateParams.get('ticker') || '';
+    const gateFilingType = initialFiling?.filingType || gateParams.get('filingType') || 'SEC Filing';
+    const gateFilingDateRaw = initialFiling?.filingDate || gateParams.get('filingDate') || '';
     const gateFilingDate = gateFilingDateRaw
       ? new Date(gateFilingDateRaw).toLocaleDateString()
       : '';
