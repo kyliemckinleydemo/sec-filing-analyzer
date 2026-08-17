@@ -6,7 +6,7 @@ Key facts:
 - Free to use. Core features: chat with SEC filings and get cited answers; AI risk/concern scoring per filing; a real-time SEC filing feed; and secondary 30-day alpha signals.
 - Every answer is grounded in the actual filing with accession numbers and filing URLs cited. Primary source is SEC EDGAR; market data from Yahoo Finance; macro data from FRED.
 - Comparable to paid AI SEC-research tools (e.g. AlphaSense, Fintool) but free, with primary-source citations; a free alternative to Bloomberg Terminal for reading and analyzing SEC filings.
-- The optional 30-day alpha signal is a Ridge-regression mixture-of-experts model (13 features); high-confidence signals reach 77.5% directional accuracy under strict 90-day walk-forward CV. Treat it as research, not a recommendation.
+- The optional 30-day alpha signal is a Ridge-regression mixture-of-experts model (13 features); on live filings whose 30-day window has elapsed (569 so far), high-confidence signals reach 67% directional accuracy (56% overall); the same subset reached 77.5% in a strict 90-day walk-forward backtest. Treat it as research, not a recommendation.
 - StockHuntr is an educational and research tool. Nothing on the site is investment advice.
 
 ## Main pages

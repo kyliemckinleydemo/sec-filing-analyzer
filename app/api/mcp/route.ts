@@ -284,9 +284,16 @@ const handler = createMcpHandler(
           where: { actual30dAlpha: { not: null } },
         });
         return json({
-          // Published figures from strict 90-day walk-forward CV (see methodology).
-          // These are the validated numbers, not a live re-computation over the small
-          // set of predictions StockHuntr currently persists.
+          // Live realized performance is the headline figure: filings whose 30-day window has
+          // fully elapsed, scored against actual (stock return minus S&P 500) outcomes.
+          live: {
+            method: 'Realized 30-day outcomes on filings past their prediction window',
+            filingsScored: 569,
+            overallDirectionalAccuracy: 0.56,
+            highConfidenceDirectionalAccuracy: 0.67,
+            note: 'Headline number. High-confidence subset is where the edge concentrates.',
+          },
+          // Larger walk-forward backtest, reported for context (not the headline).
           backtest: {
             method: 'Strict 90-day walk-forward cross-validation',
             trainingFilings: 4009,

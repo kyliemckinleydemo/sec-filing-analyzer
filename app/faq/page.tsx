@@ -5,7 +5,7 @@
  * PURPOSE:
  * - Display comprehensive FAQ covering model methodology, analyst opinion tracking, backtesting results, and data source limitations
  * - Organize questions into 5 categories: Purpose & Overview, The Model, Variables & Features, Backtesting & Accuracy, and Data & Coverage
- * - Provide detailed explanations of Ridge regression MoE model using 13 features with 77.5% high-confidence directional accuracy
+ * - Provide detailed explanations of Ridge regression MoE model using 13 features with 67% live high-confidence directional accuracy (77.5% in backtest)
  * - Document key findings including EPS surprise as strongest new feature, contrarian downgrade signals, and macro regime adjustment
  *
  * DEPENDENCIES:
@@ -37,7 +37,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 export const metadata: Metadata = {
   title: 'FAQ — How Our SEC Filing Prediction Model Works',
   description:
-    'How StockHuntr predicts 30-day alpha from SEC filings: Ridge regression MoE model, 13 features, 77.5% high-confidence directional accuracy, strict walk-forward validation, and full data source documentation.',
+    'How StockHuntr predicts 30-day alpha from SEC filings: Ridge regression MoE model, 13 features, 67% live high-confidence directional accuracy, strict walk-forward validation, and full data source documentation.',
   alternates: { canonical: '/faq' },
 };
 
@@ -93,7 +93,7 @@ const faqs = [
         },
         {
           q: "What machine learning approach do you use?",
-          a: "We use Ridge regression (regularization λ=100) with forward stepwise feature selection. The model is trained on 4,009 SEC filings from 500+ companies across all sectors and market cap tiers. We use a strict 90-day walk-forward cross-validation — the test set is always at least 90 days after the training cutoff — to prevent any temporal leakage. High-confidence signals achieve 77.5% directional accuracy with an annualized Sharpe ratio of 2.22. The model is fully interpretable: every prediction shows which features drove it (e.g., 'strong price momentum: +2.1 score', 'EPS beat: +0.8 score')."
+          a: "We use Ridge regression (regularization λ=100) with forward stepwise feature selection. The model is trained on 4,009 SEC filings from 500+ companies across all sectors and market cap tiers. We use a strict 90-day walk-forward cross-validation, where the test set is always at least 90 days after the training cutoff, to prevent any temporal leakage. On the live filings whose 30-day window has since elapsed (569 so far), high-confidence signals show 67% directional accuracy versus 56% overall; the same subset reached 77.5% in the walk-forward backtest. The model is fully interpretable: every prediction shows which features drove it (e.g., 'strong price momentum: +2.1 score', 'EPS beat: +0.8 score')."
         },
         {
           q: "Why 30 calendar days?",
@@ -139,7 +139,7 @@ const faqs = [
         },
         {
           q: "What is the model's accuracy?",
-          a: "Under strict 90-day walk-forward CV: 56.2% overall directional accuracy and 77.5% for high-confidence signals, with an annualized Sharpe ratio of 2.22 on the high-confidence signal portfolio. Temporal consistency is strong — older filings in the training data show similar accuracy (69.8% at 2+ years, 76.6% at 1-2 years, 82.2% in the last 12 months), indicating the model captures a real structural signal rather than overfitting to the recent bull market. The model's PRIMARY edge is identifying relative losers — SHORT signals have the highest directional accuracy."
+          a: "We report two numbers and lead with the live one. On the live filings whose 30-day window has already elapsed (569 so far): 56% overall directional accuracy and 67% on the high-confidence subset. In strict 90-day walk-forward backtesting over the full 4,009-filing set: 56.2% overall and 77.5% high-confidence, with an annualized Sharpe ratio of 2.22 on the high-confidence portfolio. Backtest temporal consistency is stable (69.8% at 2+ years, 76.6% at 1-2 years, 82.2% in the last 12 months), which points to a real structural signal rather than overfitting to the recent bull market. The high-confidence subset is where the edge concentrates, so that is the number worth watching."
         },
         {
           q: "What are the model's limitations?",

@@ -15,7 +15,7 @@
  * - Authentication gate: Free users see signup CTA, authenticated users get 100 analyses/day
  * - Multi-stage loading UI shows 9-step analysis pipeline (fetch → parse → AI → ML → render)
  * - Alpha Model v2: 44-expert MoE ensemble predicting 30-day market-relative alpha
- *   • 77.5% directional accuracy on high-confidence SHORT signals
+ *   • 67% directional accuracy on high-confidence signals (live realized, n=569)
  *   • Key features: 52W price momentum, EPS surprise, major bank downgrades (contrarian)
  * - Backward compat: Legacy ML prediction card shown if no alpha prediction available
  * - Financial data conditional: 10-K/10-Q always show financials, 8-K only if earnings-related
@@ -770,7 +770,7 @@ export default function FilingPage({ initialFiling }: { initialFiling?: InitialF
                 </span>
               </div>
               <CardDescription>
-                Ridge regression + 44-expert Mixture-of-Experts predicting 30-day market-relative alpha. 77.5% directional accuracy on high-confidence signals.
+                Ridge regression + 44-expert Mixture-of-Experts predicting 30-day market-relative alpha. 67% directional accuracy on high-confidence signals, measured on the 569 filings whose 30-day window has elapsed.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -851,7 +851,7 @@ export default function FilingPage({ initialFiling }: { initialFiling?: InitialF
                 <p className="text-sm text-slate-700">
                   Predicts 30-day market-relative alpha using 13 features across a 44-expert Mixture-of-Experts ensemble (routed by sector and market-cap tier).
                   Top features: price momentum (52W high/low), EPS surprise, major bank downgrades (contrarian signal), and macro regime (SPX trend, VIX).
-                  <strong className="text-emerald-700"> SHORT signals are strongest: 77.5% high-confidence directional accuracy.</strong>
+                  <strong className="text-emerald-700"> High-confidence signals reach 67% directional accuracy on filings with a realized 30-day outcome (56% overall).</strong>
                 </p>
               </div>
             </CardContent>

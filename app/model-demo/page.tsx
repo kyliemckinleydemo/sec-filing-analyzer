@@ -432,6 +432,19 @@ export default function ModelDemoPage() {
               </div>
             </div>
 
+            {/* High-confidence hero: the subset where the edge concentrates (default view) */}
+            {filterConf === 'high' && summary?.dirAccuracy != null && summary.withActual > 0 && !loadingPreds && (
+              <div className="mt-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
+                <div className="flex items-baseline gap-3 flex-wrap">
+                  <span className="text-3xl font-bold text-emerald-400">{summary.dirAccuracy.toFixed(0)}%</span>
+                  <span className="text-sm text-emerald-100/90">
+                    directional accuracy on <strong>high-confidence signals</strong>, across {summary.withActual.toLocaleString()} filings
+                    with a realized 30-day outcome. This is the subset where the model&apos;s edge concentrates (overall runs lower, near 56%).
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* Summary */}
             {summary && !loadingPreds && (
               <div className="flex flex-wrap gap-6 mt-4 pt-4 border-t border-white/10">
