@@ -37,6 +37,9 @@ const PRICING: Record<string, [number, number]> = {
   'z-ai/glm-5.2': [0.447, 3.31],
   'deepseek/deepseek-v3.2': [0.269, 0.4],
   'qwen/qwen3.6-flash': [0.188, 1.125],
+  // OpenAI + Google — benchmark-chosen (AA Intelligence Index, Aug 2026); live OpenRouter pricing
+  'google/gemini-3.7-flash': [0.375, 1.875], // Intelligence 56, #1 on AA-AnalystAgent doc-QA
+  'openai/gpt-5.6-luna': [0.1, 0.6], // Intelligence 51, cheap-capable GPT-5.6 tier
 };
 
 type ModelSpec = { id: string; label: string; provider: 'anthropic' | 'openai-compat' };
@@ -52,9 +55,8 @@ const MODELS: ModelSpec[] = [
   { id: 'claude-haiku-4-5-20251001', label: 'Haiku 4.5 (current bar)', provider: 'anthropic' },
   ...(OPENAI_COMPAT_KEY
     ? ([
-        { id: 'deepseek/deepseek-v4-flash', label: 'DeepSeek V4 Flash', provider: 'openai-compat' },
-        { id: 'z-ai/glm-5.2', label: 'GLM-5.2', provider: 'openai-compat' },
-        { id: 'deepseek/deepseek-v3.2', label: 'DeepSeek V3.2', provider: 'openai-compat' },
+        { id: 'google/gemini-3.7-flash', label: 'Gemini 3.7 Flash', provider: 'openai-compat' },
+        { id: 'openai/gpt-5.6-luna', label: 'GPT-5.6 Luna', provider: 'openai-compat' },
       ] as ModelSpec[])
     : []),
 ];
