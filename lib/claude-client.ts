@@ -910,7 +910,10 @@ Return ONLY bullet points, no introduction.`;
     hasFinancialData: boolean = true
   ): Promise<FilingAnalysis> {
     try {
-      const fullText = currentRisks + '\n\n' + mdaText;
+      // The bulk pipeline passes the same 50KB sample as both currentRisks and mdaText, which used
+      // to duplicate the entire filing text inside fullText (sent to financials/content/exec calls).
+      // Dedupe when identical so we don't pay to send the text twice — ~40% less input on those calls.
+      const fullText = currentRisks === mdaText ? mdaText : currentRisks + '\n\n' + mdaText;
 
       // Run all analysis in parallel for speed
       const [risks, sentiment, financialMetrics, filingContentSummary] = await Promise.all([

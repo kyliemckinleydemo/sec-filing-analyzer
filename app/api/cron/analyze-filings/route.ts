@@ -21,7 +21,10 @@ import { analyzeAndPersistFiling } from '@/lib/pipeline';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
 
-const LOOKBACK_DAYS = 45; // only keep the recent window current; backfill older via script
+// Age cap: the cron only analyzes filings newer than this. Bounds ongoing spend — older filings are
+// never auto-analyzed here (backfill those deliberately via script). Env-tunable so it can be
+// tightened without a deploy. Clamped to 180d (6mo) — full analysis of older filings isn't worth it.
+const LOOKBACK_DAYS = Math.min(180, parseInt(process.env.ANALYSIS_LOOKBACK_DAYS || '45', 10));
 const DEFAULT_MAX_PER_RUN = 6; // conservative; each filing ~30-60s and costs tokens
 
 function authorized(request: Request): boolean {
@@ -102,6 +105,8 @@ export async function GET(request: Request) {
   return NextResponse.json({
     success: true,
     dryRun: false,
+    lookbackDays: LOOKBACK_DAYS,
+    maxPerRun,
     recentBacklog: backlog,
     processed: filings.length,
     analyzed,
