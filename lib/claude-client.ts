@@ -907,7 +907,12 @@ Return ONLY bullet points, no introduction.`;
     companyName?: string,
     priorMDA?: string,
     useCase: 'bulk' | 'user' = 'user',
-    hasFinancialData: boolean = true
+    hasFinancialData: boolean = true,
+    // Model tier for the user-facing EXECUTIVE SUMMARY specifically. The bake-off showed the cheaper
+    // model matches the premium one on all the numeric SCORES but writes weaker prose (loses the blind
+    // summary judge ~3:1), so callers can keep the summary on the quality tier while the 5 analytical
+    // calls run on the cheap tier. Defaults to `useCase` — no change unless a caller opts in.
+    summaryUseCase: 'bulk' | 'user' = useCase
   ): Promise<FilingAnalysis> {
     try {
       // The bulk pipeline passes the same 50KB sample as both currentRisks and mdaText, which used
@@ -933,12 +938,13 @@ Return ONLY bullet points, no introduction.`;
         useCase
       );
 
-      // Generate summary (with guidance on whether to make price forecasts)
+      // Generate summary (with guidance on whether to make price forecasts). Uses summaryUseCase so
+      // the prose can stay on the quality tier even when the analytical calls run cheap.
       const summary = await this.generateExecutiveSummary(
         fullText,
         risks,
         sentiment,
-        useCase,
+        summaryUseCase,
         hasFinancialData
       );
 

@@ -588,8 +588,9 @@ Note: Base analysis on general knowledge. Do not mention data access limitations
           filing.filingType,
           filing.company.name,
           priorMDA,
-          'user', // useCase
-          hasFinancialData
+          'bulk', // analytical calls on Haiku — the bake-off showed identical scores to Sonnet
+          hasFinancialData,
+          'user' // executive summary stays on Sonnet (clearly better prose)
         ),
 
         // Yahoo Finance data (~1-2s) - preload for later use

@@ -261,6 +261,11 @@ export async function analyzeAndPersistFiling(filing: {
     }
 
     const sample = text.slice(0, 50000);
+    // Hybrid tiering: the 5 analytical calls run on the cheap tier (Haiku — matches the premium model
+    // on every numeric score), while the user-facing executive summary runs on the quality tier
+    // (Sonnet — writes clearly better prose). Set BULK_SUMMARY_HAIKU=true to force the summary back to
+    // Haiku and shave the extra cost if feed-summary quality isn't worth it.
+    const summaryTier = process.env.BULK_SUMMARY_HAIKU === 'true' ? 'bulk' : 'user';
     const analysis = await claudeClient.analyzeFullFiling(
       sample,
       sample,
@@ -268,7 +273,9 @@ export async function analyzeAndPersistFiling(filing: {
       filing.filingType,
       filing.company.name,
       undefined,
-      'bulk'
+      'bulk',
+      true,
+      summaryTier
     );
 
     await prisma.filing.update({
