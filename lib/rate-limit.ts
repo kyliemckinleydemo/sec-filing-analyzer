@@ -86,6 +86,56 @@ export async function checkUnauthRateLimit(fingerprint: string): Promise<LimitRe
   return { allowed: count <= limit, remaining: Math.max(0, limit - count), resetAt, limit };
 }
 
+/**
+ * Like incrWindow but FAILS CLOSED: returns null on a Redis error (instead of 1). Used only for the
+ * anonymous AI allowance, where "can't verify usage" must NOT translate to "unlimited free AI" — a
+ * Redis blip during a traffic spike would otherwise remove the cost cap entirely.
+ */
+async function incrOrNull(key: string, ttlSeconds: number, resetAt: number): Promise<number | null> {
+  if (redis) {
+    try {
+      const count = await redis.incr(key);
+      if (count === 1) await redis.expire(key, ttlSeconds);
+      return count;
+    } catch (e) {
+      console.error('[rate-limit] redis error on anon allowance (failing closed):', e);
+      return null;
+    }
+  }
+  // No Redis configured (local dev / pre-provision): use the in-memory fallback, allow.
+  const now = Date.now();
+  const existing = mem.get(key);
+  if (!existing || now > existing.resetAt) { mem.set(key, { count: 1, resetAt }); return 1; }
+  existing.count += 1;
+  return existing.count;
+}
+
+/**
+ * Anonymous free-AI allowance for launch/HN traffic: lets logged-out visitors try the flagship chat
+ * a few times before the signup gate, so "free" isn't a bait-and-switch. Two guards, both env-tunable:
+ *   - ANON_AI_FREE_PER_DAY (default 5): per-fingerprint free AI actions/day (chat + analyze combined).
+ *   - ANON_AI_GLOBAL_DAILY_CAP (default 2000): global daily kill-switch bounding total anon spend
+ *     (~$180/day worst case if every action were a full analysis; realistically far less — chat ~$0.03).
+ * Fails CLOSED (deny → signup) if the store can't be reached, so cost stays bounded during outages.
+ */
+export async function checkAnonAIAllowance(
+  fingerprint: string
+): Promise<{ allowed: boolean; reason?: 'perUser' | 'global'; remaining: number; limit: number; resetAt: number }> {
+  const perUser = parseInt(process.env.ANON_AI_FREE_PER_DAY || '5', 10);
+  const globalCap = parseInt(process.env.ANON_AI_GLOBAL_DAILY_CAP || '2000', 10);
+  const resetAt = endOfDayMs();
+
+  const userCount = await incrOrNull(`ai:anon:${dayStamp()}:${fingerprint}`, 90000, resetAt);
+  if (userCount === null || userCount > perUser) {
+    return { allowed: false, reason: 'perUser', remaining: 0, limit: perUser, resetAt };
+  }
+  const globalCount = await incrOrNull(`ai:anon:global:${dayStamp()}`, 90000, resetAt);
+  if (globalCount === null || globalCount > globalCap) {
+    return { allowed: false, reason: 'global', remaining: 0, limit: perUser, resetAt };
+  }
+  return { allowed: true, remaining: Math.max(0, perUser - userCount), limit: perUser, resetAt };
+}
+
 /** Authenticated AI-analysis quota (100/day) per user. */
 export async function checkAuthAIQuota(userId: string): Promise<LimitResult> {
   const limit = 100;

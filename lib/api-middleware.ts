@@ -36,6 +36,7 @@ import {
   generateFingerprint,
   checkUnauthRateLimit,
   checkAuthAIQuota,
+  checkAnonAIAllowance,
 } from './rate-limit';
 
 /**
@@ -110,17 +111,28 @@ export async function requireAuthAndAIQuota(request: NextRequest): Promise<{
 }> {
   const session = await getSession();
 
-  // Must be authenticated for AI endpoints
+  // Anonymous visitors get a small FREE allowance before the signup gate, so the flagship "free"
+  // chat isn't a bait-and-switch (critical for launch/HN). Bounded per-fingerprint + a global daily
+  // kill-switch; see checkAnonAIAllowance. Fails closed (gates to signup) if the store is unreachable.
   if (!session) {
+    const anon = await checkAnonAIAllowance(generateFingerprint(request));
+    if (anon.allowed) {
+      return { allowed: true, session: null };
+    }
+    const overloaded = anon.reason === 'global';
     return {
       allowed: false,
       response: NextResponse.json(
         {
-          error: 'Authentication required',
-          message: 'Sign up for free to access AI-powered filing analysis. Get 100 analyses per day!',
+          error: overloaded ? 'High demand' : 'Free limit reached',
+          message: overloaded
+            ? 'StockHuntr is seeing a lot of traffic right now — sign up free to keep going (100 AI analyses/day).'
+            : `You've used your ${anon.limit} free questions for today. Sign up free for 100 AI analyses/day.`,
           requiresAuth: true,
+          limit: anon.limit,
+          remaining: 0,
         },
-        { status: 401 }
+        { status: overloaded ? 429 : 401 }
       ),
       session: null,
     };

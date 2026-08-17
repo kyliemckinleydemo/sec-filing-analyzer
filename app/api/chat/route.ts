@@ -346,10 +346,10 @@ export async function POST(request: NextRequest) {
     if (!authCheck.allowed) {
       return new Response(
         JSON.stringify({
-          error: authCheck.response?.status === 401 ? 'Authentication required' : 'Daily quota exceeded',
+          error: authCheck.response?.status === 401 ? 'Free limit reached' : 'High demand',
           message: authCheck.response?.status === 401
-            ? 'Sign up for free to access AI-powered chat. Get 100 AI analyses per day!'
-            : 'You\'ve used all your AI analyses for today. Resets at midnight.',
+            ? "You've used your free questions for today. Sign up free for 100 AI analyses per day!"
+            : 'StockHuntr is seeing a lot of traffic right now — sign up free to keep going.',
           requiresAuth: true,
         }),
         {
