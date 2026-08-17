@@ -42,6 +42,22 @@
 
 import { TOP_1000_TICKERS } from './top1000-tickers';
 
+/**
+ * Decode the handful of HTML/XML entities that show up in SEC RSS titles (which are XML-escaped),
+ * so a name like "H&amp;R BLOCK" or "Wendy&#39;s" is stored — and later rendered/indexed — correctly.
+ * Decodes &amp; last so single-encoded names resolve cleanly.
+ */
+export function decodeEntities(s: string): string {
+  return s
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&#38;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
+}
+
 export interface SECFiling {
   accessionNumber: string;
   cik: string;
@@ -249,8 +265,10 @@ export class SECRSSClient {
         const link = entry.match(/<link[^>]*href="([^"]*)"[^>]*>/)?.[1] || '';
         const updated = entry.match(/<updated>(.*?)<\/updated>/)?.[1] || '';
 
-        // Title format: "10-K - APPLE INC (0000320193) (Filer)"
-        const titleMatch = title.match(/^([^\-]+)\s*-\s*(.+?)\s*\((\d+)\)/);
+        // Title format: "10-K - APPLE INC (0000320193) (Filer)". Require whitespace around the
+        // form/company separator hyphen — the form type itself contains a hyphen (10-K, 8-K, 10-Q),
+        // so matching on any hyphen used to leave its trailing letter stuck on the name ("K - APPLE").
+        const titleMatch = title.match(/^(.+?)\s+-\s+(.+?)\s*\((\d+)\)/);
         if (!titleMatch) continue;
 
         const [, form, companyName, cik] = titleMatch;
@@ -264,7 +282,7 @@ export class SECRSSClient {
           accessionNumber: this.extractAccessionNumber(link),
           cik: cik.padStart(10, '0'),
           ticker,
-          companyName: companyName.trim(),
+          companyName: decodeEntities(companyName.trim()),
           formType: form.trim(),
           filingDate: updated.split('T')[0],
           filingUrl: link.startsWith('http') ? link : `${this.BASE_URL}${link}`,
@@ -313,7 +331,7 @@ export class SECRSSClient {
         accessionNumber,
         cik: cik.padStart(10, '0'),
         ticker,
-        companyName,
+        companyName: decodeEntities(companyName),
         formType,
         filingDate: formattedDate,
         filingUrl: `${this.BASE_URL}/Archives/${fileName}`,
