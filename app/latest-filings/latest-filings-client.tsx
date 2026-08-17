@@ -104,8 +104,14 @@ export default function LatestFilingsClient({ initialData }: { initialData: Late
   const [totalPages, setTotalPages] = useState(initialData.pagination.totalPages);
   const [totalCount, setTotalCount] = useState(initialData.pagination.totalCount);
   const [isInitialized, setIsInitialized] = useState(false);
+  // Gates time-relative rendering ("N days ago") so it runs only after mount — computing it during
+  // SSR/first render uses Date.now(), which differs from the ISR-cached server HTML and triggers a
+  // React hydration mismatch (errors #418/#425).
+  const [mounted, setMounted] = useState(false);
   const hasHandledInitialFilters = useRef(false);
   const router = useRouter();
+
+  useEffect(() => setMounted(true), []);
 
   // Initialize ticker filter from URL on mount - runs FIRST.
   // Uses window.location instead of useSearchParams so the page can be statically
@@ -249,6 +255,11 @@ export default function LatestFilingsClient({ initialData }: { initialData: Late
     if (days === 1) return '1 day ago';
     return `${days} days ago`;
   };
+
+  // Deterministic date format (explicit locale + UTC) so server-rendered and client-hydrated HTML
+  // match — a bare toLocaleDateString() varies by the renderer's timezone/locale and mismatches.
+  const formatFiledDate = (iso: string) =>
+    new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
 
   const getFilingTypeBadge = (filingType: string) => {
     const colors: Record<string, string> = {
@@ -420,13 +431,17 @@ export default function LatestFilingsClient({ initialData }: { initialData: Late
                       </div>
                       <p className="text-sm text-slate-600 mb-1">{filing.companyName}</p>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
-                        <span>Filed: {new Date(filing.filingDate).toLocaleDateString()}</span>
-                        <span>•</span>
-                        <span>{formatDaysSinceFiling(getDaysSinceFiling(filing.filingDate))}</span>
+                        <span>Filed: {formatFiledDate(filing.filingDate)}</span>
+                        {mounted && (
+                          <>
+                            <span>•</span>
+                            <span>{formatDaysSinceFiling(getDaysSinceFiling(filing.filingDate))}</span>
+                          </>
+                        )}
                         {filing.reportDate && (
                           <>
                             <span>•</span>
-                            <span>Period: {new Date(filing.reportDate).toLocaleDateString()}</span>
+                            <span>Period: {formatFiledDate(filing.reportDate)}</span>
                           </>
                         )}
                       </div>
