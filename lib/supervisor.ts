@@ -330,11 +330,19 @@ export async function runSupervisorChecks(autoTriggerMissing: boolean = false): 
       }
 
       // Prediction coverage: analyzed filings that still lack a prediction.
+      // Must mirror the backfill-predictions cron's eligibility filter — predictions are
+      // intentionally gated to financially-substantive filings (10-K/10-Q, or 8-K with an
+      // EPS surprise). Procedural 8-Ks legitimately never get a predicted30dAlpha, so
+      // counting them here produced a permanent false alarm (~700 8-Ks every run).
       const analyzedNoPrediction = await prisma.filing.count({
         where: {
           filingDate: { gte: thirtyDaysAgo },
           concernLevel: { not: null },
           predicted30dAlpha: null,
+          OR: [
+            { filingType: { in: ['10-K', '10-Q'] } },
+            { epsSurprise: { not: null } },
+          ],
         },
       });
       report.analyzedWithoutPrediction30d = analyzedNoPrediction;
