@@ -23,7 +23,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/query`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/model-demo`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/faq`, changeFrequency: 'monthly', priority: 0.8 },
-    { url: `${BASE_URL}/backtest`, changeFrequency: 'weekly', priority: 0.5 },
+    // NOTE: /backtest removed — page requires auth and redirects unauthenticated users,
+    // which causes Google Search Console "page with redirect" warnings.
     { url: `${BASE_URL}/learn`, changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/sectors`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/pulse`, changeFrequency: 'daily', priority: 0.8 },
@@ -55,38 +56,51 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  try {
-    const [companies, filings] = await Promise.all([
-      prisma.company.findMany({
-        select: { ticker: true, yahooLastUpdated: true },
-        orderBy: { ticker: 'asc' },
-      }),
-      // Only analyzed filings — thin pages stay out of the sitemap
-      prisma.filing.findMany({
-        where: { aiSummary: { not: null } },
-        select: { accessionNumber: true, filingDate: true },
-        orderBy: { filingDate: 'desc' },
-        take: 5000,
-      }),
-    ]);
+  // Run company and filing queries independently so a failure in one
+  // doesn't wipe out the other — both fall back to empty arrays.
+  let companyPages: MetadataRoute.Sitemap = [];
+  let filingPages: MetadataRoute.Sitemap = [];
 
-    const companyPages: MetadataRoute.Sitemap = companies.map((c) => ({
-      url: `${BASE_URL}/company/${encodeURIComponent(c.ticker)}`,
+  try {
+    const companies = await prisma.company.findMany({
+      select: { ticker: true, yahooLastUpdated: true },
+      orderBy: { ticker: 'asc' },
+    });
+    // Tickers are already uppercase alphanumeric — no encodeURIComponent needed.
+    companyPages = companies.map((c) => ({
+      url: `${BASE_URL}/company/${c.ticker}`,
       lastModified: c.yahooLastUpdated ?? undefined,
       changeFrequency: 'daily',
       priority: 0.8,
     }));
+  } catch (error) {
+    console.error('sitemap: failed to load company pages', error);
+  }
 
-    const filingPages: MetadataRoute.Sitemap = filings.map((f) => ({
-      url: `${BASE_URL}/filing/${encodeURIComponent(f.accessionNumber)}`,
+  try {
+    // Only analyzed filings — thin pages stay out of the sitemap.
+    const filings = await prisma.filing.findMany({
+      where: { aiSummary: { not: null } },
+      select: { accessionNumber: true, filingDate: true },
+      orderBy: { filingDate: 'desc' },
+      take: 5000,
+    });
+    filingPages = filings.map((f) => ({
+      url: `${BASE_URL}/filing/${f.accessionNumber}`,
       lastModified: f.filingDate,
       changeFrequency: 'weekly',
       priority: 0.6,
     }));
-
-    return [...staticPages, ...explainerPages, ...sectorPages, ...comparePages, ...companyPages, ...filingPages];
   } catch (error) {
-    console.error('sitemap: database unavailable, serving static pages only', error);
-    return [...staticPages, ...explainerPages, ...sectorPages, ...comparePages];
+    console.error('sitemap: failed to load filing pages', error);
   }
+
+  return [
+    ...staticPages,
+    ...explainerPages,
+    ...sectorPages,
+    ...comparePages,
+    ...companyPages,
+    ...filingPages,
+  ];
 }

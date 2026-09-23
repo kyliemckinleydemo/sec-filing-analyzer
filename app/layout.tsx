@@ -40,6 +40,8 @@ import Footer from "./components/Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 const SITE_URL = "https://www.stockhuntr.net";
+// Canonical URL always uses trailing slash to match what Next.js resolves for "/"
+const CANONICAL_URL = `${SITE_URL}/`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -62,6 +64,12 @@ export const metadata: Metadata = {
     "earnings analysis",
   ],
   applicationName: "StockHuntr",
+  // FIX: add alternates.canonical so Next.js emits <link rel="canonical"> on
+  // every page that doesn't override it, resolving "Duplicate without
+  // user-selected canonical" and "Google chose different canonical" issues.
+  alternates: {
+    canonical: CANONICAL_URL,
+  },
   robots: {
     index: true,
     follow: true,
@@ -74,18 +82,21 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    url: SITE_URL,
+    // FIX: use CANONICAL_URL (with trailing slash) so og:url matches the
+    // canonical tag exactly — prevents "Google chose different canonical
+    // than user" Search Console warning.
+    url: CANONICAL_URL,
     siteName: "StockHuntr",
     title: "StockHuntr - AI-Powered SEC Filing Intelligence",
     description:
-      "Chat with SEC filings, get cited AI answers and risk scoring \u2014 free. 800+ companies, primary-source EDGAR data.",
+      "Chat with SEC filings, get cited AI answers and risk scoring — free. 800+ companies, primary-source EDGAR data.",
     locale: "en_US",
   },
   twitter: {
     card: "summary",
     title: "StockHuntr - AI-Powered SEC Filing Intelligence",
     description:
-      "Chat with SEC filings, get cited AI answers and risk scoring \u2014 free. 800+ companies, primary-source EDGAR data.",
+      "Chat with SEC filings, get cited AI answers and risk scoring — free. 800+ companies, primary-source EDGAR data.",
   },
 };
 
@@ -105,14 +116,14 @@ const jsonLd = {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
       name: "StockHuntr",
-      url: SITE_URL,
+      url: CANONICAL_URL,
       description:
         "Free AI tool to chat with SEC filings and get cited answers and risk scoring, across 800+ US companies. Also generates 30-day alpha signals.",
     },
     {
       "@type": "WebSite",
       "@id": `${SITE_URL}/#website`,
-      url: SITE_URL,
+      url: CANONICAL_URL,
       name: "StockHuntr",
       publisher: { "@id": `${SITE_URL}/#organization` },
     },
@@ -120,7 +131,7 @@ const jsonLd = {
       "@type": "SoftwareApplication",
       "@id": `${SITE_URL}/#app`,
       name: "StockHuntr",
-      url: SITE_URL,
+      url: CANONICAL_URL,
       applicationCategory: "FinanceApplication",
       operatingSystem: "Web",
       description:

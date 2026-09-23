@@ -13,6 +13,10 @@ const DISALLOWED = [
   '/alerts',
   '/watchlist',
   '/paper-trading',
+  // FIX: /backtest requires auth and redirects unauthenticated users, causing
+  // Google Search Console "page with redirect" warnings. Disallow it so
+  // Googlebot never follows it and wastes crawl budget on a redirect chain.
+  '/backtest',
 ];
 
 export default function robots(): MetadataRoute.Robots {
