@@ -1,6 +1,6 @@
 # StockHuntr
 
-> StockHuntr (stockhuntr.net) is a free AI tool for analyzing SEC filings. Chat with any 10-K, 10-Q, or 8-K in plain English and get clear, cited answers straight from the filing, plus AI risk and concern scoring. It covers 640+ US companies (all S&P 500 constituents) and sources everything from primary SEC EDGAR filings. It also generates 30-day alpha signals as a secondary feature. Free and research-focused — not investment advice.
+> StockHuntr (stockhuntr.net) is a free AI tool for analyzing SEC filings. Chat with any 10-K, 10-Q, or 8-K in plain English and get clear, cited answers straight from the filing, plus AI risk and concern scoring. It covers 800+ US companies (all S&P 500 constituents) and sources everything from primary SEC EDGAR filings. It also generates 30-day alpha signals as a secondary feature. Free and research-focused — not investment advice.
 
 Key facts:
 - Free to use. Core features: chat with SEC filings and get cited answers; AI risk/concern scoring per filing; a real-time SEC filing feed; and secondary 30-day alpha signals.
