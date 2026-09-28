@@ -9,7 +9,15 @@ import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import CompanyClient from './company-client';
 import QASection from '@/app/components/QASection';
+import AnalysisProvenance from '@/app/components/AnalysisProvenance';
 import { buildCompanyQA } from '@/lib/qa-builders';
+
+/** Company filing history on SEC EDGAR, built from CIK. */
+function edgarCompanyUrl(cik?: string | null): string | null {
+  if (!cik) return null;
+  const cikInt = String(cik).replace(/^0+/, '') || cik;
+  return `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${cikInt}&type=&dateb=&owner=include&count=40`;
+}
 
 // ISR: the server-rendered company shell (metadata + Q&A) changes slowly; prices refresh via
 // cron every few hours, so a 15-min revalidate is well within freshness and cuts TTFB from
@@ -82,6 +90,7 @@ async function getCompanyQAData(tickerParam: string) {
       select: {
         ticker: true,
         name: true,
+        cik: true,
         sector: true,
         industry: true,
         currentPrice: true,
@@ -125,7 +134,7 @@ async function getCompanyQAData(tickerParam: string) {
       };
     }
 
-    return buildCompanyQA({
+    const items = buildCompanyQA({
       ticker: company.ticker,
       name: company.name,
       sector: company.sector,
@@ -135,6 +144,7 @@ async function getCompanyQAData(tickerParam: string) {
       recentFilings: filings.map((f) => ({ filingType: f.filingType, filingDate: f.filingDate })),
       latest,
     });
+    return { items, cik: company.cik, asOf: latestRaw?.filingDate ?? null };
   } catch (error) {
     console.error('company QA: db lookup failed', error);
     return null;
@@ -142,7 +152,8 @@ async function getCompanyQAData(tickerParam: string) {
 }
 
 export default async function Page({ params }: PageProps) {
-  const qaItems = await getCompanyQAData(params.ticker);
+  const qa = await getCompanyQAData(params.ticker);
+  const qaItems = qa?.items;
 
   return (
     <>
@@ -152,6 +163,16 @@ export default async function Page({ params }: PageProps) {
             heading="Company overview — key questions"
             items={qaItems}
             note="Answers are generated from SEC filings and StockHuntr's analysis. Not investment advice."
+          />
+        </div>
+      )}
+      {qa && (
+        <div className="bg-[#020617]">
+          <AnalysisProvenance
+            asOf={qa.asOf}
+            edgarUrl={edgarCompanyUrl(qa.cik)}
+            edgarLabel="View this company's filings on SEC EDGAR"
+            extraSources={['Yahoo Finance (market data)']}
           />
         </div>
       )}

@@ -10,7 +10,21 @@ import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import FilingClient from './filing-client';
 import QASection from '@/app/components/QASection';
+import AnalysisProvenance from '@/app/components/AnalysisProvenance';
 import { buildFilingQA } from '@/lib/qa-builders';
+
+/**
+ * Build a direct link to a filing's index on SEC EDGAR from its CIK + accession.
+ * e.g. cik=320193, accession=0000320193-24-000123 →
+ * https://www.sec.gov/Archives/edgar/data/320193/000032019324000123/0000320193-24-000123-index.htm
+ */
+function edgarFilingUrl(cik?: string | null, accession?: string | null): string | null {
+  if (!cik || !accession) return null;
+  const cikInt = String(cik).replace(/^0+/, '') || cik;
+  const accNoDashes = accession.replace(/-/g, '');
+  if (!/^\d{18}$/.test(accNoDashes)) return null;
+  return `https://www.sec.gov/Archives/edgar/data/${cikInt}/${accNoDashes}/${accession}-index.htm`;
+}
 
 // ISR: a filing's server-rendered content (metadata + cited Q&A) is essentially static once
 // analyzed, so cache it and revalidate hourly. Cuts TTFB from ~600ms (dynamic) to ~cached.
@@ -48,7 +62,7 @@ async function getFiling(accessionParam: string) {
         filingType: true,
         filingDate: true,
         aiSummary: true,
-        company: { select: { ticker: true, name: true } },
+        company: { select: { ticker: true, name: true, cik: true } },
       },
     });
   } catch (error) {
@@ -165,6 +179,8 @@ export default async function Page({ params }: PageProps) {
       }
     : undefined;
 
+  const edgarUrl = edgarFilingUrl(filing?.company?.cik, filing?.accessionNumber);
+
   return (
     <>
       {qaItems && qaItems.length > 0 && (
@@ -173,6 +189,16 @@ export default async function Page({ params }: PageProps) {
             heading="Filing analysis — key questions"
             items={qaItems}
             note="Answers are generated from this SEC filing and StockHuntr's analysis. Not investment advice."
+          />
+        </div>
+      )}
+      {filing && (
+        <div className="bg-[#020617]">
+          <AnalysisProvenance
+            asOf={filing.filingDate}
+            edgarUrl={edgarUrl}
+            edgarLabel={`View this ${filing.filingType} on SEC EDGAR`}
+            extraSources={['Yahoo Finance (market data)']}
           />
         </div>
       )}
