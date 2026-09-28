@@ -29,6 +29,10 @@ const nextConfig = {
     workerThreads: false,
     // Reduce memory usage during build
     cpus: 1,
+    // Allow larger Server Action payloads (was previously in next.config.mjs)
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
     // Exclude large data directories from build tracing
     outputFileTracingExcludes: {
       '*': [
@@ -37,6 +41,19 @@ const nextConfig = {
         './.claude-flow/**',
       ],
     },
+  },
+  async redirects() {
+    return [
+      // /filing with no accession number was 404ing in Google Search Console.
+      // A config-level redirect emits a real edge 308 with a Location header
+      // (crawler-friendly), unlike the page-level redirect() which returns a
+      // 307 with no Location and only resolves client-side.
+      {
+        source: '/filing',
+        destination: '/latest-filings',
+        permanent: true,
+      },
+    ];
   },
   // Reduce bundle size
   productionBrowserSourceMaps: false,
