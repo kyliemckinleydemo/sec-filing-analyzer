@@ -738,7 +738,8 @@ export default function FilingPage({ initialFiling }: { initialFiling?: InitialF
               <span>🖨️</span> Print Report
             </Button>
           </div>
-          <h1 className="text-4xl font-bold">{data.filing.company?.name || 'Company'}</h1>
+          {/* h2, not h1: the server-rendered FilingLede provides the page's single h1 for SEO. */}
+          <h2 className="text-4xl font-bold">{data.filing.company?.name || 'Company'}</h2>
           <p className="text-lg text-slate-600 mt-2">
             {data.filing.filingType} Filed on{' '}
             {new Date(data.filing.filingDate).toLocaleDateString()}

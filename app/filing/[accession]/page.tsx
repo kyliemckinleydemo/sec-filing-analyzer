@@ -11,6 +11,7 @@ import { prisma } from '@/lib/prisma';
 import FilingClient from './filing-client';
 import QASection from '@/app/components/QASection';
 import AnalysisProvenance from '@/app/components/AnalysisProvenance';
+import FilingLede from '@/app/components/FilingLede';
 import { buildFilingQA } from '@/lib/qa-builders';
 
 /**
@@ -145,7 +146,7 @@ async function getFilingQAData(accessionParam: string) {
       }
     }
 
-    return buildFilingQA({
+    const items = buildFilingQA({
       ticker: filing.company.ticker,
       companyName: filing.company.name,
       filingType: filing.filingType,
@@ -155,6 +156,19 @@ async function getFilingQAData(accessionParam: string) {
       predicted30dAlpha: filing.predicted30dAlpha,
       predictionConfidence: filing.predictionConfidence,
     });
+    // Analytical summary for the server-rendered lede (distinct from the client's
+    // "Filing Summary" card, which uses filingContentSummary).
+    const lede = analysis?.summary || filing.aiSummary || null;
+    return {
+      items,
+      lede,
+      header: {
+        companyName: filing.company.name,
+        ticker: filing.company.ticker,
+        filingType: filing.filingType,
+        filingDate: filing.filingDate,
+      },
+    };
   } catch (error) {
     console.error('filing QA: db lookup failed', error);
     return null;
@@ -162,10 +176,11 @@ async function getFilingQAData(accessionParam: string) {
 }
 
 export default async function Page({ params }: PageProps) {
-  const [qaItems, filing] = await Promise.all([
+  const [qa, filing] = await Promise.all([
     getFilingQAData(params.accession),
     getFiling(params.accession),
   ]);
+  const qaItems = qa?.items;
 
   // Server-known filing identity, passed to the client so the (client-rendered)
   // signup gate can always show WHICH filing you're on — even on a direct/SEO landing
@@ -183,6 +198,17 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
+      {qa?.header && qa.lede && (
+        <div className="bg-[#020617]">
+          <FilingLede
+            companyName={qa.header.companyName}
+            ticker={qa.header.ticker}
+            filingType={qa.header.filingType}
+            filingDate={qa.header.filingDate}
+            lede={qa.lede}
+          />
+        </div>
+      )}
       {qaItems && qaItems.length > 0 && (
         <div className="bg-[#020617]">
           <QASection
