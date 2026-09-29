@@ -355,6 +355,126 @@ export const comparisons: Comparison[] = [
       'Fintool is best for analysts wanting a paid AI research assistant; AlphaSense for enterprises needing breadth beyond filings; and free SEC EDGAR for anyone who wants the authoritative original documents with no AI layer.',
     updated: UPDATED,
   },
+  {
+    slug: 'last10k-alternatives',
+    title: 'Last10K alternatives',
+    directAnswer:
+      'Last10K is a paid service that summarizes SEC filings (10-K, 10-Q) with highlights and alerts. The closest free alternative is StockHuntr: instead of static summaries you chat with a filing and get answers cited straight from the source, plus AI risk and concern scoring across 800+ US companies. SEC EDGAR remains the free primary source with no AI layer.',
+    competitors: ['Last10K', 'SEC EDGAR (free)'],
+    dimensions: [
+      {
+        label: 'Price',
+        stockhuntr: 'Free to use.',
+        others: { Last10K: 'Paid subscription.', 'SEC EDGAR (free)': 'Free.' },
+      },
+      {
+        label: 'How you get answers',
+        stockhuntr: 'Chat with the filing in plain English; answers cited from the source text.',
+        others: {
+          Last10K: 'Pre-generated filing summaries and highlights.',
+          'SEC EDGAR (free)': 'Read the full filing yourself.',
+        },
+      },
+      {
+        label: 'AI risk scoring',
+        stockhuntr: 'AI risk/concern scoring (0–10) per filing.',
+        others: { Last10K: 'Summary highlights and change alerts.', 'SEC EDGAR (free)': 'None.' },
+      },
+      {
+        label: 'Coverage',
+        stockhuntr: '800+ US companies (all S&P 500 constituents).',
+        others: { Last10K: 'Broad SEC-filer coverage.', 'SEC EDGAR (free)': 'All SEC filers.' },
+      },
+      {
+        label: 'Data source',
+        stockhuntr: 'Primary-source SEC EDGAR filings.',
+        others: { Last10K: 'SEC filings.', 'SEC EDGAR (free)': 'The official SEC source.' },
+      },
+    ],
+    whoForStockHuntr:
+      'Investors who want a free way to interrogate a specific 10-K, 10-Q, or 8-K — asking their own questions and getting answers cited from the filing — rather than reading a fixed summary, plus a quick read on AI-assessed risk.',
+    whoForOthers:
+      'Last10K suits people who want ready-made filing summaries and change alerts in a paid product; SEC EDGAR is best for anyone who wants the authoritative original documents with no AI layer.',
+    updated: '2026-09-29',
+  },
+  {
+    slug: 'koyfin-alternatives',
+    title: 'Koyfin alternatives',
+    directAnswer:
+      'Koyfin is a freemium market-data and analytics platform — charts, financials, dashboards, and screeners across global markets. It is not focused on reading SEC filings. If your need is specifically AI-assisted SEC filing research, StockHuntr is a free, filing-first alternative: chat with a 10-K, 10-Q, or 8-K and get cited answers plus AI risk scoring. Many use both — Koyfin for market data, StockHuntr for filings.',
+    competitors: ['Koyfin'],
+    dimensions: [
+      {
+        label: 'Price',
+        stockhuntr: 'Free to use.',
+        others: { Koyfin: 'Freemium — free tier plus paid plans.' },
+      },
+      {
+        label: 'Primary focus',
+        stockhuntr: 'AI-assisted SEC filing research: chat with a filing, cited answers, risk scoring.',
+        others: { Koyfin: 'Market data, charting, financial dashboards, and screening.' },
+      },
+      {
+        label: 'SEC filing analysis',
+        stockhuntr: 'Core feature — grounded, cited answers from the filing text.',
+        others: { Koyfin: 'Filing data available, but not an AI filing-chat tool.' },
+      },
+      {
+        label: 'Breadth vs focus',
+        stockhuntr: 'Deep and focused on filings.',
+        others: { Koyfin: 'Broad market-data platform across asset classes.' },
+      },
+      {
+        label: 'Data source',
+        stockhuntr: 'Primary-source SEC EDGAR filings (plus market data from Yahoo Finance).',
+        others: { Koyfin: 'Aggregated market and fundamental data.' },
+      },
+    ],
+    whoForStockHuntr:
+      'Investors and analysts who specifically want to read and question SEC filings with AI, get cited answers, and see AI risk scoring — for free.',
+    whoForOthers:
+      'Koyfin is best for people who want a broad market-data and analytics dashboard — charts, macro, fundamentals, and screeners across global markets — in one place.',
+    updated: '2026-09-29',
+  },
+  {
+    slug: 'tikr-alternatives',
+    title: 'TIKR alternatives',
+    directAnswer:
+      'TIKR is a freemium platform for fundamentals, analyst estimates, valuation, and screening across global stocks. It is built around financial data, not AI filing analysis. StockHuntr is a free, filing-first alternative: chat with a specific SEC filing and get answers cited from the source, plus AI risk and concern scoring across 800+ US companies. The two are complementary — TIKR for fundamentals, StockHuntr for filings.',
+    competitors: ['TIKR'],
+    dimensions: [
+      {
+        label: 'Price',
+        stockhuntr: 'Free to use.',
+        others: { TIKR: 'Freemium — free tier plus paid plans.' },
+      },
+      {
+        label: 'Primary focus',
+        stockhuntr: 'AI-assisted SEC filing research with cited answers and risk scoring.',
+        others: { TIKR: 'Fundamentals, analyst estimates, valuation models, and screening.' },
+      },
+      {
+        label: 'SEC filing analysis',
+        stockhuntr: 'Core feature — chat with the filing; answers cited from the text.',
+        others: { TIKR: 'Filing data available, but not an AI filing-chat tool.' },
+      },
+      {
+        label: 'AI risk scoring',
+        stockhuntr: 'AI risk/concern scoring (0–10) per filing.',
+        others: { TIKR: 'Quantitative fundamentals and estimates, not AI risk scoring.' },
+      },
+      {
+        label: 'Data source',
+        stockhuntr: 'Primary-source SEC EDGAR filings.',
+        others: { TIKR: 'Aggregated global fundamentals and estimates.' },
+      },
+    ],
+    whoForStockHuntr:
+      'Investors who want to read and question SEC filings with AI — cited answers and risk scoring — without paying for a subscription.',
+    whoForOthers:
+      'TIKR is best for investors who want deep fundamentals, analyst estimates, and valuation/screening tools across a broad global universe.',
+    updated: '2026-09-29',
+  },
 ];
 
 /** Look up a single comparison by slug. */
