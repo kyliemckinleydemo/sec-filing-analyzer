@@ -59,6 +59,7 @@ export default function Footer() {
               <li><Link href="/faq" className="block py-1 hover:text-white">FAQ & Methodology</Link></li>
               <li><Link href="/compare" className="block py-1 hover:text-white">Compare tools</Link></li>
               <li><Link href="/compare/free-sec-filing-ai-tools" className="block py-1 hover:text-white">Free SEC filing AI</Link></li>
+              <li><Link href="/dataset" className="block py-1 hover:text-white">Open dataset & API</Link></li>
               <li><Link href="/privacy" className="block py-1 hover:text-white">Privacy</Link></li>
               <li><Link href="/terms" className="block py-1 hover:text-white">Terms</Link></li>
             </ul>
