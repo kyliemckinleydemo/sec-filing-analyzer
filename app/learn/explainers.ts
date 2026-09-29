@@ -299,6 +299,50 @@ export const explainers: Explainer[] = [
     related: ['what-is-an-8-k-filing', '8-k-item-5-02', '10-k-vs-10-q'],
     updated: UPDATED,
   },
+  {
+    slug: 'what-is-a-proxy-statement-def-14a',
+    question: 'What is a proxy statement (DEF 14A)?',
+    shortAnswer:
+      'A proxy statement, filed as a DEF 14A, is the document a public company sends shareholders ahead of its annual meeting so they can vote by proxy. It discloses the matters up for a vote — director elections, auditor ratification, executive pay ("say-on-pay"), and shareholder proposals — along with detailed executive compensation tables.',
+    sections: [
+      {
+        heading: 'What a proxy statement covers',
+        body: 'When a company holds a shareholder meeting, most investors do not attend in person; they vote in advance "by proxy." The proxy statement is the SEC-mandated disclosure that tells them what they are voting on. The definitive version is filed as a DEF 14A (a preliminary version, PRE 14A, may come first).\n\nTypical agenda items include the election of directors, ratification of the independent auditor, an advisory vote on executive compensation (say-on-pay), approval of equity-compensation plans, and any shareholder proposals that qualified for the ballot. Each item comes with the board\'s recommendation on how to vote.',
+      },
+      {
+        heading: 'Why it is one of the richest filings to read',
+        body: 'The proxy is where executive compensation is laid bare. The Summary Compensation Table shows what the CEO and other named executives were paid — salary, bonus, stock and option awards, and other compensation — often over three years. The Compensation Discussion & Analysis (CD&A) explains the philosophy and the performance targets behind the numbers.\n\nBeyond pay, the proxy discloses director independence, board committee membership, related-party transactions, beneficial ownership (who owns large stakes), and potential conflicts of interest. For anyone assessing governance quality, it is more revealing than the 10-K.',
+      },
+      {
+        heading: 'Signals worth watching',
+        body: 'Watch the say-on-pay result: a low approval percentage signals shareholder discontent with how executives are paid relative to performance. Contested director elections, activist shareholder proposals, or a large gap between "pay" and company results can all flag governance friction. Related-party transactions — business the company does with insiders or their affiliates — are disclosed here and deserve scrutiny.',
+      },
+    ],
+    related: ['what-does-mda-tell-you', 'what-is-a-form-4', '10-k-vs-10-q'],
+    updated: '2026-09-28',
+  },
+  {
+    slug: 'what-is-a-form-13f',
+    question: 'What is a Form 13F and what does it reveal about hedge funds?',
+    shortAnswer:
+      'A Form 13F is a quarterly report that large institutional investors — hedge funds, mutual funds, and other managers with over $100 million in qualifying US equities — must file with the SEC listing their holdings. It reveals which stocks big money owns, but it is filed up to 45 days after quarter-end, so it shows a lagged snapshot.',
+    sections: [
+      {
+        heading: 'Who files a 13F and what it shows',
+        body: 'Any "institutional investment manager" that exercises discretion over more than $100 million in Section 13(f) securities (mostly US-listed stocks and certain options) must file a Form 13F within 45 days after the end of each calendar quarter. The filing lists each position: the issuer, the class of security, the number of shares, and the market value at quarter-end.\n\nBecause famous investors and large hedge funds cross this threshold, 13Fs are how the public learns what they held — the basis for the widely reported "so-and-so bought/sold X" headlines each quarter.',
+      },
+      {
+        heading: 'The limitations that trip people up',
+        body: 'A 13F is a lagged, incomplete picture, and reading it as a live portfolio is the most common mistake. Three caveats matter most. First, the 45-day delay means a manager may have already exited a position by the time you see it. Second, 13Fs disclose only long US equity and some options — they exclude short positions, cash, bonds, commodities, and non-US holdings, so they can badly misrepresent a fund\'s actual net exposure. Third, managers can request confidential treatment to delay disclosing certain positions.',
+      },
+      {
+        heading: 'How to use them well',
+        body: 'Used carefully, 13Fs are still useful. Comparing a manager\'s holdings across consecutive quarters reveals the direction of conviction — new positions, additions, trims, and full exits. Aggregating many funds can show where institutional interest is concentrating or rotating. Treat a single quarter\'s snapshot as a starting point for research, not a trade signal, and always pair it with the fund\'s strategy: a quant fund\'s 13F means something very different from a concentrated value manager\'s.',
+      },
+    ],
+    related: ['what-is-a-form-4', 'what-is-a-proxy-statement-def-14a', 'what-is-an-eps-surprise'],
+    updated: '2026-09-28',
+  },
 ];
 
 /** Look up a single explainer by slug. */
