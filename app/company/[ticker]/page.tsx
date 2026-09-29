@@ -70,9 +70,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const { ticker, name, sector, industry } = company;
-  const title = `${ticker} — ${name} SEC Filings & AI Analysis`;
+  const title = `${ticker} Stock Analysis — ${name} SEC Filings, Earnings & AI Scoring`;
   const sectorPart = [industry, sector].filter(Boolean).join(', ');
-  const description = `${name} (${ticker})${sectorPart ? ` — ${sectorPart}.` : '.'} Latest SEC filings (10-K, 10-Q, 8-K), financial snapshot, and AI-powered 30-day stock predictions. Data from SEC EDGAR and Yahoo Finance.`;
+  const description = `${name} (${ticker})${sectorPart ? ` — ${sectorPart}.` : '.'} Latest SEC filings (10-K, 10-Q, 8-K), earnings, financial snapshot, AI risk scoring, and a 30-day stock outlook — with cited answers to "is ${ticker} a buy?" Grounded in primary-source SEC EDGAR and Yahoo Finance data.`;
 
   const canonical = `/company/${ticker}`;
 

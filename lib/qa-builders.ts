@@ -223,6 +223,33 @@ export function buildCompanyQA(c: CompanyQAInput): QAItem[] {
     });
   }
 
+  // 5. "Is X a buy?" — a very common query. Answered honestly: StockHuntr is a
+  // research tool, not a ratings service. Synthesize only from grounded signals we
+  // actually have (concern level + the model's 30-day directional call), and always
+  // defer to the reader. Never asserts a buy/sell recommendation.
+  if (c.latest?.concernLabel || typeof c.latest?.predicted30dAlpha === 'number') {
+    const signals: string[] = [];
+    if (c.latest?.concernLabel) {
+      signals.push(`its latest ${c.latest.filingType} carries a ${c.latest.concernLabel} concern level`);
+    }
+    if (typeof c.latest?.predicted30dAlpha === 'number') {
+      const dir = c.latest.predicted30dAlpha >= 0 ? 'outperform' : 'underperform';
+      signals.push(
+        `the model projects a 30-day ${dir} vs the S&P 500 of about ${Math.abs(
+          c.latest.predicted30dAlpha
+        ).toFixed(1)}%`
+      );
+    }
+    items.push({
+      question: `Is ${c.ticker} a buy?`,
+      answer: clip(
+        `StockHuntr doesn't issue buy or sell ratings — it's a research tool. For ${c.name} (${c.ticker}), ` +
+          `${signals.join(' and ')}. Weigh these filing-based signals alongside your own research. ${NOT_ADVICE}`,
+        420
+      ),
+    });
+  }
+
   return items;
 }
 
