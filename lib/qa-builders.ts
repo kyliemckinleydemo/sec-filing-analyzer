@@ -230,7 +230,7 @@ export function buildCompanyQA(c: CompanyQAInput): QAItem[] {
   if (c.latest?.concernLabel || typeof c.latest?.predicted30dAlpha === 'number') {
     const signals: string[] = [];
     if (c.latest?.concernLabel) {
-      signals.push(`its latest ${c.latest.filingType} carries a ${c.latest.concernLabel} concern level`);
+      signals.push(`its latest ${c.latest.filingType} is rated ${c.latest.concernLabel} concern`);
     }
     if (typeof c.latest?.predicted30dAlpha === 'number') {
       const dir = c.latest.predicted30dAlpha >= 0 ? 'outperform' : 'underperform';
