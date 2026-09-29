@@ -431,6 +431,50 @@ export const explainers: Explainer[] = [
     related: ['what-is-an-8-k-filing', '8-k-item-2-02', 'what-is-an-eps-surprise'],
     updated: '2026-09-29',
   },
+  {
+    slug: 'what-is-a-424b-prospectus',
+    question: 'What is a 424B prospectus?',
+    shortAnswer:
+      'A 424B is the final prospectus a company files with the SEC after its registration statement (such as an S-1 or S-3) is declared effective. It contains the completed terms of a securities offering — the actual price, number of shares, and use of proceeds. The number suffix (424B1 through 424B5) indicates what was finalized after the earlier filing.',
+    sections: [
+      {
+        heading: 'Where a 424B fits',
+        body: 'A registration statement like an S-1 (for an IPO) or S-3 (for follow-on offerings by established companies) registers securities, but it often leaves final pricing blank while the SEC reviews it. Once the registration is effective and the deal prices, the company files the definitive prospectus as a Form 424B. This is the document with the real, locked-in terms — so for any priced offering, the 424B is the authoritative version to read.',
+      },
+      {
+        heading: 'The B-number variants',
+        body: 'The suffix tells you what was completed relative to the effective registration statement. The most common are 424B1 and 424B2 (prospectuses that include pricing or other information omitted earlier), 424B3 (a prospectus filed under Rule 424(b)(3), often for updates), 424B4 (the classic final IPO prospectus reflecting the priced deal), and 424B5 (typically a prospectus supplement for a takedown off an existing shelf registration). You do not need to memorize the differences — the key point is that a 424B carries final offering terms.',
+      },
+      {
+        heading: 'How to use it',
+        body: 'If you are researching an IPO or a secondary offering after it has priced, go straight to the 424B for the offering price, share count, underwriters, and use of proceeds. Pair it with the underlying S-1 or S-3, which carries the fuller business description, risk factors, and financial statements. A wave of 424B5 filings by a company can also signal it is repeatedly tapping the market for capital — worth noting for dilution.',
+      },
+    ],
+    related: ['what-is-a-form-s-1', '10-k-vs-10-q', 'how-to-read-risk-factors'],
+    updated: '2026-09-29',
+  },
+  {
+    slug: 'what-is-a-form-s-4',
+    question: 'What is a Form S-4 (mergers and acquisitions)?',
+    shortAnswer:
+      'A Form S-4 is the registration statement a company files when it issues new shares to fund a merger or acquisition — for example, in a stock-for-stock deal. It doubles as the combined proxy statement and prospectus sent to shareholders voting on the transaction, and it lays out the deal terms, background, financials, and risk factors.',
+    sections: [
+      {
+        heading: 'When an S-4 is used',
+        body: 'When an acquirer pays for a target partly or wholly in its own stock, those new shares must be registered with the SEC. The Form S-4 is that registration statement. Because target shareholders usually have to vote on the deal, the S-4 typically serves double duty as a "proxy statement/prospectus" — the disclosure document shareholders read before voting and before receiving the acquirer\'s shares.',
+      },
+      {
+        heading: "What's inside",
+        body: 'An S-4 is one of the richest deal documents available publicly. It usually includes: the terms of the merger (including the exchange ratio — how many acquirer shares each target share converts into); the "Background of the Merger," a narrative timeline of negotiations; the board\'s reasons for recommending the deal; a fairness opinion from a financial advisor; pro forma financial statements showing the combined company; and risk factors specific to the transaction and integration.',
+      },
+      {
+        heading: 'How to read it',
+        body: 'Focus on the exchange ratio and implied deal value, the background section (which can reveal whether the process was competitive or negotiated with a single bidder), and the risk factors around closing conditions, regulatory approval, and integration. The pro forma financials show what the combined balance sheet and earnings could look like. For merger arbitrage and event-driven analysis, the S-4 is the primary source document.',
+      },
+    ],
+    related: ['what-is-an-8-k-filing', 'what-is-a-proxy-statement-def-14a', 'how-to-read-risk-factors'],
+    updated: '2026-09-29',
+  },
 ];
 
 /** Look up a single explainer by slug. */
