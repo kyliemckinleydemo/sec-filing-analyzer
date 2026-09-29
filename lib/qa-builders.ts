@@ -41,6 +41,18 @@ function clipMd(s: string, n = 320): string {
   return clip(stripMd(s), n);
 }
 
+/**
+ * Phrase a 30-day predicted alpha (market-relative %) as readable prose. Predictions
+ * often round toward zero, so treat magnitudes under 0.5% as "roughly in line" rather
+ * than printing the nonsensical "outperform by about 0.0%".
+ */
+function outlookPhrase(alpha: number): string {
+  const mag = Math.abs(alpha);
+  if (mag < 0.5) return 'perform roughly in line with the S&P 500';
+  const dir = alpha >= 0 ? 'outperform' : 'underperform';
+  return `${dir} the S&P 500 by about ${mag.toFixed(1)}%`;
+}
+
 /** Loose shape of the parsed analysisData JSON (see lib/claude-client FilingAnalysis). */
 interface ParsedAnalysis {
   summary?: string;
@@ -211,13 +223,12 @@ export function buildCompanyQA(c: CompanyQAInput): QAItem[] {
 
   // 4. 30-day outlook
   if (c.latest && typeof c.latest.predicted30dAlpha === 'number') {
-    const dir = c.latest.predicted30dAlpha >= 0 ? 'outperform' : 'underperform';
     items.push({
       question: `What is the 30-day outlook for ${c.ticker}?`,
       answer: clip(
-        `Based on ${c.ticker}'s latest filing, the model predicts it will ${dir} the S&P 500 by about ${Math.abs(
+        `Based on ${c.ticker}'s latest filing, the model projects it will ${outlookPhrase(
           c.latest.predicted30dAlpha
-        ).toFixed(1)}% over 30 days. ${NOT_ADVICE}`,
+        )} over the next 30 days. ${NOT_ADVICE}`,
         400
       ),
     });
@@ -233,12 +244,7 @@ export function buildCompanyQA(c: CompanyQAInput): QAItem[] {
       signals.push(`its latest ${c.latest.filingType} is rated ${c.latest.concernLabel} concern`);
     }
     if (typeof c.latest?.predicted30dAlpha === 'number') {
-      const dir = c.latest.predicted30dAlpha >= 0 ? 'outperform' : 'underperform';
-      signals.push(
-        `the model projects a 30-day ${dir} vs the S&P 500 of about ${Math.abs(
-          c.latest.predicted30dAlpha
-        ).toFixed(1)}%`
-      );
+      signals.push(`the model projects it will ${outlookPhrase(c.latest.predicted30dAlpha)} over 30 days`);
     }
     items.push({
       question: `Is ${c.ticker} a buy?`,
