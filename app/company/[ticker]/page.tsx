@@ -11,7 +11,10 @@ import CompanyClient from './company-client';
 import QASection from '@/app/components/QASection';
 import AnalysisProvenance from '@/app/components/AnalysisProvenance';
 import CompanyLede from '@/app/components/CompanyLede';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
 import { buildCompanyQA } from '@/lib/qa-builders';
+
+const SITE = 'https://www.stockhuntr.net';
 
 /** Company filing history on SEC EDGAR, built from CIK. */
 function edgarCompanyUrl(cik?: string | null): string | null {
@@ -167,8 +170,23 @@ export default async function Page({ params }: PageProps) {
   const qa = await getCompanyQAData(params.ticker);
   const qaItems = qa?.items;
 
+  const crumbs = qa?.lede
+    ? [
+        { name: 'Home', url: `${SITE}/` },
+        {
+          name: `${qa.lede.name} (${qa.lede.ticker})`,
+          url: `${SITE}/company/${qa.lede.ticker}`,
+        },
+      ]
+    : [];
+
   return (
     <>
+      {crumbs.length > 0 && (
+        <div className="bg-[#020617]">
+          <Breadcrumbs items={crumbs} />
+        </div>
+      )}
       {qa?.lede && (
         <div className="bg-[#020617]">
           <CompanyLede

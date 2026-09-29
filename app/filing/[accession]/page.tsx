@@ -12,7 +12,10 @@ import FilingClient from './filing-client';
 import QASection from '@/app/components/QASection';
 import AnalysisProvenance from '@/app/components/AnalysisProvenance';
 import FilingLede from '@/app/components/FilingLede';
+import Breadcrumbs from '@/app/components/Breadcrumbs';
 import { buildFilingQA } from '@/lib/qa-builders';
+
+const SITE = 'https://www.stockhuntr.net';
 
 /**
  * Build a direct link to a filing's index on SEC EDGAR from its CIK + accession.
@@ -196,8 +199,32 @@ export default async function Page({ params }: PageProps) {
 
   const edgarUrl = edgarFilingUrl(filing?.company?.cik, filing?.accessionNumber);
 
+  const crumbs =
+    qa?.header && filing?.accessionNumber
+      ? [
+          { name: 'Home', url: `${SITE}/` },
+          {
+            name: `${qa.header.companyName} (${qa.header.ticker})`,
+            url: `${SITE}/company/${qa.header.ticker}`,
+          },
+          {
+            name: `${qa.header.filingType} · ${new Date(qa.header.filingDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+            })}`,
+            url: `${SITE}/filing/${filing.accessionNumber}`,
+          },
+        ]
+      : [];
+
   return (
     <>
+      {crumbs.length > 0 && (
+        <div className="bg-[#020617]">
+          <Breadcrumbs items={crumbs} />
+        </div>
+      )}
       {qa?.header && qa.lede && (
         <div className="bg-[#020617]">
           <FilingLede
