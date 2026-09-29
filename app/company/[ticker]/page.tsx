@@ -10,6 +10,7 @@ import { prisma } from '@/lib/prisma';
 import CompanyClient from './company-client';
 import QASection from '@/app/components/QASection';
 import AnalysisProvenance from '@/app/components/AnalysisProvenance';
+import CompanyLede from '@/app/components/CompanyLede';
 import { buildCompanyQA } from '@/lib/qa-builders';
 
 /** Company filing history on SEC EDGAR, built from CIK. */
@@ -144,7 +145,18 @@ async function getCompanyQAData(tickerParam: string) {
       recentFilings: filings.map((f) => ({ filingType: f.filingType, filingDate: f.filingDate })),
       latest,
     });
-    return { items, cik: company.cik, asOf: latestRaw?.filingDate ?? null };
+    return {
+      items,
+      cik: company.cik,
+      asOf: latestRaw?.filingDate ?? null,
+      lede: {
+        name: company.name,
+        ticker: company.ticker,
+        sector: company.sector,
+        industry: company.industry,
+        latest,
+      },
+    };
   } catch (error) {
     console.error('company QA: db lookup failed', error);
     return null;
@@ -157,6 +169,17 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
+      {qa?.lede && (
+        <div className="bg-[#020617]">
+          <CompanyLede
+            name={qa.lede.name}
+            ticker={qa.lede.ticker}
+            sector={qa.lede.sector}
+            industry={qa.lede.industry}
+            latest={qa.lede.latest}
+          />
+        </div>
+      )}
       {qaItems && qaItems.length > 0 && (
         <div className="bg-[#020617]">
           <QASection

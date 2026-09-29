@@ -269,7 +269,8 @@ export default function CompanySnapshotPage() {
 
           <div className="flex items-start justify-between">
             <div>
-              <h1 className="text-4xl font-bold mb-2">{company.name}</h1>
+              {/* h2, not h1: the server-rendered CompanyLede provides the page's single h1 for SEO. */}
+              <h2 className="text-4xl font-bold mb-2">{company.name}</h2>
               <div className="flex items-center gap-3 text-lg text-slate-600">
                 <span className="font-semibold">{company.ticker}</span>
                 {company.sector && (
