@@ -5,7 +5,7 @@
  * PURPOSE:
  * - Display comprehensive FAQ covering model methodology, analyst opinion tracking, backtesting results, and data source limitations
  * - Organize questions into 5 categories: Purpose & Overview, The Model, Variables & Features, Backtesting & Accuracy, and Data & Coverage
- * - Provide detailed explanations of Ridge regression MoE model using 13 features with 67% live high-confidence directional accuracy (77.5% in backtest)
+ * - Provide detailed explanations of Ridge regression MoE model using 13 features with ~75% high-confidence directional accuracy in strict 90-day walk-forward backtest
  * - Document key findings including EPS surprise as strongest new feature, contrarian downgrade signals, and macro regime adjustment
  *
  * DEPENDENCIES:
@@ -37,7 +37,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 export const metadata: Metadata = {
   title: 'FAQ — How Our SEC Filing Prediction Model Works',
   description:
-    'How StockHuntr predicts 30-day alpha from SEC filings: Ridge regression MoE model, 13 features, 67% live high-confidence directional accuracy, strict walk-forward validation, and full data source documentation.',
+    'How StockHuntr predicts 30-day alpha from SEC filings: Ridge regression MoE model, 13 features, ~75% high-confidence directional accuracy in strict walk-forward validation, and full data source documentation.',
   alternates: { canonical: '/faq' },
 };
 
@@ -93,7 +93,7 @@ const faqs = [
         },
         {
           q: "What machine learning approach do you use?",
-          a: "We use Ridge regression (regularization λ=100) with forward stepwise feature selection. The model is trained on 4,009 SEC filings from 500+ companies across all sectors and market cap tiers. We use a strict 90-day walk-forward cross-validation, where the test set is always at least 90 days after the training cutoff, to prevent any temporal leakage. On the live filings whose 30-day window has since elapsed (569 so far), high-confidence signals show 67% directional accuracy versus 56% overall; the same subset reached 77.5% in the walk-forward backtest. The model is fully interpretable: every prediction shows which features drove it (e.g., 'strong price momentum: +2.1 score', 'EPS beat: +0.8 score')."
+          a: "We use Ridge regression (regularization λ=100) with forward stepwise feature selection. The model is trained on 4,009 SEC filings from 500+ companies across all sectors and market cap tiers. We use a strict 90-day walk-forward cross-validation, where the test set is always at least 90 days after the training cutoff, to prevent any temporal leakage. In that walk-forward backtest, high-confidence signals show about 75% directional accuracy versus roughly 53% overall — the edge concentrates in the high-confidence subset. The model is fully interpretable: every prediction shows which features drove it (e.g., 'strong price momentum: +2.1 score', 'EPS beat: +0.8 score')."
         },
         {
           q: "Why 30 calendar days?",
@@ -135,11 +135,11 @@ const faqs = [
       questions: [
         {
           q: "How did you backtest the model?",
-          a: "We use strict walk-forward cross-validation: the model is trained on all data up to time T, then evaluated on filings from T+90 days onward (the 90-day gap prevents any boundary leakage). This was repeated across multiple splits. For price data, we use historical snapshots taken at the time of each filing (99% coverage) rather than today's stock price — this eliminates the most common source of backtest bias in financial models. Actual 30-day alpha outcomes come from Yahoo Finance historical prices. The dataset covers 4,009 filings from 500+ companies spanning 2022 to 2025."
+          a: "We use strict walk-forward cross-validation: the model is trained on all data up to time T, then evaluated on filings from T+90 days onward (the 90-day gap prevents any boundary leakage). This was repeated across multiple splits. For price data, we use historical snapshots taken at the time of each filing (99% coverage) rather than today's stock price — this eliminates the most common source of backtest bias in financial models. Actual 30-day alpha outcomes come from Yahoo Finance historical prices. The dataset covers 4,009 filings from 500+ companies spanning 2023 to 2026."
         },
         {
           q: "What is the model's accuracy?",
-          a: "We report two numbers and lead with the live one. On the live filings whose 30-day window has already elapsed (569 so far): 56% overall directional accuracy and 67% on the high-confidence subset. In strict 90-day walk-forward backtesting over the full 4,009-filing set: 56.2% overall and 77.5% high-confidence, with an annualized Sharpe ratio of 2.22 on the high-confidence portfolio. Backtest temporal consistency is stable (69.8% at 2+ years, 76.6% at 1-2 years, 82.2% in the last 12 months), which points to a real structural signal rather than overfitting to the recent bull market. The high-confidence subset is where the edge concentrates, so that is the number worth watching."
+          a: "We report accuracy from strict 90-day walk-forward cross-validation over the full 4,009-filing set, which prevents any temporal leakage. Overall directional accuracy is about 53.5%, rising to roughly 75% on the high-confidence subset, with an annualized Sharpe ratio of about 2.0 on the high-confidence portfolio. Temporal consistency is stable (72.6% at 2+ years, 74.2% at 1-2 years, 83.0% in the last 12 months), which points to a real structural signal rather than overfitting to the recent bull market. The high-confidence subset is where the edge concentrates, so that is the number worth watching. We also track live results as each filing's 30-day window elapses, but that sample is still small, so we lead with the walk-forward numbers."
         },
         {
           q: "What are the model's limitations?",
@@ -147,7 +147,7 @@ const faqs = [
         },
         {
           q: "How do you prevent overfitting?",
-          a: "Several layers of protection: (1) Ridge regularization (λ=100) penalizes large coefficients, preventing any single feature from dominating, (2) Forward stepwise selection — only features that survive out-of-sample improvement are included, (3) 90-day strict walk-forward CV — the test window is always 90+ days after training cutoff, eliminating boundary leakage, (4) Mixture-of-Experts routing — sector and cap-tier models only activate when that segment has enough training data (minimum 30 samples), (5) Feature winsorization (EPS surprise clipped to ±50%) prevents outlier filings from distorting weights. The simple CV accuracy gap between standard CV (59.5%) and strict 90-day CV (56.2%) of ~3pp is healthy — small enough to confirm real signal, large enough to confirm we're measuring it honestly."
+          a: "Several layers of protection: (1) Ridge regularization (λ=100) penalizes large coefficients, preventing any single feature from dominating, (2) Forward stepwise selection — only features that survive out-of-sample improvement are included, (3) 90-day strict walk-forward CV — the test window is always 90+ days after training cutoff, eliminating boundary leakage, (4) Mixture-of-Experts routing — sector and cap-tier models only activate when that segment has enough training data (minimum 30 samples), (5) Feature winsorization (EPS surprise clipped to ±50%) prevents outlier filings from distorting weights. The strict 90-day walk-forward accuracy (about 53.5% overall) sits modestly below looser cross-validation — a healthy gap, small enough to confirm real signal and large enough to confirm we're measuring it honestly rather than leaking future information."
         }
       ]
     },

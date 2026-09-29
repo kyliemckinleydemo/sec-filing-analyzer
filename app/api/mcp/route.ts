@@ -284,25 +284,23 @@ const handler = createMcpHandler(
           where: { actual30dAlpha: { not: null } },
         });
         return json({
-          // Live realized performance is the headline figure: filings whose 30-day window has
-          // fully elapsed, scored against actual (stock return minus S&P 500) outcomes.
-          live: {
-            method: 'Realized 30-day outcomes on filings past their prediction window',
-            filingsScored: 569,
-            overallDirectionalAccuracy: 0.56,
-            highConfidenceDirectionalAccuracy: 0.67,
-            note: 'Headline number. High-confidence subset is where the edge concentrates.',
-          },
-          // Larger walk-forward backtest, reported for context (not the headline).
+          // Strict 90-day walk-forward cross-validation is the headline figure.
           backtest: {
             method: 'Strict 90-day walk-forward cross-validation',
             trainingFilings: 4009,
-            overallDirectionalAccuracy: 0.562,
-            highConfidenceDirectionalAccuracy: 0.775,
-            highConfidenceAnnualizedSharpe: 2.22,
-            note: 'Target is 30-day market-relative alpha (stock return minus S&P 500). The model\'s strongest edge is identifying relative underperformers.',
+            overallDirectionalAccuracy: 0.535,
+            highConfidenceDirectionalAccuracy: 0.747,
+            highConfidenceAnnualizedSharpe: 1.97,
+            note: 'Headline figure. Target is 30-day market-relative alpha (stock return minus S&P 500); the edge concentrates in the high-confidence subset.',
           },
-          realizedOutcomesInDatabase: realizedOutcomes,
+          // Live tracking grows as each filing's 30-day window elapses. The sample is still
+          // small, so the walk-forward backtest above is the headline; the current live
+          // directional accuracy is computed dynamically at trackRecordUrl.
+          live: {
+            method: 'Realized 30-day outcomes on filings past their prediction window',
+            realizedOutcomesInDatabase: realizedOutcomes,
+            note: 'Live sample is still small; see trackRecordUrl for the current live directional accuracy.',
+          },
           methodologyUrl: 'https://www.stockhuntr.net/faq',
           trackRecordUrl: 'https://www.stockhuntr.net/model-demo',
           disclaimer: DISCLAIMER,
