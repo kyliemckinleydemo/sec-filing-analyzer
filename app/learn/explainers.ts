@@ -387,6 +387,50 @@ export const explainers: Explainer[] = [
     related: ['how-to-read-risk-factors', '10-k-vs-10-q', 'what-is-a-proxy-statement-def-14a'],
     updated: '2026-09-28',
   },
+  {
+    slug: 'schedule-13d-vs-13g',
+    question: "Schedule 13D vs 13G: what's the difference?",
+    shortAnswer:
+      'Schedule 13D and 13G are filed when an investor crosses 5% ownership of a public company. A 13D signals an active investor who may seek to influence or control the company — the classic activist filing. A 13G is for passive investors with no intent to influence control, and carries lighter, less frequent disclosure.',
+    sections: [
+      {
+        heading: 'The 5% trigger',
+        body: 'When any person or group acquires beneficial ownership of more than 5% of a class of a company\'s voting shares, they must report it to the SEC. Which form they file depends on their intent. An investor who might push for change — board seats, a sale, a strategy shift — files the longer Schedule 13D. An investor holding purely for investment, with no plan to influence control, can file the shorter Schedule 13G.\n\nRecent SEC amendments shortened the deadlines: an initial 13D is now generally due within five business days of crossing the threshold, and amendments must follow material changes promptly.',
+      },
+      {
+        heading: 'Why a 13D is the one to watch',
+        body: 'The 13D is the activist\'s calling card. Its Item 4, "Purpose of Transaction," is where the filer must state what they intend — and language there about seeking board representation, strategic alternatives, a sale, or governance changes can move the stock, because it flags potential pressure on management.\n\nHedge funds and activist investors use 13Ds (and their amendments) to build and disclose campaigns. A new 13D on a company, especially from a known activist, often draws immediate market attention.',
+      },
+      {
+        heading: 'How to read a 13G',
+        body: 'A 13G is typically filed by passive institutional holders — index funds, asset managers, and the like — who cross 5% simply through the scale of their holdings. It is shorter and updated less often. A holder can be required to switch from 13G to 13D if their intent changes to an active one. When scanning ownership, treat a 13G as "big passive holder" and a 13D as "someone who may want to shake things up."',
+      },
+    ],
+    related: ['what-is-a-form-4', 'what-is-a-proxy-statement-def-14a', 'what-is-a-form-13f'],
+    updated: '2026-09-29',
+  },
+  {
+    slug: 'what-is-regulation-fd',
+    question: 'What is Regulation FD (Fair Disclosure)?',
+    shortAnswer:
+      'Regulation FD (Fair Disclosure) is an SEC rule that bars public companies from selectively sharing material non-public information with analysts or select investors before the public. If material information is disclosed selectively — even by accident — the company must promptly make it broadly public, often by furnishing an 8-K under Item 7.01.',
+    sections: [
+      {
+        heading: 'What the rule requires',
+        body: 'Regulation FD, adopted in 2000, targets selective disclosure. If a company (or someone acting on its behalf) discloses material non-public information to certain people — typically analysts, institutional investors, or shareholders who might trade on it — it must disclose that same information to the public. For an intentional selective disclosure, the public disclosure must be simultaneous; for an unintentional one, promptly (generally within 24 hours).\n\nThe usual mechanism for the public disclosure is a Form 8-K under Item 7.01 (Regulation FD Disclosure), or a widely accessible press release or webcast.',
+      },
+      {
+        heading: 'Why it exists',
+        body: 'Before Reg FD, companies sometimes gave analysts and big investors a heads-up on earnings or guidance ahead of everyone else, creating an uneven playing field. The rule was designed to ensure all investors get access to material information at the same time, improving fairness and market integrity. It is a big reason earnings guidance and material updates are released through broadly accessible channels.',
+      },
+      {
+        heading: 'How you see it in filings',
+        body: 'When you see an 8-K with Item 7.01, the company is making a Regulation FD disclosure — putting information on the public record so no one has an informational edge. These are often "furnished" rather than "filed," a technical distinction affecting liability but not your ability to read the content. Investor-day slides, updated guidance, and similar materials frequently appear this way.',
+      },
+    ],
+    related: ['what-is-an-8-k-filing', '8-k-item-2-02', 'what-is-an-eps-surprise'],
+    updated: '2026-09-29',
+  },
 ];
 
 /** Look up a single explainer by slug. */
