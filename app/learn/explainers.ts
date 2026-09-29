@@ -343,6 +343,50 @@ export const explainers: Explainer[] = [
     related: ['what-is-a-form-4', 'what-is-a-proxy-statement-def-14a', 'what-is-an-eps-surprise'],
     updated: '2026-09-28',
   },
+  {
+    slug: 'what-is-a-material-weakness',
+    question: 'What is a material weakness in internal controls?',
+    shortAnswer:
+      "A material weakness is a deficiency in a company's internal control over financial reporting serious enough that there is a reasonable possibility a material misstatement in the financial statements would not be prevented or caught in time. It is disclosed in the 10-K and is a meaningful red flag about financial-reporting reliability.",
+    sections: [
+      {
+        heading: 'What it means and why it matters',
+        body: 'Public companies must maintain internal control over financial reporting (ICFR) — the processes that give reasonable assurance the financials are accurate. Deficiencies are graded by severity: a "deficiency," a more serious "significant deficiency," and the most serious, a "material weakness." A material weakness means there is a reasonable possibility that a material misstatement could occur and go undetected.\n\nIt does not necessarily mean the reported numbers are wrong today, but it tells you the guardrails that would catch an error are not working. That raises the risk of future restatements and is a signal to read the financials with extra care.',
+      },
+      {
+        heading: 'Where to find it',
+        body: "Look in the 10-K under \"Controls and Procedures\" (Item 9A), where management assesses the effectiveness of ICFR and disclosure controls. For larger companies, the independent auditor also issues an opinion on ICFR — an \"adverse\" opinion there means the auditor identified a material weakness. Newly public and smaller reporting companies sometimes disclose weaknesses while they build out their finance function.\n\nManagement will typically describe the nature of the weakness (for example, insufficient segregation of duties, or inadequate controls over revenue recognition) and a remediation plan.",
+      },
+      {
+        heading: 'How to read the signal',
+        body: 'Assess three things: what the weakness touches (a weakness over a core area like revenue is more serious than one over a peripheral process), whether it has led to an actual restatement, and how credible and advanced the remediation plan is. A single, narrowly scoped weakness with an active fix reads very differently from repeated or pervasive weaknesses across multiple reporting periods, which suggest deeper problems in the finance organization.',
+      },
+    ],
+    related: ['going-concern-qualification', 'how-to-read-risk-factors', 'what-does-mda-tell-you'],
+    updated: '2026-09-28',
+  },
+  {
+    slug: 'what-is-a-form-s-1',
+    question: 'What is a Form S-1 (IPO registration statement)?',
+    shortAnswer:
+      "A Form S-1 is the registration statement a company files with the SEC to go public. It is the core disclosure document for an IPO, containing the business description, risk factors, audited financials, how the proceeds will be used, and ownership details. The prospectus that investors read is part of the S-1.",
+    sections: [
+      {
+        heading: 'What an S-1 is for',
+        body: "Before a company can sell shares to the public, it must register those securities with the SEC. The Form S-1 is that registration statement, and its prospectus is the document prospective investors use to evaluate the offering. It is a company's most comprehensive public introduction of itself — often the first time detailed financials and strategy are disclosed.\n\nCompanies frequently file amendments (S-1/A) as they respond to SEC comments and update terms; the price range and share count often appear in later amendments as the IPO date approaches.",
+      },
+      {
+        heading: "What's inside",
+        body: 'Key sections include: a prospectus summary; risk factors (often the longest and most candid part); use of proceeds (what the company will do with the money raised); a description of the business and its market; management\'s discussion and analysis (MD&A) of the financial results; audited financial statements; a capitalization table and dilution analysis; and information on management, executive compensation, and principal shareholders.\n\nFor loss-making growth companies, the risk factors and the path-to-profitability discussion in MD&A are especially important.',
+      },
+      {
+        heading: 'S-1 vs the final prospectus (424B)',
+        body: 'The S-1 registers the offering; once it is declared effective and the deal prices, the company files the final prospectus as a Form 424B, which locks in the actual offering price and share count. If you are researching an IPO after it has priced, the 424B is the definitive version. Emerging-growth companies may also file confidentially first and only reveal the S-1 publicly closer to the roadshow.',
+      },
+    ],
+    related: ['how-to-read-risk-factors', '10-k-vs-10-q', 'what-is-a-proxy-statement-def-14a'],
+    updated: '2026-09-28',
+  },
 ];
 
 /** Look up a single explainer by slug. */
