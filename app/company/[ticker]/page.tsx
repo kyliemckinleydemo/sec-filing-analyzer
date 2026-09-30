@@ -12,9 +12,27 @@ import QASection from '@/app/components/QASection';
 import AnalysisProvenance from '@/app/components/AnalysisProvenance';
 import CompanyLede from '@/app/components/CompanyLede';
 import Breadcrumbs from '@/app/components/Breadcrumbs';
+import RelatedCompanies from '@/app/components/RelatedCompanies';
 import { buildCompanyQA } from '@/lib/qa-builders';
 
 const SITE = 'https://www.stockhuntr.net';
+
+/** Same-sector peers (by market cap) for internal linking + discovery. Real data only. */
+async function getRelatedCompanies(sector: string | null, excludeTicker: string) {
+  if (!sector) return [];
+  try {
+    const peers = await prisma.company.findMany({
+      where: { sector, ticker: { not: excludeTicker } },
+      orderBy: { marketCap: 'desc' },
+      take: 8,
+      select: { ticker: true, name: true },
+    });
+    return peers;
+  } catch (error) {
+    console.error('related companies: db lookup failed', error);
+    return [];
+  }
+}
 
 /** Company filing history on SEC EDGAR, built from CIK. */
 function edgarCompanyUrl(cik?: string | null): string | null {
@@ -169,6 +187,9 @@ async function getCompanyQAData(tickerParam: string) {
 export default async function Page({ params }: PageProps) {
   const qa = await getCompanyQAData(params.ticker);
   const qaItems = qa?.items;
+  const related = qa?.lede
+    ? await getRelatedCompanies(qa.lede.sector, qa.lede.ticker)
+    : [];
 
   const crumbs = qa?.lede
     ? [
@@ -205,6 +226,11 @@ export default async function Page({ params }: PageProps) {
             items={qaItems}
             note="Answers are generated from SEC filings and StockHuntr's analysis. Not investment advice."
           />
+        </div>
+      )}
+      {qa?.lede?.sector && related.length > 0 && (
+        <div className="bg-[#020617]">
+          <RelatedCompanies sector={qa.lede.sector} companies={related} />
         </div>
       )}
       {qa && (
