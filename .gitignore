@@ -76,6 +76,8 @@ data/sec-bulk/
 /*.md
 !README.md
 !CLAUDE.md
+!DEVELOPER-GUIDE.md
+!MCP-GUIDE.md
 
 # AI/ML outputs
 ai-discovery-outputs/
