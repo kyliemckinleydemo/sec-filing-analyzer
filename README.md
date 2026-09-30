@@ -44,7 +44,7 @@ It competes with paid AI research tools (Fintool, AlphaSense) and free raw EDGAR
 - **`/sectors` & `/sectors/[slug]`** — Sector insight pages with aggregate stats (filings analyzed, avg concern, model accuracy) computed from the corpus
 - **`/pulse`** — Recurring "SEC Filing Pulse" report: sector concern heat, most significant filings, strongest 30-day signals (ISR-refreshed, Article JSON-LD)
 - **`/compare` & `/compare/[slug]`** — Comparison landing pages (e.g. Fintool vs StockHuntr, AlphaSense alternatives, Bloomberg Terminal alternatives)
-- **MCP server** (`/api/mcp`, docs at [`/mcp`](https://www.stockhuntr.net/mcp)) — Remote Model Context Protocol server (Streamable HTTP) with **7 read-only tools**: filings, filing analysis, company snapshot, company search, **fundamentals screening**, top signals, and model track record — for MCP clients (Claude, ChatGPT, agents). Discovery manifest at `/.well-known/mcp.json`. See [`docs/MCP-GUIDE.md`](docs/MCP-GUIDE.md)
+- **MCP server** (`/api/mcp`, docs at [`/mcp`](https://www.stockhuntr.net/mcp)) — Remote Model Context Protocol server (Streamable HTTP) with **7 read-only tools**: filings, filing analysis, company snapshot, company search, **fundamentals screening**, top signals, and model track record — for MCP clients (Claude, ChatGPT, agents). Discovery manifest at `/.well-known/mcp.json`. See [`MCP-GUIDE.md`](MCP-GUIDE.md)
 - **Open dataset** (`scripts/export-dataset.ts`) — CC-BY-4.0 export of the analyzed-filing corpus (CSV + JSONL + dataset card) for publication on Hugging Face / Kaggle
 - **SEO/GEO infra** — Dynamic `sitemap.ts` & `robots.ts`, `public/llms.txt`, JSON-LD (Organization / WebSite / SoftwareApplication / FAQPage / Article / Dataset), Microsoft Clarity analytics, and IndexNow submission
 
@@ -325,8 +325,8 @@ See [`DEPLOYMENT.md`](DEPLOYMENT.md) for the full deployment guide.
 | Document | Description |
 |----------|-------------|
 | [`README.md`](README.md) | This file — project overview |
-| [`docs/DEVELOPER-GUIDE.md`](docs/DEVELOPER-GUIDE.md) | How to work in the repo: build/test/deploy, adding an MCP tool, SEO/GEO patterns, gotchas |
-| [`docs/MCP-GUIDE.md`](docs/MCP-GUIDE.md) | Connecting to and using the remote MCP server (7 tools) |
+| [`DEVELOPER-GUIDE.md`](DEVELOPER-GUIDE.md) | How to work in the repo: build/test/deploy, adding an MCP tool, SEO/GEO patterns, gotchas |
+| [`MCP-GUIDE.md`](MCP-GUIDE.md) | Connecting to and using the remote MCP server (7 tools) |
 | [`QUICKSTART.md`](QUICKSTART.md) | Quick start guide for new users |
 | [`TEST-PLAN.md`](TEST-PLAN.md) | Test architecture and coverage |
 | [`CRON-JOBS-README.md`](CRON-JOBS-README.md) | Cron job system documentation |
