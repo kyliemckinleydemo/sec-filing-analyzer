@@ -65,6 +65,7 @@ data/sec-bulk/
 /*.json
 !package.json
 !package-lock.json
+!server.json
 !tsconfig.json
 !vercel.json
 !playwright.config.json

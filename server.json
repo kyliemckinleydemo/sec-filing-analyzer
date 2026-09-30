@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.kyliemckinleydemo/sec-filing-analyzer",
+  "description": "AI-analyzed SEC filings: filings, analysis, screening, 30-day signals, track record.",
+  "repository": {
+    "url": "https://github.com/kyliemckinleydemo/sec-filing-analyzer",
+    "source": "github"
+  },
+  "websiteUrl": "https://www.stockhuntr.net/mcp",
+  "version": "1.0.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://www.stockhuntr.net/api/mcp"
+    }
+  ]
+}
