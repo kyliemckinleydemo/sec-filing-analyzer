@@ -40,11 +40,13 @@ function str(v: string | string[] | undefined): string | null {
   return typeof v === 'string' && v.trim() !== '' ? v.trim() : null;
 }
 
+// nulls: 'last' so companies missing the sorted metric (often stale/delisted) never
+// dominate the top of a view — Postgres otherwise sorts NULLs first on DESC.
 const SORTS: Record<string, { orderBy: any; label: string }> = {
-  marketcap: { orderBy: { marketCap: 'desc' }, label: 'Market cap (high→low)' },
-  yield: { orderBy: { dividendYield: 'desc' }, label: 'Dividend yield (high→low)' },
-  pe: { orderBy: { peRatio: 'asc' }, label: 'P/E (low→high)' },
-  growth: { orderBy: { revenueGrowth: 'desc' }, label: 'Revenue growth (high→low)' },
+  marketcap: { orderBy: { marketCap: { sort: 'desc', nulls: 'last' } }, label: 'Market cap (high→low)' },
+  yield: { orderBy: { dividendYield: { sort: 'desc', nulls: 'last' } }, label: 'Dividend yield (high→low)' },
+  pe: { orderBy: { peRatio: { sort: 'asc', nulls: 'last' } }, label: 'P/E (low→high)' },
+  growth: { orderBy: { revenueGrowth: { sort: 'desc', nulls: 'last' } }, label: 'Revenue growth (high→low)' },
 };
 
 function fmtB(v: number | null | undefined): string {
