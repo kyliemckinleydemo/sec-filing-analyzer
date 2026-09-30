@@ -1,0 +1,24 @@
+{
+  "name": "stockhuntr",
+  "displayName": "StockHuntr — AI SEC Filing Analysis",
+  "description": "Remote MCP server for querying AI-analyzed SEC filings (10-K, 10-Q, 8-K), company snapshots, fundamentals-based stock screening, 30-day prediction signals, and the model's track record. All data is read-only and grounded in primary-source SEC EDGAR filings.",
+  "version": "1.0.0",
+  "vendor": {
+    "name": "StockHuntr",
+    "url": "https://www.stockhuntr.net"
+  },
+  "transport": "streamable-http",
+  "endpoint": "https://www.stockhuntr.net/api/mcp",
+  "authentication": "none",
+  "documentationUrl": "https://www.stockhuntr.net/mcp",
+  "tools": [
+    { "name": "get_latest_filings", "description": "Recent 10-K/10-Q/8-K filings with AI analysis and 30-day predictions." },
+    { "name": "get_filing_analysis", "description": "Full AI analysis for a single filing by accession number." },
+    { "name": "get_company", "description": "Company snapshot: sector, fundamentals, recent filings." },
+    { "name": "search_companies", "description": "Find tracked companies by ticker or name." },
+    { "name": "screen_companies", "description": "Filter 800+ companies by sector, market cap, P/E, dividend yield, and revenue growth." },
+    { "name": "get_top_signals", "description": "Highest-conviction 30-day prediction signals." },
+    { "name": "get_model_track_record", "description": "Model accuracy from strict walk-forward backtesting plus live outcome counts." }
+  ],
+  "disclaimer": "StockHuntr is an educational/research tool. Predictions are model outputs, not investment advice."
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "StockHuntr",
+  "name_for_model": "stockhuntr",
+  "description_for_human": "Query AI-analyzed SEC filings, company fundamentals, stock screening, and 30-day prediction signals — grounded in primary-source SEC EDGAR data.",
+  "description_for_model": "Read-only access to StockHuntr's AI analysis of SEC filings (10-K, 10-Q, 8-K) for 800+ US companies. Use to fetch recent filings and their analysis, get a company snapshot, screen companies by fundamentals (sector, market cap, P/E, dividend yield, revenue growth), retrieve top 30-day prediction signals, and read the model's backtested track record. Connect via the Model Context Protocol (MCP) endpoint. Always surface the disclaimer: predictions are model outputs, not investment advice.",
+  "api": {
+    "type": "mcp",
+    "url": "https://www.stockhuntr.net/api/mcp",
+    "transport": "streamable-http"
+  },
+  "contact_email": "support@stockhuntr.net",
+  "legal_info_url": "https://www.stockhuntr.net/terms",
+  "documentation_url": "https://www.stockhuntr.net/mcp"
+}

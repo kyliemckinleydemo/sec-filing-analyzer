@@ -2,7 +2,7 @@
 
 **Chat with SEC filings. Get cited answers and risk scores — free.**
 
-StockHuntr is a free AI tool for reading and analyzing SEC filings. Ask about any 10-K, 10-Q, or 8-K in plain English and get clear, **cited answers** straight from the filing, plus AI **risk and concern scoring** across 640+ US companies (all S&P 500 constituents). Everything is grounded in primary-source SEC EDGAR data. It also generates 30-day alpha signals as a secondary feature.
+StockHuntr is a free AI tool for reading and analyzing SEC filings. Ask about any 10-K, 10-Q, or 8-K in plain English and get clear, **cited answers** straight from the filing, plus AI **risk and concern scoring** across 800+ US companies (all S&P 500 constituents). Everything is grounded in primary-source SEC EDGAR data. It also generates 30-day alpha signals as a secondary feature.
 
 It competes with paid AI research tools (Fintool, AlphaSense) and free raw EDGAR — cited AI answers and risk scoring on primary-source filings, at no cost. Research and educational only; not investment advice.
 
@@ -35,7 +35,7 @@ It competes with paid AI research tools (Fintool, AlphaSense) and free raw EDGAR
 - **Historical price snapshots** at filing date (99% coverage) — eliminates stale-price bias from prior model
 - **Macro regime features** — S&P 500 30-day trend and VIX level at filing date for bull/bear market adjustment
 - **EPS surprise** — strongest new feature (actual vs. consensus EPS), winsorized to [-50%, +50%]
-- **Backtested accuracy**: 56.2% directional (77.5% high-confidence), Sharpe ratio 2.22 (90-day strict walk-forward CV)
+- **Backtested accuracy**: 53.5% directional (74.7% high-confidence), Sharpe ratio ~1.97 (90-day strict walk-forward CV)
 - **Paper Trading** — Automated virtual portfolio validates live performance (30-day hold period)
 - See [`MODEL.md`](MODEL.md) for full model documentation
 
@@ -44,7 +44,7 @@ It competes with paid AI research tools (Fintool, AlphaSense) and free raw EDGAR
 - **`/sectors` & `/sectors/[slug]`** — Sector insight pages with aggregate stats (filings analyzed, avg concern, model accuracy) computed from the corpus
 - **`/pulse`** — Recurring "SEC Filing Pulse" report: sector concern heat, most significant filings, strongest 30-day signals (ISR-refreshed, Article JSON-LD)
 - **`/compare` & `/compare/[slug]`** — Comparison landing pages (e.g. Fintool vs StockHuntr, AlphaSense alternatives, Bloomberg Terminal alternatives)
-- **MCP server** (`/api/mcp`) — Remote Model Context Protocol server (Streamable HTTP) exposing filings, analysis, company data, top signals, and track record to MCP clients (Claude, ChatGPT, agents)
+- **MCP server** (`/api/mcp`, docs at [`/mcp`](https://www.stockhuntr.net/mcp)) — Remote Model Context Protocol server (Streamable HTTP) with **7 read-only tools**: filings, filing analysis, company snapshot, company search, **fundamentals screening**, top signals, and model track record — for MCP clients (Claude, ChatGPT, agents). Discovery manifest at `/.well-known/mcp.json`. See [`docs/MCP-GUIDE.md`](docs/MCP-GUIDE.md)
 - **Open dataset** (`scripts/export-dataset.ts`) — CC-BY-4.0 export of the analyzed-filing corpus (CSV + JSONL + dataset card) for publication on Hugging Face / Kaggle
 - **SEO/GEO infra** — Dynamic `sitemap.ts` & `robots.ts`, `public/llms.txt`, JSON-LD (Organization / WebSite / SoftwareApplication / FAQPage / Article / Dataset), Microsoft Clarity analytics, and IndexNow submission
 
@@ -61,7 +61,7 @@ It competes with paid AI research tools (Fintool, AlphaSense) and free raw EDGAR
 
 ### User Features
 - **Watchlist Alerts** — Email notifications for high-concern filings, price moves, analyst activity
-- **Company Search** — Search 640+ companies by ticker
+- **Company Search** — Search 800+ companies by ticker
 - **Filing History** — Browse 10-K, 10-Q, 8-K with infinite scroll
 - **Paper Trading Dashboard** — Track virtual portfolio performance
 - **Magic Link Auth** — Passwordless email authentication
@@ -325,6 +325,8 @@ See [`DEPLOYMENT.md`](DEPLOYMENT.md) for the full deployment guide.
 | Document | Description |
 |----------|-------------|
 | [`README.md`](README.md) | This file — project overview |
+| [`docs/DEVELOPER-GUIDE.md`](docs/DEVELOPER-GUIDE.md) | How to work in the repo: build/test/deploy, adding an MCP tool, SEO/GEO patterns, gotchas |
+| [`docs/MCP-GUIDE.md`](docs/MCP-GUIDE.md) | Connecting to and using the remote MCP server (7 tools) |
 | [`QUICKSTART.md`](QUICKSTART.md) | Quick start guide for new users |
 | [`TEST-PLAN.md`](TEST-PLAN.md) | Test architecture and coverage |
 | [`CRON-JOBS-README.md`](CRON-JOBS-README.md) | Cron job system documentation |

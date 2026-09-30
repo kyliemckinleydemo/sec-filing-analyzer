@@ -17,7 +17,8 @@ Key facts:
 - [Compare](https://www.stockhuntr.net/compare): How StockHuntr compares to Fintool, AlphaSense, Bloomberg Terminal, and free EDGAR for AI SEC-filing analysis
 - [Model Demo](https://www.stockhuntr.net/model-demo): Live track record of predictions vs actual 30-day outcomes
 - [Ask the Market](https://www.stockhuntr.net/query): Natural-language querying over the filing corpus
-- [Open Dataset](https://www.stockhuntr.net/dataset): Free CC-BY-4.0 dataset of 17,500+ AI-analyzed SEC filings (concern/sentiment features + realized 30-day outcomes), downloadable as CSV/JSONL, plus a remote MCP server at /api/mcp for AI agents
+- [Open Dataset](https://www.stockhuntr.net/dataset): Free CC-BY-4.0 dataset of 17,500+ AI-analyzed SEC filings (concern/sentiment features + realized 30-day outcomes), downloadable as CSV/JSONL
+- [MCP Server](https://www.stockhuntr.net/mcp): Free remote Model Context Protocol server at /api/mcp — 7 read-only tools for AI agents to query filings, filing analysis, company snapshots, fundamentals-based screening, top 30-day signals, and the model track record
 
 ## Page patterns
 

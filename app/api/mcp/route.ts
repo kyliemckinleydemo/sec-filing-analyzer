@@ -225,6 +225,82 @@ const handler = createMcpHandler(
       }
     );
 
+    // ---- screen_companies --------------------------------------------------
+    server.registerTool(
+      'screen_companies',
+      {
+        title: 'Screen companies by fundamentals',
+        description:
+          'Filter the tracked-company universe (800+ US companies, all S&P 500 constituents) by fundamentals: sector, minimum market cap, maximum P/E, minimum dividend yield, and minimum revenue growth. Mirrors the /screener tool. Returns matching companies with links to their pages.',
+        inputSchema: z.object({
+          sector: z
+            .string()
+            .optional()
+            .describe('Exact sector name, e.g. "Information Technology", "Financials", "Energy"'),
+          min_market_cap_billions: z.number().min(0).optional().describe('Minimum market cap in USD billions'),
+          max_pe: z.number().min(0).optional().describe('Maximum trailing P/E ratio'),
+          min_dividend_yield_pct: z.number().min(0).optional().describe('Minimum dividend yield in percent, e.g. 3 for 3%'),
+          min_revenue_growth_pct: z.number().optional().describe('Minimum TTM revenue growth in percent, e.g. 20 for 20%'),
+          sort: z.enum(['marketcap', 'yield', 'pe', 'growth']).default('marketcap').describe('Sort order'),
+          limit: z.number().int().min(1).max(50).default(25),
+        }),
+      },
+      async (args) => {
+        const AND: any[] = [];
+        if (args.sector) AND.push({ sector: { equals: args.sector } });
+        if (args.min_market_cap_billions != null)
+          AND.push({ marketCap: { gte: args.min_market_cap_billions * 1e9 } });
+        if (args.max_pe != null) AND.push({ peRatio: { lte: args.max_pe, gt: 0 } });
+        if (args.min_dividend_yield_pct != null)
+          AND.push({ dividendYield: { gte: args.min_dividend_yield_pct / 100 } });
+        if (args.min_revenue_growth_pct != null)
+          AND.push({ revenueGrowth: { gte: args.min_revenue_growth_pct / 100 } });
+        const where = AND.length ? { AND } : {};
+        const orderBy: any = {
+          marketcap: { marketCap: { sort: 'desc', nulls: 'last' } },
+          yield: { dividendYield: { sort: 'desc', nulls: 'last' } },
+          pe: { peRatio: { sort: 'asc', nulls: 'last' } },
+          growth: { revenueGrowth: { sort: 'desc', nulls: 'last' } },
+        }[args.sort];
+        const [rows, total] = await Promise.all([
+          prisma.company.findMany({
+            where,
+            orderBy,
+            take: args.limit,
+            select: {
+              ticker: true,
+              name: true,
+              sector: true,
+              currentPrice: true,
+              marketCap: true,
+              peRatio: true,
+              dividendYield: true,
+              revenueGrowth: true,
+            },
+          }),
+          prisma.company.count({ where }),
+        ]);
+        return json({
+          totalMatches: total,
+          returned: rows.length,
+          results: rows.map((c) => ({
+            ticker: c.ticker,
+            name: c.name,
+            sector: c.sector,
+            currentPrice: c.currentPrice,
+            marketCap: c.marketCap,
+            peRatio: c.peRatio,
+            // Percent for readability — matches the min_dividend_yield_pct / min_revenue_growth_pct inputs.
+            dividendYieldPct: c.dividendYield != null ? c.dividendYield * 100 : null,
+            revenueGrowthPct: c.revenueGrowth != null ? c.revenueGrowth * 100 : null,
+            companyUrl: `https://www.stockhuntr.net/company/${c.ticker}`,
+          })),
+          screenerUrl: 'https://www.stockhuntr.net/screener',
+          disclaimer: DISCLAIMER,
+        });
+      }
+    );
+
     // ---- get_top_signals ---------------------------------------------------
     server.registerTool(
       'get_top_signals',
@@ -287,7 +363,8 @@ const handler = createMcpHandler(
           // Strict 90-day walk-forward cross-validation is the headline figure.
           backtest: {
             method: 'Strict 90-day walk-forward cross-validation',
-            trainingFilings: 4009,
+            // Fixed at model-evaluation time; does not track new ingestions. See trackRecordUrl.
+            trainingFilingsApprox: 4009,
             overallDirectionalAccuracy: 0.535,
             highConfidenceDirectionalAccuracy: 0.747,
             highConfidenceAnnualizedSharpe: 1.97,
