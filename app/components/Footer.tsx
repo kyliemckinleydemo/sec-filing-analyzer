@@ -23,6 +23,7 @@ export default function Footer() {
               <li><Link href="/latest-filings" className="block py-1 hover:text-white">Latest Filings</Link></li>
               <li><Link href="/pulse" className="block py-1 hover:text-white">SEC Filing Pulse</Link></li>
               <li><Link href="/query" className="block py-1 hover:text-white">Ask the Market</Link></li>
+              <li><Link href="/screener" className="block py-1 hover:text-white">Stock Screener</Link></li>
               <li><Link href="/model-demo" className="block py-1 hover:text-white">Model Track Record</Link></li>
               <li><Link href="/sectors" className="block py-1 hover:text-white">Filings by Sector</Link></li>
             </ul>

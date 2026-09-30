@@ -21,6 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/`, changeFrequency: 'daily', priority: 1.0 },
     { url: `${BASE_URL}/latest-filings`, changeFrequency: 'daily', priority: 0.9 },
     { url: `${BASE_URL}/query`, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${BASE_URL}/screener`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/model-demo`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/faq`, changeFrequency: 'monthly', priority: 0.8 },
     // NOTE: /backtest removed — page requires auth and redirects unauthenticated users,

@@ -15,6 +15,7 @@ const LINKS = [
   { href: '/latest-filings', label: 'Latest Filings' },
   { href: '/pulse', label: 'Pulse' },
   { href: '/sectors', label: 'Sectors' },
+  { href: '/screener', label: 'Screener' },
   { href: '/query', label: 'Ask the Market' },
   { href: '/model-demo', label: 'Track Record' },
   { href: '/watchlist', label: 'Watchlist' },

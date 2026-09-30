@@ -93,7 +93,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     timeZone: 'UTC',
   });
   const { ticker, name } = filing.company;
-  const title = `${ticker} ${filing.filingType} — ${dateStr} | AI Analysis & 30-Day Prediction`;
+  // Title mirrors how people search — "{Company} ({TICKER}) {form} filing summary" —
+  // capturing "[ticker] 10-K summary" / "[company] 8-K explained" intent, while keeping
+  // the AI-analysis differentiator.
+  const title = `${name} (${ticker}) ${filing.filingType} Filing Summary — ${dateStr} | AI Analysis`;
 
   // Strip markdown (bold, bullets, headings) so the AI summary reads cleanly
   // as a plain-text search/AI snippet.
