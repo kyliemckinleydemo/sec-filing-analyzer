@@ -475,6 +475,84 @@ export const comparisons: Comparison[] = [
       'TIKR is best for investors who want deep fundamentals, analyst estimates, and valuation/screening tools across a broad global universe.',
     updated: '2026-09-29',
   },
+  {
+    slug: 'seeking-alpha-alternatives',
+    title: 'Seeking Alpha alternatives',
+    directAnswer:
+      'Seeking Alpha is a subscription investment-research platform known for crowd-sourced analysis articles and quantitative stock ratings. If what you want is to read and question the underlying SEC filings directly, StockHuntr is a free, filing-first alternative: chat with a 10-K, 10-Q, or 8-K and get answers cited from the source, plus AI risk scoring. They serve different needs — opinion/ratings vs primary-source filing analysis.',
+    competitors: ['Seeking Alpha'],
+    dimensions: [
+      {
+        label: 'Price',
+        stockhuntr: 'Free to use.',
+        others: { 'Seeking Alpha': 'Freemium — limited free access plus paid Premium tiers.' },
+      },
+      {
+        label: 'What you get',
+        stockhuntr: 'Cited answers from a specific SEC filing + AI risk/concern scoring.',
+        others: { 'Seeking Alpha': 'Analyst/contributor articles, news, and quantitative stock ratings.' },
+      },
+      {
+        label: 'Primary source vs opinion',
+        stockhuntr: 'Grounded in the primary-source filing text you are reading.',
+        others: { 'Seeking Alpha': 'Largely third-party analysis and opinion, plus quant scores.' },
+      },
+      {
+        label: 'AI filing chat',
+        stockhuntr: 'Ask any question of a filing in plain English.',
+        others: { 'Seeking Alpha': 'Not an AI filing-chat tool.' },
+      },
+      {
+        label: 'Coverage',
+        stockhuntr: '800+ US companies (all S&P 500 constituents).',
+        others: { 'Seeking Alpha': 'Broad US and global coverage via articles and ratings.' },
+      },
+    ],
+    whoForStockHuntr:
+      'Investors who want to go straight to the SEC filing, ask their own questions, and get cited answers plus an AI read on risk — for free, without wading through opinion pieces.',
+    whoForOthers:
+      'Seeking Alpha is best for readers who value a large library of analysis articles, community discussion, and quantitative ratings, and are comfortable with a subscription for the full experience.',
+    updated: '2026-09-29',
+  },
+  {
+    slug: 'simply-wall-st-alternatives',
+    title: 'Simply Wall St alternatives',
+    directAnswer:
+      'Simply Wall St is a freemium platform known for visual, infographic-style fundamental analysis and valuation snapshots. If you instead want to read and interrogate the actual SEC filings, StockHuntr is a free, filing-first alternative: chat with a 10-K, 10-Q, or 8-K and get answers cited from the source, plus AI risk and concern scoring. One visualizes fundamentals; the other analyzes the primary-source filings.',
+    competitors: ['Simply Wall St'],
+    dimensions: [
+      {
+        label: 'Price',
+        stockhuntr: 'Free to use.',
+        others: { 'Simply Wall St': 'Freemium — free tier plus paid plans.' },
+      },
+      {
+        label: 'Primary focus',
+        stockhuntr: 'AI-assisted SEC filing research: cited answers + risk scoring.',
+        others: { 'Simply Wall St': 'Visual fundamental analysis, valuation, and dividend/health snapshots.' },
+      },
+      {
+        label: 'SEC filing analysis',
+        stockhuntr: 'Core feature — chat with the filing; answers cited from the text.',
+        others: { 'Simply Wall St': 'Fundamentals-driven visuals rather than filing-text analysis.' },
+      },
+      {
+        label: 'Presentation',
+        stockhuntr: 'Cited Q&A and a 0–10 AI concern score per filing.',
+        others: { 'Simply Wall St': 'Infographic "snowflake" summaries and charts.' },
+      },
+      {
+        label: 'Data source',
+        stockhuntr: 'Primary-source SEC EDGAR filings (plus market data from Yahoo Finance).',
+        others: { 'Simply Wall St': 'Aggregated fundamentals and market data.' },
+      },
+    ],
+    whoForStockHuntr:
+      'Investors who want to read and question the underlying SEC filings with AI — cited answers and a risk read — rather than a visual fundamentals summary, all for free.',
+    whoForOthers:
+      'Simply Wall St is best for investors who like a fast, visual read on a company\'s fundamentals, valuation, and financial health without digging into filing text.',
+    updated: '2026-09-29',
+  },
 ];
 
 /** Look up a single comparison by slug. */
