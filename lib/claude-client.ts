@@ -902,6 +902,8 @@ Return ONLY bullet points, no introduction.`;
 
 STRICT RULES:
 - Use ONLY the facts provided. Do NOT invent numbers, quotes, prices, or events.
+- NEVER do arithmetic or derive/sum/compute any figure. State numbers ONLY exactly as they appear in the facts. If a total, range, or combined figure is not given verbatim, do NOT produce one — describe it qualitatively instead (e.g. "a portion of the debt remained untendered"). Fabricated or mis-computed numbers are the worst possible error.
+- Do NOT cite StockHuntr's internal model outputs (e.g. a "sentiment score", the raw concern number) as if they were facts from the filing. You may describe the concern qualitatively (e.g. "elevated concern").
 - Add genuine ANALYSIS and context — do NOT merely restate the summary. Explain why it matters, what changed, and what to watch.
 - If a predicted 30-day alpha is given, mention it as a model signal with an explicit caveat that it is a model estimate with known error — NOT investment advice. If it's "n/a", don't mention a prediction.
 - Neutral, factual, non-promotional tone. No hype, no buy/sell recommendation.
