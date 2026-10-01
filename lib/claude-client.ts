@@ -868,6 +868,64 @@ Return ONLY bullet points, no introduction.`;
     }
   }
 
+  /**
+   * Generate a short news-style article about a significant SEC filing, grounded ONLY in
+   * the supplied facts. Returns { title, dek, body }. Strict prompt: no invented numbers,
+   * unique analysis (not a restatement), honest signal caveat, not investment advice.
+   * Used by the daily /news generator — penalty-safe, human-curated-via-code editorial.
+   */
+  async generateNewsArticle(input: {
+    companyName: string;
+    ticker: string;
+    filingType: string;
+    filingDateStr: string;
+    aiSummary: string | null;
+    netAssessment: string | null;
+    concernLabel: string | null;
+    concernLevel: number | null;
+    topRiskChanges: string[];
+    predicted30dAlpha: number | null;
+    sector: string | null;
+  }): Promise<{ title: string; dek: string; body: string }> {
+    const facts = {
+      company: `${input.companyName} (${input.ticker})`,
+      filing: `${input.filingType} filed ${input.filingDateStr}`,
+      sector: input.sector ?? 'n/a',
+      aiSummary: input.aiSummary ?? 'n/a',
+      netAssessment: input.netAssessment ?? 'n/a',
+      concern: input.concernLevel != null ? `${input.concernLevel.toFixed(1)}/10 (${input.concernLabel ?? ''})` : 'n/a',
+      topRiskChanges: input.topRiskChanges.slice(0, 4),
+      predicted30dAlpha: input.predicted30dAlpha != null ? `${input.predicted30dAlpha.toFixed(1)}%` : 'n/a',
+    };
+
+    const prompt = `You are a financial news writer for StockHuntr. Write a short, original news article (about 220-320 words) analyzing the SEC filing below for investors.
+
+STRICT RULES:
+- Use ONLY the facts provided. Do NOT invent numbers, quotes, prices, or events.
+- Add genuine ANALYSIS and context — do NOT merely restate the summary. Explain why it matters, what changed, and what to watch.
+- If a predicted 30-day alpha is given, mention it as a model signal with an explicit caveat that it is a model estimate with known error — NOT investment advice. If it's "n/a", don't mention a prediction.
+- Neutral, factual, non-promotional tone. No hype, no buy/sell recommendation.
+- End with one sentence noting the analysis is from StockHuntr's AI, grounded in the SEC filing, and is not investment advice.
+
+FACTS (JSON):
+${JSON.stringify(facts, null, 2)}
+
+Return ONLY valid JSON (no markdown fences) with exactly these keys:
+{"title": "<= 100 chars, specific, includes company + filing type>", "dek": "<= 160 char one-sentence summary", "body": "the article body as plain paragraphs separated by blank lines"}`;
+
+    const response = await this.client.messages.create({
+      model: this.getModel('user'),
+      max_tokens: 1200,
+      messages: [{ role: 'user', content: prompt }],
+    });
+    const content = response.content[0];
+    if (content.type !== 'text') throw new Error('Unexpected response type');
+    const raw = content.text.trim().replace(/^```json\s*/i, '').replace(/```$/,'').trim();
+    const parsed = JSON.parse(raw) as { title: string; dek: string; body: string };
+    if (!parsed.title || !parsed.body) throw new Error('news article missing title/body');
+    return { title: parsed.title.slice(0, 120), dek: (parsed.dek ?? '').slice(0, 200), body: parsed.body };
+  }
+
   async *chatWithFiling(
     filingContext: string,
     question: string

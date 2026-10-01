@@ -534,3 +534,41 @@ model MagicLinkToken {
   @@index([email])
   @@index([expiresAt])
 }
+
+// AI-written daily news/insights articles about the most significant filings.
+// One row per published article; filingAccession is unique so the generator is
+// idempotent (never double-articles a filing). Body is Claude-generated prose
+// grounded in the filing's stored analysis. Syndication columns track cross-posts.
+model NewsArticle {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  dek             String   // one-line summary / deck
+  bodyMarkdown    String   // Claude-written article body (markdown)
+
+  // Source filing (denormalized for fast render; accession unique = idempotency)
+  filingAccession String   @unique
+  ticker          String
+  companyName     String
+  sector          String?
+  filingType      String
+  filingDate      DateTime
+
+  // Snapshot of the signals cited in the article
+  concernLevel         Float?
+  predicted30dAlpha    Float?
+  predictionConfidence Float?
+
+  model           String?  // Claude model used to generate (provenance)
+
+  // Syndication markers (iteration 6: Medium / X / LinkedIn) — null until posted
+  mediumUrl        String?
+  xPostedAt        DateTime?
+  linkedinPostedAt DateTime?
+
+  publishedAt DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([publishedAt])
+  @@index([ticker])
+}
