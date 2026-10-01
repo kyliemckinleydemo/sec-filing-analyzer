@@ -29,10 +29,15 @@ npx vercel --prod           # deploy to production (auto-aliases www.stockhuntr.
 - **Deploy is manual** via `npx vercel --prod` (GitHub auto-deploy may not be wired up).
 - After a config/route change, verify against the **direct deployment URL** printed by
   Vercel before trusting `www` (the apex→www redirect can strip headers).
-- **Build hang gotcha:** `next build` has occasionally hung (0-byte output, process alive
-  at ~0 CPU, `.next` frozen). If a build sits with no output for minutes, `pkill -f
-  ".bin/next"` and rerun. Always confirm the route-manifest table printed before trusting
-  `exit 0` from a captured background build.
+- **Local `next build` is unreliable on some machines** — the webpack compile worker can
+  spin indefinitely (one core pegged, zero output, `.next` frozen) regardless of the
+  `experimental.cpus`/`workerThreads` config. It is **environmental** (Vercel builds the
+  identical code reliably every deploy). Don't fight it: **verify locally with
+  `npx tsc --noEmit`** (fast, catches type errors — ignore the known pre-existing
+  `__tests__/setup.ts` NODE_ENV error) and let **`npx vercel --prod` be the build gate**
+  (Vercel compiles + reports failures loudly). If you must build locally and it spins,
+  `pkill -f ".bin/next"`. Note: killing a build mid-op can leave a stale `.git/index.lock`
+  — `rm -f .git/index.lock` if git then reports "Another git process seems to be running".
 
 ## Repo map (where things live)
 
