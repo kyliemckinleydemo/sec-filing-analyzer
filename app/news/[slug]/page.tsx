@@ -88,6 +88,7 @@ export default async function NewsArticlePage({ params }: { params: { slug: stri
     author: { '@type': 'Organization', name: 'StockHuntr', url: SITE },
     publisher: { '@type': 'Organization', name: 'StockHuntr', url: SITE },
     mainEntityOfPage: { '@type': 'WebPage', '@id': `${SITE}/news/${a.slug}` },
+    image: [`${SITE}/news/${a.slug}/opengraph-image`],
     isAccessibleForFree: true,
     about: `${a.companyName} (${a.ticker}) ${a.filingType}`,
   };

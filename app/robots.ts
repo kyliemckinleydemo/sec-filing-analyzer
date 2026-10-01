@@ -29,6 +29,9 @@ export default function robots(): MetadataRoute.Robots {
         disallow: DISALLOWED,
       },
     ],
-    sitemap: 'https://www.stockhuntr.net/sitemap.xml',
+    sitemap: [
+      'https://www.stockhuntr.net/sitemap.xml',
+      'https://www.stockhuntr.net/news-sitemap.xml',
+    ],
   };
 }

@@ -19,6 +19,7 @@ Key facts:
 - [Ask the Market](https://www.stockhuntr.net/query): Natural-language querying over the filing corpus
 - [Open Dataset](https://www.stockhuntr.net/dataset): Free CC-BY-4.0 dataset of 17,500+ AI-analyzed SEC filings (concern/sentiment features + realized 30-day outcomes), downloadable as CSV/JSONL
 - [MCP Server](https://www.stockhuntr.net/mcp): Free remote Model Context Protocol server at /api/mcp — 7 read-only tools for AI agents to query filings, filing analysis, company snapshots, fundamentals-based screening, top 30-day signals, and the model track record
+- [News & Insights](https://www.stockhuntr.net/news): Daily AI-written analysis of the most significant SEC filings (a small curated set per day) — what changed, concern score, and why it matters; each links to the full filing analysis
 - [RSS Feed](https://www.stockhuntr.net/feed.xml): RSS 2.0 feed of the most recent AI-analyzed SEC filings (10-K, 10-Q, 8-K) with concern scores, each linking to its filing analysis page
 
 ## Page patterns
