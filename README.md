@@ -42,16 +42,19 @@ It competes with paid AI research tools (Fintool, AlphaSense) and free raw EDGAR
 ### Content & Discovery (server-rendered for SEO / AI crawlers)
 - **`/learn`** — Explainer library: plain-language answers about SEC forms and items (10-K vs 10-Q, 8-K items, going concern, EPS surprises, XBRL, Form 4)
 - **`/sectors` & `/sectors/[slug]`** — Sector insight pages with aggregate stats (filings analyzed, avg concern, model accuracy) computed from the corpus
+- **`/news` & `/news/[slug]`** — Daily AI-written news/insights section: a small, significance-gated set (≤4/day, never one-per-filing) of original articles analyzing the most significant recent filings. Each is Claude-written from stored analysis with a strict no-arithmetic/grounded prompt, carries `NewsArticle` JSON-LD, a visible AI-disclosure line, E-E-A-T provenance (primary-source EDGAR link + methodology), a dynamic OG image, and internal links to the filing/company/sector. Google-News-surfaced via `/news-sitemap.xml` (48h window, `<news:news>` tags); auto-syndicated to owned Medium/X/LinkedIn accounts (credential-gated). Not investment advice.
 - **`/pulse`** — Recurring "SEC Filing Pulse" report: sector concern heat, most significant filings, strongest 30-day signals (ISR-refreshed, Article JSON-LD)
+- **RSS feed** ([`/feed.xml`](https://www.stockhuntr.net/feed.xml)) — RSS 2.0 of the most recent AI-analyzed filings (autodiscovery `<link>` site-wide); consumed by feed readers + news aggregators
 - **`/compare` & `/compare/[slug]`** — Comparison landing pages (e.g. Fintool vs StockHuntr, AlphaSense alternatives, Bloomberg Terminal alternatives)
 - **MCP server** (`/api/mcp`, docs at [`/mcp`](https://www.stockhuntr.net/mcp)) — Remote Model Context Protocol server (Streamable HTTP) with **7 read-only tools**: filings, filing analysis, company snapshot, company search, **fundamentals screening**, top signals, and model track record — for MCP clients (Claude, ChatGPT, agents). **Published to the official MCP Registry** as `io.github.kyliemckinleydemo/sec-filing-analyzer`. Discovery manifest at `/.well-known/mcp.json`. See [`MCP-GUIDE.md`](MCP-GUIDE.md)
 - **Stock screener** ([`/screener`](https://www.stockhuntr.net/screener)) — Free server-rendered screener: filter 800+ companies by sector, market cap, P/E, dividend yield, and revenue growth; results link to AI-analyzed filings. Works without JS (native GET form); mirrored by the `screen_companies` MCP tool
 - **Open dataset** (`scripts/export-dataset.ts`) — CC-BY-4.0 export of the analyzed-filing corpus (CSV + JSONL + dataset card) for publication on Hugging Face / Kaggle
-- **SEO/GEO infra** — Dynamic `sitemap.ts` & `robots.ts`, `public/llms.txt`, JSON-LD (Organization / WebSite / SoftwareApplication / FAQPage / Article / Dataset), Microsoft Clarity analytics, and IndexNow submission
+- **SEO/GEO infra** — Dynamic `sitemap.ts` (+ `news-sitemap.xml`) & `robots.ts`, RSS `feed.xml`, `public/llms.txt`, JSON-LD (Organization / WebSite / SoftwareApplication / FAQPage / Article / NewsArticle / Dataset / BreadcrumbList), Microsoft Clarity analytics, and IndexNow submission
 
 ### Data Pipeline (Automated Cron Jobs)
 - **SEC Filing Ingestion** — Fetches new 10-K, 10-Q, 8-K filings via RSS (3x daily), matched to companies **by CIK** (not ticker) for reliability, with daily-index catch-up
 - **AI Analysis** — Automated `analyze-filings` cron keeps recent filings analyzed in bounded, cost-guarded batches
+- **News Generation** — `generate-news` cron (daily 12:00 UTC) writes the day's ≤4 significant-filing articles via Claude (significance-gated, idempotent, cost-capped); `syndicate-news` cron (12:30 UTC) cross-posts new articles to owned Medium/X/LinkedIn accounts (credential-gated no-op until keys are set)
 - **Prediction Backfill** — `backfill-predictions` cron persists 30-day alpha predictions so Top Signals / Track Record / MCP stay populated
 - **Ticker Audit** — Weekly `ticker-audit` cron surfaces ticker-universe drift (delistings, duplicates, missing companies)
 - **Stock Price Updates** — Real-time prices from Yahoo Finance (batch rotation 6x daily)

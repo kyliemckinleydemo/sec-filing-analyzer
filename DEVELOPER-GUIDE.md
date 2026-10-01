@@ -119,6 +119,42 @@ GitHub repo (hence the `mcp`/`model-context-protocol` repo topics).
   overall, Sharpe ~1.97), NOT the stale live figure. Recompute with
   `npx tsx scripts/backtest-alpha-v2.ts` (read-only) before changing any of them.
 
+## The daily news pipeline (`/news`)
+
+A penalty-safe, AI-written daily news section. Flow:
+
+1. **Generate** — `app/api/cron/generate-news/route.ts` (cron, daily 12:00 UTC). Selects the
+   day's most significant *recently-analyzed* filings (concern ≥ 4, last 2 days), **hard-capped
+   at 4/run** (never one-per-filing), skips any filing already written about (idempotent via
+   the unique `NewsArticle.filingAccession`). For each, calls
+   `claudeClient.generateNewsArticle()` and persists a `NewsArticle` row.
+2. **Prompt** — `generateNewsArticle()` in `lib/claude-client.ts` uses a STRICT grounded prompt:
+   facts-only, **never do arithmetic or derive figures** (the one hallucination caught in QA was
+   a mis-computed number — state figures only as they appear, else describe qualitatively),
+   don't cite internal model scores as facts, unique analysis not restatement, honest signal
+   caveat, not-advice. Returns `{title, dek, body}`.
+3. **Render** — `app/news/page.tsx` (index) + `app/news/[slug]/page.tsx` (article: `NewsArticle`
+   JSON-LD, visible **AI-disclosure line** — required by Google's AI-content policy —
+   `AnalysisProvenance` with a real EDGAR link via ticker→cik lookup, internal links).
+   Per-article featured image: `app/news/[slug]/opengraph-image.tsx` (`next/og`).
+4. **Surface** — `app/news-sitemap.xml/route.ts` (Google News sitemap, last-48h only,
+   `<news:news>` tags; referenced from `robots.ts`). Also in the main sitemap, RSS `feed.xml`,
+   nav, footer, llms.txt.
+5. **Syndicate** — `app/api/cron/syndicate-news/route.ts` (cron, 12:30 UTC) → `lib/syndication.ts`
+   posts new articles to Medium / X / LinkedIn. **Credential-gated**: each channel no-ops if its
+   env vars are absent (never throws). Dedup via `NewsArticle.mediumUrl` / `xPostedAt` /
+   `linkedinPostedAt`. Env to activate: `MEDIUM_INTEGRATION_TOKEN`; `X_API_KEY`/`X_API_SECRET`/
+   `X_ACCESS_TOKEN`/`X_ACCESS_SECRET` (X posting = paid tier); `LINKEDIN_ACCESS_TOKEN` +
+   `LINKEDIN_ORG_URN`. Owned accounts only — never third-party communities (Reddit/HN = spam/ban).
+
+**Manual trigger (testing):** `curl <deploy-url>/api/cron/generate-news -H "Authorization: Bearer $CRON_SECRET"`
+(use the direct Vercel deploy URL — the www alias strips auth headers). Same for `syndicate-news`.
+
+**Maintenance:** AI generation isn't guaranteed — run a periodic adversarial QA of recent
+articles (cross-check specific numbers against the linked EDGAR filing; confirm AI-disclosure +
+not-advice present; watch for restatement-not-analysis). Delete a bad article's row to let the
+generator re-create it under the current prompt.
+
 ## SEO / GEO patterns (penalty-safe)
 
 This site's traffic strategy is **deepen canonical pages + a few genuinely-distinct pages**,
