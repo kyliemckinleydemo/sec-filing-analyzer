@@ -21,6 +21,7 @@ export default function Footer() {
             <h3 className="text-xs uppercase tracking-wider text-gray-400 mb-3">Explore</h3>
             <ul className="space-y-2">
               <li><Link href="/latest-filings" className="block py-1 hover:text-white">Latest Filings</Link></li>
+              <li><Link href="/news" className="block py-1 hover:text-white">News & Insights</Link></li>
               <li><Link href="/pulse" className="block py-1 hover:text-white">SEC Filing Pulse</Link></li>
               <li><Link href="/query" className="block py-1 hover:text-white">Ask the Market</Link></li>
               <li><Link href="/screener" className="block py-1 hover:text-white">Stock Screener</Link></li>

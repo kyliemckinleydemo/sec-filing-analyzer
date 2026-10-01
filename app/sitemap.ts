@@ -20,6 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${BASE_URL}/`, changeFrequency: 'daily', priority: 1.0 },
     { url: `${BASE_URL}/latest-filings`, changeFrequency: 'daily', priority: 0.9 },
+    { url: `${BASE_URL}/news`, changeFrequency: 'daily', priority: 0.8 },
     { url: `${BASE_URL}/query`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/screener`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/model-demo`, changeFrequency: 'weekly', priority: 0.7 },
@@ -98,6 +99,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('sitemap: failed to load filing pages', error);
   }
 
+  let newsPages: MetadataRoute.Sitemap = [];
+  try {
+    const articles = await prisma.newsArticle.findMany({
+      select: { slug: true, updatedAt: true },
+      orderBy: { publishedAt: 'desc' },
+      take: 1000,
+    });
+    newsPages = articles.map((n) => ({
+      url: `${BASE_URL}/news/${n.slug}`,
+      lastModified: n.updatedAt,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    }));
+  } catch (error) {
+    console.error('sitemap: failed to load news articles', error);
+  }
+
   return [
     ...staticPages,
     ...explainerPages,
@@ -105,5 +123,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...comparePages,
     ...companyPages,
     ...filingPages,
+    ...newsPages,
   ];
 }

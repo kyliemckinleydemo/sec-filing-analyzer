@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 
 const LINKS = [
   { href: '/latest-filings', label: 'Latest Filings' },
+  { href: '/news', label: 'News' },
   { href: '/pulse', label: 'Pulse' },
   { href: '/sectors', label: 'Sectors' },
   { href: '/screener', label: 'Screener' },
