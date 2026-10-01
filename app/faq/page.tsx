@@ -80,7 +80,11 @@ const faqs = [
         },
         {
           q: "Do you have an MCP server or an open dataset for developers?",
-          a: "Yes. StockHuntr runs a remote Model Context Protocol (MCP) server at /api/mcp so MCP-aware clients (Claude, ChatGPT, agents) can query filings, filing analysis, company snapshots, top prediction signals, and the model's track record directly. We also publish an open, CC-BY-4.0 dataset of AI-analyzed filings — one row per filing with concern/sentiment features and, where the 30-day window has elapsed, the realized market-relative outcome — for research and model evaluation."
+          a: "Yes. StockHuntr runs a remote Model Context Protocol (MCP) server at /api/mcp so MCP-aware clients (Claude, ChatGPT, agents) can query filings, filing analysis, company snapshots, top prediction signals, and the model's track record directly. It's listed in the official MCP Registry as io.github.kyliemckinleydemo/sec-filing-analyzer. We also publish an open, CC-BY-4.0 dataset of AI-analyzed filings — one row per filing with concern/sentiment features and, where the 30-day window has elapsed, the realized market-relative outcome — for research and model evaluation."
+        },
+        {
+          q: "Is there an RSS feed?",
+          a: "Yes. StockHuntr publishes an RSS 2.0 feed of the most recent AI-analyzed SEC filings at https://www.stockhuntr.net/feed.xml. Each item is a 10-K, 10-Q, or 8-K with its AI concern score and a short analysis summary, linking back to the full filing analysis page. Add that URL to any feed reader (Feedly, Inoreader, etc.) to follow new analyzed filings as they land. The feed is grounded in primary-source SEC EDGAR data and is for research and education, not investment advice."
         }
       ]
     },

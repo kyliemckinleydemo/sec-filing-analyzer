@@ -69,6 +69,11 @@ export const metadata: Metadata = {
   // user-selected canonical" and "Google chose different canonical" issues.
   alternates: {
     canonical: CANONICAL_URL,
+    types: {
+      'application/rss+xml': [
+        { url: '/feed.xml', title: 'StockHuntr — Latest AI-Analyzed SEC Filings' },
+      ],
+    },
   },
   robots: {
     index: true,
