@@ -44,7 +44,8 @@ It competes with paid AI research tools (Fintool, AlphaSense) and free raw EDGAR
 - **`/sectors` & `/sectors/[slug]`** — Sector insight pages with aggregate stats (filings analyzed, avg concern, model accuracy) computed from the corpus
 - **`/pulse`** — Recurring "SEC Filing Pulse" report: sector concern heat, most significant filings, strongest 30-day signals (ISR-refreshed, Article JSON-LD)
 - **`/compare` & `/compare/[slug]`** — Comparison landing pages (e.g. Fintool vs StockHuntr, AlphaSense alternatives, Bloomberg Terminal alternatives)
-- **MCP server** (`/api/mcp`, docs at [`/mcp`](https://www.stockhuntr.net/mcp)) — Remote Model Context Protocol server (Streamable HTTP) with **7 read-only tools**: filings, filing analysis, company snapshot, company search, **fundamentals screening**, top signals, and model track record — for MCP clients (Claude, ChatGPT, agents). Discovery manifest at `/.well-known/mcp.json`. See [`MCP-GUIDE.md`](MCP-GUIDE.md)
+- **MCP server** (`/api/mcp`, docs at [`/mcp`](https://www.stockhuntr.net/mcp)) — Remote Model Context Protocol server (Streamable HTTP) with **7 read-only tools**: filings, filing analysis, company snapshot, company search, **fundamentals screening**, top signals, and model track record — for MCP clients (Claude, ChatGPT, agents). **Published to the official MCP Registry** as `io.github.kyliemckinleydemo/sec-filing-analyzer`. Discovery manifest at `/.well-known/mcp.json`. See [`MCP-GUIDE.md`](MCP-GUIDE.md)
+- **Stock screener** ([`/screener`](https://www.stockhuntr.net/screener)) — Free server-rendered screener: filter 800+ companies by sector, market cap, P/E, dividend yield, and revenue growth; results link to AI-analyzed filings. Works without JS (native GET form); mirrored by the `screen_companies` MCP tool
 - **Open dataset** (`scripts/export-dataset.ts`) — CC-BY-4.0 export of the analyzed-filing corpus (CSV + JSONL + dataset card) for publication on Hugging Face / Kaggle
 - **SEO/GEO infra** — Dynamic `sitemap.ts` & `robots.ts`, `public/llms.txt`, JSON-LD (Organization / WebSite / SoftwareApplication / FAQPage / Article / Dataset), Microsoft Clarity analytics, and IndexNow submission
 
@@ -262,7 +263,7 @@ See [`TEST-PLAN.md`](TEST-PLAN.md) for detailed test architecture.
 | GET | `/api/sec/company/{ticker}` | Company info + filings from SEC EDGAR |
 | GET | `/api/companies/search` | Search companies by ticker/name |
 | GET | `/api/stock/{ticker}` | Stock price data |
-| GET/POST | `/api/mcp` | Remote MCP server (filings, analysis, company, top signals, track record) |
+| GET/POST | `/api/mcp` | Remote MCP server — 7 tools (filings, analysis, company, search, screening, top signals, track record) |
 
 ### Analysis (requires auth)
 | Method | Endpoint | Description |

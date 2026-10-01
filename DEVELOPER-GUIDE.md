@@ -81,6 +81,26 @@ Then keep these **in sync** (there is no single source of truth — update all):
 - the `TOOLS` array + count in `app/mcp/page.tsx`
 - the "N read-only tools" line in `public/llms.txt`
 
+### Publishing to the official MCP Registry
+
+The server is published at `io.github.kyliemckinleydemo/sec-filing-analyzer` via the
+`server.json` manifest in the repo root (a remote `streamable-http` entry → `/api/mcp`).
+To (re)publish — e.g. after bumping the server version:
+
+```bash
+# bump "version" in server.json first — the registry REJECTS a duplicate version
+mcp-publisher validate                                              # checks against the live registry
+mcp-publisher login github -token "$(gh auth token --user kyliemckinleydemo)"   # namespace owner; no browser needed
+mcp-publisher publish
+# verify: curl "https://registry.modelcontextprotocol.io/v0/servers?search=io.github.kyliemckinleydemo/sec-filing-analyzer"
+```
+
+Notes: `description` must be ≤100 chars. `mcp-publisher init` embeds the git-remote
+PAT into `repository.url` — scrub it before committing. The namespace requires auth as
+`kyliemckinleydemo` (that account's token is in the local gh keyring). PulseMCP and
+other downstreams auto-pull from the official registry; Glama auto-indexes the public
+GitHub repo (hence the `mcp`/`model-context-protocol` repo topics).
+
 ### Conventions & gotchas
 - **Units:** the DB stores `dividendYield`/`revenueGrowth`/margins as **ratios** (0.03 =
   3%). MCP inputs/outputs use **percent** — divide by 100 when filtering, multiply by 100

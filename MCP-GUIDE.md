@@ -10,6 +10,8 @@ all read-only and grounded in primary-source SEC EDGAR data.
 - **Transport:** Streamable HTTP (GET + POST)
 - **Auth:** none
 - **Discovery manifest:** https://www.stockhuntr.net/.well-known/mcp.json
+- **Official MCP Registry:** listed as `io.github.kyliemckinleydemo/sec-filing-analyzer`
+  — `curl "https://registry.modelcontextprotocol.io/v0/servers?search=io.github.kyliemckinleydemo/sec-filing-analyzer"`
 
 > StockHuntr is an educational/research tool. Predictions are model outputs, not
 > investment advice.
