@@ -162,6 +162,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        {/* RSS autodiscovery — raw <link> (Next hoists to <head>); not overridden by
+            per-page metadata.alternates the way metadata.alternates.types would be. */}
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="StockHuntr — Latest AI-Analyzed SEC Filings"
+          href="https://www.stockhuntr.net/feed.xml"
+        />
         {/* Microsoft Clarity — analytics + AI Visibility (bot/citation tracking) */}
         <Script id="ms-clarity" strategy="afterInteractive">
           {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","y2djbu69y4");`}
