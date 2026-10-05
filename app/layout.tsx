@@ -118,12 +118,25 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
+      "@type": "Person",
+      "@id": `${SITE_URL}/#founder`,
+      name: "Kylie McKinley",
+      jobTitle: "Founder",
+      worksFor: { "@id": `${SITE_URL}/#organization` },
+    },
+    {
       "@type": "Organization",
       "@id": `${SITE_URL}/#organization`,
       name: "StockHuntr",
       url: CANONICAL_URL,
       description:
         "Free AI tool to chat with SEC filings and get cited answers and risk scoring, across 800+ US companies. Also generates 30-day alpha signals.",
+      // Authorship / trust signals (E-E-A-T). The founder is a named Person entity; the
+      // full About page is at /about. Add profile URLs to `sameAs` as they are confirmed
+      // (see LINKEDIN_URL in app/about/page.tsx) — never add unverified profile links.
+      founder: { "@id": `${SITE_URL}/#founder` },
+      publisher: "Great Falls Ventures",
+      publishingPrinciples: `${SITE_URL}/faq`,
     },
     {
       "@type": "WebSite",

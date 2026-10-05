@@ -58,6 +58,7 @@ export default function Footer() {
             <h3 className="text-xs uppercase tracking-wider text-gray-400 mb-3">StockHuntr</h3>
             <ul className="space-y-2">
               <li><Link href="/" className="block py-1 hover:text-white">Home</Link></li>
+              <li><Link href="/about" className="block py-1 hover:text-white">About</Link></li>
               <li><Link href="/faq" className="block py-1 hover:text-white">FAQ & Methodology</Link></li>
               <li><Link href="/compare" className="block py-1 hover:text-white">Compare tools</Link></li>
               <li><Link href="/compare/free-sec-filing-ai-tools" className="block py-1 hover:text-white">Free SEC filing AI</Link></li>

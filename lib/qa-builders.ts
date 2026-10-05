@@ -7,6 +7,7 @@
  */
 import type { QAItem } from '@/app/components/QASection';
 import type { SectorInsights } from '@/lib/sector-insights';
+import { isRefusal } from '@/lib/analysis-quality';
 
 const NOT_ADVICE = 'This is model analysis for research, not investment advice.';
 
@@ -90,8 +91,11 @@ export function buildFilingQA(f: FilingQAInput): QAItem[] {
   const who = `${f.companyName} (${f.ticker})`;
   const a = f.analysis;
 
-  // 1. What does the filing say?
-  const overview = f.analysis?.filingContentSummary || f.analysis?.summary || f.aiSummary;
+  // 1. What does the filing say? Pick the first candidate that is real analysis —
+  // skip any refusal/error text (see lib/analysis-quality) so the Q&A never echoes it.
+  const overview = [f.analysis?.filingContentSummary, f.analysis?.summary, f.aiSummary].find(
+    (s) => s && !isRefusal(s)
+  );
   if (overview) {
     items.push({
       question: `What does ${who}'s ${f.filingType} filed ${dateStr} say?`,

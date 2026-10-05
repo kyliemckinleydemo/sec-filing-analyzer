@@ -14,6 +14,7 @@ import AnalysisProvenance from '@/app/components/AnalysisProvenance';
 import FilingLede from '@/app/components/FilingLede';
 import Breadcrumbs from '@/app/components/Breadcrumbs';
 import { buildFilingQA } from '@/lib/qa-builders';
+import { isRefusal, safeSummary } from '@/lib/analysis-quality';
 
 const SITE = 'https://www.stockhuntr.net';
 
@@ -98,13 +99,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // the AI-analysis differentiator.
   const title = `${name} (${ticker}) ${filing.filingType} Filing Summary — ${dateStr} | AI Analysis`;
 
+  // If the stored summary is a refusal/error (see lib/analysis-quality), never render
+  // it as the snippet AND keep the page out of the index until it's regenerated.
+  const broken = isRefusal(filing.aiSummary);
+
   // Strip markdown (bold, bullets, headings) so the AI summary reads cleanly
   // as a plain-text search/AI snippet.
-  const cleanSummary = filing.aiSummary
-    ?.replace(/[*_#`]+/g, '')
-    .replace(/[•\-]\s+/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  const cleanSummary = broken
+    ? null
+    : filing.aiSummary
+        ?.replace(/[*_#`]+/g, '')
+        .replace(/[•\-]\s+/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
   const description = cleanSummary
     ? cleanSummary.slice(0, 155)
     : `AI analysis of ${name} (${ticker}) ${filing.filingType} filed ${dateStr}: financial highlights, risk assessment, and a 30-day market-relative stock prediction. Sourced from SEC EDGAR.`;
@@ -115,6 +122,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: { canonical },
+    // Broken analyses are followable (keep EDGAR/company links flowing) but not
+    // indexable, so they drop out of search until regenerated.
+    ...(broken ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title,
       description,
@@ -157,14 +167,17 @@ async function getFilingQAData(accessionParam: string) {
       companyName: filing.company.name,
       filingType: filing.filingType,
       filingDate: filing.filingDate,
-      aiSummary: filing.aiSummary,
+      // Don't feed refusal/error text into the grounded Q&A overview.
+      aiSummary: safeSummary(filing.aiSummary),
       analysis,
       predicted30dAlpha: filing.predicted30dAlpha,
       predictionConfidence: filing.predictionConfidence,
     });
     // Analytical summary for the server-rendered lede (distinct from the client's
-    // "Filing Summary" card, which uses filingContentSummary).
-    const lede = analysis?.summary || filing.aiSummary || null;
+    // "Filing Summary" card, which uses filingContentSummary). Suppress it entirely
+    // if both candidate sources are refusals/errors — a blank lede beats a broken one.
+    const ledeCandidate = analysis?.summary || filing.aiSummary || null;
+    const lede = isRefusal(ledeCandidate) ? null : ledeCandidate;
     return {
       items,
       lede,

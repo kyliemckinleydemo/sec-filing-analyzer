@@ -3,12 +3,14 @@ import { prisma } from '@/lib/prisma';
 import { explainers } from './learn/explainers';
 import { CANONICAL_SECTORS } from '@/lib/sectors';
 import { comparisons } from './compare/comparisons';
+import { isRefusal } from '@/lib/analysis-quality';
 
 /**
  * @module app/sitemap
  * @description Dynamic sitemap.xml built from the database: static pages, all tracked
- * company pages, and analyzed filing detail pages. Filings without AI analysis are
- * excluded so the sitemap only advertises pages with differentiated content.
+ * company pages, and analyzed filing detail pages. Filings without AI analysis — and
+ * filings whose AI summary is a refusal/error (see lib/analysis-quality) — are
+ * excluded so the sitemap only advertises pages with differentiated, real content.
  */
 
 const BASE_URL = 'https://www.stockhuntr.net';
@@ -25,6 +27,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/screener`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/model-demo`, changeFrequency: 'weekly', priority: 0.7 },
     { url: `${BASE_URL}/faq`, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${BASE_URL}/about`, changeFrequency: 'monthly', priority: 0.6 },
     // NOTE: /backtest removed — page requires auth and redirects unauthenticated users,
     // which causes Google Search Console "page with redirect" warnings.
     { url: `${BASE_URL}/learn`, changeFrequency: 'monthly', priority: 0.7 },
@@ -82,19 +85,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   try {
-    // Only analyzed filings — thin pages stay out of the sitemap.
+    // Only analyzed filings — thin pages stay out of the sitemap. We over-fetch and
+    // then drop any whose summary is a refusal/error, so broken AI output is never
+    // advertised to search engines (these pages are also noindexed at render time).
     const filings = await prisma.filing.findMany({
       where: { aiSummary: { not: null } },
-      select: { accessionNumber: true, filingDate: true },
+      select: { accessionNumber: true, filingDate: true, aiSummary: true },
       orderBy: { filingDate: 'desc' },
-      take: 5000,
+      take: 8000,
     });
-    filingPages = filings.map((f) => ({
-      url: `${BASE_URL}/filing/${f.accessionNumber}`,
-      lastModified: f.filingDate,
-      changeFrequency: 'weekly',
-      priority: 0.6,
-    }));
+    filingPages = filings
+      .filter((f) => !isRefusal(f.aiSummary))
+      .slice(0, 5000)
+      .map((f) => ({
+        url: `${BASE_URL}/filing/${f.accessionNumber}`,
+        lastModified: f.filingDate,
+        changeFrequency: 'weekly',
+        priority: 0.6,
+      }));
   } catch (error) {
     console.error('sitemap: failed to load filing pages', error);
   }
