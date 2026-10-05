@@ -99,19 +99,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // the AI-analysis differentiator.
   const title = `${name} (${ticker}) ${filing.filingType} Filing Summary — ${dateStr} | AI Analysis`;
 
-  // If the stored summary is a refusal/error (see lib/analysis-quality), never render
-  // it as the snippet AND keep the page out of the index until it's regenerated.
-  const broken = isRefusal(filing.aiSummary);
+  // Only index a filing page when it has a *publishable* summary. safeSummary() returns
+  // null for both a refusal/error (see lib/analysis-quality) AND a missing summary, so a
+  // filing that was never analyzed — or was cleared for re-analysis (aiSummary nulled) —
+  // stays out of the index too, rather than becoming a thin page. Matches the sitemap,
+  // which only advertises filings with a non-refusal aiSummary.
+  const publishableSummary = safeSummary(filing.aiSummary);
+  const noIndex = !publishableSummary;
 
   // Strip markdown (bold, bullets, headings) so the AI summary reads cleanly
   // as a plain-text search/AI snippet.
-  const cleanSummary = broken
-    ? null
-    : filing.aiSummary
-        ?.replace(/[*_#`]+/g, '')
-        .replace(/[•\-]\s+/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
+  const cleanSummary = publishableSummary
+    ?.replace(/[*_#`]+/g, '')
+    .replace(/[•\-]\s+/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
   const description = cleanSummary
     ? cleanSummary.slice(0, 155)
     : `AI analysis of ${name} (${ticker}) ${filing.filingType} filed ${dateStr}: financial highlights, risk assessment, and a 30-day market-relative stock prediction. Sourced from SEC EDGAR.`;
@@ -122,9 +124,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: { canonical },
-    // Broken analyses are followable (keep EDGAR/company links flowing) but not
-    // indexable, so they drop out of search until regenerated.
-    ...(broken ? { robots: { index: false, follow: true } } : {}),
+    // Pages without a publishable summary are followable (keep EDGAR/company links
+    // flowing) but not indexable, so they drop out of search until (re)generated.
+    ...(noIndex ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title,
       description,

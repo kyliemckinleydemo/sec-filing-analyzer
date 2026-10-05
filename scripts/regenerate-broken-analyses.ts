@@ -89,6 +89,11 @@ async function main() {
     const slice = ids.slice(i, i + BATCH);
     const res = await prisma.filing.updateMany({
       where: { id: { in: slice } },
+      // Null ONLY the AI-derived outputs. The realized-outcome labels (actual7dReturn,
+      // actual30dReturn, actual*Alpha) and earnings-surprise features (eps/revenue
+      // consensus+actual+surprise) are NOT touched — they are independent of the AI and
+      // are the backbone of model training/backtesting. Predictions are nulled too because
+      // they were derived from the broken analysis (garbage in → garbage prediction).
       data: {
         analysisData: null,
         aiSummary: null,
@@ -96,6 +101,8 @@ async function main() {
         riskScore: null,
         concernLevel: null,
         predicted7dReturn: null,
+        predicted30dReturn: null,
+        predicted30dAlpha: null,
         predictionConfidence: null,
       },
     });
