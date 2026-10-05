@@ -123,6 +123,7 @@ const jsonLd = {
       name: "Kylie McKinley",
       jobTitle: "Founder",
       worksFor: { "@id": `${SITE_URL}/#organization` },
+      sameAs: ["https://www.linkedin.com/in/kyliekmckinley/"],
     },
     {
       "@type": "Organization",
@@ -137,6 +138,7 @@ const jsonLd = {
       founder: { "@id": `${SITE_URL}/#founder` },
       publisher: "Great Falls Ventures",
       publishingPrinciples: `${SITE_URL}/faq`,
+      sameAs: ["https://www.linkedin.com/in/kyliekmckinley/"],
     },
     {
       "@type": "WebSite",

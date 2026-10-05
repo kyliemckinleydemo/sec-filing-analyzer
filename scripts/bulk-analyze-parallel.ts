@@ -56,9 +56,19 @@ const prisma = new PrismaClient({
 const WORKER_ID = parseInt(process.argv[2] || '0');
 const TOTAL_WORKERS = parseInt(process.argv[3] || '1');
 const COST_LIMIT = parseFloat(process.env.BACKFILL_COST_LIMIT || '300'); // hard stop (env-overridable)
-// How far back to analyze. Default 120d (4mo); capped at 183d (6mo) — full analysis of older
-// filings isn't worth the spend (their 30d prediction windows are long realized). Env-overridable.
-const LOOKBACK_DAYS = Math.min(183, parseInt(process.env.BACKFILL_LOOKBACK_DAYS || '120'));
+// How far back to analyze. Default 120d (4mo) for the routine cron — full analysis of older
+// filings usually isn't worth the spend (their 30d prediction windows are long realized).
+// Env-overridable up to a 366d safety ceiling for deliberate backlog cleanups (e.g. fixing
+// broken refusal summaries, where re-analysis is valuable even after predictions realize).
+const LOOKBACK_DAYS = Math.min(366, parseInt(process.env.BACKFILL_LOOKBACK_DAYS || '120'));
+// Optional: restrict the null-sweep to the top-N companies by market cap. Keeps a targeted
+// backlog run from also processing out-of-scope filings. 0/unset = all companies.
+const TOP_COMPANIES = parseInt(process.env.BACKFILL_TOP_COMPANIES || '0');
+// Optional: only (re)analyze filings whose row was updated on/after this ISO timestamp.
+// Pairs with scripts/regenerate-broken-analyses.ts — after clearing broken rows (which
+// stamps updatedAt=now), set this to the clear time so the run targets EXACTLY those rows
+// and not other never-analyzed (analysisData:null) filings in the window. Unset = no filter.
+const UPDATED_SINCE = process.env.BACKFILL_UPDATED_SINCE || '';
 
 // Rough token estimation (1 token ≈ 4 characters)
 function estimateTokens(text: string): number {
@@ -131,15 +141,41 @@ async function parallelAnalyzeFilings() {
   console.log(`WORKER ${WORKER_ID}/${TOTAL_WORKERS - 1} - Parallel Filing Analysis (Auto-Retry Enabled)`);
   console.log('='.repeat(80) + '\n');
 
-  // Find recent filings without analysis (bounded by LOOKBACK_DAYS, capped at 6 months)
+  // Find recent filings without analysis (bounded by LOOKBACK_DAYS)
   const since = new Date(Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000);
   console.log(`Lookback: ${LOOKBACK_DAYS} days (since ${since.toISOString().split('T')[0]})`);
+
+  // Optionally scope to the top-N companies by market cap.
+  let companyFilter: { companyId: { in: string[] } } | {} = {};
+  if (TOP_COMPANIES > 0) {
+    const top = await withRetry(async () =>
+      prisma.company.findMany({
+        where: { marketCap: { not: null } },
+        orderBy: { marketCap: 'desc' },
+        take: TOP_COMPANIES,
+        select: { id: true },
+      })
+    );
+    companyFilter = { companyId: { in: top.map((c) => c.id) } };
+    console.log(`Scoped to top ${top.length} companies by market cap.`);
+  }
+
+  let updatedFilter: { updatedAt: { gte: Date } } | {} = {};
+  if (UPDATED_SINCE) {
+    const d = new Date(UPDATED_SINCE);
+    if (!isNaN(d.getTime())) {
+      updatedFilter = { updatedAt: { gte: d } };
+      console.log(`Restricting to rows updated since ${d.toISOString()}`);
+    }
+  }
 
   const allFilings = await withRetry(async () => {
     return await prisma.filing.findMany({
       where: {
         analysisData: null,
         filingDate: { gte: since },
+        ...companyFilter,
+        ...updatedFilter,
       },
       select: {
         id: true,

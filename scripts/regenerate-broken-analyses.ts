@@ -16,9 +16,16 @@ import { isRefusal } from '../lib/analysis-quality';
  *   npx tsx scripts/regenerate-broken-analyses.ts                 # dry run, show counts
  *   npx tsx scripts/regenerate-broken-analyses.ts --apply --limit 500
  *   npx tsx scripts/regenerate-broken-analyses.ts --apply --limit 500 --since 2025-01-01
+ *   npx tsx scripts/regenerate-broken-analyses.ts --apply --since 2025-04-05 --top-companies 600
  *
- * After clearing, regenerate with:
- *   npx tsx scripts/bulk-analyze-parallel.ts
+ * Flags:
+ *   --apply                actually clear (default is dry-run)
+ *   --limit N              cap how many broken filings to reset this run
+ *   --since YYYY-MM-DD     only filings filed on/after this date
+ *   --top-companies N      only filings from the top-N companies by market cap
+ *
+ * After clearing, regenerate with (183 = full 6-month lookback):
+ *   BACKFILL_LOOKBACK_DAYS=183 npx tsx scripts/bulk-analyze-parallel.ts 0 1
  */
 
 function arg(name: string): string | undefined {
@@ -30,17 +37,33 @@ async function main() {
   const apply = process.argv.includes('--apply');
   const limit = Number(arg('--limit') ?? '0') || 0; // 0 = no limit
   const since = arg('--since') ? new Date(arg('--since') as string) : null;
+  const topCompanies = Number(arg('--top-companies') ?? '0') || 0; // 0 = all companies
 
   const where: Record<string, unknown> = { aiSummary: { not: null } };
   if (since && !isNaN(since.getTime())) where.filingDate = { gte: since };
 
+  // Optionally restrict to the top-N companies by market cap.
+  let topIds: Set<string> | null = null;
+  if (topCompanies > 0) {
+    const top = await prisma.company.findMany({
+      where: { marketCap: { not: null } },
+      orderBy: { marketCap: 'desc' },
+      take: topCompanies,
+      select: { id: true },
+    });
+    topIds = new Set(top.map((c) => c.id));
+    console.log(`Scoped to top ${top.length} companies by market cap.`);
+  }
+
   const candidates = await prisma.filing.findMany({
     where,
-    select: { id: true, accessionNumber: true, filingType: true, filingDate: true, aiSummary: true },
+    select: { id: true, companyId: true, accessionNumber: true, filingType: true, filingDate: true, aiSummary: true },
     orderBy: { filingDate: 'desc' },
   });
 
-  const broken = candidates.filter((f) => isRefusal(f.aiSummary));
+  const broken = candidates
+    .filter((f) => isRefusal(f.aiSummary))
+    .filter((f) => !topIds || topIds.has(f.companyId));
   const targets = limit > 0 ? broken.slice(0, limit) : broken;
 
   console.log(`Candidates scanned: ${candidates.length}`);

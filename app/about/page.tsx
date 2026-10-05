@@ -23,10 +23,10 @@ const FOUNDER_NAME = 'Kylie McKinley';
 const FOUNDER_ROLE = 'Founder';
 const PUBLISHER = 'Great Falls Ventures';
 
-// Set this to the founder/company LinkedIn URL to surface it as a trust signal on the
-// page and in the Organization `sameAs` structured data. Leave empty to omit (no broken
-// or placeholder links will render). TODO(owner): paste the real LinkedIn profile URL.
-const LINKEDIN_URL = '';
+// Founder/company LinkedIn URL — surfaced as a trust signal on the page and in the
+// Organization + Person `sameAs` structured data. Leave empty to omit (no broken or
+// placeholder links will render).
+const LINKEDIN_URL = 'https://www.linkedin.com/in/kyliekmckinley/';
 
 export const metadata: Metadata = {
   title: 'About StockHuntr — Who Builds It & How It Works',
