@@ -58,9 +58,11 @@ const TOTAL_WORKERS = parseInt(process.argv[3] || '1');
 const COST_LIMIT = parseFloat(process.env.BACKFILL_COST_LIMIT || '300'); // hard stop (env-overridable)
 // How far back to analyze. Default 120d (4mo) for the routine cron — full analysis of older
 // filings usually isn't worth the spend (their 30d prediction windows are long realized).
-// Env-overridable up to a 366d safety ceiling for deliberate backlog cleanups (e.g. fixing
-// broken refusal summaries, where re-analysis is valuable even after predictions realize).
-const LOOKBACK_DAYS = Math.min(366, parseInt(process.env.BACKFILL_LOOKBACK_DAYS || '120'));
+// Env-overridable up to a 1095d (3y) safety ceiling for deliberate backlog cleanups (e.g.
+// re-analyzing broken refusal summaries, where fixing the page content is valuable even
+// after predictions realize). The ceiling is only a runaway guard — pair with
+// BACKFILL_UPDATED_SINCE to target a specific cleared set rather than every old null.
+const LOOKBACK_DAYS = Math.min(1095, parseInt(process.env.BACKFILL_LOOKBACK_DAYS || '120'));
 // Optional: restrict the null-sweep to the top-N companies by market cap. Keeps a targeted
 // backlog run from also processing out-of-scope filings. 0/unset = all companies.
 const TOP_COMPANIES = parseInt(process.env.BACKFILL_TOP_COMPANIES || '0');

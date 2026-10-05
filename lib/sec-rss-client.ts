@@ -278,8 +278,14 @@ export class SECRSSClient {
           continue; // Skip if not in our top 1,000
         }
 
+        const accessionNumber = this.extractAccessionNumber(link);
+        if (!this.isValidAccession(accessionNumber)) {
+          console.warn(`RSS: skipping ${form.trim()} for ${ticker} — unparseable accession from link: ${link}`);
+          continue;
+        }
+
         filings.push({
-          accessionNumber: this.extractAccessionNumber(link),
+          accessionNumber,
           cik: cik.padStart(10, '0'),
           ticker,
           companyName: decodeEntities(companyName.trim()),
@@ -323,6 +329,10 @@ export class SECRSSClient {
       }
 
       const accessionNumber = fileName.split('/').pop()?.replace('.txt', '') || '';
+      if (!this.isValidAccession(accessionNumber)) {
+        console.warn(`DailyIndex: skipping ${formType} for CIK ${cik} — invalid accession "${accessionNumber}" (fileName: ${fileName})`);
+        continue;
+      }
 
       // Convert YYYYMMDD to YYYY-MM-DD format
       const formattedDate = `${dateStr.substring(0, 4)}-${dateStr.substring(4, 6)}-${dateStr.substring(6, 8)}`;
@@ -415,6 +425,16 @@ export class SECRSSClient {
   private extractAccessionNumber(url: string): string {
     const match = url.match(/accession[=\/]([0-9-]+)/i);
     return match ? match[1] : '';
+  }
+
+  /**
+   * A valid SEC accession number is dashed: 10 digits, 2 digits, 6 digits
+   * (e.g. 0000320193-24-000123). Rejects '' and any malformed value so junk
+   * records (which can't form a real /filing URL or be re-fetched from EDGAR)
+   * never enter the pipeline.
+   */
+  private isValidAccession(accession: string): boolean {
+    return /^\d{10}-\d{2}-\d{6}$/.test(accession);
   }
 
   /**

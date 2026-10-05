@@ -103,6 +103,7 @@ export async function GET(request: Request) {
     const results = {
       fetched: 0,
       stored: 0,
+      skippedInvalid: 0,
       errors: [] as string[],
       companiesProcessed: 0,
       mode: 'daily' as 'daily' | 'catchup',
@@ -227,6 +228,20 @@ export async function GET(request: Request) {
     const newFilingPaths: string[] = [];
     for (const filing of allFilings) {
       try {
+        // Guard: never persist a filing without a valid SEC accession number.
+        // Both ingestion paths can yield '' when a line/URL is malformed
+        // (sec-rss-client: extractAccessionNumber returns '' on no match;
+        // parseDailyIndex falls back to ''). An empty/garbage accession collides on
+        // the unique constraint and produces a junk record that can't form a real URL
+        // or be re-fetched from EDGAR (observed: an empty-accession AMAT row). Skip it.
+        if (!/^\d{10}-\d{2}-\d{6}$/.test(filing.accessionNumber)) {
+          console.warn(
+            `Skipping filing with invalid accession "${filing.accessionNumber}" (${filing.ticker} ${filing.formType})`
+          );
+          results.skippedInvalid++;
+          continue;
+        }
+
         // Check if company exists in our fetched map, otherwise upsert
         let company = companyMap.get(filing.ticker);
         
