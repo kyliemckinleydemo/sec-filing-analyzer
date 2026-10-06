@@ -420,11 +420,22 @@ export class SECRSSClient {
   }
 
   /**
-   * Extract accession number from URL
+   * Extract the dashed accession number from a SEC filing URL.
+   *
+   * Modern SEC RSS/Atom <link> hrefs point at the filing index page and embed the
+   * dashed accession in the filename, e.g.
+   *   /Archives/edgar/data/320193/000032019326000001/0000320193-26-000001-index.htm
+   * The previous regex only matched a literal "accession=" / "accession/" segment,
+   * which these URLs do NOT contain — so it returned '' for every RSS filing,
+   * silently breaking real-time RSS ingestion (and, before accession validation was
+   * added, creating junk empty-accession rows). Match the canonical dashed pattern
+   * (NNNNNNNNNN-NN-NNNNNN) directly, with the legacy query-param form as a fallback.
    */
   private extractAccessionNumber(url: string): string {
-    const match = url.match(/accession[=\/]([0-9-]+)/i);
-    return match ? match[1] : '';
+    const dashed = url.match(/(\d{10}-\d{2}-\d{6})/);
+    if (dashed) return dashed[1];
+    const legacy = url.match(/accession[=\/]([0-9-]+)/i);
+    return legacy ? legacy[1] : '';
   }
 
   /**
