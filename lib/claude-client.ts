@@ -41,6 +41,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
+import { isRefusal } from './analysis-quality';
 
 export interface RiskAnalysis {
   overallTrend: 'INCREASING' | 'STABLE' | 'DECREASING';
@@ -118,7 +119,7 @@ export interface FilingAnalysis {
   risks: RiskAnalysis;
   sentiment: SentimentAnalysis;
   concernAssessment: ConcernAssessment; // NEW: Replaces simple sentiment with multi-factor concern scoring
-  summary: string;
+  summary: string | null; // null when the model has no usable material (refusal/empty) — persisted as null aiSummary so the page is noindexed, never shows refusal text
   filingContentSummary?: string; // NEW: TLDR of what the filing actually contains
   guidance?: string;
   financialMetrics?: FinancialMetrics;
@@ -825,7 +826,17 @@ Return ONLY bullet points, no introduction.`;
     sentimentAnalysis: SentimentAnalysis,
     useCase: 'bulk' | 'user' = 'user',
     hasFinancialData: boolean = true
-  ): Promise<string> {
+  ): Promise<string | null> {
+    // If risk extraction produced nothing usable (e.g. an 8-K whose sections failed to
+    // parse → topChanges is empty or a "[Risk analysis failed]" placeholder), the model
+    // has no material and will refuse ("I cannot create an executive summary…"). Skip the
+    // paid call and signal "no summary" so we persist null (page noindexed) rather than a
+    // refusal string. See lib/analysis-quality / the GSC "crawled - not indexed" cleanup.
+    const usableChanges = (riskAnalysis.topChanges || []).filter((c) => c && !isRefusal(c));
+    if (usableChanges.length === 0) {
+      return null;
+    }
+
     const forecastGuidance = hasFinancialData
       ? ''
       : '\n\nIMPORTANT: This filing does NOT contain financial results. Do NOT make stock price forecasts, predictions, or trading recommendations. Focus only on the disclosed events and their qualitative implications.';
@@ -861,7 +872,10 @@ Return ONLY bullet points, no introduction.`;
         throw new Error('Unexpected response type');
       }
 
-      return content.text.trim();
+      // Safety net: even with usable inputs the model can still refuse. Never persist a
+      // refusal as the summary — store null so the page is noindexed, not thin/broken.
+      const text = content.text.trim();
+      return isRefusal(text) ? null : text;
     } catch (error) {
       console.error('Error generating summary:', error);
       throw error;
