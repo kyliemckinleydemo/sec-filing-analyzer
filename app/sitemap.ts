@@ -88,15 +88,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Only analyzed filings — thin pages stay out of the sitemap. We over-fetch and
     // then drop any whose summary is a refusal/error, so broken AI output is never
     // advertised to search engines (these pages are also noindexed at render time).
+    // Cap: a single sitemap allows 50,000 URLs; we advertise up to 46,000 filings,
+    // leaving headroom for company + static pages. (Previously capped at 5,000, which
+    // hid ~11k real, indexable filing pages from Google — a chunk of GSC's
+    // "Crawled - currently not indexed". When the eligible count approaches 46k, split
+    // into a sitemap index.)
     const filings = await prisma.filing.findMany({
       where: { aiSummary: { not: null } },
       select: { accessionNumber: true, filingDate: true, aiSummary: true },
       orderBy: { filingDate: 'desc' },
-      take: 8000,
+      take: 48000,
     });
     filingPages = filings
       .filter((f) => !isRefusal(f.aiSummary))
-      .slice(0, 5000)
+      .slice(0, 46000)
       .map((f) => ({
         url: `${BASE_URL}/filing/${f.accessionNumber}`,
         lastModified: f.filingDate,
