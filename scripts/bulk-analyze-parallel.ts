@@ -41,7 +41,7 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { claudeClient } from '../lib/claude-client';
-import { isProceduralEightK } from '../lib/pipeline';
+import { isProceduralEightK, fetchFilingText } from '../lib/pipeline';
 import { costTracker } from './cost-tracker';
 
 // Configure Prisma with larger connection pool for parallel processing
@@ -77,27 +77,11 @@ function estimateTokens(text: string): number {
   return Math.ceil(text.length / 4);
 }
 
+// Delegate to the shared pipeline fetch, which resolves EDGAR index pages
+// (…-index.htm) to the primary document — fetching the index listing directly yields
+// empty extraction and model refusals. (Was a duplicate index-page fetch here.)
 async function fetchFilingContent(filingUrl: string): Promise<string | null> {
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-    const response = await fetch(filingUrl, {
-      headers: {
-        'User-Agent': 'SEC Filing Analyzer contact@bluecomet.ai',
-      },
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      return null;
-    }
-
-    return await response.text();
-  } catch (error: any) {
-    return null;
-  }
+  return fetchFilingText(filingUrl);
 }
 
 async function sleep(ms: number) {

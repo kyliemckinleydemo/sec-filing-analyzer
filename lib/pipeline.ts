@@ -19,12 +19,14 @@ export const MAJOR_FIRMS = [
 ];
 
 /** Fetch raw SEC filing HTML/text with a compliant User-Agent and a hard timeout. */
-export async function fetchFilingText(filingUrl: string): Promise<string | null> {
+const SEC_UA = 'SEC Filing Analyzer contact@bluecomet.ai';
+
+async function fetchRaw(url: string): Promise<string | null> {
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
-    const response = await fetch(filingUrl, {
-      headers: { 'User-Agent': 'SEC Filing Analyzer contact@bluecomet.ai' },
+    const response = await fetch(url, {
+      headers: { 'User-Agent': SEC_UA },
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
@@ -33,6 +35,48 @@ export async function fetchFilingText(filingUrl: string): Promise<string | null>
   } catch {
     return null;
   }
+}
+
+/**
+ * Resolve an EDGAR filing INDEX page (…-index.htm) to its primary document URL.
+ * The index page is only a ~10KB document *listing* with no filing body, so analyzing
+ * it directly yields empty risk/MD&A/8-K-item extraction and the model refuses ("Risk
+ * Analysis section is empty… I cannot create an executive summary"). The primary document
+ * (e.g. fg-20261005.htm) holds the actual content. RSS-ingested filings store the index
+ * URL (sec-rss-client), whereas bulk-ingested ones (sec-client) store the primary doc —
+ * which is why only some filings failed. We read the index and take the inline-XBRL
+ * viewer target (/ix?doc=/Archives/…primary.htm), falling back to the first non-index,
+ * non-fragment document link. Returns null if it can't be resolved.
+ */
+async function resolvePrimaryDocument(indexUrl: string): Promise<string | null> {
+  const html = await fetchRaw(indexUrl);
+  if (!html) return null;
+  const origin = 'https://www.sec.gov';
+  // Modern filings: the inline-XBRL viewer link points at the primary document.
+  const ix = html.match(/\/ix\?doc=(\/Archives\/[^"'&\s]+\.(?:htm|html))/i);
+  if (ix) return origin + ix[1];
+  // Fallback: first Archives .htm link that isn't the index itself, an XBRL R-fragment,
+  // or the FilingSummary.
+  const links = Array.from(html.matchAll(/href="(\/Archives\/[^"]+\.(?:htm|html))"/gi)).map(
+    (m) => m[1]
+  );
+  const primary = links.find(
+    (h) => !/-index\.html?$/i.test(h) && !/\/R\d+\.htm/i.test(h) && !/FilingSummary/i.test(h)
+  );
+  return primary ? origin + primary : null;
+}
+
+export async function fetchFilingText(filingUrl: string): Promise<string | null> {
+  let url = filingUrl;
+  // If we were handed the EDGAR index page, resolve it to the real document first —
+  // otherwise the parser sees only the listing and the model refuses on empty content.
+  if (/-index\.html?$/i.test(filingUrl)) {
+    const resolved = await resolvePrimaryDocument(filingUrl);
+    // Last resort: the full submission .txt (all documents concatenated) still contains
+    // the body, unlike the index listing.
+    url = resolved ?? filingUrl.replace(/-index\.html?$/i, '.txt');
+  }
+  return await fetchRaw(url);
 }
 
 /** Nearest macro-regime row (SPX 30d return, VIX) to a filing date, within ±7 days. */
